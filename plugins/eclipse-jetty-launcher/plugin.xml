@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="net.sourceforge.eclipsejetty.launch.JettyLaunchConfigurationDelegate"
+            id="net.sourceforge.eclipsejetty.launchConfigurationType"
+            modes="run, debug"
+            name="Jetty Webapp"
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
+            sourcePathComputerId="org.eclipse.jdt.launching.sourceLookup.javaSourcePathComputer">
+      </launchConfigurationType>
+   </extension>
+
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="net.sourceforge.eclipsejetty.launch.JettyLaunchConfigurationTabGroup"
+            id="JettyWebAppTabGroup"
+            type="net.sourceforge.eclipsejetty.launchConfigurationType">
+      </launchConfigurationTabGroup>
+   </extension>
+
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="net.sourceforge.eclipsejetty.launchConfigurationType"
+            icon="icons/jetty.gif"
+            id="net.sourceforge.eclipsejetty.launchConfigurationType.image">
+      </launchConfigurationTypeImage>
+   </extension>
+
+   <extension
+         point="org.eclipse.jdt.launching.classpathProviders">
+      <classpathProvider
+            class="net.sourceforge.eclipsejetty.JettyLaunchConfigurationClassPathProvider"
+            id="net.sourceforge.eclipsejetty.JettyWebAppClassPathProvider">
+      </classpathProvider>
+   </extension>
+</plugin>
