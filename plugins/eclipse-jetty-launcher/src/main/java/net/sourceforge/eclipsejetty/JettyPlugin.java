@@ -27,7 +27,7 @@ import org.osgi.framework.BundleContext;
 public class JettyPlugin extends AbstractUIPlugin
 {
 	// The plug-in ID
-	public static final String PLUGIN_ID = "net.sourceforge.eclipse-jetty-launcher";
+	public static final String PLUGIN_ID = "net.sourceforge.eclipsejetty.launcher";
 
 	private static final String JETTY_ICON = PLUGIN_ID + ".jettyIcon";
 

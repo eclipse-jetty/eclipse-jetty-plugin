@@ -3,8 +3,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sourceforge.eclipse-jetty</groupId>
-	<artifactId>eclipse-jetty-launcher</artifactId>
+	<groupId>net.sourceforge.eclipsejetty</groupId>
+	<artifactId>launcher</artifactId>
 	<version>3.4.0.alpha-1</version>
 	<packaging>bundle</packaging>
 	<name>Eclipse Jetty Launcher</name>

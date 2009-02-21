@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="eclipse_jetty"
+      id="net.sourceforge.eclipsejetty.feature"
       label="Eclipse Jetty Feature"
-      version="3.4.1"
+      version="3.4.0.alpha-1"
       provider-name="Christian Köberl">
 
    <description url="http://eclipse-jetty.sourceforge.net/">
@@ -22,9 +22,9 @@
    </url>
 
    <plugin
-         id="net.sourceforge.eclipse-jetty-launcher"
-         download-size="0"
-         install-size="0"
+         id="net.sourceforge.eclipsejetty.launcher"
+         download-size="25"
+         install-size="25"
          version="3.4.0.alpha-1"
          unpack="false"/>
 
