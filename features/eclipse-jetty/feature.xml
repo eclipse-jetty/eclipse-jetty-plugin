@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="eclipse_jetty"
+      label="Eclipse Jetty Feature"
+      version="3.4.1"
+      provider-name="Christian Köberl">
+
+   <description url="http://eclipse-jetty.sourceforge.net/">
+      Eclipse Jetty Integration
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.apache.org/licenses/LICENSE-2.0.txt">
+      The Apache Software License, Version 2.0
+   </license>
+
+   <url>
+      <update label="Eclipse Jetty Update Site" url="http://eclipse-jetty.sourceforge.net/update/"/>
+   </url>
+
+   <plugin
+         id="net.sourceforge.eclipse-jetty-launcher"
+         download-size="0"
+         install-size="0"
+         version="3.4.0.alpha-1"
+         unpack="false"/>
+
+</feature>
