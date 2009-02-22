@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Eclipse Jetty Integration ">
+	<bannerLeft>
+		<name>Eclipse Jetty Integration </name>
+	</bannerLeft>
+	<body>
+		<links>
+			<item name="Eclipse" href="http://www.eclipse.org/" />
+			<item name="Jetty" href="http://www.mortbay.org/jetty/" />
+		</links>
+
+		<menu name="Main">
+			<item name="Introduction" href="index.html" />
+		</menu>
+
+		<menu ref="reports" />
+
+	</body>
+</project>
