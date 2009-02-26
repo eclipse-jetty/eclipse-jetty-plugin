@@ -35,7 +35,7 @@
          point="org.eclipse.jdt.launching.classpathProviders">
       <classpathProvider
             class="net.sourceforge.eclipsejetty.JettyLaunchConfigurationClassPathProvider"
-            id="net.sourceforge.eclipsejetty.JettyWebAppClassPathProvider">
+            id="net.sourceforge.eclipsejetty.launcher.JettyWebAppClassPathProvider">
       </classpathProvider>
    </extension>
 </plugin>
