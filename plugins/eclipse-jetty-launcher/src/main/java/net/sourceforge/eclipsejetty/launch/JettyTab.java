@@ -67,6 +67,21 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
  */
 public class JettyTab extends JavaLaunchTab
 {
+	private final class ModifyDialogListener implements ModifyListener,
+			SelectionListener {
+		public void modifyText(ModifyEvent e) {
+			updateLaunchConfigurationDialog();
+		}
+
+		public void widgetDefaultSelected(SelectionEvent arg0) {
+
+		}
+
+		public void widgetSelected(SelectionEvent arg0) {
+			updateLaunchConfigurationDialog();
+		}
+	}
+
 	private static abstract class ButtonListener implements SelectionListener
 	{
 		public void widgetDefaultSelected(SelectionEvent e)
@@ -84,15 +99,28 @@ public class JettyTab extends JavaLaunchTab
 
 	private Text fJettyPathText;
 
-	private Button fProjButton;
-
 	private Button fWebappDirButton;
+
+	private Button jetty5Button;
+
+	private Button jetty6Button;
+
+	private Button jetty7Button;
+
+	private ModifyDialogListener modifyDialogListener;
+
+	private Button nojspButton;
+
+	private Button jsp20Button;
+
+	private Button jsp21Button;
 
 	/**
 	 * Construct.
 	 */
 	public JettyTab()
 	{
+		modifyDialogListener = new ModifyDialogListener();
 	}
 
 	public void createControl(Composite parent)
@@ -140,14 +168,8 @@ public class JettyTab extends JavaLaunchTab
 		gd.grabExcessHorizontalSpace = true;
 		fProjText.setLayoutData(gd);
 		fProjText.setFont(font);
-		fProjText.addModifyListener(new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
-			{
-				updateLaunchConfigurationDialog();
-			}
-		});
-		fProjButton = createPushButton(group, "&Browse...", null);
+		fProjText.addModifyListener(modifyDialogListener);
+		Button fProjButton = createPushButton(group, "&Browse...", null);
 		fProjButton.addSelectionListener(new ButtonListener()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -179,13 +201,7 @@ public class JettyTab extends JavaLaunchTab
 
 		new Label(group, SWT.LEFT).setText("Context");
 		fContextText = new Text(group, SWT.SINGLE | SWT.BORDER);
-		fContextText.addModifyListener(new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
-			{
-				updateLaunchConfigurationDialog();
-			}
-		});
+		fContextText.addModifyListener(modifyDialogListener);
 		gd = new GridData();
 		gd.horizontalAlignment = GridData.FILL;
 		gd.grabExcessHorizontalSpace = true;
@@ -194,26 +210,14 @@ public class JettyTab extends JavaLaunchTab
 
 		new Label(group, SWT.LEFT).setText("Port");
 		fPortText = new Text(group, SWT.SINGLE | SWT.BORDER);
-		fPortText.addModifyListener(new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
-			{
-				updateLaunchConfigurationDialog();
-			}
-		});
+		fPortText.addModifyListener(modifyDialogListener);
 		gd = new GridData();
 		fPortText.setLayoutData(gd);
 		fPortText.setFont(font);
 
 		new Label(group, SWT.LEFT).setText("WebApp Directory");
 		fWebAppDirText = new Text(group, SWT.SINGLE | SWT.BORDER);
-		fWebAppDirText.addModifyListener(new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
-			{
-				updateLaunchConfigurationDialog();
-			}
-		});
+		fWebAppDirText.addModifyListener(modifyDialogListener);
 		gd = new GridData();
 		gd.horizontalAlignment = GridData.FILL;
 		gd.grabExcessHorizontalSpace = true;
@@ -247,13 +251,7 @@ public class JettyTab extends JavaLaunchTab
 		// Jetty path
 		new Label(group, SWT.LEFT).setText("Path");
 		fJettyPathText = new Text(group, SWT.SINGLE | SWT.BORDER);
-		fJettyPathText.addModifyListener(new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
-			{
-				updateLaunchConfigurationDialog();
-			}
-		});
+		fJettyPathText.addModifyListener(modifyDialogListener);
 		gd = new GridData();
 		gd.horizontalAlignment = GridData.FILL;
 		gd.grabExcessHorizontalSpace = true;
@@ -268,17 +266,41 @@ public class JettyTab extends JavaLaunchTab
 			}
 		});
 
-		// Jetty version TODO make it work
 		new Label(group, SWT.LEFT).setText("Version");
-		Button jetty5Button = new Button(group, SWT.RADIO);
+		Composite jettyVersionGroup = new Composite(group, SWT.NONE);
+		layout = new GridLayout();
+		layout.numColumns = 3;
+		jettyVersionGroup.setLayout(layout);
+		gd = new GridData();
+		gd.horizontalAlignment = GridData.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		gd.horizontalSpan = 4;
+		jettyVersionGroup.setLayoutData(gd);
+		jetty5Button = new Button(jettyVersionGroup, SWT.RADIO);
 		jetty5Button.setText("Jetty 5.x");
-		jetty5Button.setSelection(false);
-		Button jetty6Button = new Button(group, SWT.RADIO);
+		jetty5Button.setEnabled(false);
+		jetty5Button.addSelectionListener(modifyDialogListener);
+		jetty6Button = new Button(jettyVersionGroup, SWT.RADIO);
 		jetty6Button.setText("Jetty 6.x");
-		jetty6Button.setSelection(true);
-		Button jetty7Button = new Button(group, SWT.RADIO);
+		jetty6Button.addSelectionListener(modifyDialogListener);
+		jetty7Button = new Button(jettyVersionGroup, SWT.RADIO);
 		jetty7Button.setText("Jetty 7.x");
-		jetty7Button.setEnabled(false);
+		jetty7Button.addSelectionListener(modifyDialogListener);
+
+		new Label(group, SWT.LEFT).setText("JSP");
+		Composite jspVersionComposite = new Composite(group, SWT.NONE);
+		jspVersionComposite.setLayout(layout);
+		jspVersionComposite.setLayoutData(gd);
+		nojspButton = new Button(jspVersionComposite, SWT.RADIO);
+		nojspButton.setText("disabled");
+		nojspButton.setSelection(true);
+		nojspButton.addSelectionListener(modifyDialogListener);
+		jsp20Button = new Button(jspVersionComposite, SWT.RADIO);
+		jsp20Button.setText("JSP 2.0");
+		jsp20Button.addSelectionListener(modifyDialogListener);
+		jsp21Button = new Button(jspVersionComposite, SWT.RADIO);
+		jsp21Button.setText("JSP 2.1");
+		jsp21Button.addSelectionListener(modifyDialogListener);
 	}
 
 	@Override
@@ -307,6 +329,14 @@ public class JettyTab extends JavaLaunchTab
 			fWebAppDirText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, ""));
 			fPortText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_PORT, ""));
 			fJettyPathText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_PATH, ""));
+			String jettyVersion = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, "6");
+			jetty7Button.setSelection("7".equals(jettyVersion));
+			jetty6Button.setSelection("6".equals(jettyVersion));
+			jetty5Button.setSelection("5".equals(jettyVersion));
+			String jspVersion = configuration.getAttribute(JettyPluginConstants.ATTR_JSP_VERSION, JettyPluginConstants.ATTR_JSP_VERSION_NO);
+			nojspButton.setSelection(JettyPluginConstants.ATTR_JSP_VERSION_NO.equals(jspVersion));
+			jsp20Button.setSelection(JettyPluginConstants.ATTR_JSP_VERSION_20.equals(jspVersion));
+			jsp21Button.setSelection(JettyPluginConstants.ATTR_JSP_VERSION_21.equals(jspVersion));
 		}
 		catch (CoreException e)
 		{
@@ -407,13 +437,34 @@ public class JettyTab extends JavaLaunchTab
 		configuration.setAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, fWebAppDirText.getText());
 		configuration.setAttribute(JettyPluginConstants.ATTR_PORT, fPortText.getText());
 		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_PATH, fJettyPathText.getText());
-		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, "6");
+		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, getJettyVersion());
+		configuration.setAttribute(JettyPluginConstants.ATTR_JSP_VERSION, getJspVersion());
 		configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
 			JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
 		// save the Jetty path in preferences
 		JettyPlugin.getDefault().getPluginPreferences().setValue(JettyPluginConstants.ATTR_JETTY_PATH, fJettyPathText.getText());
 		JettyPlugin.getDefault().savePluginPreferences();
+	}
+
+	private String getJettyVersion()
+	{
+		if(jetty7Button.getSelection())
+			return "7";
+		else if(jetty5Button.getSelection())
+			return "5";
+		else
+			return "6";
+	}
+
+	private String getJspVersion()
+	{
+		if(jsp20Button.getSelection())
+			return JettyPluginConstants.ATTR_JSP_VERSION_20;
+		else if(jsp21Button.getSelection())
+			return JettyPluginConstants.ATTR_JSP_VERSION_21;
+		else
+			return JettyPluginConstants.ATTR_JSP_VERSION_NO;
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)

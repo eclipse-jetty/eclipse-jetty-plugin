@@ -30,6 +30,12 @@ public interface JettyPluginConstants
 
 	public static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version";
 
+	public static final String ATTR_JSP_VERSION =  JettyPlugin.PLUGIN_ID + ".jsp.version";
+
+	static final String ATTR_JSP_VERSION_20 = "2.0";
+	static final String ATTR_JSP_VERSION_21 = "2.1";
+	static final String ATTR_JSP_VERSION_NO = "NO";
+
 	public static final String BOOTSTRAP_CLASS_NAME = "net.sourceforge.eclipsejetty.launch.JettyLauncherMain";
 
 	public static final String CLASSPATH_PROVIDER_JETTY = JettyPlugin.PLUGIN_ID + ".JettyWebAppClassPathProvider";
