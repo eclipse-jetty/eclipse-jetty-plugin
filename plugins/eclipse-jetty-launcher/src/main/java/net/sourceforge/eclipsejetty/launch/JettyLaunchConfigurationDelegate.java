@@ -44,7 +44,6 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
 	{
 	}
 
-	@SuppressWarnings("unchecked")
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 		throws CoreException
 	{

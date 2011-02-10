@@ -29,7 +29,7 @@ public class JettyLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode)
 	{
-		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[]{new JettyTab(), new JavaArgumentsTab(),
+		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[]{new JettyLaunchConfigurationTab(), new JavaArgumentsTab(),
 			new JavaJRETab(), new JavaClasspathTab(), new SourceLookupTab(), new EnvironmentTab(), new CommonTab()};
 		setTabs(tabs);
 	}
