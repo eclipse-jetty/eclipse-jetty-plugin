@@ -289,7 +289,7 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 
 		configuration.setAttribute(
 			IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
-			JettyPluginConstants.BOOTSTRAP_CLASS_NAME);
+			JettyPluginConstants.DEFAULT_BOOTSTRAP_CLASS_NAME);
 
 		// set the class path provider so that Jetty and the bootstrap jar are
 		// added to the run time class path. Value has to be the same as the one
@@ -332,10 +332,23 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 		configuration.setAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, txtWebappDirectory.getText());
 		configuration.setAttribute(JettyPluginConstants.ATTR_PORT, txtPort.getText());
 		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_PATH, txtJettyPath.getText());
-		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, getJettyVersion());
+
 //		configuration.setAttribute(JettyPluginConstants.ATTR_JSP_VERSION, getJspVersion());
 		configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
 			JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
+
+		final String jettyVersion = getJettyVersion();
+		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, jettyVersion);
+		if("7".equals(jettyVersion))
+		{
+			configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
+					JettyPluginConstants.JETTY7_BOOTSTRAP_CLASS_NAME);
+		}
+		else
+		{
+			configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
+				JettyPluginConstants.DEFAULT_BOOTSTRAP_CLASS_NAME);
+		}
 
 		// save the Jetty path in preferences
 		JettyPlugin.getDefault().getPluginPreferences().setValue(JettyPluginConstants.ATTR_JETTY_PATH, txtJettyPath.getText());

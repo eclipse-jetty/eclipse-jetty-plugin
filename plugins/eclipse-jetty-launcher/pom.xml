@@ -26,6 +26,18 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>7.2.2.v20101205</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
+			<version>7.2.2.v20101205</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jdt</groupId>
 			<artifactId>debug</artifactId>
 			<version>3.3.0-v20070530a</version>

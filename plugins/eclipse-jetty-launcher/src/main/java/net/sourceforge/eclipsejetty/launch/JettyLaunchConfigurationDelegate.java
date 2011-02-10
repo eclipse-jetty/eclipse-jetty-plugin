@@ -64,7 +64,10 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
 		{
 			monitor.subTask("verifying installation");
 
-			String mainTypeName = JettyPluginConstants.BOOTSTRAP_CLASS_NAME;
+			String mainTypeName = configuration.getAttribute(
+					IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
+					JettyPluginConstants.DEFAULT_BOOTSTRAP_CLASS_NAME);
+
 			IVMRunner runner = getVMRunner(configuration, mode);
 
 			File workingDir = verifyWorkingDirectory(configuration);
