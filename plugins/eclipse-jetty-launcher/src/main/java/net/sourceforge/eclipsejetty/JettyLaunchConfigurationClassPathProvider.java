@@ -108,13 +108,13 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 		entries.addAll(Arrays.asList(existing));
 		String jettyUrl = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_PATH, (String) null);
 		String jettyVersion = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, "6");
-		String jspVersion =  configuration.getAttribute(JettyPluginConstants.ATTR_JSP_VERSION, JettyPluginConstants.ATTR_JSP_VERSION_NO);
+		boolean jspEnabled = Boolean.valueOf(configuration.getAttribute(JettyPluginConstants.ATTR_JSP_ENABLED, JettyPluginConstants.ATTR_JSP_ENABLED_DEFAULT));
 
 		try
 		{
 			entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(JettyLauncherMain.class.getResource("/")).getFile())));
 
-			for (File jettyLib : findJettyLibs(jettyUrl, jettyVersion, jspVersion))
+			for (File jettyLib : findJettyLibs(jettyUrl, jettyVersion, jspEnabled))
 			{
 				entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(jettyLib.getCanonicalPath())));
 			}
@@ -129,24 +129,27 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 	/**
 	 * Find the jetty libs for given version
 	 */
-	private Iterable<File> findJettyLibs(String jettyUrl, String jettyVersion, String jspVersion) throws CoreException
+	private Iterable<File> findJettyLibs(String jettyUrl, String jettyVersion, boolean jspEnabled) throws CoreException
 	{
 		if("5".equals(jettyVersion))
 			return findJettyLibs5(jettyUrl);
 		else
-			return findJettyLibs67(jettyUrl, jspVersion);
+			return findJettyLibs67(jettyUrl, jspEnabled);
 	}
 
 	/**
 	 * Find the jetty libs for Jetty 6 and 7.
 	 */
-	private Iterable<File> findJettyLibs67(String jettyUrl, String jspVersion) throws CoreException
+	private List<File> findJettyLibs67(String jettyUrl, boolean jspEnabled) throws CoreException
 	{
 		File jettyLibDir = new File(jettyUrl, "lib");
+		
 		if (!jettyLibDir.exists() || !jettyLibDir.isDirectory())
 			throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty libs"));
 
-		File[] jettyLibs = jettyLibDir.listFiles(new FilenameFilter()
+		List<File> jettyLibs = new ArrayList<File>();
+		
+		jettyLibs.addAll(Arrays.asList(jettyLibDir.listFiles(new FilenameFilter()
 		{
 			public boolean accept(File dir, String name)
 			{
@@ -156,14 +159,28 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 
 				return false;
 			}
-		});
-		return Arrays.asList(jettyLibs);
+		})));
+
+		if (jspEnabled)
+		{
+			// currently ignores the JSP version...add this koe
+			File jettyLibJSPDir = new File(jettyLibDir, "jsp-2.1");
+			if (!jettyLibJSPDir.exists())
+				jettyLibJSPDir = new File(jettyLibDir, "jsp");
+
+			if ((jettyLibJSPDir.exists()) && (jettyLibJSPDir.isDirectory()))
+			{
+				jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(JAR_FILTER)));
+			}
+		}
+		
+		return jettyLibs;
 	}
 
 	/**
 	 * Find the jetty libs for Jetty 5.
 	 */
-	private Iterable<File> findJettyLibs5(String jettyUrl) throws CoreException
+	private List<File> findJettyLibs5(String jettyUrl) throws CoreException
 	{
 		File jettyLibDir = new File(jettyUrl, "lib");
 		File jettyExtDir = new File(jettyUrl, "ext");

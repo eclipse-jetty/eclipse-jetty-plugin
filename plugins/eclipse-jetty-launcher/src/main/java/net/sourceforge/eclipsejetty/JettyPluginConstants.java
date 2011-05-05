@@ -11,6 +11,7 @@
 // limitations under the License. 
 package net.sourceforge.eclipsejetty;
 
+
 /**
  * Constants for the Jetty plugin.
  * 
@@ -30,15 +31,13 @@ public interface JettyPluginConstants
 
 	public static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version";
 
-	public static final String ATTR_JSP_VERSION =  JettyPlugin.PLUGIN_ID + ".jsp.version";
-
-	static final String ATTR_JSP_VERSION_20 = "2.0";
-	static final String ATTR_JSP_VERSION_21 = "2.1";
-	static final String ATTR_JSP_VERSION_NO = "NO";
+	public static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled";
 
 	public static final String DEFAULT_BOOTSTRAP_CLASS_NAME = "net.sourceforge.eclipsejetty.launch.JettyLauncherMain";
 
 	public static final String JETTY7_BOOTSTRAP_CLASS_NAME = "net.sourceforge.eclipsejetty.launch.Jetty7LauncherMain";
 
 	public static final String CLASSPATH_PROVIDER_JETTY = JettyPlugin.PLUGIN_ID + ".JettyWebAppClassPathProvider";
+
+	public static final String ATTR_JSP_ENABLED_DEFAULT = "false";
 }

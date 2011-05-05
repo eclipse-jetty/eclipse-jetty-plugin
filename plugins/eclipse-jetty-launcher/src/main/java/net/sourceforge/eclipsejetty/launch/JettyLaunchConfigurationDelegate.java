@@ -32,11 +32,8 @@ import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 
-
 /**
  * Launch configuration delegate for Jetty. Based on {@link JavaLaunchDelegate}.
- * 
- * @author hillenius
  */
 public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigurationDelegate
 {
@@ -55,11 +52,13 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
 		}
 
 		monitor.beginTask(MessageFormat.format("{0}...", configuration.getName()), 3); //$NON-NLS-1$
+
 		// check for cancellation
 		if (monitor.isCanceled())
 		{
 			return;
 		}
+
 		try
 		{
 			monitor.subTask("verifying installation");

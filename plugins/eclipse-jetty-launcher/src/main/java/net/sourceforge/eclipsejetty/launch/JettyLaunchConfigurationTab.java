@@ -61,6 +61,7 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 	private Button btnJetty5;
 	private Button btnJetty6;
 	private Button btnJetty7;
+	private Button btnEnableJsp;
 	private Button btnBrowseWebappDirectory;
 	private ModifyDialogListener modifyDialogListener;
 
@@ -228,6 +229,14 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 		btnJetty7.setText("Jetty 7.x");
 		btnJetty7.addSelectionListener(modifyDialogListener);
 
+		btnEnableJsp = new Button(grpJetty, SWT.CHECK);
+		FormData fd_btnEnableJsp = new FormData();
+		fd_btnEnableJsp.top = new FormAttachment(lblVersion, -1, SWT.TOP);
+		fd_btnEnableJsp.left = new FormAttachment(btnJetty7, 6);
+		btnEnableJsp.setLayoutData(fd_btnEnableJsp);
+		btnEnableJsp.setText("Enable JSP");
+		btnEnableJsp.addSelectionListener(modifyDialogListener);
+
 		setControl(tabComposite);
 	}
 
@@ -263,10 +272,7 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 			btnJetty7.setSelection("7".equals(jettyVersion));
 			btnJetty6.setSelection("6".equals(jettyVersion));
 			btnJetty5.setSelection("5".equals(jettyVersion));
-//			String jspVersion = configuration.getAttribute(JettyPluginConstants.ATTR_JSP_VERSION, JettyPluginConstants.ATTR_JSP_VERSION_NO);
-//			nojspButton.setSelection(JettyPluginConstants.ATTR_JSP_VERSION_NO.equals(jspVersion));
-//			jsp20Button.setSelection(JettyPluginConstants.ATTR_JSP_VERSION_20.equals(jspVersion));
-//			jsp21Button.setSelection(JettyPluginConstants.ATTR_JSP_VERSION_21.equals(jspVersion));
+			btnEnableJsp.setSelection(Boolean.valueOf(configuration.getAttribute(JettyPluginConstants.ATTR_JSP_ENABLED, JettyPluginConstants.ATTR_JSP_ENABLED_DEFAULT)));
 		}
 		catch (CoreException e)
 		{
@@ -333,7 +339,6 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 		configuration.setAttribute(JettyPluginConstants.ATTR_PORT, txtPort.getText());
 		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_PATH, txtJettyPath.getText());
 
-//		configuration.setAttribute(JettyPluginConstants.ATTR_JSP_VERSION, getJspVersion());
 		configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
 			JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
@@ -349,6 +354,8 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 			configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
 				JettyPluginConstants.DEFAULT_BOOTSTRAP_CLASS_NAME);
 		}
+
+		configuration.setAttribute(JettyPluginConstants.ATTR_JSP_ENABLED, String.valueOf(btnEnableJsp.getSelection()));
 
 		// save the Jetty path in preferences
 		JettyPlugin.getDefault().getPluginPreferences().setValue(JettyPluginConstants.ATTR_JETTY_PATH, txtJettyPath.getText());
@@ -445,6 +452,16 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 		{
 			setErrorMessage("Jetty path is not set");
 			return false;
+		}
+
+		if (btnJetty5.getSelection())
+		{
+			btnEnableJsp.setSelection(false);
+			btnEnableJsp.setEnabled(false);
+		}
+		else
+		{
+			btnEnableJsp.setEnabled(true);
 		}
 
 		setDirty(true);
