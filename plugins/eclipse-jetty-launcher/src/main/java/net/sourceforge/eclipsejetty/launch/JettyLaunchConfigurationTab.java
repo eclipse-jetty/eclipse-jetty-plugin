@@ -1,10 +1,13 @@
 package net.sourceforge.eclipsejetty.launch;
 
-import static org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME;
+import static org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants.*;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
 
+import net.sourceforge.eclipsejetty.JettyLaunchConfigurationClassPathProvider;
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
 
@@ -37,11 +40,9 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -53,17 +54,21 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 public class JettyLaunchConfigurationTab extends JavaLaunchTab
 {
-	private Text txtProject;
-	private Text txtContext;
-	private Text txtPort;
-	private Text txtWebappDirectory;
-	private Text txtJettyPath;
-	private Button btnJetty5;
-	private Button btnJetty6;
-	private Button btnJetty7;
-	private Button btnEnableJsp;
-	private Button btnBrowseWebappDirectory;
-	private ModifyDialogListener modifyDialogListener;
+	private Text projectText;
+	private Text webAppText;
+	private Button webAppButton;
+	private Text contextText;
+	private Text portText;
+	private Text pathText;
+	private Button jettyAutoButton;
+	private Button jetty5Button;
+	private Button jetty6Button;
+	private Button jetty7Button;
+	private Button jspDisabledButton;
+	private Button jsp20Button;
+	private Button jsp21Button;
+	private Text excludedLibrariesText;
+	private final ModifyDialogListener modifyDialogListener;
 
 	public JettyLaunchConfigurationTab()
 	{
@@ -73,174 +78,185 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	@Override
-	public void createControl(Composite parent)
+	public void createControl(final Composite parent)
 	{
-		Composite tabComposite = new Composite(parent, SWT.NONE);
+		final Composite tabComposite = new Composite(parent, SWT.NONE);
+
 		tabComposite.setLayout(new GridLayout(1, false));
-		
-		Group grpProject = new Group(tabComposite, SWT.NONE);
-		grpProject.setLayout(new GridLayout(2, false));
-		grpProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		grpProject.setText("Project");
-		
-		txtProject = new Text(grpProject, SWT.BORDER);
-		txtProject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		txtProject.addModifyListener(modifyDialogListener);
-		
-		Button btnBrowseProject = new Button(grpProject, SWT.NONE);
-		btnBrowseProject.setText("&Browse...");
-		btnBrowseProject.addSelectionListener(new SelectionAdapter()
+
+		final Group projectGroup = new Group(tabComposite, SWT.NONE);
+
+		projectGroup.setLayout(new GridLayout(3, false));
+		projectGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		projectGroup.setText("Project");
+
+		projectText = new Text(projectGroup, SWT.BORDER);
+
+		projectText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		projectText.addModifyListener(modifyDialogListener);
+
+		final Button projectButton = new Button(projectGroup, SWT.NONE);
+
+		projectButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		projectButton.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				chooseJavaProject();
 			}
 		});
-		
-		Group grpWebApplication = new Group(tabComposite, SWT.NONE);
-		grpWebApplication.setLayout(new FormLayout());
-		grpWebApplication.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		grpWebApplication.setText("Web Application");
-		
-		Label lblContext = new Label(grpWebApplication, SWT.NONE);
-		FormData fd_lblContext = new FormData();
-		fd_lblContext.top = new FormAttachment(0, 10);
-		fd_lblContext.left = new FormAttachment(0, 10);
-		lblContext.setLayoutData(fd_lblContext);
-		lblContext.setText("Context");
-		
-		txtContext = new Text(grpWebApplication, SWT.BORDER);
-		FormData fd_txtContext = new FormData();
-		fd_txtContext.top = new FormAttachment(lblContext, -3, SWT.TOP);
-		fd_txtContext.left = new FormAttachment(lblContext, 3, SWT.RIGHT);
-		txtContext.setLayoutData(fd_txtContext);
-		txtContext.addModifyListener(modifyDialogListener);
-		
-		Label lblPort = new Label(grpWebApplication, SWT.NONE);
-		fd_txtContext.right = new FormAttachment(lblPort, -3);
-		FormData fd_lblPort = new FormData();
-		fd_lblPort.top = new FormAttachment(lblContext, 0, SWT.TOP);
-		lblPort.setLayoutData(fd_lblPort);
-		lblPort.setText("Port");
-		
-		txtPort = new Text(grpWebApplication, SWT.BORDER);
-		fd_lblPort.right = new FormAttachment(txtPort, -6);
-		FormData fd_txtPort = new FormData();
-		fd_txtPort.top = new FormAttachment(lblContext, -3, SWT.TOP);
-		fd_txtPort.right = new FormAttachment(100, -10);
-		fd_txtPort.width = 30;
-		txtPort.setLayoutData(fd_txtPort);
-		txtPort.addModifyListener(modifyDialogListener);
+		projectButton.setText("Browse...");
 
-		Label lblWebappDirectory = new Label(grpWebApplication, SWT.NONE);
-		FormData fd_lblWebappDirectory = new FormData();
-		fd_lblWebappDirectory.top = new FormAttachment(lblContext, 12);
-		fd_lblWebappDirectory.left = new FormAttachment(0, 10);
-		lblWebappDirectory.setLayoutData(fd_lblWebappDirectory);
-		lblWebappDirectory.setText("Webapp Directory");
-		
-		txtWebappDirectory = new Text(grpWebApplication, SWT.BORDER);
-		FormData fd_txtWebappDirectory = new FormData();
-		fd_txtWebappDirectory.top = new FormAttachment(lblWebappDirectory, -3, SWT.TOP);
-		fd_txtWebappDirectory.left = new FormAttachment(lblWebappDirectory, 5);
-		txtWebappDirectory.setLayoutData(fd_txtWebappDirectory);
-		txtWebappDirectory.addModifyListener(modifyDialogListener);
+		final Group applicationGroup = new Group(tabComposite, SWT.NONE);
 
-		btnBrowseWebappDirectory = new Button(grpWebApplication, SWT.NONE);
-		fd_txtWebappDirectory.right = new FormAttachment(btnBrowseWebappDirectory, -6);
-		FormData fd_btnBrowseWebappDirectory = new FormData();
-		fd_btnBrowseWebappDirectory.top = new FormAttachment(txtPort, 6);
-		fd_btnBrowseWebappDirectory.right = new FormAttachment(txtPort, 0, SWT.RIGHT);
-		btnBrowseWebappDirectory.setLayoutData(fd_btnBrowseWebappDirectory);
-		btnBrowseWebappDirectory.setText("Browse...");
-		btnBrowseWebappDirectory.addSelectionListener(new SelectionAdapter()
+		applicationGroup.setLayout(new GridLayout(3, false));
+		applicationGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		applicationGroup.setText("Web Application");
+
+		createLabel(applicationGroup, "WebApp Directory", 128);
+
+		webAppText = new Text(applicationGroup, SWT.BORDER);
+
+		webAppText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		webAppText.addModifyListener(modifyDialogListener);
+
+		webAppButton = new Button(applicationGroup, SWT.NONE);
+
+		webAppButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		webAppButton.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				chooseWebappDir();
 			}
 		});
+		webAppButton.setText("Browse...");
 
-		Group grpJetty = new Group(tabComposite, SWT.NONE);
-		grpJetty.setLayout(new FormLayout());
-		grpJetty.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		grpJetty.setText("Jetty");
-		
-		Label lblPath = new Label(grpJetty, SWT.NONE);
-		FormData fd_lblPath = new FormData();
-		fd_lblPath.top = new FormAttachment(0, 10);
-		fd_lblPath.left = new FormAttachment(0, 10);
-		lblPath.setLayoutData(fd_lblPath);
-		lblPath.setText("Path");
-		
-		txtJettyPath = new Text(grpJetty, SWT.BORDER);
-		FormData fd_txtPath = new FormData();
-		fd_txtPath.bottom = new FormAttachment(lblPath, 0, SWT.BOTTOM);
-		fd_txtPath.left = new FormAttachment(lblPath, 6);
-		txtJettyPath.setLayoutData(fd_txtPath);
-		
-		Button btnBrowsePath = new Button(grpJetty, SWT.NONE);
-		fd_txtPath.right = new FormAttachment(btnBrowsePath, -6);
-		FormData fd_btnBrowsePath = new FormData();
-		fd_btnBrowsePath.bottom = new FormAttachment(lblPath, 0, SWT.BOTTOM);
-		fd_btnBrowsePath.right = new FormAttachment(100, -10);
-		btnBrowsePath.setLayoutData(fd_btnBrowsePath);
-		btnBrowsePath.setText("Browse...");
-		btnBrowsePath.addSelectionListener(new SelectionAdapter()
+		createLabel(applicationGroup, "Context Path", 128);
+
+		contextText = new Text(applicationGroup, SWT.BORDER);
+
+		contextText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		contextText.addModifyListener(modifyDialogListener);
+
+		createLabel(applicationGroup, "", 0);
+
+		createLabel(applicationGroup, "HTTP Port", 128);
+
+		portText = new Text(applicationGroup, SWT.BORDER);
+
+		final GridData portTextGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
+		portTextGridData.widthHint = 64;
+		portText.setLayoutData(portTextGridData);
+		portText.addModifyListener(modifyDialogListener);
+
+		final Group jettyGroup = new Group(tabComposite, SWT.NONE);
+
+		jettyGroup.setLayout(new GridLayout(3, false));
+		jettyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		jettyGroup.setText("Jetty");
+
+		createLabel(jettyGroup, "Home", 128);
+
+		pathText = new Text(jettyGroup, SWT.BORDER);
+
+		pathText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		pathText.addModifyListener(modifyDialogListener);
+
+		final Button pathButton = new Button(jettyGroup, SWT.NONE);
+
+		pathButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		pathButton.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
-			public void widgetSelected(SelectionEvent e)
+			public void widgetSelected(final SelectionEvent e)
 			{
 				chooseJettyPath();
 			}
 		});
+		pathButton.setText("Browse...");
 
-		Label lblVersion = new Label(grpJetty, SWT.NONE);
-		FormData fd_lblVersion = new FormData();
-		fd_lblVersion.left = new FormAttachment(lblPath, 0, SWT.LEFT);
-		fd_lblVersion.top = new FormAttachment(lblPath, 12);
-		lblVersion.setLayoutData(fd_lblVersion);
-		lblVersion.setText("Version");
+		createLabel(jettyGroup, "Version", 128);
 
-		btnJetty5 = new Button(grpJetty, SWT.RADIO);
-		FormData fd_btnJettyx = new FormData();
-		fd_btnJettyx.bottom = new FormAttachment(lblVersion, 0, SWT.BOTTOM);
-		fd_btnJettyx.left = new FormAttachment(lblVersion, 11);
-		btnJetty5.setLayoutData(fd_btnJettyx);
-		btnJetty5.setText("Jetty 5.x");
-		btnJetty5.addSelectionListener(modifyDialogListener);
+		final Group versionGroup = new Group(jettyGroup, SWT.SHADOW_NONE);
 
-		btnJetty6 = new Button(grpJetty, SWT.RADIO);
-		FormData fd_btnJettyx_1 = new FormData();
-		fd_btnJettyx_1.bottom = new FormAttachment(lblVersion, 0, SWT.BOTTOM);
-		fd_btnJettyx_1.left = new FormAttachment(btnJetty5, 6);
-		btnJetty6.setLayoutData(fd_btnJettyx_1);
-		btnJetty6.setText("Jetty 6.x");
-		btnJetty6.addSelectionListener(modifyDialogListener);
+		versionGroup.setLayout(new RowLayout());
+		versionGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-		btnJetty7 = new Button(grpJetty, SWT.RADIO);
-		FormData fd_btnJettyx_2 = new FormData();
-		fd_btnJettyx_2.bottom = new FormAttachment(lblVersion, 0, SWT.BOTTOM);
-		fd_btnJettyx_2.left = new FormAttachment(btnJetty6, 6);
-		btnJetty7.setLayoutData(fd_btnJettyx_2);
-		btnJetty7.setText("Jetty 7.x");
-		btnJetty7.addSelectionListener(modifyDialogListener);
+		jettyAutoButton = new Button(versionGroup, SWT.RADIO);
 
-		btnEnableJsp = new Button(grpJetty, SWT.CHECK);
-		FormData fd_btnEnableJsp = new FormData();
-		fd_btnEnableJsp.top = new FormAttachment(lblVersion, -1, SWT.TOP);
-		fd_btnEnableJsp.left = new FormAttachment(btnJetty7, 6);
-		btnEnableJsp.setLayoutData(fd_btnEnableJsp);
-		btnEnableJsp.setText("Enable JSP");
-		btnEnableJsp.addSelectionListener(modifyDialogListener);
+		jettyAutoButton.setText("Auto Detect");
+		jettyAutoButton.addSelectionListener(modifyDialogListener);
+
+		jetty5Button = new Button(versionGroup, SWT.RADIO);
+
+		jetty5Button.setText("Jetty 5.x");
+		jetty5Button.addSelectionListener(modifyDialogListener);
+
+		jetty6Button = new Button(versionGroup, SWT.RADIO);
+
+		jetty6Button.setText("Jetty 6.x");
+		jetty6Button.addSelectionListener(modifyDialogListener);
+
+		jetty7Button = new Button(versionGroup, SWT.RADIO);
+
+		jetty7Button.setText("Jetty 7.x");
+		jetty7Button.addSelectionListener(modifyDialogListener);
+
+		createLabel(jettyGroup, "", 0);
+
+		createLabel(jettyGroup, "JSP Support", 128);
+
+		final Group jspGroup = new Group(jettyGroup, SWT.SHADOW_NONE);
+
+		jspGroup.setLayout(new RowLayout());
+		jspGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+
+		jspDisabledButton = new Button(jspGroup, SWT.RADIO);
+
+		jspDisabledButton.setText("Disabled");
+		jspDisabledButton.addSelectionListener(modifyDialogListener);
+
+		jsp20Button = new Button(jspGroup, SWT.RADIO);
+
+		jsp20Button.setText("JSP 2.0");
+		jsp20Button.addSelectionListener(modifyDialogListener);
+
+		jsp21Button = new Button(jspGroup, SWT.RADIO);
+
+		jsp21Button.setText("JSP 2.1");
+		jsp21Button.addSelectionListener(modifyDialogListener);
+
+		createLabel(jettyGroup, "", 0);
+
+		createLabel(jettyGroup, "Excluded Libraries", 128);
+
+		excludedLibrariesText = new Text(jettyGroup, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+
+		final GridData excludedLibrariesGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		excludedLibrariesGridData.heightHint = 50;
+		excludedLibrariesText.setLayoutData(excludedLibrariesGridData);
+		excludedLibrariesText.addModifyListener(modifyDialogListener);
+		excludedLibrariesText
+			.setToolTipText("Comma or line separated list of libraries to exclude from the classpath. The entries are regular expressions.");
 
 		setControl(tabComposite);
 	}
 
-	@Override
+	private Label createLabel(final Composite composite, final String text, final int widthHint)
+	{
+		final Label label = new Label(composite, SWT.NONE);
+
+		final GridData projectLabelGridData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		projectLabelGridData.widthHint = widthHint;
+		label.setLayoutData(projectLabelGridData);
+		label.setText(text);
+
+		return label;
+	}
+
 	public String getName()
 	{
 		return "Jetty";
@@ -259,31 +275,43 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 	}
 
 	@Override
-	public void initializeFrom(ILaunchConfiguration configuration)
+	public void initializeFrom(final ILaunchConfiguration configuration)
 	{
 		try
 		{
-			txtProject.setText(configuration.getAttribute(ATTR_PROJECT_NAME, ""));
-			txtContext.setText(configuration.getAttribute(JettyPluginConstants.ATTR_CONTEXT, ""));
-			txtWebappDirectory.setText(configuration.getAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, ""));
-			txtPort.setText(configuration.getAttribute(JettyPluginConstants.ATTR_PORT, ""));
-			txtJettyPath.setText(configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_PATH, ""));
-			String jettyVersion = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, "6");
-			btnJetty7.setSelection("7".equals(jettyVersion));
-			btnJetty6.setSelection("6".equals(jettyVersion));
-			btnJetty5.setSelection("5".equals(jettyVersion));
-			btnEnableJsp.setSelection(Boolean.valueOf(configuration.getAttribute(JettyPluginConstants.ATTR_JSP_ENABLED, JettyPluginConstants.ATTR_JSP_ENABLED_DEFAULT)));
+			projectText.setText(configuration.getAttribute(ATTR_PROJECT_NAME, ""));
+			webAppText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, ""));
+			contextText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_CONTEXT, ""));
+			portText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_PORT, ""));
+			pathText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_PATH, ""));
+
+			final String jettyVersion = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, "auto");
+
+			jettyAutoButton.setSelection("auto".equals(jettyVersion));
+			jetty5Button.setSelection("5".equals(jettyVersion));
+			jetty6Button.setSelection("6".equals(jettyVersion));
+			jetty7Button.setSelection("7".equals(jettyVersion));
+
+			final String jspSupport =
+				configuration.getAttribute(JettyPluginConstants.ATTR_JSP_ENABLED,
+					JettyPluginConstants.ATTR_JSP_ENABLED_DEFAULT);
+
+			jspDisabledButton.setSelection("false".equals(jspSupport));
+			jsp20Button.setSelection("2.0".equals(jspSupport));
+			jsp21Button.setSelection("2.1".equals(jspSupport) || "true".equals(jspSupport));
+
+			excludedLibrariesText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_LAUNCHER_EXCLUDED_LIBS,
+				JettyPluginConstants.DEFAULT_LAUNCHER_EXCLUDED_LIBS));
 		}
-		catch (CoreException e)
+		catch (final CoreException e)
 		{
 			JettyPlugin.logError(e);
 		}
 	}
 
-	@Override
-	public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
+	public void setDefaults(final ILaunchConfigurationWorkingCopy configuration)
 	{
-		IJavaElement javaElement = getContext();
+		final IJavaElement javaElement = getContext();
 		if (javaElement != null)
 		{
 			initializeJavaProject(javaElement, configuration);
@@ -293,15 +321,13 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 			configuration.setAttribute(ATTR_PROJECT_NAME, "");
 		}
 
-		configuration.setAttribute(
-			IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
+		configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
 			JettyPluginConstants.DEFAULT_BOOTSTRAP_CLASS_NAME);
 
 		// set the class path provider so that Jetty and the bootstrap jar are
 		// added to the run time class path. Value has to be the same as the one
 		// defined for the extension point
-		configuration.setAttribute(
-			IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
+		configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
 			JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
 		// get the name for this launch configuration
@@ -311,11 +337,11 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 			// try to base the launch config name on the current project
 			launchConfigName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
 		}
-		catch (CoreException e)
+		catch (final CoreException e)
 		{
 			// ignore
 		}
-		if (launchConfigName == null || launchConfigName.length() == 0)
+		if ((launchConfigName == null) || (launchConfigName.length() == 0))
 		{
 			// if no project name was found, base on a default name
 			launchConfigName = "Jetty Webapp";
@@ -327,27 +353,28 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 		configuration.setAttribute(JettyPluginConstants.ATTR_CONTEXT, "/");
 		configuration.setAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, "src/main/webapp");
 		configuration.setAttribute(JettyPluginConstants.ATTR_PORT, "8080");
-		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_PATH, JettyPlugin.getDefault().getPluginPreferences().getString(JettyPluginConstants.ATTR_JETTY_PATH));
+		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_PATH, JettyPlugin.getDefault()
+			.getPluginPreferences().getString(JettyPluginConstants.ATTR_JETTY_PATH));
 	}
 
-	@Override
-	public void performApply(ILaunchConfigurationWorkingCopy configuration)
+	public void performApply(final ILaunchConfigurationWorkingCopy configuration)
 	{
-		configuration.setAttribute(ATTR_PROJECT_NAME, txtProject.getText());
-		configuration.setAttribute(JettyPluginConstants.ATTR_CONTEXT, txtContext.getText());
-		configuration.setAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, txtWebappDirectory.getText());
-		configuration.setAttribute(JettyPluginConstants.ATTR_PORT, txtPort.getText());
-		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_PATH, txtJettyPath.getText());
+		configuration.setAttribute(ATTR_PROJECT_NAME, projectText.getText());
+		configuration.setAttribute(JettyPluginConstants.ATTR_CONTEXT, contextText.getText());
+		configuration.setAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, webAppText.getText());
+		configuration.setAttribute(JettyPluginConstants.ATTR_PORT, portText.getText());
+		configuration.setAttribute(JettyPluginConstants.ATTR_LAUNCHER_EXCLUDED_LIBS, excludedLibrariesText.getText());
+		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_PATH, pathText.getText());
 
 		configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
 			JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
 		final String jettyVersion = getJettyVersion();
 		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, jettyVersion);
-		if("7".equals(jettyVersion))
+		if ("7".equals(jettyVersion))
 		{
 			configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
-					JettyPluginConstants.JETTY7_BOOTSTRAP_CLASS_NAME);
+				JettyPluginConstants.JETTY7_BOOTSTRAP_CLASS_NAME);
 		}
 		else
 		{
@@ -355,57 +382,85 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 				JettyPluginConstants.DEFAULT_BOOTSTRAP_CLASS_NAME);
 		}
 
-		configuration.setAttribute(JettyPluginConstants.ATTR_JSP_ENABLED, String.valueOf(btnEnableJsp.getSelection()));
+		configuration.setAttribute(JettyPluginConstants.ATTR_JSP_ENABLED, getJSPEnabled());
 
 		// save the Jetty path in preferences
-		JettyPlugin.getDefault().getPluginPreferences().setValue(JettyPluginConstants.ATTR_JETTY_PATH, txtJettyPath.getText());
+		JettyPlugin.getDefault().getPluginPreferences()
+			.setValue(JettyPluginConstants.ATTR_JETTY_PATH, pathText.getText());
 		JettyPlugin.getDefault().savePluginPreferences();
 	}
 
 	private String getJettyVersion()
 	{
-		if(btnJetty7.getSelection())
-			return "7";
-		else if(btnJetty5.getSelection())
+		if (jetty5Button.getSelection())
+		{
 			return "5";
-		else
+		}
+		else if (jetty6Button.getSelection())
+		{
 			return "6";
+		}
+		else if (jetty7Button.getSelection())
+		{
+			return "7";
+		}
+		else
+		{
+			return "auto";
+		}
 	}
 
-	public boolean isValid(ILaunchConfiguration config)
+	private String getJSPEnabled()
+	{
+		if (jspDisabledButton.getSelection())
+		{
+			return "false";
+		}
+		else if (jsp20Button.getSelection())
+		{
+			return "2.0";
+		}
+		else
+		{
+			return "true";
+		}
+	}
+
+	@Override
+	public boolean isValid(final ILaunchConfiguration config)
 	{
 		setErrorMessage(null);
 		setMessage(null);
 
-		String projectName = txtProject.getText().trim();
+		final String projectName = projectText.getText().trim();
 		IProject project = null;
 		if (projectName.length() > 0)
 		{
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IStatus status = workspace.validateName(projectName, IResource.PROJECT);
+			final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			final IStatus status = workspace.validateName(projectName, IResource.PROJECT);
 			if (status.isOK())
 			{
 				project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 				if (!project.exists())
 				{
 					setErrorMessage(MessageFormat.format("Project {0} does not exist", projectName));
-					btnBrowseWebappDirectory.setEnabled(false);
+					webAppButton.setEnabled(false);
 					return false;
 				}
 				if (!project.isOpen())
 				{
 					setErrorMessage(MessageFormat.format("Project {0} is closed", projectName));
-					btnBrowseWebappDirectory.setEnabled(false);
+					webAppButton.setEnabled(false);
 					return false;
 				}
 			}
 			else
 			{
 				setErrorMessage(MessageFormat.format("Illegal project name: {0}", status.getMessage()));
-				btnBrowseWebappDirectory.setEnabled(false);
+				webAppButton.setEnabled(false);
 				return false;
 			}
-			btnBrowseWebappDirectory.setEnabled(true);
+			webAppButton.setEnabled(true);
 		}
 		else
 		{
@@ -413,17 +468,17 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 			return false;
 		}
 
-		String directory = txtWebappDirectory.getText().trim();
+		final String directory = webAppText.getText().trim();
 		if (!"".equals(directory.trim()))
 		{
-			IFolder folder = project.getFolder(directory);
+			final IFolder folder = project.getFolder(directory);
 			if (!folder.exists())
 			{
-				setErrorMessage(MessageFormat.format("Folder {0} does not exist in project {1}", directory, project
-					.getName()));
+				setErrorMessage(MessageFormat.format("Folder {0} does not exist in project {1}", directory,
+					project.getName()));
 				return false;
 			}
-			IFile file = project.getFile(new Path(directory + "/WEB-INF/web.xml"));
+			final IFile file = project.getFile(new Path(directory + "/WEB-INF/web.xml"));
 			if (!file.exists())
 			{
 				setErrorMessage(MessageFormat.format(
@@ -438,11 +493,11 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 			return false;
 		}
 
-		String jettyPath = txtJettyPath.getText().trim();
-		if(!"".equals(jettyPath))
+		final String jettyPath = pathText.getText().trim();
+		if (!"".equals(jettyPath))
 		{
-			File f = new File(jettyPath);
-			if(!f.exists() || !f.isDirectory())
+			final File f = new File(jettyPath);
+			if (!f.exists() || !f.isDirectory())
 			{
 				setErrorMessage(MessageFormat.format("The path {0} is not a valid directory.", jettyPath));
 				return false;
@@ -454,40 +509,81 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 			return false;
 		}
 
-		if (btnJetty5.getSelection())
+		if (jetty5Button.getSelection())
 		{
-			btnEnableJsp.setSelection(false);
-			btnEnableJsp.setEnabled(false);
+			jspDisabledButton.setEnabled(true);
+			jsp20Button.setEnabled(false);
+			jsp21Button.setEnabled(false);
+
+			jspDisabledButton.setSelection(true);
+			jsp20Button.setSelection(false);
+			jsp21Button.setSelection(false);
+		}
+		else if (jetty7Button.getSelection())
+		{
+			jspDisabledButton.setEnabled(true);
+			jsp20Button.setEnabled(false);
+			jsp21Button.setEnabled(true);
+			
+			if (jsp20Button.getSelection())
+			{
+				jsp20Button.setSelection(false);
+				jsp21Button.setSelection(true);
+			}
 		}
 		else
 		{
-			btnEnableJsp.setEnabled(true);
+			jspDisabledButton.setEnabled(true);
+			jsp20Button.setEnabled(true);
+			jsp21Button.setEnabled(true);
+		}
+
+		try
+		{
+			JettyLaunchConfigurationClassPathProvider.detectJettyVersion(pathText.getText(), getJettyVersion());
+		}
+		catch (final IllegalArgumentException e)
+		{
+			setErrorMessage(e.getMessage());
+			return false;
+		}
+
+		try
+		{
+			JettyLaunchConfigurationClassPathProvider.extractPatterns(new ArrayList<Pattern>(),
+				excludedLibrariesText.getText());
+		}
+		catch (final IllegalArgumentException e)
+		{
+			setErrorMessage("Failed to parse Excluded Libraries. " + e.getMessage());
+			return false;
 		}
 
 		setDirty(true);
+
 		return true;
 	}
 
-	private void chooseJavaProject()
+	protected void chooseJavaProject()
 	{
-		ILabelProvider labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
-		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), labelProvider);
+		final ILabelProvider labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
+		final ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), labelProvider);
 		dialog.setTitle("Project Selection");
 		dialog.setMessage("Select a project to constrain your search.");
 		try
 		{
 			dialog.setElements(JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getJavaProjects());
 		}
-		catch (JavaModelException jme)
+		catch (final JavaModelException jme)
 		{
 			JettyPlugin.logError(jme);
 		}
 
 		IJavaProject javaProject = null;
-		String projectName = txtProject.getText().trim();
+		String projectName = projectText.getText().trim();
 		if (projectName.length() > 0)
 		{
-			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+			final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 			javaProject = JavaCore.create(workspaceRoot).getJavaProject(projectName);
 		}
 		if (javaProject != null)
@@ -496,58 +592,61 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 		}
 		if (dialog.open() == Window.OK)
 		{
-			IJavaProject selectedProject = (IJavaProject) dialog.getFirstResult();
+			final IJavaProject selectedProject = (IJavaProject) dialog.getFirstResult();
 			projectName = selectedProject.getElementName();
-			txtProject.setText(projectName);
+			projectText.setText(projectName);
 		}
 	}
 
-	private void chooseWebappDir()
+	protected void chooseWebappDir()
 	{
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(txtProject.getText());
-		ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), project, false,
-			"Select Web Application Directory");
+		final IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectText.getText());
+		final ContainerSelectionDialog dialog =
+			new ContainerSelectionDialog(getShell(), project, false, "Select Web Application Directory");
 		dialog.setTitle("Folder Selection");
 		if (project != null)
 		{
-			IPath path = project.getFullPath();
+			final IPath path = project.getFullPath();
 			dialog.setInitialSelections(new Object[]{path});
 		}
 		dialog.showClosedProjects(false);
 		dialog.open();
-		Object[] results = dialog.getResult();
+		final Object[] results = dialog.getResult();
 		if ((results != null) && (results.length > 0) && (results[0] instanceof IPath))
 		{
 			IPath path = (IPath) results[0];
 			path = path.removeFirstSegments(1);
-			String containerName = path.makeRelative().toString();
-			txtWebappDirectory.setText(containerName);
+			final String containerName = path.makeRelative().toString();
+			webAppText.setText(containerName);
 		}
 	}
 
-	private void chooseJettyPath()
+	protected void chooseJettyPath()
 	{
-		DirectoryDialog dialog = new DirectoryDialog(getShell(), SWT.OPEN);
+		final DirectoryDialog dialog = new DirectoryDialog(getShell(), SWT.OPEN);
 		dialog.setText("Select Jetty Install Directory");
-		String jettyPath = dialog.open();
-		if(jettyPath != null)
-			txtJettyPath.setText(jettyPath);
+		final String jettyPath = dialog.open();
+		if (jettyPath != null)
+		{
+			pathText.setText(jettyPath);
+		}
 	}
 
-	private final class ModifyDialogListener implements ModifyListener,
-			SelectionListener
+	public final class ModifyDialogListener implements ModifyListener, SelectionListener
 	{
-		public void modifyText(ModifyEvent e)
+		@SuppressWarnings("synthetic-access")
+		public void modifyText(final ModifyEvent e)
 		{
 			updateLaunchConfigurationDialog();
 		}
 
-		public void widgetDefaultSelected(SelectionEvent arg0)
+		public void widgetDefaultSelected(final SelectionEvent arg0)
 		{
-
+			// intentionally left blank
 		}
 
-		public void widgetSelected(SelectionEvent arg0)
+		@SuppressWarnings("synthetic-access")
+		public void widgetSelected(final SelectionEvent arg0)
 		{
 			updateLaunchConfigurationDialog();
 		}

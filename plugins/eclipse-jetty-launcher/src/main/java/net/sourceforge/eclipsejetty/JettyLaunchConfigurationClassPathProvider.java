@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.eclipsejetty.launch.JettyLauncherMain;
 
@@ -47,23 +49,28 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 {
 	private static final FilenameFilter JAR_FILTER = new FilenameFilter()
 	{
-		public boolean accept(File dir, String name)
+		public boolean accept(final File dir, final String name)
 		{
-			if (name != null && name.endsWith(".jar"))
+			if ((name != null) && name.endsWith(".jar"))
+			{
 				return true;
+			}
 			return false;
 		}
 	};
 
 	public JettyLaunchConfigurationClassPathProvider()
 	{
+		super();
 	}
 
 	@Override
-	public IRuntimeClasspathEntry[] computeUnresolvedClasspath(ILaunchConfiguration configuration) throws CoreException
+	public IRuntimeClasspathEntry[] computeUnresolvedClasspath(final ILaunchConfiguration configuration)
+		throws CoreException
 	{
 		IRuntimeClasspathEntry[] classpath = super.computeUnresolvedClasspath(configuration);
-		boolean useDefault = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, true);
+		final boolean useDefault =
+			configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, true);
 		if (useDefault)
 		{
 			classpath = filterWebInfLibs(classpath, configuration);
@@ -77,20 +84,41 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 	}
 
 	@Override
-	public IRuntimeClasspathEntry[] resolveClasspath(IRuntimeClasspathEntry[] entries,
-		ILaunchConfiguration configuration) throws CoreException
+	public IRuntimeClasspathEntry[] resolveClasspath(final IRuntimeClasspathEntry[] entries,
+		final ILaunchConfiguration configuration) throws CoreException
 	{
 		IRuntimeClasspathEntry[] resolvedEntries = super.resolveClasspath(entries, configuration);
 
-		// filter Jetty and Servlet API
-		List<IRuntimeClasspathEntry> filteredEntries = new ArrayList<IRuntimeClasspathEntry>(resolvedEntries.length);
-		for (IRuntimeClasspathEntry entry : resolvedEntries)
+		final List<Pattern> excludedLibs = new ArrayList<Pattern>();
+
+		excludedLibs.add(Pattern.compile(".*org\\.mortbay\\.jetty.*"));
+
+		try
 		{
-			String path = entry.getLocation();
-			if (path != null
-				&& (path.contains("org.mortbay.jetty") || path.contains("servlet-api") || path
-					.matches(".*selenium-server.*standalone\\.jar")))
-				continue;
+			extractPatterns(excludedLibs,
+				configuration.getAttribute(JettyPluginConstants.ATTR_LAUNCHER_EXCLUDED_LIBS, ""));
+		}
+		catch (final IllegalArgumentException e)
+		{
+			throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, e.getMessage(), e));
+		}
+
+		// filter Jetty and Servlet API
+		final List<IRuntimeClasspathEntry> filteredEntries =
+			new ArrayList<IRuntimeClasspathEntry>(resolvedEntries.length);
+
+		entryLoop: for (final IRuntimeClasspathEntry entry : resolvedEntries)
+		{
+			final String path = entry.getLocation();
+
+			for (final Pattern excludedLib : excludedLibs)
+			{
+				if (excludedLib.matcher(path).matches())
+				{
+					continue entryLoop;
+				}
+			}
+
 			filteredEntries.add(entry);
 		}
 		resolvedEntries = filteredEntries.toArray(new IRuntimeClasspathEntry[filteredEntries.size()]);
@@ -101,25 +129,29 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 		return resolvedEntries;
 	}
 
-	private IRuntimeClasspathEntry[] addJettyAndBootstrap(IRuntimeClasspathEntry[] existing,
-		ILaunchConfiguration configuration) throws CoreException
+	private IRuntimeClasspathEntry[] addJettyAndBootstrap(final IRuntimeClasspathEntry[] existing,
+		final ILaunchConfiguration configuration) throws CoreException
 	{
-		List<IRuntimeClasspathEntry> entries = new ArrayList<IRuntimeClasspathEntry>();
+		final List<IRuntimeClasspathEntry> entries = new ArrayList<IRuntimeClasspathEntry>();
 		entries.addAll(Arrays.asList(existing));
-		String jettyUrl = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_PATH, (String) null);
-		String jettyVersion = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, "6");
-		boolean jspEnabled = Boolean.valueOf(configuration.getAttribute(JettyPluginConstants.ATTR_JSP_ENABLED, JettyPluginConstants.ATTR_JSP_ENABLED_DEFAULT));
+		final String jettyUrl = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_PATH, (String) null);
+		final String jettyVersion =
+			detectJettyVersion(jettyUrl, configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, "auto"));
+		final String jspEnabled =
+			configuration.getAttribute(JettyPluginConstants.ATTR_JSP_ENABLED,
+				JettyPluginConstants.ATTR_JSP_ENABLED_DEFAULT);
 
 		try
 		{
-			entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(JettyLauncherMain.class.getResource("/")).getFile())));
+			entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
+				JettyLauncherMain.class.getResource("/")).getFile())));
 
-			for (File jettyLib : findJettyLibs(jettyUrl, jettyVersion, jspEnabled))
+			for (final File jettyLib : findJettyLibs(jettyUrl, jettyVersion, jspEnabled))
 			{
 				entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(jettyLib.getCanonicalPath())));
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			JettyPlugin.logError(e);
 		}
@@ -129,75 +161,102 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 	/**
 	 * Find the jetty libs for given version
 	 */
-	private Iterable<File> findJettyLibs(String jettyUrl, String jettyVersion, boolean jspEnabled) throws CoreException
+	private Iterable<File> findJettyLibs(final String jettyUrl, final String jettyVersion, final String jspEnabled)
+		throws CoreException
 	{
-		if("5".equals(jettyVersion))
+		if ("5".equals(jettyVersion))
+		{
 			return findJettyLibs5(jettyUrl);
-		else
-			return findJettyLibs67(jettyUrl, jspEnabled);
+		}
+
+		return findJettyLibs67(jettyUrl, jspEnabled);
 	}
 
 	/**
 	 * Find the jetty libs for Jetty 6 and 7.
 	 */
-	private List<File> findJettyLibs67(String jettyUrl, boolean jspEnabled) throws CoreException
+	private List<File> findJettyLibs67(final String jettyUrl, final String jspEnabled) throws CoreException
 	{
-		File jettyLibDir = new File(jettyUrl, "lib");
-		
-		if (!jettyLibDir.exists() || !jettyLibDir.isDirectory())
-			throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty libs"));
+		final File jettyLibDir = new File(jettyUrl, "lib");
 
-		List<File> jettyLibs = new ArrayList<File>();
-		
+		if (!jettyLibDir.exists() || !jettyLibDir.isDirectory())
+		{
+			throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty libs"));
+		}
+
+		final List<File> jettyLibs = new ArrayList<File>();
+
 		jettyLibs.addAll(Arrays.asList(jettyLibDir.listFiles(new FilenameFilter()
 		{
-			public boolean accept(File dir, String name)
+			public boolean accept(final File dir, final String name)
 			{
-				if (name != null && name.endsWith(".jar")
+				if ((name != null) && name.endsWith(".jar")
 					&& (name.startsWith("jetty-") || name.startsWith("servlet-api")))
+				{
 					return true;
+				}
 
 				return false;
 			}
 		})));
 
-		if (jspEnabled)
+		if ("2.0".equals(jspEnabled))
 		{
-			// currently ignores the JSP version...add this koe
-			File jettyLibJSPDir = new File(jettyLibDir, "jsp-2.1");
-			if (!jettyLibJSPDir.exists())
-				jettyLibJSPDir = new File(jettyLibDir, "jsp");
+			final File jettyLibJSPDir = new File(jettyLibDir, "jsp-2.0");
 
 			if ((jettyLibJSPDir.exists()) && (jettyLibJSPDir.isDirectory()))
 			{
 				jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(JAR_FILTER)));
 			}
+			else
+			{
+				throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find JSP 2.0 libs"));
+			}
 		}
-		
+		else if (("true".equals(jspEnabled)) || ("2.1".equals(jspEnabled)))
+		{
+			File jettyLibJSPDir = new File(jettyLibDir, "jsp-2.1");
+			if (!jettyLibJSPDir.exists())
+			{
+				jettyLibJSPDir = new File(jettyLibDir, "jsp");
+			}
+
+			if ((jettyLibJSPDir.exists()) && (jettyLibJSPDir.isDirectory()))
+			{
+				jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(JAR_FILTER)));
+			}
+			else
+			{
+				throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find JSP 2.1 libs"));
+			}
+		}
+
 		return jettyLibs;
 	}
 
 	/**
 	 * Find the jetty libs for Jetty 5.
 	 */
-	private List<File> findJettyLibs5(String jettyUrl) throws CoreException
+	private List<File> findJettyLibs5(final String jettyUrl) throws CoreException
 	{
-		File jettyLibDir = new File(jettyUrl, "lib");
-		File jettyExtDir = new File(jettyUrl, "ext");
+		final File jettyLibDir = new File(jettyUrl, "lib");
+		final File jettyExtDir = new File(jettyUrl, "ext");
 		if (!jettyLibDir.exists() || !jettyLibDir.isDirectory() || !jettyExtDir.exists() || !jettyExtDir.isDirectory())
+		{
 			throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty libs"));
+		}
 
-		List<File> jettyLibs = new ArrayList<File>();
+		final List<File> jettyLibs = new ArrayList<File>();
 		Collections.addAll(jettyLibs, jettyLibDir.listFiles(JAR_FILTER));
 		Collections.addAll(jettyLibs, jettyExtDir.listFiles(JAR_FILTER));
 		return jettyLibs;
 	}
 
-	private IRuntimeClasspathEntry[] filterWebInfLibs(IRuntimeClasspathEntry[] defaults,
-		ILaunchConfiguration configuration)
+	private IRuntimeClasspathEntry[] filterWebInfLibs(final IRuntimeClasspathEntry[] defaults,
+		final ILaunchConfiguration configuration)
 	{
 
-		IJavaModel javaModel = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot());
+		final IJavaModel javaModel = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot());
 		String projectName = null;
 		String webAppDirName = null;
 		try
@@ -205,31 +264,31 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 			projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
 			webAppDirName = configuration.getAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, "");
 		}
-		catch (CoreException e)
+		catch (final CoreException e)
 		{
 			JettyPlugin.logError(e);
 		}
 
-		if (projectName == null || projectName.trim().equals("") || webAppDirName == null
+		if ((projectName == null) || projectName.trim().equals("") || (webAppDirName == null)
 			|| webAppDirName.trim().equals(""))
 		{
 			return defaults;
 		}
 
-		IJavaProject project = javaModel.getJavaProject(projectName);
+		final IJavaProject project = javaModel.getJavaProject(projectName);
 		if (project == null)
 		{
 			return defaults;
 		}
 
 		// this should be fine since the plugin checks whether WEB-INF exists
-		IFolder webInfDir = project.getProject().getFolder(new Path(webAppDirName)).getFolder("WEB-INF");
-		if (webInfDir == null || !webInfDir.exists())
+		final IFolder webInfDir = project.getProject().getFolder(new Path(webAppDirName)).getFolder("WEB-INF");
+		if ((webInfDir == null) || !webInfDir.exists())
 		{
 			return defaults;
 		}
-		IFolder lib = webInfDir.getFolder("lib");
-		if (lib == null || !lib.exists())
+		final IFolder lib = webInfDir.getFolder("lib");
+		if ((lib == null) || !lib.exists())
 		{
 			return defaults;
 		}
@@ -237,22 +296,78 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 		// ok, so we have a WEB-INF/lib dir, which means that we should filter
 		// out the entries in there since if the user wants those entries, they
 		// should be part of the project definition already
-		List<IRuntimeClasspathEntry> keep = new ArrayList<IRuntimeClasspathEntry>();
-		for (int i = 0; i < defaults.length; i++)
+		final List<IRuntimeClasspathEntry> keep = new ArrayList<IRuntimeClasspathEntry>();
+		for (final IRuntimeClasspathEntry default1 : defaults)
 		{
-			if (defaults[i].getType() != IRuntimeClasspathEntry.ARCHIVE)
+			if (default1.getType() != IRuntimeClasspathEntry.ARCHIVE)
 			{
-				keep.add(defaults[i]);
+				keep.add(default1);
 				continue;
 			}
-			IResource resource = defaults[i].getResource();
-			if (resource != null && !resource.getParent().equals(lib))
+			final IResource resource = default1.getResource();
+			if ((resource != null) && !resource.getParent().equals(lib))
 			{
-				keep.add(defaults[i]);
+				keep.add(default1);
 				continue;
 			}
 		}
 
 		return keep.toArray(new IRuntimeClasspathEntry[keep.size()]);
 	}
+
+	public static String detectJettyVersion(final String jettyUrl, final String jettyVersion)
+	{
+		if (!"auto".equals(jettyVersion))
+		{
+			return jettyVersion;
+		}
+
+		final File jettyPath = new File(jettyUrl);
+
+		if (!jettyPath.exists())
+		{
+			throw new IllegalArgumentException("Invalid path: " + jettyPath.getAbsolutePath());
+		}
+
+		final String jettyFile = jettyPath.getName();
+
+		if (jettyFile.contains("-5."))
+		{
+			return "5";
+		}
+		else if (jettyFile.contains("-6."))
+		{
+			return "6";
+		}
+		else if (jettyFile.contains("-7."))
+		{
+			return "7";
+		}
+		else
+		{
+			throw new IllegalArgumentException("Failed to detect Jetty version.");
+		}
+	}
+
+	public static List<Pattern> extractPatterns(final List<Pattern> list, final String text)
+		throws IllegalArgumentException
+	{
+		for (final String entry : text.split("[,\\n]"))
+		{
+			if (entry.trim().length() > 0)
+			{
+				try
+				{
+					list.add(Pattern.compile(entry));
+				}
+				catch (final PatternSyntaxException e)
+				{
+					throw new IllegalArgumentException("Invalid pattern: " + entry + " (" + e.getMessage() + ")", e);
+				}
+			}
+		}
+
+		return list;
+	}
+
 }

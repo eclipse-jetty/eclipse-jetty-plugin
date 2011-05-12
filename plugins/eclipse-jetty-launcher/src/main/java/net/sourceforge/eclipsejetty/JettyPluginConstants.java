@@ -11,7 +11,6 @@
 // limitations under the License. 
 package net.sourceforge.eclipsejetty;
 
-
 /**
  * Constants for the Jetty plugin.
  * 
@@ -20,12 +19,16 @@ package net.sourceforge.eclipsejetty;
 public interface JettyPluginConstants
 {
 	public static final String LAUNCH_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".launchConfigurationType";
-	
+
 	public static final String ATTR_CONTEXT = JettyPlugin.PLUGIN_ID + ".context";
 
 	public static final String ATTR_WEBAPPDIR = JettyPlugin.PLUGIN_ID + ".webappdir";
 
 	public static final String ATTR_PORT = JettyPlugin.PLUGIN_ID + ".port";
+
+	public static final String ATTR_LAUNCHER_EXCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.excludeLibs";
+
+	public static final String DEFAULT_LAUNCHER_EXCLUDED_LIBS = ".*servlet-api.*, .*selenium-server.*standalone\\.jar";
 
 	public static final String ATTR_JETTY_PATH = JettyPlugin.PLUGIN_ID + ".jetty.path";
 

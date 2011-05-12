@@ -39,12 +39,14 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
 {
 	public JettyLaunchConfigurationDelegate()
 	{
+		super();
 	}
 
-	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
-		throws CoreException
+	public void launch(final ILaunchConfiguration configuration, final String mode, final ILaunch launch,
+		IProgressMonitor monitor) throws CoreException
 	{
-		configuration.getWorkingCopy().setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
+		configuration.getWorkingCopy().setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
+			JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
 		if (monitor == null)
 		{
@@ -63,13 +65,13 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
 		{
 			monitor.subTask("verifying installation");
 
-			String mainTypeName = configuration.getAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
+			final String mainTypeName =
+				configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
 					JettyPluginConstants.DEFAULT_BOOTSTRAP_CLASS_NAME);
 
-			IVMRunner runner = getVMRunner(configuration, mode);
+			final IVMRunner runner = getVMRunner(configuration, mode);
 
-			File workingDir = verifyWorkingDirectory(configuration);
+			final File workingDir = verifyWorkingDirectory(configuration);
 			String workingDirName = null;
 			if (workingDir != null)
 			{
@@ -77,25 +79,26 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
 			}
 
 			// Environment variables
-			String[] envp = getEnvironment(configuration);
+			final String[] envp = getEnvironment(configuration);
 
 			// Program & VM arguments
-			String pgmArgs = getProgramArguments(configuration);
-			String vmArgs = getVMArguments(configuration);
-			ExecutionArguments execArgs = new ExecutionArguments(vmArgs, pgmArgs);
+			final String pgmArgs = getProgramArguments(configuration);
+			final String vmArgs = getVMArguments(configuration);
+			final ExecutionArguments execArgs = new ExecutionArguments(vmArgs, pgmArgs);
 
 			// VM-specific attributes
-			Map vmAttributesMap = getVMSpecificAttributesMap(configuration);
+			@SuppressWarnings("rawtypes")
+			final Map vmAttributesMap = getVMSpecificAttributesMap(configuration);
 
 			// Class path
-			String[] classpath = getClasspath(configuration);
+			final String[] classpath = getClasspath(configuration);
 
 			// Create VM configuration
-			VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName, classpath);
+			final VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName, classpath);
 			runConfig.setEnvironment(envp);
 			runConfig.setVMArguments(execArgs.getVMArgumentsArray());
 
-			List<String> programArgs = new ArrayList<String>();
+			final List<String> programArgs = new ArrayList<String>();
 			programArgs.addAll(Arrays.asList(execArgs.getProgramArgumentsArray()));
 			programArgs.add("-context");
 			programArgs.add(configuration.getAttribute(JettyPluginConstants.ATTR_CONTEXT, ""));

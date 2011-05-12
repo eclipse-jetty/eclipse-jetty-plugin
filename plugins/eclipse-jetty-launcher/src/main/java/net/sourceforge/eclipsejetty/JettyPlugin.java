@@ -39,13 +39,15 @@ public class JettyPlugin extends AbstractUIPlugin
 	 */
 	public JettyPlugin()
 	{
+		super();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception
+	@Override
+	public void start(final BundleContext context) throws Exception
 	{
 		super.start(context);
 		plugin = this;
@@ -55,7 +57,8 @@ public class JettyPlugin extends AbstractUIPlugin
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception
+	@Override
+	public void stop(final BundleContext context) throws Exception
 	{
 		plugin = null;
 		super.stop(context);
@@ -72,12 +75,12 @@ public class JettyPlugin extends AbstractUIPlugin
 	}
 
 	@Override
-	protected void initializeImageRegistry(ImageRegistry reg)
+	protected void initializeImageRegistry(final ImageRegistry reg)
 	{
-		URL imageURL = getBundle().getEntry("/icons/jetty.gif");
+		final URL imageURL = getBundle().getEntry("/icons/jetty.gif");
 		if (imageURL != null)
 		{
-			ImageDescriptor descriptor = ImageDescriptor.createFromURL(imageURL);
+			final ImageDescriptor descriptor = ImageDescriptor.createFromURL(imageURL);
 			reg.put(JETTY_ICON, descriptor);
 		}
 		else
@@ -91,12 +94,12 @@ public class JettyPlugin extends AbstractUIPlugin
 		return plugin.getImageRegistry().get(JETTY_ICON);
 	}
 
-	public static void logError(Exception e)
+	public static void logError(final Exception e)
 	{
 		e.printStackTrace();
 	}
 
-	public static void logError(String error)
+	public static void logError(final String error)
 	{
 		System.err.println(error);
 	}
