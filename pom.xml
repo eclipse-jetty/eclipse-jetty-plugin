@@ -29,13 +29,46 @@
 		</developer>
 	</developers>
 
+	<properties>
+		<tycho-version>0.11.1</tycho-version>
+	</properties>
+
 	<scm>
 		<connection>scm:svn:https://eclipse-jetty.svn.sourceforge.net/svnroot/eclipse-jetty/</connection>
 		<url>https://eclipse-jetty.svn.sourceforge.net/svnroot/eclipse-jetty/</url>
 	</scm>
 
+	<repositories>
+		<repository>
+			<id>eclipse-helios</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/helios</url>
+		</repository>
+	</repositories>
+
+	<modules>
+		<module>plugins/eclipse-jetty-launcher</module>
+		<module>features/eclipse-jetty</module>
+	</modules>
+
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.sonatype.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.sonatype.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<resolver>p2</resolver>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
