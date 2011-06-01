@@ -12,17 +12,14 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.debug.ui;bundle-version="3.3.0",
  org.eclipse.jdt.launching;bundle-version="3.3.0",
  org.eclipse.ui.ide;bundle-version="3.3.0",
- org.eclipse.debug.ui;bundle-version="3.3.0"
+ org.eclipse.debug.ui;bundle-version="3.3.0",
+ org.mortbay.jetty.server;bundle-version="[6.0.0,7.0.0)";resolution:=optional,
+ org.mortbay.jetty.util;bundle-version="[6.0.0,7.0.0)";resolution:=optional,
+ org.eclipse.jetty;bundle-version="[7.0.0,8.0.0)";resolution:=optional,
+ org.eclipse.jetty.server;bundle-version="[7.0.0,8.0.0)";resolution:=optional,
+ org.eclipse.jetty.webapp;bundle-version="[7.0.0,8.0.0)";resolution:=optional,
+ org.eclipse.jetty.util;bundle-version="[7.0.0,8.0.0)";resolution:=optional,
+ org.eclipse.jetty.servlet;bundle-version="[7.0.0,8.0.0)";resolution:=optional
 Bundle-RequiredExecutionEnvironment: J2SE-1.5,
  JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Import-Package: org.eclipse.jetty;version="[7.0.0,8.0.0)";resolution:=optional,
- org.eclipse.jetty.server;version="[7.0.0,8.0.0)";resolution:=optional,
- org.eclipse.jetty.webapp;version="[7.0.0,8.0.0)";resolution:=optional,
- org.eclipse.jetty.servlet;version="[7.0.0,8.0.0)";resolution:=optional,
- org.eclipse.jetty.util;version="[7.0.0,8.0.0)";resolution:=optional,
- org.eclipse.jetty.util.component;version="[7.0.0,8.0.0)";resolution:=optional,
- org.mortbay.jetty;version="[6.0.0,7.0.0)";resolution:=optional,
- org.mortbay.jetty.webapp;version="[6.0.0,7.0.0)";resolution:=optional,
- org.mortbay.component;version="[6.0.0,7.0.0)";resolution:=optional,
- org.mortbay.util;version="[6.0.0,7.0.0)";resolution:=optional
