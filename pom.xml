@@ -49,6 +49,7 @@
 	<modules>
 		<module>plugins/eclipse-jetty-launcher</module>
 		<module>features/eclipse-jetty</module>
+		<module>site</module>
 	</modules>
 
 	<build>
