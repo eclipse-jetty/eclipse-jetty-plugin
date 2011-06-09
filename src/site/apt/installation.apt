@@ -1,0 +1,25 @@
+ -----
+ Eclipse Jetty Integration - Installation
+ -----
+ Christian Köberl
+ -----
+ May 2011
+
+Installation
+
+ For installation use the Eclipse install manager:
+
+ [[1]] Help - Install New Software ...
+
+ [[2]] Click on Add... next to the site
+
+ [[3]] Add repository: Eclipse Jetty - http://eclipse-jetty.sourceforge.net/update/\
+ :
+
+[images/AddRepository.jpg]
+
+ [[4]] Select the feature and click through rest of wizard\
+ :
+ 
+[images/Install.jpg]
+ 

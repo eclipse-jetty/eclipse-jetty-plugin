@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Eclipse Jetty Integration ">
+<project xmlns="http://maven.apache.org/DECORATION/1.0.0"
+	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd"
+	name="Eclipse Jetty Integration">
 	<bannerLeft>
 		<name>Eclipse Jetty Integration </name>
 	</bannerLeft>
@@ -9,11 +11,17 @@
 			<item name="Jetty" href="http://www.mortbay.org/jetty/" />
 		</links>
 
-		<menu name="Main">
-			<item name="Introduction" href="index.html" />
+		<menu name="Documentation">
+			<item name="Overview" href="index.html" />
+			<item name="Getting started" href="getting_started.html" />
+			<item name="Installation" href="installation.html" />
 		</menu>
 
-		<menu ref="reports" />
-
+		<menu name="Additional Infos">
+			<item name="Version History" href="changes-report.html" />
+			<item name="Team" href="team-list.html" />
+			<item name="License" href="license.html" />
+			<item name="Source Repository" href="source-repository.html" />
+		</menu>
 	</body>
 </project>
