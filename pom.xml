@@ -27,6 +27,12 @@
 			<organization>Porsche Informatik</organization>
 			<organizationUrl>http://www.porscheinformatik.com/</organizationUrl>
 		</developer>
+		<developer>
+			<id>thred</id>
+			<name>Manfred Hantschel</name>
+			<organization>Porsche Informatik</organization>
+			<organizationUrl>http://www.porscheinformatik.com/</organizationUrl>
+		</developer>
 	</developers>
 
 	<properties>
