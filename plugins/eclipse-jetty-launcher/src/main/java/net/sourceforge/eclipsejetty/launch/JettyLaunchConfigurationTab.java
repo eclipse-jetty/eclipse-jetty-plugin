@@ -285,12 +285,12 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 			portText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_PORT, ""));
 			pathText.setText(configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_PATH, ""));
 
-			final String jettyVersion = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, "auto");
+			final String jettyVersion = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, JettyPluginConstants.AUTO_JETTY_VERSION);
 
-			jettyAutoButton.setSelection("auto".equals(jettyVersion));
-			jetty5Button.setSelection("5".equals(jettyVersion));
-			jetty6Button.setSelection("6".equals(jettyVersion));
-			jetty7Button.setSelection("7".equals(jettyVersion));
+			jettyAutoButton.setSelection(JettyPluginConstants.AUTO_JETTY_VERSION.equals(jettyVersion));
+			jetty5Button.setSelection(JettyPluginConstants.V5_JETTY_VERSION.equals(jettyVersion));
+			jetty6Button.setSelection(JettyPluginConstants.V6_JETTY_VERSION.equals(jettyVersion));
+			jetty7Button.setSelection(JettyPluginConstants.V7_JETTY_VERSION.equals(jettyVersion));
 
 			final String jspSupport =
 				configuration.getAttribute(JettyPluginConstants.ATTR_JSP_ENABLED,
@@ -364,14 +364,34 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 		configuration.setAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, webAppText.getText());
 		configuration.setAttribute(JettyPluginConstants.ATTR_PORT, portText.getText());
 		configuration.setAttribute(JettyPluginConstants.ATTR_LAUNCHER_EXCLUDED_LIBS, excludedLibrariesText.getText());
-		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_PATH, pathText.getText());
-
+		
+		String jettyPath = pathText.getText();
+		
+		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_PATH, jettyPath);
 		configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
 			JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
-		final String jettyVersion = getJettyVersion();
+		String jettyVersion = getJettyVersion();
+				
 		configuration.setAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, jettyVersion);
-		if ("7".equals(jettyVersion))
+		
+		if (JettyPluginConstants.AUTO_JETTY_VERSION.equals(jettyVersion)) 
+		{
+			try 
+			{
+				jettyVersion = JettyLaunchConfigurationClassPathProvider.detectJettyVersion(jettyPath, jettyVersion);
+			}
+			catch (IllegalArgumentException e) 
+			{
+				// ignore
+			}
+		}
+
+		if (JettyPluginConstants.AUTO_JETTY_VERSION.equals(jettyVersion)) 
+		{
+			// failed to autodetect
+		}
+		else if (JettyPluginConstants.V7_JETTY_VERSION.equals(jettyVersion))
 		{
 			configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
 				JettyPluginConstants.JETTY7_BOOTSTRAP_CLASS_NAME);
@@ -386,7 +406,7 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 
 		// save the Jetty path in preferences
 		JettyPlugin.getDefault().getPluginPreferences()
-			.setValue(JettyPluginConstants.ATTR_JETTY_PATH, pathText.getText());
+			.setValue(JettyPluginConstants.ATTR_JETTY_PATH, jettyPath);
 		JettyPlugin.getDefault().savePluginPreferences();
 	}
 
@@ -394,19 +414,19 @@ public class JettyLaunchConfigurationTab extends JavaLaunchTab
 	{
 		if (jetty5Button.getSelection())
 		{
-			return "5";
+			return JettyPluginConstants.V5_JETTY_VERSION;
 		}
 		else if (jetty6Button.getSelection())
 		{
-			return "6";
+			return JettyPluginConstants.V6_JETTY_VERSION;
 		}
 		else if (jetty7Button.getSelection())
 		{
-			return "7";
+			return JettyPluginConstants.V7_JETTY_VERSION;
 		}
 		else
 		{
-			return "auto";
+			return JettyPluginConstants.AUTO_JETTY_VERSION;
 		}
 	}
 

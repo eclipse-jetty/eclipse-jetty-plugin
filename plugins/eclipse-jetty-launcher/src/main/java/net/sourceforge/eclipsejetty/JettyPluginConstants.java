@@ -33,6 +33,16 @@ public interface JettyPluginConstants
 	public static final String ATTR_JETTY_PATH = JettyPlugin.PLUGIN_ID + ".jetty.path";
 
 	public static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version";
+	
+	public static final String AUTO_JETTY_VERSION = "auto";
+	
+	public static final String V5_JETTY_VERSION = "5";
+	
+	public static final String V6_JETTY_VERSION = "6";
+	
+	public static final String V7_JETTY_VERSION = "7";
+	
+	public static final String V8_JETTY_VERSION = "8";
 
 	public static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled";
 

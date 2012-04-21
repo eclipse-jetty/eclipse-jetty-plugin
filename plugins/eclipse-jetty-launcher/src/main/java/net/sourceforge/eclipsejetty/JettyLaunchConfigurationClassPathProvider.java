@@ -135,8 +135,16 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 		final List<IRuntimeClasspathEntry> entries = new ArrayList<IRuntimeClasspathEntry>();
 		entries.addAll(Arrays.asList(existing));
 		final String jettyUrl = configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_PATH, (String) null);
-		final String jettyVersion =
-			detectJettyVersion(jettyUrl, configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, "auto"));
+		
+		final String jettyVersion;
+		
+		try {
+			jettyVersion = detectJettyVersion(jettyUrl, configuration.getAttribute(JettyPluginConstants.ATTR_JETTY_VERSION, JettyPluginConstants.AUTO_JETTY_VERSION));
+		}
+		catch (IllegalArgumentException e) {
+			throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, e.getMessage()));
+		}
+		
 		final String jspEnabled =
 			configuration.getAttribute(JettyPluginConstants.ATTR_JSP_ENABLED,
 				JettyPluginConstants.ATTR_JSP_ENABLED_DEFAULT);
@@ -164,7 +172,7 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 	private Iterable<File> findJettyLibs(final String jettyUrl, final String jettyVersion, final String jspEnabled)
 		throws CoreException
 	{
-		if ("5".equals(jettyVersion))
+		if (JettyPluginConstants.V5_JETTY_VERSION.equals(jettyVersion))
 		{
 			return findJettyLibs5(jettyUrl);
 		}
@@ -315,38 +323,57 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 		return keep.toArray(new IRuntimeClasspathEntry[keep.size()]);
 	}
 
-	public static String detectJettyVersion(final String jettyUrl, final String jettyVersion)
+	public static String detectJettyVersion(final String jettyUrl, final String jettyVersion) 
 	{
-		if (!"auto".equals(jettyVersion))
+		if (!JettyPluginConstants.AUTO_JETTY_VERSION.equals(jettyVersion))
 		{
 			return jettyVersion;
 		}
 
-		final File jettyPath = new File(jettyUrl);
+		final File jettyLibDir = new File(jettyUrl, "lib");
 
-		if (!jettyPath.exists())
+		if (!jettyLibDir.exists() || !jettyLibDir.isDirectory())
 		{
-			throw new IllegalArgumentException("Invalid path: " + jettyPath.getAbsolutePath());
+			throw new IllegalArgumentException("Could not find Jetty libs");
 		}
+		
+		for (File file : jettyLibDir.listFiles()) 
+		{
+			if (!file.isFile()) 
+			{
+				continue;
+			}
 
-		final String jettyFile = jettyPath.getName();
-
-		if (jettyFile.contains("-5."))
-		{
-			return "5";
+			String name = file.getName();
+			
+			if ("org.mortbay.jetty.jar".equals(name)) 
+			{
+				// org.mortbay.jetty.jar - Jetty 5
+				return JettyPluginConstants.V5_JETTY_VERSION;
+			}
+			
+			if ((name.startsWith("jetty-")) && (name.endsWith(".jar"))) 
+			{
+				// jetty-6.1.26.jar - Jetty 6
+				// jetty-server-7.6.3.v20120416.jar - Jetty 7
+				// jetty-server-8.1.3.v20120416.jar - Jetty 8
+				
+				if (name.contains("-6."))
+				{
+					return JettyPluginConstants.V6_JETTY_VERSION;
+				}
+				else if (name.contains("-7."))
+				{
+					return JettyPluginConstants.V7_JETTY_VERSION;
+				}
+				else if (name.contains("-8."))
+				{
+					return JettyPluginConstants.V8_JETTY_VERSION;
+				}
+			}
 		}
-		else if (jettyFile.contains("-6."))
-		{
-			return "6";
-		}
-		else if (jettyFile.contains("-7."))
-		{
-			return "7";
-		}
-		else
-		{
-			throw new IllegalArgumentException("Failed to detect Jetty version.");
-		}
+		
+		throw new IllegalArgumentException("Failed to detect Jetty version.");
 	}
 
 	public static List<Pattern> extractPatterns(final List<Pattern> list, final String text)
