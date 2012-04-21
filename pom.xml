@@ -44,14 +44,6 @@
 		<url>https://eclipse-jetty.svn.sourceforge.net/svnroot/eclipse-jetty/</url>
 	</scm>
 
-	<repositories>
-		<repository>
-			<id>eclipse-helios</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/helios</url>
-		</repository>
-	</repositories>
-
 	<modules>
 		<module>plugins/eclipse-jetty-launcher</module>
 		<module>features/eclipse-jetty</module>
@@ -79,7 +71,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.0-beta-3</version>
+				<version>3.0</version>
 				<configuration>
 					<reportPlugins>
 						<plugin>
