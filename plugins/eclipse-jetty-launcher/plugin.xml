@@ -34,8 +34,9 @@
    <extension
          point="org.eclipse.jdt.launching.classpathProviders">
       <classpathProvider
-            class="net.sourceforge.eclipsejetty.JettyLaunchConfigurationClassPathProvider"
-            id="net.sourceforge.eclipsejetty.launcher.JettyWebAppClassPathProvider">
+            class="net.sourceforge.eclipsejetty.launch.JettyLaunchConfigurationClassPathProvider"
+            id="net.sourceforge.eclipsejetty.launcher.JettyLaunchClassPathProvider">
       </classpathProvider>
    </extension>
+   
 </plugin>

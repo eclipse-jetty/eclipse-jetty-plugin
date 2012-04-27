@@ -8,7 +8,7 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License. 
+// limitations under the License.
 package net.sourceforge.eclipsejetty.launch;
 
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
@@ -21,19 +21,24 @@ import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaClasspathTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaJRETab;
 
+/**
+ * UI
+ * 
+ * @author Christian K&ouml;berl
+ * @author Manfred Hantschel
+ */
 public class JettyLaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup
 {
-	public JettyLaunchConfigurationTabGroup()
-	{
-		super();
-	}
+    public JettyLaunchConfigurationTabGroup()
+    {
+        super();
+    }
 
-	public void createTabs(final ILaunchConfigurationDialog dialog, final String mode)
-	{
-		final ILaunchConfigurationTab[] tabs =
-			new ILaunchConfigurationTab[]{
-				new JettyLaunchConfigurationTab(), new JavaArgumentsTab(), new JavaJRETab(), new JavaClasspathTab(),
-				new SourceLookupTab(), new EnvironmentTab(), new CommonTab()};
-		setTabs(tabs);
-	}
+    public void createTabs(final ILaunchConfigurationDialog dialog, final String mode)
+    {
+        final ILaunchConfigurationTab[] tabs =
+            new ILaunchConfigurationTab[]{new JettyLaunchConfigurationTab(), new JavaArgumentsTab(), new JavaJRETab(),
+                new JavaClasspathTab(), new SourceLookupTab(), new EnvironmentTab(), new CommonTab()};
+        setTabs(tabs);
+    }
 }

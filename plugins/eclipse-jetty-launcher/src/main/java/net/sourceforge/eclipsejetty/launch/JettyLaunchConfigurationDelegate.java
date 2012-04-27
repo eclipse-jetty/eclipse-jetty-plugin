@@ -8,141 +8,226 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License. 
+// limitations under the License.
 package net.sourceforge.eclipsejetty.launch;
 
+import static net.sourceforge.eclipsejetty.launch.JettyLaunchClasspathMatcher.*;
+
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
+import net.sourceforge.eclipsejetty.jetty.JettyConfiguration;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
 import org.eclipse.jdt.launching.ExecutionArguments;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 
 /**
  * Launch configuration delegate for Jetty. Based on {@link JavaLaunchDelegate}.
+ * 
+ * @author Christian K&ouml;berl
+ * @author Manfred Hantschel
  */
 public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigurationDelegate
 {
-	public JettyLaunchConfigurationDelegate()
-	{
-		super();
-	}
+    public JettyLaunchConfigurationDelegate()
+    {
+        super();
+    }
 
-	public void launch(final ILaunchConfiguration configuration, final String mode, final ILaunch launch,
-		IProgressMonitor monitor) throws CoreException
-	{
-		configuration.getWorkingCopy().setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
-			JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
+    /* (non-Javadoc)
+     * @see org.eclipse.debug.core.model.ILaunchConfigurationDelegate#launch(org.eclipse.debug.core.ILaunchConfiguration, java.lang.String, org.eclipse.debug.core.ILaunch, org.eclipse.core.runtime.IProgressMonitor)
+     */
+    public void launch(final ILaunchConfiguration configuration, final String mode, final ILaunch launch,
+        IProgressMonitor monitor) throws CoreException
+    {
+        configuration.getWorkingCopy().setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
+            JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
-		if (monitor == null)
-		{
-			monitor = new NullProgressMonitor();
-		}
+        if (monitor == null)
+        {
+            monitor = new NullProgressMonitor();
+        }
 
-		monitor.beginTask(MessageFormat.format("{0}...", configuration.getName()), 3); //$NON-NLS-1$
+        monitor.beginTask(MessageFormat.format("{0}...", configuration.getName()), 3); //$NON-NLS-1$
 
-		// check for cancellation
-		if (monitor.isCanceled())
-		{
-			return;
-		}
+        // check for cancellation
+        if (monitor.isCanceled())
+        {
+            return;
+        }
 
-		try
-		{
-			monitor.subTask("verifying installation");
+        try
+        {
+            monitor.subTask("verifying installation");
 
-			final String mainTypeName =
-				configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
-					JettyPluginConstants.DEFAULT_BOOTSTRAP_CLASS_NAME);
+            //            String jettyPath = JettyPluginConstants.getPath(configuration);
+            //            JettyVersion jettyVersion = JettyPluginUtils.detectJettyVersion(jettyPath, JettyPluginConstants.getVersion(configuration));
 
-			final IVMRunner runner = getVMRunner(configuration, mode);
+            final String mainTypeName = JettyPluginConstants.getMainTypeName(configuration);
+            final IVMRunner runner = getVMRunner(configuration, mode);
 
-			final File workingDir = verifyWorkingDirectory(configuration);
-			String workingDirName = null;
-			if (workingDir != null)
-			{
-				workingDirName = workingDir.getAbsolutePath();
-			}
+            final File workingDir = verifyWorkingDirectory(configuration);
+            String workingDirName = null;
+            if (workingDir != null)
+            {
+                workingDirName = workingDir.getAbsolutePath();
+            }
 
-			// Environment variables
-			final String[] envp = getEnvironment(configuration);
+            // Environment variables
+            final String[] envp = getEnvironment(configuration);
 
-			// Program & VM arguments
-			final String pgmArgs = getProgramArguments(configuration);
-			final String vmArgs = getVMArguments(configuration);
-			final ExecutionArguments execArgs = new ExecutionArguments(vmArgs, pgmArgs);
+            // Program & VM arguments
+            final String pgmArgs = getProgramArguments(configuration);
+            final String vmArgs = getVMArguments(configuration);
+            final ExecutionArguments execArgs = new ExecutionArguments(vmArgs, pgmArgs);
 
-			// VM-specific attributes
-			@SuppressWarnings("rawtypes")
-			final Map vmAttributesMap = getVMSpecificAttributesMap(configuration);
+            // VM-specific attributes
+            @SuppressWarnings("rawtypes")
+            final Map vmAttributesMap = getVMSpecificAttributesMap(configuration);
 
-			// Class path
-			final String[] classpath = getClasspath(configuration);
+            // Class path
+            final String[] classpath =
+                getClasspath(configuration, userClasses(), not(withExtraAttribute("maven.scope", "test")));
 
-			// Create VM configuration
-			final VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName, classpath);
-			runConfig.setEnvironment(envp);
-			runConfig.setVMArguments(execArgs.getVMArgumentsArray());
+            File jettyConfigurationFile = createJettyConfigurationFile(configuration, classpath);
 
-			final List<String> programArgs = new ArrayList<String>();
-			programArgs.addAll(Arrays.asList(execArgs.getProgramArgumentsArray()));
-			programArgs.add("-context");
-			programArgs.add(configuration.getAttribute(JettyPluginConstants.ATTR_CONTEXT, ""));
-			programArgs.add("-webapp");
-			programArgs.add(configuration.getAttribute(JettyPluginConstants.ATTR_WEBAPPDIR, ""));
-			programArgs.add("-port");
-			programArgs.add(configuration.getAttribute(JettyPluginConstants.ATTR_PORT, ""));
-			runConfig.setProgramArguments(programArgs.toArray(new String[programArgs.size()]));
+            // Create VM configuration
+            final VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName, classpath);
+            runConfig.setEnvironment(envp);
+            runConfig.setVMArguments(execArgs.getVMArgumentsArray());
 
-			runConfig.setWorkingDirectory(workingDirName);
-			runConfig.setVMSpecificAttributesMap(vmAttributesMap);
+            final List<String> programArgs = new ArrayList<String>();
+            programArgs.addAll(Arrays.asList(execArgs.getProgramArgumentsArray()));
+            programArgs.add(jettyConfigurationFile.getAbsolutePath());
+            runConfig.setProgramArguments(programArgs.toArray(new String[programArgs.size()]));
 
-			// Boot path
-			runConfig.setBootClassPath(getBootpath(configuration));
+            runConfig.setWorkingDirectory(workingDirName);
+            runConfig.setVMSpecificAttributesMap(vmAttributesMap);
 
-			// check for cancellation
-			if (monitor.isCanceled())
-			{
-				return;
-			}
+            // Boot path
+            runConfig.setBootClassPath(getBootpath(configuration));
 
-			// stop in main
-			prepareStopInMain(configuration);
+            // check for cancellation
+            if (monitor.isCanceled())
+            {
+                return;
+            }
 
-			// done the verification phase
-			monitor.worked(1);
+            // stop in main
+            prepareStopInMain(configuration);
 
-			monitor.subTask("Creating source locator");
-			// set the default source locator if required
-			setDefaultSourceLocator(launch, configuration);
-			monitor.worked(1);
+            // done the verification phase
+            monitor.worked(1);
 
-			// Launch the configuration - 1 unit of work
-			runner.run(runConfig, launch, monitor);
+            monitor.subTask("Creating source locator");
+            // set the default source locator if required
+            setDefaultSourceLocator(launch, configuration);
+            monitor.worked(1);
 
-			// check for cancellation
-			if (monitor.isCanceled())
-			{
-				return;
-			}
-		}
-		finally
-		{
-			monitor.done();
-		}
-	}
+            // Launch the configuration - 1 unit of work
+            runner.run(runConfig, launch, monitor);
+
+            // check for cancellation
+            if (monitor.isCanceled())
+            {
+                return;
+            }
+        }
+        finally
+        {
+            monitor.done();
+        }
+    }
+
+    private File createJettyConfigurationFile(final ILaunchConfiguration configuration, final String[] classpath)
+        throws CoreException
+    {
+        JettyConfiguration jettyConfiguration;
+
+        try
+        {
+            jettyConfiguration = JettyConfiguration.create();
+        }
+        catch (IOException e)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
+                "Failed to create tmp file for storing Jetty launch configuration"));
+        }
+
+        jettyConfiguration.setContext(JettyPluginConstants.getContext(configuration));
+        jettyConfiguration.setWebAppDir(JettyPluginConstants.getWebAppDir(configuration));
+        jettyConfiguration.setPort(JettyPluginConstants.getPort(configuration));
+        jettyConfiguration.setClasspath(classpath);
+
+        try
+        {
+            jettyConfiguration.store();
+        }
+        catch (IOException e)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
+                "Failed to store tmp file with Jetty launch configuration"));
+        }
+        return jettyConfiguration.getFile();
+    }
+
+    protected Collection<IRuntimeClasspathEntry> getClasspathEntries(ILaunchConfiguration configuration)
+        throws CoreException
+    {
+        IRuntimeClasspathEntry[] entries = JavaRuntime.computeUnresolvedRuntimeClasspath(configuration);
+
+        entries = JavaRuntime.resolveRuntimeClasspath(entries, configuration);
+
+        return new HashSet<IRuntimeClasspathEntry>(Arrays.asList(entries));
+    }
+
+    public String[] getClasspath(ILaunchConfiguration configuration, JettyLaunchClasspathMatcher... matchers)
+        throws CoreException
+    {
+        Set<String> results = new HashSet<String>();
+        Collection<IRuntimeClasspathEntry> classpathEntries = getClasspathEntries(configuration);
+        Collection<IRuntimeClasspathEntry> matchedClasspathEntries = and(matchers).match(classpathEntries);
+
+        for (IRuntimeClasspathEntry entry : matchedClasspathEntries)
+        {
+            String location = entry.getLocation();
+
+            if (location != null)
+            {
+                results.add(location);
+            }
+        }
+
+        return results.toArray(new String[results.size()]);
+    }
+
+    @Override
+    public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getClasspath(configuration, userClasses());
+    }
+
 }
