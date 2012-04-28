@@ -23,7 +23,9 @@ public enum JspSupport
 
     JSP_2_0("2.0"),
 
-    JSP_2_1("2.1", "true");
+    JSP_2_1("2.1", "true"),
+
+    JSP_2_2("2.2");
 
     private final String[] values;
 

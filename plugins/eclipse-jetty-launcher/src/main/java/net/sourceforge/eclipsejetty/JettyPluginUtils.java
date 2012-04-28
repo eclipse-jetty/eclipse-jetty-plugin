@@ -19,6 +19,9 @@ import java.util.regex.PatternSyntaxException;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.variables.VariablesPlugin;
+
 /**
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
@@ -139,6 +142,20 @@ public class JettyPluginUtils
         }
 
         return result.toString();
+    }
+
+    public static String resolveVariables(String s)
+    {
+        try
+        {
+            s = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(s);
+        }
+        catch (CoreException e)
+        {
+            // ignore
+        }
+
+        return s;
     }
 
 }

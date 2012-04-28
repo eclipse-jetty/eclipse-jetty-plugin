@@ -24,13 +24,16 @@ public abstract class AbstractJettyLauncherMain
 
     protected void launch(String[] args) throws Exception
     {
-        printLogo();
-        System.out.println();
-
         JettyConfiguration configuration = getConfiguration(args);
 
-        printConfiguration(configuration);
-        System.out.println();
+        if (!configuration.getHideLaunchInfo())
+        {
+            printLogo();
+            System.out.println();
+
+            printConfiguration(configuration);
+            System.out.println();
+        }
 
         configuration.delete();
 

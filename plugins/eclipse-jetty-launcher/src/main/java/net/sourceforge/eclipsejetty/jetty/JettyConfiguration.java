@@ -84,6 +84,16 @@ public class JettyConfiguration extends Properties
         }
     }
 
+    public boolean getHideLaunchInfo()
+    {
+        return "true".equals(getProperty("hideLaunchInfo"));
+    }
+
+    public void setHideLaunchInfo(boolean hideLaunchInfo)
+    {
+        setProperty("hideLaunchInfo", String.valueOf(hideLaunchInfo));
+    }
+
     public String getContext()
     {
         return getProperty("context", "/");

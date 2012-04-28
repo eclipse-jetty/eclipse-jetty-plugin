@@ -134,29 +134,26 @@ public class JettyPluginConstants
     }
 
     public static void setScopeCompileExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
-        throws CoreException
     {
         configuration.setAttribute(ATTR_EXCLUDE_SCOPE_COMPILE, value);
     }
 
     public static boolean isScopeProvidedExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_PROVIDED, false);
+        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_PROVIDED, true);
     }
 
     public static void setScopeProvidedExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
-        throws CoreException
     {
         configuration.setAttribute(ATTR_EXCLUDE_SCOPE_PROVIDED, value);
     }
 
     public static boolean isScopeRuntimeExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_RUNTIME, true);
+        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_RUNTIME, false);
     }
 
     public static void setScopeRuntimeExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
-        throws CoreException
     {
         configuration.setAttribute(ATTR_EXCLUDE_SCOPE_RUNTIME, value);
     }
@@ -167,7 +164,6 @@ public class JettyPluginConstants
     }
 
     public static void setScopeTestExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
-        throws CoreException
     {
         configuration.setAttribute(ATTR_EXCLUDE_SCOPE_TEST, value);
     }
@@ -178,7 +174,6 @@ public class JettyPluginConstants
     }
 
     public static void setScopeSystemExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
-        throws CoreException
     {
         configuration.setAttribute(ATTR_EXCLUDE_SCOPE_SYSTEM, value);
     }

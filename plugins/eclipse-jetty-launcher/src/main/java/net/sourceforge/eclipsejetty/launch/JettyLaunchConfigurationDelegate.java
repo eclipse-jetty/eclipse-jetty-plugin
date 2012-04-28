@@ -108,9 +108,31 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
             @SuppressWarnings("rawtypes")
             final Map vmAttributesMap = getVMSpecificAttributesMap(configuration);
 
+            JettyLaunchClasspathMatcher vmClasspathMatcher = userClasses();
+            
+            if (JettyPluginConstants.isScopeCompileExcluded(configuration)) {
+                vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "compile")));
+            }
+            
+            if (JettyPluginConstants.isScopeProvidedExcluded(configuration)) {
+                vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "provided")));
+            }
+            
+            if (JettyPluginConstants.isScopeRuntimeExcluded(configuration)) {
+                vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "runtime")));
+            }
+            
+            if (JettyPluginConstants.isScopeSystemExcluded(configuration)) {
+                vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "system")));
+            }
+            
+            if (JettyPluginConstants.isScopeTestExcluded(configuration)) {
+                vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "test")));
+            }
+            
             // Class path
             final String[] classpath =
-                getClasspath(configuration, userClasses(), not(withExtraAttribute("maven.scope", "test")));
+                getClasspath(configuration, vmClasspathMatcher);
 
             File jettyConfigurationFile = createJettyConfigurationFile(configuration, classpath);
 

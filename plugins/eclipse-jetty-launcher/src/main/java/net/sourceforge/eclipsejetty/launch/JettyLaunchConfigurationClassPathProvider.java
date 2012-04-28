@@ -100,7 +100,7 @@ public class JettyLaunchConfigurationClassPathProvider extends StandardClasspath
 
         entries.addAll(Arrays.asList(existing));
 
-        final String jettyPath = JettyPluginConstants.getPath(configuration);
+        final String jettyPath = JettyPluginUtils.resolveVariables(JettyPluginConstants.getPath(configuration));
         final JettyVersion jettyVersion;
 
         try

@@ -32,21 +32,23 @@ public enum JettyVersion
 
     JETTY_5("5", Jetty5LauncherMain.class, new Jetty5LibStrategy()),
 
-    JETTY_6("6", Jetty6LauncherMain.class, new Jetty6LibStrategy()),
+    JETTY_6("6", Jetty6LauncherMain.class, new Jetty6LibStrategy(), JspSupport.JSP_2_1, JspSupport.JSP_2_0),
 
-    JETTY_7("7", Jetty7LauncherMain.class, new Jetty7LibStrategy()),
+    JETTY_7("7", Jetty7LauncherMain.class, new Jetty7LibStrategy(), JspSupport.JSP_2_1),
 
-    JETTY_8("8", Jetty8LauncherMain.class, new Jetty8LibStrategy());
+    JETTY_8("8", Jetty8LauncherMain.class, new Jetty8LibStrategy(), JspSupport.JSP_2_2);
 
     private final String value;
     private final Class<?> mainClass;
     private final IJettyLibStrategy libStrategy;
+    private final JspSupport[] jspSupports;
 
-    private JettyVersion(String value, Class<?> mainClass, IJettyLibStrategy libStrategy)
+    private JettyVersion(String value, Class<?> mainClass, IJettyLibStrategy libStrategy, JspSupport... jspSupports)
     {
         this.value = value;
         this.mainClass = mainClass;
         this.libStrategy = libStrategy;
+        this.jspSupports = jspSupports;
     }
 
     public String getValue()
@@ -67,6 +69,24 @@ public enum JettyVersion
     public IJettyLibStrategy getLibStrategy()
     {
         return libStrategy;
+    }
+
+    public boolean isJspSupported()
+    {
+        return jspSupports.length > 0;
+    }
+
+    public boolean containsJspSupport(JspSupport jspSupport)
+    {
+        for (JspSupport current : jspSupports)
+        {
+            if (current == jspSupport)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static JettyVersion toJettyVersion(String value)

@@ -8,7 +8,7 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License. 
+// limitations under the License.
 package net.sourceforge.eclipsejetty;
 
 import java.net.URL;
@@ -26,81 +26,99 @@ import org.osgi.framework.BundleContext;
  */
 public class JettyPlugin extends AbstractUIPlugin
 {
-	// The plug-in ID
-	public static final String PLUGIN_ID = "net.sourceforge.eclipsejetty.launcher";
+    // The plug-in ID
+    public static final String PLUGIN_ID = "net.sourceforge.eclipsejetty.launcher";
 
-	private static final String JETTY_ICON = PLUGIN_ID + ".jettyIcon";
+    private static final String JETTY_ICON = PLUGIN_ID + ".jettyIcon";
+    private static final String JETTY_ADVANCED_ICON = PLUGIN_ID + ".jettyAdvancedIcon";
 
-	// The shared instance
-	private static JettyPlugin plugin;
+    // The shared instance
+    private static JettyPlugin plugin;
 
-	/**
-	 * The constructor
-	 */
-	public JettyPlugin()
-	{
-		super();
-	}
+    /**
+     * The constructor
+     */
+    public JettyPlugin()
+    {
+        super();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void start(final BundleContext context) throws Exception
-	{
-		super.start(context);
-		plugin = this;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+     */
+    @Override
+    public void start(final BundleContext context) throws Exception
+    {
+        super.start(context);
+        plugin = this;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	@Override
-	public void stop(final BundleContext context) throws Exception
-	{
-		plugin = null;
-		super.stop(context);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+     */
+    @Override
+    public void stop(final BundleContext context) throws Exception
+    {
+        plugin = null;
+        super.stop(context);
+    }
 
-	/**
-	 * Returns the shared instance
-	 * 
-	 * @return the shared instance
-	 */
-	public static JettyPlugin getDefault()
-	{
-		return plugin;
-	}
+    /**
+     * Returns the shared instance
+     * 
+     * @return the shared instance
+     */
+    public static JettyPlugin getDefault()
+    {
+        return plugin;
+    }
 
-	@Override
-	protected void initializeImageRegistry(final ImageRegistry reg)
-	{
-		final URL imageURL = getBundle().getEntry("/icons/jetty.gif");
-		if (imageURL != null)
-		{
-			final ImageDescriptor descriptor = ImageDescriptor.createFromURL(imageURL);
-			reg.put(JETTY_ICON, descriptor);
-		}
-		else
-		{
-			logError("resource " + "/icons/jetty.gif" + " was not found");
-		}
-	}
+    @Override
+    protected void initializeImageRegistry(final ImageRegistry reg)
+    {
+        final URL imageURL = getBundle().getEntry("/icons/jetty.png");
+        
+        if (imageURL != null)
+        {
+            reg.put(JETTY_ICON, ImageDescriptor.createFromURL(imageURL));
+        }
+        else
+        {
+            logError("resource " + "/icons/jetty.gif" + " was not found");
+        }
 
-	public static Image getJettyIcon()
-	{
-		return plugin.getImageRegistry().get(JETTY_ICON);
-	}
+        final URL imageAdvancedURL = getBundle().getEntry("/icons/jetty-advanced.png");
+        
+        if (imageAdvancedURL != null)
+        {
+            reg.put(JETTY_ADVANCED_ICON, ImageDescriptor.createFromURL(imageAdvancedURL));
+        }
+        else
+        {
+            logError("resource " + "/icons/jetty.gif" + " was not found");
+        }
 
-	public static void logError(final Exception e)
-	{
-		e.printStackTrace();
-	}
+    }
 
-	public static void logError(final String error)
-	{
-		System.err.println(error);
-	}
+    public static Image getJettyIcon()
+    {
+        return plugin.getImageRegistry().get(JETTY_ICON);
+    }
+
+    public static Image getJettyAdvancedIcon()
+    {
+        return plugin.getImageRegistry().get(JETTY_ADVANCED_ICON);
+    }
+
+    public static void logError(final Exception e)
+    {
+        e.printStackTrace();
+    }
+
+    public static void logError(final String error)
+    {
+        System.err.println(error);
+    }
 }
