@@ -109,35 +109,46 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
             final Map vmAttributesMap = getVMSpecificAttributesMap(configuration);
 
             JettyLaunchClasspathMatcher vmClasspathMatcher = userClasses();
-            
-            if (JettyPluginConstants.isScopeCompileExcluded(configuration)) {
+
+            if (JettyPluginConstants.isScopeCompileExcluded(configuration))
+            {
                 vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "compile")));
             }
-            
-            if (JettyPluginConstants.isScopeProvidedExcluded(configuration)) {
+
+            if (JettyPluginConstants.isScopeProvidedExcluded(configuration))
+            {
                 vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "provided")));
             }
-            
-            if (JettyPluginConstants.isScopeRuntimeExcluded(configuration)) {
+
+            if (JettyPluginConstants.isScopeRuntimeExcluded(configuration))
+            {
                 vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "runtime")));
             }
-            
-            if (JettyPluginConstants.isScopeSystemExcluded(configuration)) {
+
+            if (JettyPluginConstants.isScopeSystemExcluded(configuration))
+            {
                 vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "system")));
             }
-            
-            if (JettyPluginConstants.isScopeTestExcluded(configuration)) {
+
+            if (JettyPluginConstants.isScopeTestExcluded(configuration))
+            {
                 vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "test")));
             }
-            
-            // Class path
-            final String[] classpath =
-                getClasspath(configuration, vmClasspathMatcher);
 
-            File jettyConfigurationFile = createJettyConfigurationFile(configuration, classpath);
+            Collection<IRuntimeClasspathEntry> allClasspathEntries =
+                getClasspathEntries(configuration, vmClasspathMatcher);
+            Collection<IRuntimeClasspathEntry> bootEntries =
+                or(bootstrapClasses(), withExtraAttribute(JettyClasspathAttribute.NAME, JettyClasspathAttribute.VALUE))
+                    .match(new HashSet<IRuntimeClasspathEntry>(allClasspathEntries));
+            String[] bootClasspath = toLocationArray(bootEntries);
+            Collection<IRuntimeClasspathEntry> webAppEntries =
+                notIn(bootEntries).match(new HashSet<IRuntimeClasspathEntry>(allClasspathEntries));
+            String[] webAppClassspath = toLocationArray(webAppEntries);
+
+            File jettyConfigurationFile = createJettyConfigurationFile(configuration, webAppClassspath);
 
             // Create VM configuration
-            final VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName, classpath);
+            final VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName, bootClasspath);
             runConfig.setEnvironment(envp);
             runConfig.setVMArguments(execArgs.getVMArgumentsArray());
 
@@ -150,7 +161,27 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
             runConfig.setVMSpecificAttributesMap(vmAttributesMap);
 
             // Boot path
-            runConfig.setBootClassPath(getBootpath(configuration));
+            String[] bootpath = getBootpath(configuration);
+
+            runConfig.setBootClassPath(bootpath);
+
+            if (bootpath != null)
+            {
+                for (String s : bootpath)
+                {
+                    System.out.println("Boot: " + s);
+                }
+            }
+
+            for (String s : bootClasspath)
+            {
+                System.out.println("Jetty: " + s);
+            }
+
+            for (String s : webAppClassspath)
+            {
+                System.out.println("Webapp: " + s);
+            }
 
             // check for cancellation
             if (monitor.isCanceled())
@@ -216,24 +247,35 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
         return jettyConfiguration.getFile();
     }
 
-    protected Collection<IRuntimeClasspathEntry> getClasspathEntries(ILaunchConfiguration configuration)
-        throws CoreException
+    protected Collection<IRuntimeClasspathEntry> getClasspathEntries(ILaunchConfiguration configuration,
+        JettyLaunchClasspathMatcher... matchers) throws CoreException
     {
         IRuntimeClasspathEntry[] entries = JavaRuntime.computeUnresolvedRuntimeClasspath(configuration);
 
         entries = JavaRuntime.resolveRuntimeClasspath(entries, configuration);
 
-        return new HashSet<IRuntimeClasspathEntry>(Arrays.asList(entries));
+        HashSet<IRuntimeClasspathEntry> results = new HashSet<IRuntimeClasspathEntry>(Arrays.asList(entries));
+
+        return and(matchers).match(results);
     }
 
     public String[] getClasspath(ILaunchConfiguration configuration, JettyLaunchClasspathMatcher... matchers)
         throws CoreException
     {
-        Set<String> results = new HashSet<String>();
-        Collection<IRuntimeClasspathEntry> classpathEntries = getClasspathEntries(configuration);
-        Collection<IRuntimeClasspathEntry> matchedClasspathEntries = and(matchers).match(classpathEntries);
+        return toLocationArray(getClasspathEntries(configuration, matchers));
+    }
 
-        for (IRuntimeClasspathEntry entry : matchedClasspathEntries)
+    @Override
+    public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getClasspath(configuration, userClasses());
+    }
+
+    public static String[] toLocationArray(Collection<IRuntimeClasspathEntry> classpathEntries)
+    {
+        Set<String> results = new HashSet<String>();
+
+        for (IRuntimeClasspathEntry entry : classpathEntries)
         {
             String location = entry.getLocation();
 
@@ -244,12 +286,6 @@ public class JettyLaunchConfigurationDelegate extends AbstractJavaLaunchConfigur
         }
 
         return results.toArray(new String[results.size()]);
-    }
-
-    @Override
-    public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException
-    {
-        return getClasspath(configuration, userClasses());
     }
 
 }

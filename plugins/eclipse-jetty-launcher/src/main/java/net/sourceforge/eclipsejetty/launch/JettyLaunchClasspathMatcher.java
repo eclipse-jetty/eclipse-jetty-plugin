@@ -14,9 +14,11 @@ package net.sourceforge.eclipsejetty.launch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
@@ -379,6 +381,45 @@ public abstract class JettyLaunchClasspathMatcher
             public String toString()
             {
                 return "mavenTestScope";
+            }
+
+        };
+    }
+
+    /**
+     * Matches all entries, that are in the specified collection
+     * 
+     * @param excludedEntries a collection of {@link IRuntimeClasspathEntry}s
+     * @return all matching entries
+     */
+    public static JettyLaunchClasspathMatcher notIn(Collection<IRuntimeClasspathEntry> excludedEntries)
+        throws CoreException
+    {
+        final Set<IRuntimeClasspathEntry> excludedEntriesSet = new HashSet<IRuntimeClasspathEntry>(excludedEntries);
+
+        return new JettyLaunchClasspathMatcher()
+        {
+
+            @Override
+            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            {
+                Iterator<IRuntimeClasspathEntry> iterator = entries.iterator();
+
+                while (iterator.hasNext())
+                {
+                    if (excludedEntriesSet.contains(iterator.next()))
+                    {
+                        iterator.remove();
+                    }
+                }
+
+                return entries;
+            }
+
+            @Override
+            public String toString()
+            {
+                return "notIn" + excludedEntriesSet;
             }
 
         };
