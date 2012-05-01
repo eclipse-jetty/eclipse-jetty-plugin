@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipsejetty.feature"
       label="Eclipse Jetty Feature"
-      version="3.4.0.beta-2"
+      version="3.4.0.beta-3"
       provider-name="Christian Köberl">
 
    <description url="http://eclipse-jetty.sourceforge.net/">
@@ -14,7 +14,7 @@
    </copyright>
 
    <license url="http://www.apache.org/licenses/LICENSE-2.0.txt">
-sLicensed under the Apache License, Version 2.0 (the &amp;quot;License&amp;quot;);
+      sLicensed under the Apache License, Version 2.0 (the &amp;quot;License&amp;quot;);
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
@@ -35,7 +35,7 @@ limitations under the License.
          id="net.sourceforge.eclipsejetty.launcher"
          download-size="25"
          install-size="25"
-         version="3.4.0.beta-2"
+         version="3.4.0.beta-3"
          unpack="false"/>
 
 </feature>

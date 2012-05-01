@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>net.sourceforge.eclipsejetty</groupId>
 		<artifactId>parent</artifactId>
-		<version>3.4.0.beta-2</version>
+		<version>3.4.0.beta-3</version>
 	</parent>
 	<artifactId>net.sourceforge.eclipsejetty.site</artifactId>
 	<packaging>eclipse-update-site</packaging>
