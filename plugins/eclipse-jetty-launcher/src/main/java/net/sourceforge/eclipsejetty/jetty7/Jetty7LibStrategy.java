@@ -11,7 +11,19 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty7;
 
+import static net.sourceforge.eclipsejetty.util.FilenameMatcher.*;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
+import net.sourceforge.eclipsejetty.JettyPlugin;
+import net.sourceforge.eclipsejetty.jetty.JspSupport;
 import net.sourceforge.eclipsejetty.jetty6.Jetty6LibStrategy;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 /**
  * Resolve libs for Jetty 7
@@ -22,6 +34,17 @@ import net.sourceforge.eclipsejetty.jetty6.Jetty6LibStrategy;
 public class Jetty7LibStrategy extends Jetty6LibStrategy
 {
 
-    // intentionally left blank
+    @Override
+    protected void addJSPLibs(List<File> jettyLibs, File jettyPath, JspSupport jspSupport) throws CoreException
+    {
+        final File jettyLibJSPDir = new File(jettyPath, "lib/jsp");
+
+        if (!jettyLibJSPDir.exists() || !jettyLibJSPDir.isDirectory())
+        {
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty JSP libs"));
+        }
+
+        jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(named(".*\\.jar"))));
+    }
 
 }

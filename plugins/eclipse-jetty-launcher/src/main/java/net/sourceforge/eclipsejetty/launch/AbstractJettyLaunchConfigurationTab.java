@@ -1,3 +1,14 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.launch;
 
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaLaunchTab;
@@ -19,12 +30,14 @@ import org.eclipse.swt.widgets.Text;
 public abstract class AbstractJettyLaunchConfigurationTab extends JavaLaunchTab
 {
 
-    protected Label createLabel(final Composite composite, final String text, final int widthHint, int horizontalSpan)
+    protected Label createLabel(final Composite composite, final String text, final int widthHint, int horizontalSpan,
+        int verticalSpan)
     {
         Label label = new Label(composite, SWT.NONE);
 
         GridData gridData =
-            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, SWT.CENTER, widthHint < 0, false, horizontalSpan, 1);
+            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
+                widthHint < 0, false, horizontalSpan, verticalSpan);
 
         if (widthHint >= 0)
         {
@@ -38,11 +51,13 @@ public abstract class AbstractJettyLaunchConfigurationTab extends JavaLaunchTab
     }
 
     protected Button createButton(final Composite composite, int style, final String text, final int widthHint,
-        SelectionListener... selectionListeners)
+        int verticalSpan, SelectionListener... selectionListeners)
     {
         Button button = new Button(composite, style);
 
-        GridData gridData = new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, SWT.CENTER, widthHint < 0, false, 1, 1);
+        GridData gridData =
+            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
+                widthHint < 0, false, 1, verticalSpan);
 
         if (widthHint >= 0)
         {
@@ -63,17 +78,23 @@ public abstract class AbstractJettyLaunchConfigurationTab extends JavaLaunchTab
         return button;
     }
 
-    protected Text createText(final Composite composite, final int widthHint, int horizontalSpan,
-        ModifyListener... modifyListeners)
+    protected Text createText(final Composite composite, int style, final int widthHint, int heightHint,
+        int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
     {
-        Text text = new Text(composite, SWT.BORDER);
+        Text text = new Text(composite, style);
 
         GridData gridData =
-            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, SWT.CENTER, widthHint < 0, false, horizontalSpan, 1);
+            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
+                widthHint < 0, false, horizontalSpan, verticalSpan);
 
         if (widthHint >= 0)
         {
             gridData.widthHint = widthHint;
+        }
+
+        if (heightHint >= 0)
+        {
+            gridData.heightHint = heightHint;
         }
 
         text.setLayoutData(gridData);

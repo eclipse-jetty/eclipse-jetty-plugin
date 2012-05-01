@@ -95,8 +95,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         projectGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         projectGroup.setText("Project:");
 
-        projectText = createText(projectGroup, -1, 1, modifyDialogListener);
-        createButton(projectGroup, SWT.NONE, "Browse...", 96, new SelectionAdapter()
+        projectText = createText(projectGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
+        createButton(projectGroup, SWT.NONE, "Browse...", 96, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(final SelectionEvent e)
@@ -110,9 +110,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         applicationGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         applicationGroup.setText("Web Application:");
 
-        createLabel(applicationGroup, "WebApp Directory:", 128, 1);
-        webAppText = createText(applicationGroup, -1, 1, modifyDialogListener);
-        webAppButton = createButton(applicationGroup, SWT.NONE, "Browse...", 96, new SelectionAdapter()
+        createLabel(applicationGroup, "WebApp Directory:", 128, 1, 1);
+        webAppText = createText(applicationGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
+        webAppButton = createButton(applicationGroup, SWT.NONE, "Browse...", 96, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(final SelectionEvent e)
@@ -121,20 +121,20 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             }
         });
 
-        createLabel(applicationGroup, "Context Path:", 128, 1);
-        contextText = createText(applicationGroup, -1, 1, modifyDialogListener);
-        createLabel(applicationGroup, "", 0, 1);
+        createLabel(applicationGroup, "Context Path:", 128, 1, 1);
+        contextText = createText(applicationGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
+        createLabel(applicationGroup, "", 0, 1, 1);
 
         final Group jettyGroup = new Group(tabComposite, SWT.NONE);
         jettyGroup.setLayout(new GridLayout(4, false));
         jettyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         jettyGroup.setText("Jetty:");
 
-        createLabel(jettyGroup, "Jetty Home:", 128, 1);
-        pathText = createText(jettyGroup, -1, 3, modifyDialogListener);
+        createLabel(jettyGroup, "Jetty Home:", 128, 1, 1);
+        pathText = createText(jettyGroup, SWT.BORDER, -1, -1, 3, 1, modifyDialogListener);
 
-        createLabel(jettyGroup, "", -1, 2);
-        createButton(jettyGroup, SWT.NONE, "Variables...", 96, new SelectionAdapter()
+        createLabel(jettyGroup, "", -1, 2, 1);
+        createButton(jettyGroup, SWT.NONE, "Variables...", 96, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
@@ -142,7 +142,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
                 chooseJettyPathVariable();
             }
         });
-        createButton(jettyGroup, SWT.NONE, "Browse...", 96, new SelectionAdapter()
+        createButton(jettyGroup, SWT.NONE, "Browse...", 96, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(final SelectionEvent e)
@@ -151,8 +151,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             }
         });
 
-        createLabel(jettyGroup, "HTTP Port:", 128, 1);
-        portText = createText(jettyGroup, 64, 3, modifyDialogListener);
+        createLabel(jettyGroup, "HTTP Port:", 128, 1, 1);
+        portText = createText(jettyGroup, SWT.BORDER, 64, -1, 3, 1, modifyDialogListener);
 
         setControl(tabComposite);
     }
@@ -229,32 +229,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         try
         {
             JettyPluginConstants.setWebAppDir(configuration, JettyPluginConstants.getWebAppDir(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.logError(e);
-        }
-
-        try
-        {
             JettyPluginConstants.setContext(configuration, JettyPluginConstants.getContext(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.logError(e);
-        }
-
-        try
-        {
             JettyPluginConstants.setPath(configuration, JettyPluginConstants.getPath(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.logError(e);
-        }
-        
-        try
-        {
             JettyPluginConstants.setPort(configuration, JettyPluginConstants.getPort(configuration));
         }
         catch (CoreException e)

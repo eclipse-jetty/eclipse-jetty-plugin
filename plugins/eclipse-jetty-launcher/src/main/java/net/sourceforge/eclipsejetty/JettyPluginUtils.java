@@ -12,7 +12,6 @@
 package net.sourceforge.eclipsejetty;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
@@ -28,18 +27,6 @@ import org.eclipse.core.variables.VariablesPlugin;
  */
 public class JettyPluginUtils
 {
-
-    public static final FilenameFilter JAR_FILTER = new FilenameFilter()
-    {
-        public boolean accept(final File dir, final String name)
-        {
-            if ((name != null) && name.endsWith(".jar"))
-            {
-                return true;
-            }
-            return false;
-        }
-    };
 
     /**
      * Returns the Jetty version. Tries to detect it, if it is set to AUTO.
@@ -73,12 +60,6 @@ public class JettyPluginUtils
 
             String name = file.getName();
 
-            if ("org.mortbay.jetty.jar".equals(name))
-            {
-                // org.mortbay.jetty.jar - Jetty 5
-                return JettyVersion.JETTY_5;
-            }
-
             if ((name.startsWith("jetty-")) && (name.endsWith(".jar")))
             {
                 // jetty-6.1.26.jar - Jetty 6
@@ -103,10 +84,10 @@ public class JettyPluginUtils
         throw new IllegalArgumentException("Failed to detect Jetty version.");
     }
 
-    public static List<RegularMatcher> extractPatterns(final List<RegularMatcher> list, final String text)
+    public static List<RegularMatcher> extractPatterns(final List<RegularMatcher> list, final String... text)
         throws IllegalArgumentException
     {
-        for (final String entry : text.split("[,\\n]"))
+        for (final String entry : text)
         {
             if (entry.trim().length() > 0)
             {

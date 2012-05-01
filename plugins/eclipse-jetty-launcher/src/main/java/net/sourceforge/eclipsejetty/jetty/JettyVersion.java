@@ -11,8 +11,6 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty;
 
-import net.sourceforge.eclipsejetty.jetty5.Jetty5LauncherMain;
-import net.sourceforge.eclipsejetty.jetty5.Jetty5LibStrategy;
 import net.sourceforge.eclipsejetty.jetty6.Jetty6LauncherMain;
 import net.sourceforge.eclipsejetty.jetty6.Jetty6LibStrategy;
 import net.sourceforge.eclipsejetty.jetty7.Jetty7LauncherMain;
@@ -29,8 +27,6 @@ public enum JettyVersion
 {
 
     JETTY_AUTO_DETECT("auto", null, null),
-
-    JETTY_5("5", Jetty5LauncherMain.class, new Jetty5LibStrategy()),
 
     JETTY_6("6", Jetty6LauncherMain.class, new Jetty6LibStrategy(), JspSupport.JSP_2_1, JspSupport.JSP_2_0),
 

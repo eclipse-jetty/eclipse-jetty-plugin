@@ -428,11 +428,11 @@ public abstract class JettyLaunchClasspathMatcher
     /**
      * Matches all entries, that are not excluded
      * 
-     * @param excluded a comma or line separated list of regular expression of file or path names
+     * @param excluded a list of regular expression of file or path names
      * @return all matching entries
      * @throws CoreException if the excluded list cannot be parsed
      */
-    public static JettyLaunchClasspathMatcher notExcluded(String excluded) throws CoreException
+    public static JettyLaunchClasspathMatcher notExcluded(String... excluded) throws CoreException
     {
         final List<RegularMatcher> excludedLibs = new ArrayList<RegularMatcher>();
 
@@ -459,10 +459,12 @@ public abstract class JettyLaunchClasspathMatcher
                 {
                     IRuntimeClasspathEntry entry = iterator.next();
                     String path = entry.getLocation();
+                    String forwardSlashes = path.replace('\\', '/');
+                    String backSlashes = path.replace('/', '\\');
 
                     for (final RegularMatcher excludedLib : excludedLibs)
                     {
-                        if (excludedLib.matches(path))
+                        if ((excludedLib.matches(forwardSlashes)) || (excludedLib.matches(backSlashes)))
                         {
                             iterator.remove();
                             continue entry;

@@ -11,15 +11,15 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty6;
 
+import static net.sourceforge.eclipsejetty.util.FilenameMatcher.*;
+
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
-import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.IJettyLibStrategy;
 import net.sourceforge.eclipsejetty.jetty.JspSupport;
 
@@ -41,6 +41,15 @@ public class Jetty6LibStrategy implements IJettyLibStrategy
      */
     public Collection<File> find(File jettyPath, JspSupport jspSupport) throws CoreException
     {
+        List<File> jettyLibs = addCoreLibs(jettyPath);
+
+        addJSPLibs(jettyLibs, jettyPath, jspSupport);
+
+        return jettyLibs;
+    }
+
+    protected List<File> addCoreLibs(File jettyPath) throws CoreException
+    {
         final File jettyLibDir = new File(jettyPath, "lib");
 
         if (!jettyLibDir.exists() || !jettyLibDir.isDirectory())
@@ -50,33 +59,31 @@ public class Jetty6LibStrategy implements IJettyLibStrategy
 
         final List<File> jettyLibs = new ArrayList<File>();
 
-        jettyLibs.addAll(Arrays.asList(jettyLibDir.listFiles(new FilenameFilter()
-        {
-            public boolean accept(final File dir, final String name)
-            {
-                if ((name != null) && name.endsWith(".jar")
-                    && (name.startsWith("jetty-") || name.startsWith("servlet-api")))
-                {
-                    return true;
-                }
+        jettyLibs
+            .addAll(Arrays.asList(jettyLibDir.listFiles(or(named("jetty-.*\\.jar"), named("servlet-api.*\\.jar")))));
+        return jettyLibs;
+    }
 
-                return false;
-            }
-        })));
+    protected void addJSPLibs(final List<File> jettyLibs, final File jettyPath, JspSupport jspSupport)
+        throws CoreException
+    {
+        final File jettyLibDir = new File(jettyPath, "lib");
+
+        if (!jettyLibDir.exists() || !jettyLibDir.isDirectory())
+        {
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty libs"));
+        }
 
         File jettyLibJSPDir;
 
         switch (jspSupport)
         {
-            case JSP_DISABLED:
-                break;
-
             case JSP_2_0:
                 jettyLibJSPDir = new File(jettyLibDir, "jsp-2.0");
 
                 if ((jettyLibJSPDir.exists()) && (jettyLibJSPDir.isDirectory()))
                 {
-                    jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(JettyPluginUtils.JAR_FILTER)));
+                    jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(named(".*\\.jar"))));
                 }
                 else
                 {
@@ -95,7 +102,7 @@ public class Jetty6LibStrategy implements IJettyLibStrategy
 
                 if ((jettyLibJSPDir.exists()) && (jettyLibJSPDir.isDirectory()))
                 {
-                    jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(JettyPluginUtils.JAR_FILTER)));
+                    jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(named(".*\\.jar"))));
                 }
                 else
                 {
@@ -104,8 +111,6 @@ public class Jetty6LibStrategy implements IJettyLibStrategy
                 }
                 break;
         }
-
-        return jettyLibs;
     }
 
 }

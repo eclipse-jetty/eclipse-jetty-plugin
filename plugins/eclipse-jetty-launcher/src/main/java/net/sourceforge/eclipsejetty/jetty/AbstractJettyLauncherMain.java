@@ -22,9 +22,11 @@ import java.io.IOException;
 public abstract class AbstractJettyLauncherMain
 {
 
+    public static final String CONFIGURATION_KEY = "jetty.launcher.configuration";
+
     protected void launch(String[] args) throws Exception
     {
-        JettyConfiguration configuration = getConfiguration(args);
+        JettyConfiguration configuration = getConfiguration();
 
         if (!configuration.getHideLaunchInfo())
         {
@@ -44,9 +46,9 @@ public abstract class AbstractJettyLauncherMain
 
     protected abstract void printLogo();
 
-    protected JettyConfiguration getConfiguration(String[] args) throws IOException
+    protected JettyConfiguration getConfiguration() throws IOException
     {
-        return JettyConfiguration.load(new File(args[0]));
+        return JettyConfiguration.load(new File(System.getProperty(CONFIGURATION_KEY)));
     }
 
     protected void printConfiguration(JettyConfiguration configuration)

@@ -11,7 +11,11 @@
 // limitations under the License. 
 package net.sourceforge.eclipsejetty.jetty6;
 
-import net.sourceforge.eclipsejetty.jetty5.Jetty5LauncherMain;
+import net.sourceforge.eclipsejetty.jetty.AbstractJettyLauncherMain;
+import net.sourceforge.eclipsejetty.jetty.JettyConfiguration;
+
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.webapp.WebAppContext;
 
 /**
  * Main for Jetty 6
@@ -19,7 +23,7 @@ import net.sourceforge.eclipsejetty.jetty5.Jetty5LauncherMain;
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
-public class Jetty6LauncherMain extends Jetty5LauncherMain
+public class Jetty6LauncherMain extends AbstractJettyLauncherMain
 {
     
     public static void main(String[] args) throws Exception
@@ -37,6 +41,19 @@ public class Jetty6LauncherMain extends Jetty5LauncherMain
         System.out.println(" / _// __/ / / _ \\(_-</ -_) / // / -_) __/ __/ // / / _ \\");
         System.out.println("/___/\\__/_/_/ .__/___/\\__/  \\___/\\__/\\__/\\__/\\_, /  \\___/");
         System.out.println("           /_/                              /___/");
+    }
+
+    @Override
+    protected void start(JettyConfiguration configuration) throws Exception
+    {
+        Server server = new Server(configuration.getPort());
+        WebAppContext context = new WebAppContext(configuration.getWebAppDir(), configuration.getContext());
+
+        context.setExtraClasspath(link(configuration.getClasspath()));
+
+        server.setHandler(context);
+        server.start();
+        server.join();
     }
 
 }

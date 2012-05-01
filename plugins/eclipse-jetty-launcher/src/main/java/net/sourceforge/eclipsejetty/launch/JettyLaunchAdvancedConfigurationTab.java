@@ -47,7 +47,6 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private static final String DETECTED_TEXT = " (detected)";
 
     private Button jettyAutoButton;
-    private Button jetty5Button;
     private Button jetty6Button;
     private Button jetty7Button;
     private Button jetty8Button;
@@ -62,8 +61,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button mavenIncludeRuntime;
     private Button mavenIncludeTest;
     private Button mavenIncludeSystem;
-
     private Text excludedLibrariesText;
+
+    private Button showLauncherInfoButon;
 
     private final ModifyDialogListener modifyDialogListener;
 
@@ -87,14 +87,30 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jettyVersionGroup.setText("Jetty Version:");
 
         jettyAutoButton =
-            createButton(jettyVersionGroup, SWT.CHECK, "Autodetect Jetty Version", 224, modifyDialogListener);
-        jetty5Button = createButton(jettyVersionGroup, SWT.RADIO, "Jetty 5.x", -1, modifyDialogListener);
-        createLabel(jettyVersionGroup, "", 224, 1);
-        jetty6Button = createButton(jettyVersionGroup, SWT.RADIO, "Jetty 6.x", -1, modifyDialogListener);
-        createLabel(jettyVersionGroup, "", 224, 1);
-        jetty7Button = createButton(jettyVersionGroup, SWT.RADIO, "Jetty 7.x", -1, modifyDialogListener);
-        createLabel(jettyVersionGroup, "", 224, 1);
-        jetty8Button = createButton(jettyVersionGroup, SWT.RADIO, "Jetty 8.x", -1, modifyDialogListener);
+            createButton(jettyVersionGroup, SWT.CHECK, "Autodetect Jetty Version:", 224, 4, modifyDialogListener);
+        jetty6Button = createButton(jettyVersionGroup, SWT.RADIO, "Jetty 6.x", -1, 1, modifyDialogListener);
+        jetty7Button = createButton(jettyVersionGroup, SWT.RADIO, "Jetty 7.x", -1, 1, modifyDialogListener);
+        jetty8Button = createButton(jettyVersionGroup, SWT.RADIO, "Jetty 8.x", -1, 1, modifyDialogListener);
+
+        final Group dependencyGroup = new Group(tabComposite, SWT.NONE);
+
+        dependencyGroup.setLayout(new GridLayout(3, false));
+        dependencyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        dependencyGroup.setText("Libraries and Dependencies:");
+
+        createLabel(dependencyGroup, "Included Maven Dependencies:", 224, 1, 3);
+        mavenIncludeCompile = createButton(dependencyGroup, SWT.CHECK, "Compile Scope", -1, 1, modifyDialogListener);
+        mavenIncludeProvided = createButton(dependencyGroup, SWT.CHECK, "Provided Scope", -1, 1, modifyDialogListener);
+        mavenIncludeRuntime = createButton(dependencyGroup, SWT.CHECK, "Runtime Scope", -1, 1, modifyDialogListener);
+        mavenIncludeSystem = createButton(dependencyGroup, SWT.CHECK, "System Scope", -1, 1, modifyDialogListener);
+        createLabel(dependencyGroup, "", -1, 1, 1);
+        mavenIncludeTest = createButton(dependencyGroup, SWT.CHECK, "Test Scope", -1, 1, modifyDialogListener);
+
+        createLabel(dependencyGroup, "Excluded Libaries and Directories:", 224, 1, 2);
+        excludedLibrariesText =
+            createText(dependencyGroup, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL, -1, 50, 2, 2, modifyDialogListener);
+        excludedLibrariesText
+            .setToolTipText("Comma or line separated list of libraries and directories to exclude from the classpath. The entries are regular expressions.");
 
         final Group jspGroup = new Group(tabComposite, SWT.NONE);
 
@@ -102,53 +118,26 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jspGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         jspGroup.setText("JSP Support:");
 
-        jspEnabledButton = createButton(jspGroup, SWT.CHECK, "JSP Support Enabled", 224, modifyDialogListener);
-        jsp20Button = createButton(jspGroup, SWT.RADIO, "JSP 2.0 (Jetty 6)", -1, modifyDialogListener);
-        createLabel(jspGroup, "", 224, 1);
-        jsp21Button = createButton(jspGroup, SWT.RADIO, "JSP 2.1 (Jetty 6 and 7)", -1, modifyDialogListener);
-        createLabel(jspGroup, "", 224, 1);
-        jsp22Button = createButton(jspGroup, SWT.RADIO, "JSP 2.2 (Jetty 8)", -1, modifyDialogListener);
+        jspEnabledButton = createButton(jspGroup, SWT.CHECK, "JSP Support Enabled:", 224, 3, modifyDialogListener);
+        jsp20Button = createButton(jspGroup, SWT.RADIO, "JSP 2.0 (Jetty 6)", -1, 1, modifyDialogListener);
+        jsp21Button = createButton(jspGroup, SWT.RADIO, "JSP 2.1 (Jetty 6 and 7)", -1, 1, modifyDialogListener);
+        jsp22Button = createButton(jspGroup, SWT.RADIO, "JSP 2.2 (Jetty 8)", -1, 1, modifyDialogListener);
 
-        final Group mavenGroup = new Group(tabComposite, SWT.NONE);
+        final Group optionsGroup = new Group(tabComposite, SWT.NONE);
 
-        mavenGroup.setLayout(new GridLayout(2, false));
-        mavenGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        mavenGroup.setText("Maven:");
+        optionsGroup.setLayout(new GridLayout(2, false));
+        optionsGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        optionsGroup.setText("Jetty Options:");
 
-        createLabel(mavenGroup, "Included Dependencies by Scope:", 224, 1);
-        mavenIncludeCompile = createButton(mavenGroup, SWT.CHECK, "Compile Scope", -1, modifyDialogListener);
-        createLabel(mavenGroup, "", 224, 1);
-        mavenIncludeProvided = createButton(mavenGroup, SWT.CHECK, "Provided Scope", -1, modifyDialogListener);
-        createLabel(mavenGroup, "", 224, 1);
-        mavenIncludeRuntime = createButton(mavenGroup, SWT.CHECK, "Runtime Scope", -1, modifyDialogListener);
-        createLabel(mavenGroup, "", 224, 1);
-        mavenIncludeTest = createButton(mavenGroup, SWT.CHECK, "Test Scope", -1, modifyDialogListener);
-        createLabel(mavenGroup, "", 224, 1);
-        mavenIncludeSystem = createButton(mavenGroup, SWT.CHECK, "System Scope", -1, modifyDialogListener);
-
-        final Group fooGroup = new Group(tabComposite, SWT.NONE);
-
-        fooGroup.setLayout(new GridLayout(2, false));
-        fooGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        fooGroup.setText("Foobar:");
-
-        createLabel(fooGroup, "Excluded Libraries", 128, 1);
-
-        excludedLibrariesText = new Text(fooGroup, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-
-        final GridData excludedLibrariesGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        excludedLibrariesGridData.heightHint = 50;
-        excludedLibrariesText.setLayoutData(excludedLibrariesGridData);
-        excludedLibrariesText.addModifyListener(modifyDialogListener);
-        excludedLibrariesText
-            .setToolTipText("Comma or line separated list of libraries to exclude from the classpath. The entries are regular expressions.");
+        createLabel(optionsGroup, "Detailed Laucher Info:", 224, 1, 1);
+        showLauncherInfoButon = createButton(optionsGroup, SWT.CHECK, "Show", -1, 1, modifyDialogListener);
 
         setControl(tabComposite);
     }
 
     public String getName()
     {
-        return "Config";
+        return "Options";
     }
 
     @Override
@@ -171,7 +160,6 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             JettyVersion version = JettyPluginConstants.getVersion(configuration);
 
             jettyAutoButton.setSelection(version == JettyVersion.JETTY_AUTO_DETECT);
-            jetty5Button.setSelection(version == JettyVersion.JETTY_5);
             jetty6Button.setSelection(version == JettyVersion.JETTY_6);
             jetty7Button.setSelection(version == JettyVersion.JETTY_7);
             jetty7Button.setSelection(version == JettyVersion.JETTY_8);
@@ -188,8 +176,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             mavenIncludeRuntime.setSelection(!JettyPluginConstants.isScopeRuntimeExcluded(configuration));
             mavenIncludeSystem.setSelection(!JettyPluginConstants.isScopeSystemExcluded(configuration));
             mavenIncludeTest.setSelection(!JettyPluginConstants.isScopeTestExcluded(configuration));
-
             excludedLibrariesText.setText(JettyPluginConstants.getExcludedLibs(configuration));
+
+            showLauncherInfoButon.setSelection(JettyPluginConstants.isShowLauncherInfo(configuration));
         }
         catch (final CoreException e)
         {
@@ -202,65 +191,19 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         try
         {
             JettyPluginConstants.setVersion(configuration, JettyPluginConstants.getVersion(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.logError(e);
-        }
-
-        try
-        {
             JettyPluginConstants.setJspSupport(configuration, JettyPluginConstants.getJspSupport(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.logError(e);
-        }
-
-        try
-        {
             JettyPluginConstants.setScopeCompileExcluded(configuration,
                 JettyPluginConstants.isScopeCompileExcluded(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.logError(e);
-        }
-
-        try
-        {
             JettyPluginConstants.setScopeProvidedExcluded(configuration,
                 JettyPluginConstants.isScopeProvidedExcluded(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.logError(e);
-        }
-
-        try
-        {
             JettyPluginConstants.setScopeRuntimeExcluded(configuration,
                 JettyPluginConstants.isScopeRuntimeExcluded(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.logError(e);
-        }
-
-        try
-        {
             JettyPluginConstants.setScopeSystemExcluded(configuration,
                 JettyPluginConstants.isScopeSystemExcluded(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.logError(e);
-        }
-
-        try
-        {
             JettyPluginConstants.setScopeTestExcluded(configuration,
                 JettyPluginConstants.isScopeTestExcluded(configuration));
+            JettyPluginConstants.setShowLauncherInfo(configuration,
+                JettyPluginConstants.isShowLauncherInfo(configuration));
         }
         catch (CoreException e)
         {
@@ -304,6 +247,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setScopeTestExcluded(configuration, !mavenIncludeTest.getSelection());
 
         JettyPluginConstants.setExcludedLibs(configuration, excludedLibrariesText.getText());
+
+        JettyPluginConstants.setShowLauncherInfo(configuration, showLauncherInfoButon.getSelection());
     }
 
     private JettyVersion getJettyVersion()
@@ -311,10 +256,6 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         if (jettyAutoButton.getSelection())
         {
             return JettyVersion.JETTY_AUTO_DETECT;
-        }
-        else if (jetty5Button.getSelection())
-        {
-            return JettyVersion.JETTY_5;
         }
         else if (jetty6Button.getSelection())
         {
@@ -375,14 +316,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             JettyVersion detectedVersion =
                 JettyPluginUtils.detectJettyVersion(jettyPath, JettyVersion.JETTY_AUTO_DETECT);
 
-            updateJettyVersionButtonText(jetty5Button, detectedVersion == JettyVersion.JETTY_5);
             updateJettyVersionButtonText(jetty6Button, detectedVersion == JettyVersion.JETTY_6);
             updateJettyVersionButtonText(jetty7Button, detectedVersion == JettyVersion.JETTY_7);
             updateJettyVersionButtonText(jetty8Button, detectedVersion == JettyVersion.JETTY_8);
         }
         catch (final IllegalArgumentException e)
         {
-            updateJettyVersionButtonText(jetty5Button, false);
             updateJettyVersionButtonText(jetty6Button, false);
             updateJettyVersionButtonText(jetty7Button, false);
             updateJettyVersionButtonText(jetty8Button, false);
@@ -390,14 +329,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         if (jettyAutoButton.getSelection())
         {
-            jetty5Button.setEnabled(false);
             jetty6Button.setEnabled(false);
             jetty7Button.setEnabled(false);
             jetty8Button.setEnabled(false);
         }
         else
         {
-            jetty5Button.setEnabled(true);
             jetty6Button.setEnabled(true);
             jetty7Button.setEnabled(true);
             jetty8Button.setEnabled(true);
@@ -426,8 +363,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jsp21Button.setEnabled(jspEnabledButton.getSelection() && version.containsJspSupport(JspSupport.JSP_2_1));
         jsp22Button.setEnabled(jspEnabledButton.getSelection() && version.containsJspSupport(JspSupport.JSP_2_2));
 
-        if ((!jettyAutoButton.getSelection()) && (!jetty5Button.getSelection()) && (!jetty6Button.getSelection())
-            && (!jetty7Button.getSelection()) && (!jetty8Button.getSelection()))
+        if ((!jettyAutoButton.getSelection()) && (!jetty6Button.getSelection()) && (!jetty7Button.getSelection())
+            && (!jetty8Button.getSelection()))
         {
             setErrorMessage("You must select a Jetty version if auto detection is turned off.");
             return false;
@@ -439,18 +376,24 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             setErrorMessage("You must select a JSP version if JSP support is enabled.");
             return false;
         }
-        
-        if ((jspEnabledButton.getSelection()) && (jsp20Button.getSelection()) && (!version.containsJspSupport(JspSupport.JSP_2_0))) {
+
+        if ((jspEnabledButton.getSelection()) && (jsp20Button.getSelection())
+            && (!version.containsJspSupport(JspSupport.JSP_2_0)))
+        {
             setErrorMessage("JSP 2.0 is not supported by your Jetty.");
             return false;
         }
 
-        if ((jspEnabledButton.getSelection()) && (jsp21Button.getSelection()) && (!version.containsJspSupport(JspSupport.JSP_2_1))) {
+        if ((jspEnabledButton.getSelection()) && (jsp21Button.getSelection())
+            && (!version.containsJspSupport(JspSupport.JSP_2_1)))
+        {
             setErrorMessage("JSP 2.1 is not supported by your Jetty.");
             return false;
         }
 
-        if ((jspEnabledButton.getSelection()) && (jsp22Button.getSelection()) && (!version.containsJspSupport(JspSupport.JSP_2_2))) {
+        if ((jspEnabledButton.getSelection()) && (jsp22Button.getSelection())
+            && (!version.containsJspSupport(JspSupport.JSP_2_2)))
+        {
             setErrorMessage("JSP 2.2 is not supported by your Jetty.");
             return false;
         }
