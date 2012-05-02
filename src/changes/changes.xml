@@ -9,6 +9,35 @@
 	</properties>
 
 	<body>
+		<release version="3.5.0" date="2012-05-XX">
+			<action dev="thred" type="add">
+				Support for Jetty 8 added.
+			</action>
+			<action dev="thred" type="remove">
+				Support for Jetty 5 dropped.
+			</action>
+			<action dev="thred" type="fix" issue="3520146">
+				Fixed Jetty version autodetection.
+			</action>
+			<action dev="thred" type="add">
+				Jetty home can now be set via a variable.
+			</action>
+			<action dev="thred" type="add">
+				Support for m2e-plugin: you can configure the scopes included in classpath (defaults to compile and runtime).
+			</action>
+			<action dev="thred" type="add">
+				Webapp libraries are now loaded via Jetty classloader mechanism and not globally set as classpath.
+			</action>
+			<action dev="thred" type="add">
+				Classpath for webapp is now set via file - no problems with too long command line in Windows anymore :)
+			</action>
+			<action dev="thred" type="change">
+				New logo with a shiny glow.
+			</action>
+			<action dev="thred" type="change">
+				Refactored and beautified UI
+			</action>
+		</release>
 		<release version="3.4.0-beta-1" date="2011-06-01">
 			<action dev="ckoeberl" type="add">
 				Jetty 7 compatability.
