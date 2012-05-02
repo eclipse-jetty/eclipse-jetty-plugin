@@ -10,7 +10,6 @@
 		<relativePath>../..</relativePath>
 	</parent>
 	<artifactId>net.sourceforge.eclipsejetty.launcher</artifactId>
-	<packaging>eclipse-plugin</packaging>
 
 	<name>Eclipse Jetty Launcher</name>
 	<description>Eclipse launch configuration for Jetty</description>
