@@ -11,40 +11,50 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty7;
 
-import static net.sourceforge.eclipsejetty.util.FilenameMatcher.*;
+import java.util.Collection;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
-import net.sourceforge.eclipsejetty.JettyPlugin;
-import net.sourceforge.eclipsejetty.jetty.JspSupport;
-import net.sourceforge.eclipsejetty.jetty6.Jetty6LibStrategy;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import net.sourceforge.eclipsejetty.jetty.FileBasedJettyLibStrategy;
 
 /**
  * Resolve libs for Jetty 7
  * 
- * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
-public class Jetty7LibStrategy extends Jetty6LibStrategy
+public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
 {
 
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addServerDependencies(java.util.Collection)
+     */
     @Override
-    protected void addJSPLibs(List<File> jettyLibs, File jettyPath, JspSupport jspSupport) throws CoreException
+    protected void addServerDependencies(Collection<String> dependencies)
     {
-        final File jettyLibJSPDir = new File(jettyPath, "lib/jsp");
+        dependencies.add("servlet-api-.*\\.jar");
+        dependencies.add("jetty-server-.*\\.jar");
+        dependencies.add("jetty-continuation-.*\\.jar");
+        dependencies.add("jetty-http-.*\\.jar");
+        dependencies.add("jetty-io-.*\\.jar");
+        dependencies.add("jetty-util-.*\\.jar");
+        dependencies.add("jetty-security-.*\\.jar");
+        dependencies.add("jetty-servlet-.*\\.jar");
+        dependencies.add("jetty-webapp-.*\\.jar");
+        dependencies.add("jetty-xml-.*\\.jar");
+        dependencies.add("jetty-util-.*\\.jar");
+    }
 
-        if (!jettyLibJSPDir.exists() || !jettyLibJSPDir.isDirectory())
-        {
-            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty JSP libs"));
-        }
-
-        jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(named(".*\\.jar"))));
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJSPDependencies(java.util.Collection)
+     */
+    @Override
+    protected void addJSPDependencies(Collection<String> dependencies)
+    {
+        dependencies.add("com.sun.el-.*\\.jar");
+        dependencies.add("javax.el-.*\\.jar");
+        dependencies.add("javax.servlet.jsp.jstl-.*\\.jar");
+        dependencies.add("javax.servlet.jsp-.*\\.jar");
+        dependencies.add("org.apache.jasper.glassfish-.*\\.jar");
+        dependencies.add("org.apache.taglibs.standard.glassfish-.*\\.jar");
+        dependencies.add("org.eclipse.jdt.core-.*\\.jar");
     }
 
 }

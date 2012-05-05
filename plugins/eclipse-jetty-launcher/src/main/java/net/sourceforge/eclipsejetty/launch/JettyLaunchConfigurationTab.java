@@ -13,12 +13,10 @@ package net.sourceforge.eclipsejetty.launch;
 
 import static org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants.*;
 
-import java.io.File;
 import java.text.MessageFormat;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
-import net.sourceforge.eclipsejetty.JettyPluginUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -31,10 +29,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.ui.StringVariableSelectionDialog;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -54,7 +50,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
@@ -74,7 +69,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     private Text webAppText;
     private Button webAppButton;
     private Text contextText;
-    private Text pathText;
     private Text portText;
 
     public JettyLaunchConfigurationTab()
@@ -96,7 +90,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         projectGroup.setText("Project:");
 
         projectText = createText(projectGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
-        createButton(projectGroup, SWT.NONE, "Browse...", 96, 1, new SelectionAdapter()
+        createButton(projectGroup, SWT.NONE, "Browse...", 96, 1, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(final SelectionEvent e)
@@ -112,7 +106,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         createLabel(applicationGroup, "WebApp Directory:", 128, 1, 1);
         webAppText = createText(applicationGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
-        webAppButton = createButton(applicationGroup, SWT.NONE, "Browse...", 96, 1, new SelectionAdapter()
+        webAppButton = createButton(applicationGroup, SWT.NONE, "Browse...", 96, 1, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(final SelectionEvent e)
@@ -125,35 +119,10 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         contextText = createText(applicationGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
         createLabel(applicationGroup, "", 0, 1, 1);
 
-        final Group jettyGroup = new Group(tabComposite, SWT.NONE);
-        jettyGroup.setLayout(new GridLayout(4, false));
-        jettyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        jettyGroup.setText("Jetty:");
-
-        createLabel(jettyGroup, "Jetty Home:", 128, 1, 1);
-        pathText = createText(jettyGroup, SWT.BORDER, -1, -1, 3, 1, modifyDialogListener);
-
-        createLabel(jettyGroup, "", -1, 2, 1);
-        createButton(jettyGroup, SWT.NONE, "Variables...", 96, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                chooseJettyPathVariable();
-            }
-        });
-        createButton(jettyGroup, SWT.NONE, "Browse...", 96, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(final SelectionEvent e)
-            {
-                chooseJettyPath();
-            }
-        });
-
-        createLabel(jettyGroup, "HTTP Port:", 128, 1, 1);
-        portText = createText(jettyGroup, SWT.BORDER, 64, -1, 3, 1, modifyDialogListener);
-
+        createLabel(applicationGroup, "HTTP Port:", 128, 1, 1);
+        portText = createText(applicationGroup, SWT.BORDER, 64, -1, 1, 1, modifyDialogListener);
+        createLabel(applicationGroup, "", 0, 1, 1);
+        
         setControl(tabComposite);
     }
 
@@ -183,7 +152,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             webAppText.setText(JettyPluginConstants.getWebAppDir(configuration));
             contextText.setText(JettyPluginConstants.getContext(configuration));
             portText.setText(JettyPluginConstants.getPort(configuration));
-            pathText.setText(JettyPluginConstants.getPath(configuration));
         }
         catch (final CoreException e)
         {
@@ -230,7 +198,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         {
             JettyPluginConstants.setWebAppDir(configuration, JettyPluginConstants.getWebAppDir(configuration));
             JettyPluginConstants.setContext(configuration, JettyPluginConstants.getContext(configuration));
-            JettyPluginConstants.setPath(configuration, JettyPluginConstants.getPath(configuration));
             JettyPluginConstants.setPort(configuration, JettyPluginConstants.getPort(configuration));
         }
         catch (CoreException e)
@@ -246,9 +213,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         JettyPluginConstants.setWebAppDir(configuration, webAppText.getText().trim());
         JettyPluginConstants.setPort(configuration, portText.getText().trim());
 
-        String jettyPath = pathText.getText().trim();
-
-        JettyPluginConstants.setPath(configuration, jettyPath);
         JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
     }
 
@@ -316,22 +280,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         else
         {
             setErrorMessage("Web application directory is not set");
-            return false;
-        }
-
-        String jettyPath = JettyPluginUtils.resolveVariables(pathText.getText()).trim();
-        if (jettyPath.length() > 0)
-        {
-            File f = new File(jettyPath);
-            if (!f.exists() || !f.isDirectory())
-            {
-                setErrorMessage(MessageFormat.format("The path {0} is not a valid directory.", jettyPath));
-                return false;
-            }
-        }
-        else
-        {
-            setErrorMessage("Jetty path is not set");
             return false;
         }
 
@@ -432,56 +380,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
             String containerName = path.makeRelative().toString();
             webAppText.setText(containerName);
-        }
-    }
-
-    protected void chooseJettyPathVariable()
-    {
-        StringVariableSelectionDialog dialog = new StringVariableSelectionDialog(getShell());
-
-        if (Window.OK == dialog.open())
-        {
-            Object[] results = dialog.getResult();
-
-            for (int i = results.length - 1; i >= 0; i -= 1)
-            {
-                String placeholder = "${" + ((IStringVariable) results[i]).getName() + "}";
-                int position = pathText.getCaretPosition();
-                String text = pathText.getText();
-
-                if (position <= 0)
-                {
-                    text = placeholder + text;
-                }
-                else if (position >= text.length())
-                {
-                    text = text + placeholder;
-                }
-                else
-                {
-                    text = text.substring(0, position) + placeholder + text.substring(position);
-                }
-
-                pathText.setText(text);
-            }
-        }
-    }
-
-    protected void chooseJettyPath()
-    {
-        String jettyPath = JettyPluginUtils.resolveVariables(pathText.getText());
-        DirectoryDialog dialog = new DirectoryDialog(getShell(), SWT.OPEN);
-
-        dialog.setText("Select Jetty Home Directory");
-        dialog
-            .setMessage("Choose the installation directory of your Jetty. Currenty, the versions 5 to 8 are supported.");
-        dialog.setFilterPath(jettyPath);
-
-        jettyPath = dialog.open();
-
-        if (jettyPath != null)
-        {
-            pathText.setText(jettyPath);
         }
     }
 

@@ -11,12 +11,14 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty;
 
-import net.sourceforge.eclipsejetty.jetty6.Jetty6LauncherMain;
+import net.sourceforge.eclipsejetty.jetty.embedded.JettyEmbeddedLibStrategy;
+import net.sourceforge.eclipsejetty.jetty.embedded.JettyEmbeddedServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty6.Jetty6LibStrategy;
-import net.sourceforge.eclipsejetty.jetty7.Jetty7LauncherMain;
+import net.sourceforge.eclipsejetty.jetty6.Jetty6ServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy;
-import net.sourceforge.eclipsejetty.jetty8.Jetty8LauncherMain;
+import net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
+import net.sourceforge.eclipsejetty.jetty8.Jetty8ServerConfiguration;
 
 /**
  * Describes the version of the Jetty
@@ -26,77 +28,62 @@ import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
 public enum JettyVersion
 {
 
-    JETTY_AUTO_DETECT("auto", null, null),
+    JETTY_EMBEDDED("net.sourceforge.eclipsejetty.starter.embedded.JettyEmbeddedLauncherMain",
+        "lib/eclipse-jetty-starters-embedded.jar", JettyEmbeddedServerConfiguration.class,
+        new JettyEmbeddedLibStrategy()),
 
-    JETTY_6("6", Jetty6LauncherMain.class, new Jetty6LibStrategy(), JspSupport.JSP_2_1, JspSupport.JSP_2_0),
+    JETTY_6("net.sourceforge.eclipsejetty.starter.jetty6.Jetty6LauncherMain", "lib/eclipse-jetty-starters-jetty6.jar",
+        Jetty6ServerConfiguration.class, new Jetty6LibStrategy()),
 
-    JETTY_7("7", Jetty7LauncherMain.class, new Jetty7LibStrategy(), JspSupport.JSP_2_1),
+    JETTY_7("net.sourceforge.eclipsejetty.starter.jetty7.Jetty7LauncherMain", "lib/eclipse-jetty-starters-jetty7.jar",
+        Jetty7ServerConfiguration.class, new Jetty7LibStrategy()),
 
-    JETTY_8("8", Jetty8LauncherMain.class, new Jetty8LibStrategy(), JspSupport.JSP_2_2);
+    JETTY_8("net.sourceforge.eclipsejetty.starter.jetty8.Jetty8LauncherMain", "lib/eclipse-jetty-starters-jetty8.jar",
+        Jetty8ServerConfiguration.class, new Jetty8LibStrategy());
 
-    private final String value;
-    private final Class<?> mainClass;
+    private final String mainClass;
+    private final String jar;
+    private final Class<? extends AbstractServerConfiguration> serverConfigurationClass;
     private final IJettyLibStrategy libStrategy;
-    private final JspSupport[] jspSupports;
 
-    private JettyVersion(String value, Class<?> mainClass, IJettyLibStrategy libStrategy, JspSupport... jspSupports)
+    private JettyVersion(String mainClass, String jar,
+        Class<? extends AbstractServerConfiguration> serverConfigurationClass, IJettyLibStrategy libStrategy)
     {
-        this.value = value;
         this.mainClass = mainClass;
+        this.jar = jar;
+        this.serverConfigurationClass = serverConfigurationClass;
         this.libStrategy = libStrategy;
-        this.jspSupports = jspSupports;
     }
 
-    public String getValue()
-    {
-        return value;
-    }
-
-    public Class<?> getMainClass()
+    public String getMainClass()
     {
         return mainClass;
     }
 
-    public String getMainClassName()
+    public String getJar()
     {
-        return (mainClass != null) ? mainClass.getName() : null;
+        return jar;
+    }
+
+    public AbstractServerConfiguration createServerConfiguration()
+    {
+        try
+        {
+            return serverConfigurationClass.newInstance();
+        }
+        catch (InstantiationException e)
+        {
+            throw new RuntimeException("Failed to instantiate server configration: " + serverConfigurationClass, e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException("Failed to access server configration: " + serverConfigurationClass, e);
+        }
     }
 
     public IJettyLibStrategy getLibStrategy()
     {
         return libStrategy;
-    }
-
-    public boolean isJspSupported()
-    {
-        return jspSupports.length > 0;
-    }
-
-    public boolean containsJspSupport(JspSupport jspSupport)
-    {
-        for (JspSupport current : jspSupports)
-        {
-            if (current == jspSupport)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static JettyVersion toJettyVersion(String value)
-    {
-        for (JettyVersion jettyVersion : values())
-        {
-            if (jettyVersion.value.equals(value))
-            {
-                return jettyVersion;
-            }
-        }
-
-        // return default value
-        return JETTY_AUTO_DETECT;
     }
 
 }

@@ -79,7 +79,7 @@ public class JettyPlugin extends AbstractUIPlugin
     protected void initializeImageRegistry(final ImageRegistry reg)
     {
         final URL imageURL = getBundle().getEntry("/icons/jetty.png");
-        
+
         if (imageURL != null)
         {
             reg.put(JETTY_ICON, ImageDescriptor.createFromURL(imageURL));
@@ -90,7 +90,7 @@ public class JettyPlugin extends AbstractUIPlugin
         }
 
         final URL imageAdvancedURL = getBundle().getEntry("/icons/jetty-advanced.png");
-        
+
         if (imageAdvancedURL != null)
         {
             reg.put(JETTY_ADVANCED_ICON, ImageDescriptor.createFromURL(imageAdvancedURL));

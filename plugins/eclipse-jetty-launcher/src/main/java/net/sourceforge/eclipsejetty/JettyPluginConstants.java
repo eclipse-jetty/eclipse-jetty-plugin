@@ -12,7 +12,6 @@
 package net.sourceforge.eclipsejetty;
 
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
-import net.sourceforge.eclipsejetty.jetty.JspSupport;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.preferences.DefaultScope;
@@ -37,6 +36,7 @@ public class JettyPluginConstants
     private static final String ATTR_WEBAPPDIR = JettyPlugin.PLUGIN_ID + ".webappdir";
     private static final String ATTR_PORT = JettyPlugin.PLUGIN_ID + ".port";
     private static final String ATTR_JETTY_PATH = JettyPlugin.PLUGIN_ID + ".jetty.path";
+    private static final String ATTR_JETTY_EMBEDDED = JettyPlugin.PLUGIN_ID + ".jetty.embedded";
     private static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version";
     private static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled";
     private static final String ATTR_EXCLUDE_SCOPE_COMPILE = JettyPlugin.PLUGIN_ID + ".scope.compile.exclude";
@@ -109,24 +109,46 @@ public class JettyPluginConstants
         }
     }
 
+    public static boolean isEmbedded(ILaunchConfiguration configuration) throws CoreException
+    {
+        return configuration.getAttribute(ATTR_JETTY_EMBEDDED, DefaultScope.INSTANCE.getNode(JettyPlugin.PLUGIN_ID)
+            .getBoolean(ATTR_JETTY_EMBEDDED, true));
+    }
+
+    public static void setEmbedded(ILaunchConfigurationWorkingCopy configuration, boolean extern)
+    {
+        configuration.setAttribute(ATTR_JETTY_EMBEDDED, extern);
+
+        DefaultScope.INSTANCE.getNode(JettyPlugin.PLUGIN_ID).putBoolean(ATTR_JETTY_EMBEDDED, extern);
+
+        try
+        {
+            DefaultScope.INSTANCE.getNode(JettyPlugin.PLUGIN_ID).flush();
+        }
+        catch (BackingStoreException e)
+        {
+            // ignore
+        }
+    }
+
     public static JettyVersion getVersion(ILaunchConfiguration configuration) throws CoreException
     {
-        return JettyVersion.toJettyVersion(configuration.getAttribute(ATTR_JETTY_VERSION, (String) null));
+        return JettyVersion.valueOf(configuration.getAttribute(ATTR_JETTY_VERSION, JettyVersion.JETTY_EMBEDDED.name()));
     }
 
     public static void setVersion(ILaunchConfigurationWorkingCopy configuration, JettyVersion jettyVersion)
     {
-        configuration.setAttribute(ATTR_JETTY_VERSION, jettyVersion.getValue());
+        configuration.setAttribute(ATTR_JETTY_VERSION, jettyVersion.name());
     }
 
-    public static JspSupport getJspSupport(ILaunchConfiguration configuration) throws CoreException
+    public static boolean isJspSupport(ILaunchConfiguration configuration) throws CoreException
     {
-        return JspSupport.toJspSupport(configuration.getAttribute(ATTR_JSP_ENABLED, (String) null));
+        return !"false".equals(configuration.getAttribute(ATTR_JSP_ENABLED, "true")); // string for backward compatibility
     }
 
-    public static void setJspSupport(ILaunchConfigurationWorkingCopy configuration, JspSupport jspSupport)
+    public static void setJspSupport(ILaunchConfigurationWorkingCopy configuration, boolean jspSupport)
     {
-        configuration.setAttribute(ATTR_JSP_ENABLED, jspSupport.getValue());
+        configuration.setAttribute(ATTR_JSP_ENABLED, String.valueOf(jspSupport)); // string for backward compatibility
     }
 
     public static boolean isScopeCompileExcluded(ILaunchConfiguration configuration) throws CoreException
@@ -211,8 +233,7 @@ public class JettyPluginConstants
 
     public static void setMainTypeName(ILaunchConfigurationWorkingCopy configuration, JettyVersion jettyVersion)
     {
-        configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
-            jettyVersion.getMainClassName());
+        configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, jettyVersion.getMainClass());
     }
 
 }

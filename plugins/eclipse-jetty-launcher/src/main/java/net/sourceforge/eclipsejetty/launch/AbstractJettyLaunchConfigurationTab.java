@@ -51,13 +51,13 @@ public abstract class AbstractJettyLaunchConfigurationTab extends JavaLaunchTab
     }
 
     protected Button createButton(final Composite composite, int style, final String text, final int widthHint,
-        int verticalSpan, SelectionListener... selectionListeners)
+        int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
         Button button = new Button(composite, style);
 
         GridData gridData =
             new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
-                widthHint < 0, false, 1, verticalSpan);
+                widthHint < 0, false, horizontalSpan, verticalSpan);
 
         if (widthHint >= 0)
         {

@@ -22,6 +22,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.VariablesPlugin;
 
 /**
+ * Some utilities
+ * 
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
@@ -29,19 +31,19 @@ public class JettyPluginUtils
 {
 
     /**
-     * Returns the Jetty version. Tries to detect it, if it is set to AUTO.
+     * Returns the Jetty version.
      * 
+     * @param embedded true if embedded
      * @param jettyPath the path of the Jetty installation
-     * @param jettyVersion the version, may be AUTO
      * @return the version, not AUTO
      * @throws IllegalArgumentException if the detection fails
      */
-    public static JettyVersion detectJettyVersion(final String jettyPath, final JettyVersion jettyVersion)
+    public static JettyVersion detectJettyVersion(boolean embedded, final String jettyPath)
         throws IllegalArgumentException
     {
-        if (JettyVersion.JETTY_AUTO_DETECT != jettyVersion)
+        if (embedded)
         {
-            return jettyVersion;
+            return JettyVersion.JETTY_EMBEDDED;
         }
 
         final File jettyLibDir = new File(jettyPath, "lib");

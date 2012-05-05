@@ -25,22 +25,17 @@ import java.util.Set;
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
-import net.sourceforge.eclipsejetty.jetty.AbstractJettyLauncherMain;
-import net.sourceforge.eclipsejetty.jetty.JettyConfiguration;
+import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
-import net.sourceforge.eclipsejetty.jetty.JspSupport;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.jdt.core.IAccessRule;
-import org.eclipse.jdt.core.IClasspathAttribute;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.internal.launching.RuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -53,13 +48,27 @@ import org.eclipse.jdt.launching.JavaRuntime;
  */
 public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 {
-    public final static IClasspathAttribute[] JETTY_EXTRA_ATTRIBUTES = {new JettyClasspathAttribute()};
-
-    public final static IAccessRule[] NO_ACCESS_RULES = {};
+    public static final String CONFIGURATION_KEY = "jetty.launcher.configuration";
+    public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo";
 
     public JettyLaunchConfigurationDelegate()
     {
         super();
+    }
+
+    @Override
+    public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
+        throws CoreException
+    {
+//        boolean embedded = JettyPluginConstants.isExtern(configuration);
+//        String path = JettyPluginConstants.getPath(configuration);
+//        JettyVersion version =
+//            JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(path));
+//
+//        JettyPluginConstants.setMainTypeName(configuration, version);
+//        JettyPluginConstants.setVersion(configuration, version);
+
+        super.launch(configuration, mode, launch, monitor);
     }
 
     @Override
@@ -72,10 +81,10 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public String getVMArguments(ILaunchConfiguration configuration) throws CoreException
     {
         String[] webappClasspath = getWebappClasspath(configuration);
-        File file = createJettyConfigurationFile(configuration, webappClasspath);
+        final JettyVersion jettyVersion = JettyPluginConstants.getVersion(configuration);
+        File file = createJettyConfigurationFile(configuration, jettyVersion, webappClasspath);
 
-        return super.getVMArguments(configuration) + " -D" + AbstractJettyLauncherMain.CONFIGURATION_KEY + "="
-            + file.getAbsolutePath();
+        return super.getVMArguments(configuration) + " -D" + CONFIGURATION_KEY + "=" + file.getAbsolutePath();
     }
 
     @Override
@@ -106,34 +115,22 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         }
 
         final String jettyPath = JettyPluginUtils.resolveVariables(JettyPluginConstants.getPath(configuration));
-        final JettyVersion jettyVersion;
-
-        try
-        {
-            jettyVersion =
-                JettyPluginUtils.detectJettyVersion(jettyPath, JettyPluginConstants.getVersion(configuration));
-        }
-        catch (IllegalArgumentException e)
-        {
-            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, e.getMessage()));
-        }
-
-        final JspSupport jspSupport = JettyPluginConstants.getJspSupport(configuration);
+        final JettyVersion jettyVersion = JettyPluginConstants.getVersion(configuration);
+        boolean jspSupport = JettyPluginConstants.isJspSupport(configuration);
 
         try
         {
             entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
-                AbstractJettyLauncherMain.class.getResource("/")).getFile())));
+                FileLocator.find(JettyPlugin.getDefault().getBundle(),
+                    Path.fromOSString("lib/eclipse-jetty-starters-common.jar"), null)).getFile())));
+
+            entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
+                FileLocator.find(JettyPlugin.getDefault().getBundle(), Path.fromOSString(jettyVersion.getJar()), null))
+                .getFile())));
 
             for (final File jettyLib : jettyVersion.getLibStrategy().find(new File(jettyPath), jspSupport))
             {
-                Path path = new Path(jettyLib.getCanonicalPath());
-                IClasspathEntry entry =
-                    JavaCore.newLibraryEntry(path, null, null, NO_ACCESS_RULES, JETTY_EXTRA_ATTRIBUTES, false);
-
-                IRuntimeClasspathEntry runtimeEntry = new RuntimeClasspathEntry(entry);
-
-                entries.add(runtimeEntry);
+                entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(jettyLib.getCanonicalPath())));
             }
         }
         catch (final IOException e)
@@ -183,37 +180,31 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         return vmClasspathMatcher;
     }
 
-    private File createJettyConfigurationFile(final ILaunchConfiguration configuration, final String[] classpath)
-        throws CoreException
+    private File createJettyConfigurationFile(ILaunchConfiguration configuration, JettyVersion version,
+        String[] classpath) throws CoreException
     {
-        JettyConfiguration jettyConfiguration;
+        AbstractServerConfiguration serverConfiguration = version.createServerConfiguration();
+
+        serverConfiguration.setDefaultContextPath(JettyPluginConstants.getContext(configuration));
+        serverConfiguration.setDefaultWar(JettyPluginConstants.getWebAppDir(configuration));
+        serverConfiguration.setPort(Integer.valueOf(JettyPluginConstants.getPort(configuration)));
+        serverConfiguration.addDefaultClasspath(classpath);
+
+        File file;
 
         try
         {
-            jettyConfiguration = JettyConfiguration.create();
-        }
-        catch (IOException e)
-        {
-            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
-                "Failed to create tmp file for storing Jetty launch configuration"));
-        }
+            file = File.createTempFile("jettyLauncherConfiguration", ".xml");
 
-        jettyConfiguration.setContext(JettyPluginConstants.getContext(configuration));
-        jettyConfiguration.setWebAppDir(JettyPluginConstants.getWebAppDir(configuration));
-        jettyConfiguration.setPort(JettyPluginConstants.getPort(configuration));
-        jettyConfiguration.setClasspath(classpath);
-        jettyConfiguration.setHideLaunchInfo(!JettyPluginConstants.isShowLauncherInfo(configuration));
-
-        try
-        {
-            jettyConfiguration.store();
+            serverConfiguration.write(file);
         }
         catch (IOException e)
         {
             throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
                 "Failed to store tmp file with Jetty launch configuration"));
         }
-        return jettyConfiguration.getFile();
+
+        return file;
     }
 
     public static String[] toLocationArray(Collection<IRuntimeClasspathEntry> classpathEntries)

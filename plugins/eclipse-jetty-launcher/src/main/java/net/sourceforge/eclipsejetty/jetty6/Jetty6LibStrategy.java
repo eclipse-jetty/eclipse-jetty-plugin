@@ -11,21 +11,10 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty6;
 
-import static net.sourceforge.eclipsejetty.util.FilenameMatcher.*;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-import net.sourceforge.eclipsejetty.JettyPlugin;
-import net.sourceforge.eclipsejetty.jetty.IJettyLibStrategy;
-import net.sourceforge.eclipsejetty.jetty.JspSupport;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import net.sourceforge.eclipsejetty.jetty.FileBasedJettyLibStrategy;
 
 /**
  * Resolve libs for Jetty 6
@@ -33,84 +22,39 @@ import org.eclipse.core.runtime.Status;
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
-public class Jetty6LibStrategy implements IJettyLibStrategy
+public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
 {
 
     /* (non-Javadoc)
-     * @see net.sourceforge.eclipsejetty.IJettyLibStrategy#find(java.io.File)
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addServerDependencies(java.util.Collection)
      */
-    public Collection<File> find(File jettyPath, JspSupport jspSupport) throws CoreException
+    @Override
+    protected void addServerDependencies(Collection<String> dependencies)
     {
-        List<File> jettyLibs = addCoreLibs(jettyPath);
-
-        addJSPLibs(jettyLibs, jettyPath, jspSupport);
-
-        return jettyLibs;
+        dependencies.add("jetty-[\\d\\.]*jar");
+        dependencies.add("jetty-util-.*\\.jar");
+        dependencies.add("servlet-api-.*\\.jar");
     }
 
-    protected List<File> addCoreLibs(File jettyPath) throws CoreException
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJSPDependencies(java.util.Collection)
+     */
+    @Override
+    protected void addJSPDependencies(Collection<String> dependencies)
     {
-        final File jettyLibDir = new File(jettyPath, "lib");
-
-        if (!jettyLibDir.exists() || !jettyLibDir.isDirectory())
-        {
-            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty libs"));
-        }
-
-        final List<File> jettyLibs = new ArrayList<File>();
-
-        jettyLibs
-            .addAll(Arrays.asList(jettyLibDir.listFiles(or(named("jetty-.*\\.jar"), named("servlet-api.*\\.jar")))));
-        return jettyLibs;
+        dependencies.add("ant-.*\\.jar");
+        dependencies.add("core-.*\\.jar");
+        dependencies.add("jsp-2.1-.*\\.jar");
+        dependencies.add("jsp-api-.*\\.jar");
     }
 
-    protected void addJSPLibs(final List<File> jettyLibs, final File jettyPath, JspSupport jspSupport)
-        throws CoreException
+    /* (non-Javadoc)
+     * @see net.sourceforge.eclipsejetty.jetty.FileBasedJettyLibStrategy#isPathIncluded(java.io.File, java.util.Collection)
+     */
+    @Override
+    protected boolean isPathIncluded(File path, Collection<String> dependencies)
     {
-        final File jettyLibDir = new File(jettyPath, "lib");
-
-        if (!jettyLibDir.exists() || !jettyLibDir.isDirectory())
-        {
-            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty libs"));
-        }
-
-        File jettyLibJSPDir;
-
-        switch (jspSupport)
-        {
-            case JSP_2_0:
-                jettyLibJSPDir = new File(jettyLibDir, "jsp-2.0");
-
-                if ((jettyLibJSPDir.exists()) && (jettyLibJSPDir.isDirectory()))
-                {
-                    jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(named(".*\\.jar"))));
-                }
-                else
-                {
-                    throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
-                        "Could not find JSP 2.0 libs"));
-                }
-                break;
-
-            case JSP_2_1:
-                jettyLibJSPDir = new File(jettyLibDir, "jsp-2.1");
-
-                if (!jettyLibJSPDir.exists())
-                {
-                    jettyLibJSPDir = new File(jettyLibDir, "jsp");
-                }
-
-                if ((jettyLibJSPDir.exists()) && (jettyLibJSPDir.isDirectory()))
-                {
-                    jettyLibs.addAll(Arrays.asList(jettyLibJSPDir.listFiles(named(".*\\.jar"))));
-                }
-                else
-                {
-                    throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
-                        "Could not find JSP 2.1 libs"));
-                }
-                break;
-        }
+        return !"jsp-2.0".equals(path.getName());
     }
 
 }

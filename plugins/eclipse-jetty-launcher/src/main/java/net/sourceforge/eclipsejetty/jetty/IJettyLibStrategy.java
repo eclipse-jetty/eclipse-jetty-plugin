@@ -24,6 +24,6 @@ import org.eclipse.core.runtime.CoreException;
 public interface IJettyLibStrategy
 {
 
-    Collection<File> find(File jettyPath, JspSupport jspSupport) throws CoreException;
+    Collection<File> find(File jettyPath, boolean jspSupport) throws CoreException;
     
 }

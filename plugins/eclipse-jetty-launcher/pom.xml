@@ -9,26 +9,79 @@
 		<version>3.4.0.beta-3</version>
 		<relativePath>../..</relativePath>
 	</parent>
-	<artifactId>net.sourceforge.eclipsejetty.launcher</artifactId>
 
-	<name>Eclipse Jetty Launcher</name>
+	<artifactId>eclipse-jetty-plugin</artifactId>
+
+	<name>Eclipse Jetty Launcher Plugin</name>
 	<description>Eclipse launch configuration for Jetty</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
-			<version>6.1.14</version>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-embedded</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>7.6.3.v20120416</version>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-jetty6</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>7.6.3.v20120416</version>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-jetty7</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-jetty8</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies-starters</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeArtifactIds>eclipse-jetty-starters-common,
+								eclipse-jetty-starters-embedded,
+								eclipse-jetty-starters-jetty6,
+								eclipse-jetty-starters-jetty7,
+								eclipse-jetty-starters-jetty8</includeArtifactIds>
+							<outputDirectory>${project.build.directory}/../lib</outputDirectory>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy-dependencies-jetty</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeGroupIds>org.eclipse.jetty, org.eclipse.jetty.orbit</includeGroupIds>
+							<outputDirectory>${project.build.directory}/../lib/jetty</outputDirectory>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
