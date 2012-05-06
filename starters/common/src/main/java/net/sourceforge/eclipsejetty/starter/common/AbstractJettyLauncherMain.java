@@ -17,13 +17,12 @@ public abstract class AbstractJettyLauncherMain
 
     protected void launch(String[] args) throws Exception
     {
-        if (System.getProperty(HIDE_LAUNCH_INFO_KEY) == null)
+        boolean showInfo = System.getProperty(HIDE_LAUNCH_INFO_KEY) == null;
+        
+        if (showInfo)
         {
             printLogo();
             System.out.println();
-            //
-            //            printConfiguration(configuration);
-            //            System.out.println();
         }
 
         File configurationFile = new File(System.getProperty(CONFIGURATION_KEY));
@@ -33,54 +32,13 @@ public abstract class AbstractJettyLauncherMain
             throw new IOException("Configuration file is missing: " + configurationFile);
         }
 
-        start(configurationFile);
+        start(configurationFile, showInfo);
 
         configurationFile.delete();
     }
 
-    protected abstract void start(File configurationFile) throws Exception;
+    protected abstract void start(File configurationFile, boolean showInfo) throws Exception;
 
     protected abstract void printLogo();
-
-    //    protected void printConfiguration(JettyConfiguration configuration)
-    //    {
-    //        System.out.println("Context          = " + configuration.getContext());
-    //        System.out.println("WebApp Directory = " + configuration.getWebAppDir());
-    //        System.out.println("Port             = " + configuration.getPort());
-    //
-    //        String[] classpath = configuration.getClasspath();
-    //
-    //        for (int i = 0; i < classpath.length; i += 1)
-    //        {
-    //            if (i == 0)
-    //            {
-    //                System.out.println("Classpath        = " + classpath[i]);
-    //            }
-    //            else
-    //            {
-    //                System.out.println("                   " + classpath[i]);
-    //            }
-    //        }
-    //    }
-
-    //    protected String link(String[] values)
-    //    {
-    //        StringBuilder result = new StringBuilder();
-    //
-    //        if (values != null)
-    //        {
-    //            for (int i = 0; i < values.length; i += 1)
-    //            {
-    //                if (i > 0)
-    //                {
-    //                    result.append(File.pathSeparator);
-    //                }
-    //
-    //                result.append(values[i]);
-    //            }
-    //        }
-    //
-    //        return result.toString();
-    //    }
 
 }

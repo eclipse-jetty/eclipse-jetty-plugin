@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -60,13 +61,13 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
         throws CoreException
     {
-//        boolean embedded = JettyPluginConstants.isExtern(configuration);
-//        String path = JettyPluginConstants.getPath(configuration);
-//        JettyVersion version =
-//            JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(path));
-//
-//        JettyPluginConstants.setMainTypeName(configuration, version);
-//        JettyPluginConstants.setVersion(configuration, version);
+        //        boolean embedded = JettyPluginConstants.isExtern(configuration);
+        //        String path = JettyPluginConstants.getPath(configuration);
+        //        JettyVersion version =
+        //            JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(path));
+        //
+        //        JettyPluginConstants.setMainTypeName(configuration, version);
+        //        JettyPluginConstants.setVersion(configuration, version);
 
         super.launch(configuration, mode, launch, monitor);
     }
@@ -83,8 +84,16 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         String[] webappClasspath = getWebappClasspath(configuration);
         final JettyVersion jettyVersion = JettyPluginConstants.getVersion(configuration);
         File file = createJettyConfigurationFile(configuration, jettyVersion, webappClasspath);
+        String vmArguments = super.getVMArguments(configuration);
 
-        return super.getVMArguments(configuration) + " -D" + CONFIGURATION_KEY + "=" + file.getAbsolutePath();
+        vmArguments += " -D" + CONFIGURATION_KEY + "=" + file.getAbsolutePath();
+
+        if (!JettyPluginConstants.isShowLauncherInfo(configuration))
+        {
+            vmArguments += " -D" + HIDE_LAUNCH_INFO_KEY;
+        }
+
+        return vmArguments;
     }
 
     @Override
@@ -99,7 +108,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         entries = JavaRuntime.resolveRuntimeClasspath(entries, configuration);
 
-        HashSet<IRuntimeClasspathEntry> results = new HashSet<IRuntimeClasspathEntry>(Arrays.asList(entries));
+        HashSet<IRuntimeClasspathEntry> results = new LinkedHashSet<IRuntimeClasspathEntry>(Arrays.asList(entries));
 
         return toLocationArray(and(createWebappClasspathMatcher(configuration)).match(results));
     }
@@ -214,7 +223,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
     public static String[] toLocationArray(IRuntimeClasspathEntry... classpathEntries)
     {
-        Set<String> results = new HashSet<String>();
+        Set<String> results = new LinkedHashSet<String>();
 
         for (IRuntimeClasspathEntry entry : classpathEntries)
         {

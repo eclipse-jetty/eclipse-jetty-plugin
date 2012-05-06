@@ -14,7 +14,6 @@ package net.sourceforge.eclipsejetty.launch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -395,7 +394,7 @@ public abstract class JettyLaunchClasspathMatcher
     public static JettyLaunchClasspathMatcher notIn(Collection<IRuntimeClasspathEntry> excludedEntries)
         throws CoreException
     {
-        final Set<IRuntimeClasspathEntry> excludedEntriesSet = new HashSet<IRuntimeClasspathEntry>(excludedEntries);
+        final Set<IRuntimeClasspathEntry> excludedEntriesSet = new LinkedHashSet<IRuntimeClasspathEntry>(excludedEntries);
 
         return new JettyLaunchClasspathMatcher()
         {

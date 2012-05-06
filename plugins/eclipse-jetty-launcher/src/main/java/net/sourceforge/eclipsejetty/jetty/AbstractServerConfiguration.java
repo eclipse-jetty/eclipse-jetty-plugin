@@ -12,7 +12,7 @@
 package net.sourceforge.eclipsejetty.jetty;
 
 import java.util.Collection;
-import java.util.TreeSet;
+import java.util.LinkedHashSet;
 
 import net.sourceforge.eclipsejetty.util.DOMBuilder;
 
@@ -31,7 +31,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     {
         super();
 
-        defaultClasspath = new TreeSet<String>();
+        defaultClasspath = new LinkedHashSet<String>();
     }
 
     public Integer getPort()

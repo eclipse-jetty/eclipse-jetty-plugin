@@ -13,7 +13,7 @@ package net.sourceforge.eclipsejetty.jetty;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.TreeSet;
+import java.util.LinkedHashSet;
 
 import org.eclipse.core.runtime.CoreException;
 
@@ -31,7 +31,7 @@ public abstract class DependencyBasedJettyLibStrategy implements IJettyLibStrate
      */
     public Collection<File> find(File path, boolean jspSupport) throws CoreException
     {
-        Collection<String> dependencies = new TreeSet<String>();
+        Collection<String> dependencies = new LinkedHashSet<String>();
 
         addServerDependencies(dependencies);
 
@@ -40,7 +40,7 @@ public abstract class DependencyBasedJettyLibStrategy implements IJettyLibStrate
             addJSPDependencies(dependencies);
         }
 
-        Collection<File> results = new TreeSet<File>();
+        Collection<File> results = new LinkedHashSet<File>();
 
         resolveDependencies(results, path, dependencies);
 
