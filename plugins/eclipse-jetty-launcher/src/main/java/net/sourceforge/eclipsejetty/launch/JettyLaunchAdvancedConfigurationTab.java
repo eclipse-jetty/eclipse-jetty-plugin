@@ -138,7 +138,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         mavenIncludeTest = createButton(dependencyGroup, SWT.CHECK, "Test Scope", -1, 1, 1, modifyDialogListener);
 
         dependencyTable =
-            createTable(dependencyGroup, SWT.BORDER | SWT.HIDE_SELECTION, -1, -1, 3, 1, "", "Name", "Scope", "Path");
+            createTable(dependencyGroup, SWT.BORDER | SWT.HIDE_SELECTION, -1, 200, 3, 1, "", "Name", "Scope", "Path");
 
         setControl(tabComposite);
     }

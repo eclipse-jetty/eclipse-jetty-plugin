@@ -126,7 +126,7 @@ public abstract class AbstractJettyLaunchConfigurationTab extends JavaLaunchTab
 
         if (heightHint >= 0)
         {
-            gridData.heightHint = heightHint;
+            gridData.minimumHeight = heightHint;
         }
 
         table.setLayoutData(gridData);
