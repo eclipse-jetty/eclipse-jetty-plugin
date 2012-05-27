@@ -18,10 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
@@ -61,14 +59,6 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
         throws CoreException
     {
-        //        boolean embedded = JettyPluginConstants.isExtern(configuration);
-        //        String path = JettyPluginConstants.getPath(configuration);
-        //        JettyVersion version =
-        //            JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(path));
-        //
-        //        JettyPluginConstants.setMainTypeName(configuration, version);
-        //        JettyPluginConstants.setVersion(configuration, version);
-
         super.launch(configuration, mode, launch, monitor);
     }
 
@@ -99,18 +89,33 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     @Override
     public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException
     {
-        return toLocationArray(getJettyClasspath(configuration, null));
+        return JettyPluginUtils.toLocationArray(getJettyClasspath(configuration, null));
     }
 
-    public String[] getWebappClasspath(ILaunchConfiguration configuration) throws CoreException
+    public Collection<IRuntimeClasspathEntry> getCompleteWebappClasspathEntries(ILaunchConfiguration configuration)
+        throws CoreException
     {
         IRuntimeClasspathEntry[] entries = JavaRuntime.computeUnresolvedRuntimeClasspath(configuration);
 
         entries = JavaRuntime.resolveRuntimeClasspath(entries, configuration);
 
-        HashSet<IRuntimeClasspathEntry> results = new LinkedHashSet<IRuntimeClasspathEntry>(Arrays.asList(entries));
+        return userClasses().match(new LinkedHashSet<IRuntimeClasspathEntry>(Arrays.asList(entries)));
+    }
 
-        return toLocationArray(and(createWebappClasspathMatcher(configuration)).match(results));
+    public String[] getCompleteWebappClasspath(ILaunchConfiguration configuration) throws CoreException
+    {
+        return JettyPluginUtils.toLocationArray(getCompleteWebappClasspathEntries(configuration));
+    }
+
+    public Collection<IRuntimeClasspathEntry> getWebappClasspathEntries(ILaunchConfiguration configuration)
+        throws CoreException
+    {
+        return and(createWebappClasspathMatcher(configuration)).match(getCompleteWebappClasspathEntries(configuration));
+    }
+
+    public String[] getWebappClasspath(ILaunchConfiguration configuration) throws CoreException
+    {
+        return JettyPluginUtils.toLocationArray(getWebappClasspathEntries(configuration));
     }
 
     private static IRuntimeClasspathEntry[] getJettyClasspath(final ILaunchConfiguration configuration,
@@ -183,7 +188,15 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         if (JettyPluginConstants.isScopeTestExcluded(configuration))
         {
-            vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "test")));
+            vmClasspathMatcher =
+                and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "test")), notExcluded(".*/test-classes"));
+        }
+        
+        String includedLibs = JettyPluginConstants.getIncludedLibs(configuration);
+        
+        if ((includedLibs != null) && (includedLibs.trim().length() > 0))
+        {
+            vmClasspathMatcher = or(isIncluded(includedLibs.split("[,\\n\\r]")), vmClasspathMatcher);
         }
 
         return vmClasspathMatcher;
@@ -214,28 +227,6 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         }
 
         return file;
-    }
-
-    public static String[] toLocationArray(Collection<IRuntimeClasspathEntry> classpathEntries)
-    {
-        return toLocationArray(classpathEntries.toArray(new IRuntimeClasspathEntry[classpathEntries.size()]));
-    }
-
-    public static String[] toLocationArray(IRuntimeClasspathEntry... classpathEntries)
-    {
-        Set<String> results = new LinkedHashSet<String>();
-
-        for (IRuntimeClasspathEntry entry : classpathEntries)
-        {
-            String location = entry.getLocation();
-
-            if (location != null)
-            {
-                results.add(location);
-            }
-        }
-
-        return results.toArray(new String[results.size()]);
     }
 
 }

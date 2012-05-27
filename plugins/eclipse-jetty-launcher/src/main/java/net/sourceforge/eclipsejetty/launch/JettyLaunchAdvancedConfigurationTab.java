@@ -13,18 +13,19 @@ package net.sourceforge.eclipsejetty.launch;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
-import net.sourceforge.eclipsejetty.util.RegularMatcher;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -40,6 +41,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -50,6 +52,10 @@ import org.eclipse.swt.widgets.Text;
  */
 public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConfigurationTab
 {
+    private final JettyLaunchDependencyEntryList dependencyEntryList;
+    private final ModifyDialogListener modifyDialogListener;
+
+    private Composite tabComposite;
     private Button embeddedButton;
     private Button externButton;
     private Text pathText;
@@ -64,13 +70,13 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button mavenIncludeRuntime;
     private Button mavenIncludeTest;
     private Button mavenIncludeSystem;
-    private Text excludedLibrariesText;
-
-    private final ModifyDialogListener modifyDialogListener;
+    private Table dependencyTable;
+    private boolean dependencyTableFormatted = false;
 
     public JettyLaunchAdvancedConfigurationTab()
     {
         modifyDialogListener = new ModifyDialogListener();
+        dependencyEntryList = new JettyLaunchDependencyEntryList(modifyDialogListener);
     }
 
     /**
@@ -78,8 +84,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
      */
     public void createControl(final Composite parent)
     {
-        final Composite tabComposite = new Composite(parent, SWT.NONE);
-
+        tabComposite = new Composite(parent, SWT.NONE);
         tabComposite.setLayout(new GridLayout(1, false));
 
         final Group jettyGroup = new Group(tabComposite, SWT.NONE);
@@ -120,7 +125,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         final Group dependencyGroup = new Group(tabComposite, SWT.NONE);
 
         dependencyGroup.setLayout(new GridLayout(3, false));
-        dependencyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        dependencyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
         dependencyGroup.setText("Libraries and Dependencies:");
 
         createLabel(dependencyGroup, "Included Maven Dependencies:", 224, 1, 3);
@@ -132,11 +137,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         createLabel(dependencyGroup, "", -1, 1, 1);
         mavenIncludeTest = createButton(dependencyGroup, SWT.CHECK, "Test Scope", -1, 1, 1, modifyDialogListener);
 
-        createLabel(dependencyGroup, "Excluded Libaries and Directories:", 224, 1, 2);
-        excludedLibrariesText =
-            createText(dependencyGroup, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL, -1, 50, 2, 2, modifyDialogListener);
-        excludedLibrariesText
-            .setToolTipText("Comma or line separated list of libraries and directories to exclude from the classpath. The entries are regular expressions.");
+        dependencyTable =
+            createTable(dependencyGroup, SWT.BORDER | SWT.HIDE_SELECTION, -1, -1, 3, 1, "", "Name", "Scope", "Path");
 
         setControl(tabComposite);
     }
@@ -163,8 +165,6 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     {
         try
         {
-            //JettyVersion version = JettyPluginConstants.getVersion(configuration);
-
             embeddedButton.setSelection(JettyPluginConstants.isEmbedded(configuration));
             externButton.setSelection(!JettyPluginConstants.isEmbedded(configuration));
             pathText.setText(JettyPluginConstants.getPath(configuration));
@@ -177,8 +177,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             mavenIncludeRuntime.setSelection(!JettyPluginConstants.isScopeRuntimeExcluded(configuration));
             mavenIncludeSystem.setSelection(!JettyPluginConstants.isScopeSystemExcluded(configuration));
             mavenIncludeTest.setSelection(!JettyPluginConstants.isScopeTestExcluded(configuration));
-            excludedLibrariesText.setText(JettyPluginConstants.getExcludedLibs(configuration));
 
+            updateTable(configuration, true);
         }
         catch (final CoreException e)
         {
@@ -206,6 +206,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 JettyPluginConstants.isScopeTestExcluded(configuration));
             JettyPluginConstants.setShowLauncherInfo(configuration,
                 JettyPluginConstants.isShowLauncherInfo(configuration));
+
+            JettyPluginConstants.setExcludedLibs(configuration, JettyPluginConstants.getExcludedLibs(configuration));
+            JettyPluginConstants.setIncludedLibs(configuration, JettyPluginConstants.getIncludedLibs(configuration));
         }
         catch (CoreException e)
         {
@@ -216,13 +219,13 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)
     {
         boolean embedded = embeddedButton.getSelection();
-        
+
         JettyPluginConstants.setEmbedded(configuration, embedded);
-        
+
         String jettyPath = pathText.getText().trim();
 
         JettyPluginConstants.setPath(configuration, jettyPath);
-        
+
         JettyVersion jettyVersion =
             JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(jettyPath));
 
@@ -237,7 +240,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setScopeSystemExcluded(configuration, !mavenIncludeSystem.getSelection());
         JettyPluginConstants.setScopeTestExcluded(configuration, !mavenIncludeTest.getSelection());
 
-        JettyPluginConstants.setExcludedLibs(configuration, excludedLibrariesText.getText());
+        JettyPluginConstants.setExcludedLibs(configuration, dependencyEntryList.createExcludedLibs());
+        String createIncludedLibs = dependencyEntryList.createIncludedLibs();
+        JettyPluginConstants.setIncludedLibs(configuration, createIncludedLibs);
     }
 
     @Override
@@ -282,19 +287,48 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             }
         }
 
-        try
-        {
-            JettyPluginUtils.extractPatterns(new ArrayList<RegularMatcher>(), excludedLibrariesText.getText());
-        }
-        catch (final IllegalArgumentException e)
-        {
-            setErrorMessage("Failed to parse Excluded Libraries. " + e.getMessage());
-            return false;
-        }
+        updateTable(configuration, false);
 
         setDirty(true);
 
         return true;
+    }
+
+    private void updateTable(final ILaunchConfiguration configuration, boolean updateType)
+    {
+        try
+        {
+            ILaunchDelegate[] delegates =
+                configuration.getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
+
+            if (delegates.length == 1)
+            {
+                JettyLaunchConfigurationDelegate delegate =
+                    (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
+
+                if (dependencyEntryList.update(configuration, dependencyTable,
+                    delegate.getCompleteWebappClasspathEntries(configuration),
+                    delegate.getWebappClasspathEntries(configuration), updateType))
+                {
+                    if (!dependencyTableFormatted)
+                    {
+                        for (int i = 0; i < dependencyTable.getColumnCount(); i += 1)
+                        {
+                            dependencyTable.getColumn(i).pack();
+                        }
+                    }
+
+                    if (dependencyTable.getItemCount() > 0)
+                    {
+                        dependencyTableFormatted = true;
+                    }
+                }
+            }
+        }
+        catch (CoreException e)
+        {
+            JettyPlugin.logError(e);
+        }
     }
 
     protected void chooseJettyPathVariable()

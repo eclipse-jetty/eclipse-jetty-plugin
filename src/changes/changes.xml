@@ -11,6 +11,9 @@
 	<body>
 		<release version="3.5.0" date="2012-05-XX">
 			<action dev="thred" type="add">
+				Added table for exlcludes/includes - no regex anymore  
+			</action>
+			<action dev="thred" type="add">
 				Added Jetty provided by plugin.
 			</action>
 			<action dev="thred" type="add">

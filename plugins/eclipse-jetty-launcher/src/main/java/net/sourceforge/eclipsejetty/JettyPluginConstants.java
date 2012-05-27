@@ -45,6 +45,7 @@ public class JettyPluginConstants
     private static final String ATTR_EXCLUDE_SCOPE_TEST = JettyPlugin.PLUGIN_ID + ".scope.test.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_SYSTEM = JettyPlugin.PLUGIN_ID + ".scope.system.exclude";
     private static final String ATTR_EXCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.excludeLibs";
+    private static final String ATTR_INCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.includeLibs";
     private static final String ATTR_SHOW_LAUNCHER_INFO = JettyPlugin.PLUGIN_ID + ".launcher.info";
 
     public static String getProject(ILaunchConfiguration configuration) throws CoreException
@@ -203,12 +204,22 @@ public class JettyPluginConstants
 
     public static String getExcludedLibs(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDED_LIBS, ".*servlet-api.*\n.*/test-classes");
+        return configuration.getAttribute(ATTR_EXCLUDED_LIBS, ".*servlet-api.*");
     }
 
     public static void setExcludedLibs(ILaunchConfigurationWorkingCopy configuration, String excludedLibs)
     {
         configuration.setAttribute(ATTR_EXCLUDED_LIBS, excludedLibs);
+    }
+
+    public static String getIncludedLibs(ILaunchConfiguration configuration) throws CoreException
+    {
+        return configuration.getAttribute(ATTR_INCLUDED_LIBS, "");
+    }
+
+    public static void setIncludedLibs(ILaunchConfigurationWorkingCopy configuration, String includedLibs)
+    {
+        configuration.setAttribute(ATTR_INCLUDED_LIBS, includedLibs);
     }
 
     public static boolean isShowLauncherInfo(ILaunchConfiguration configuration) throws CoreException

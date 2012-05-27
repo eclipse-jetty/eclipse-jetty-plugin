@@ -19,6 +19,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -108,5 +110,33 @@ public abstract class AbstractJettyLaunchConfigurationTab extends JavaLaunchTab
         }
 
         return text;
+    }
+    
+    protected Table createTable(Composite composite, int style, int widthHint, int heightHint, int horizontalSpan, int verticalSpan, String... titles) {
+        Table table = new Table(composite, SWT.BORDER | SWT.HIDE_SELECTION);
+        table.setLinesVisible(false);
+        table.setHeaderVisible(true);
+
+        GridData gridData = new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, SWT.TOP, widthHint < 0, true, horizontalSpan, verticalSpan);
+        
+        if (widthHint >= 0)
+        {
+            gridData.widthHint = widthHint;
+        }
+
+        if (heightHint >= 0)
+        {
+            gridData.heightHint = heightHint;
+        }
+
+        table.setLayoutData(gridData);
+
+        for (String title : titles)
+        {
+            TableColumn column = new TableColumn(table, SWT.NONE);
+            column.setText(title);
+        }
+        
+        return table;
     }
 }

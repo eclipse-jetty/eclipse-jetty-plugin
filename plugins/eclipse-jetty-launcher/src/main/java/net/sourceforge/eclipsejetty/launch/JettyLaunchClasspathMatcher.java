@@ -425,6 +425,64 @@ public abstract class JettyLaunchClasspathMatcher
     }
 
     /**
+     * Matches all entries, that are included
+     * 
+     * @param included a list of regular expression of file or path names
+     * @return all matching entries
+     * @throws CoreException if the included list cannot be parsed
+     */
+    public static JettyLaunchClasspathMatcher isIncluded(String... included) throws CoreException
+    {
+        final List<RegularMatcher> includedLibs = new ArrayList<RegularMatcher>();
+
+        try
+        {
+            JettyPluginUtils.extractPatterns(includedLibs, included);
+        }
+        catch (final IllegalArgumentException e)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, e.getMessage(), e));
+        }
+
+        return new JettyLaunchClasspathMatcher()
+        {
+
+            @Override
+            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            {
+                Iterator<IRuntimeClasspathEntry> iterator = entries.iterator();
+
+                entry: while (iterator.hasNext())
+                {
+                    IRuntimeClasspathEntry entry = iterator.next();
+                    String path = entry.getLocation();
+                    String forwardSlashes = path.replace('\\', '/');
+                    String backSlashes = path.replace('/', '\\');
+
+                    for (final RegularMatcher includedLib : includedLibs)
+                    {
+                        if ((includedLib.matches(forwardSlashes)) || (includedLib.matches(backSlashes)))
+                        {
+                            continue entry;
+                        }
+                    }
+                    
+                    iterator.remove();
+                }
+
+                return entries;
+            }
+
+            @Override
+            public String toString()
+            {
+                return "notExcluded" + includedLibs;
+            }
+
+        };
+    }
+
+    /**
      * Matches all entries, that are not excluded
      * 
      * @param excluded a list of regular expression of file or path names
@@ -434,8 +492,6 @@ public abstract class JettyLaunchClasspathMatcher
     public static JettyLaunchClasspathMatcher notExcluded(String... excluded) throws CoreException
     {
         final List<RegularMatcher> excludedLibs = new ArrayList<RegularMatcher>();
-
-        // excludedLibs.add(Pattern.compile(".*org\\.mortbay\\.jetty.*"));
 
         try
         {
