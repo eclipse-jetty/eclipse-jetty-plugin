@@ -169,7 +169,8 @@ public class Jetty8LauncherMain extends AbstractJettyLauncherMain
 
                     if (extraClasspath != null)
                     {
-                        Collections.addAll(classPath, extraClasspath.split(File.pathSeparator));
+                        // Collections.addAll(classPath, extraClasspath.split(File.pathSeparator)); // it seems, Jetty was built for Windows
+                        Collections.addAll(classPath, extraClasspath.split(";"));
                     }
                 }
             }

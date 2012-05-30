@@ -229,7 +229,8 @@ public class JettyPluginUtils
             {
                 if (i > 0)
                 {
-                    result.append(File.pathSeparator);
+                    // result.append(File.pathSeparator); // it seems, Jetty was built for Windows
+                    result.append(";");
                 }
 
                 result.append(values[i]);
