@@ -39,6 +39,12 @@ public class JettyPluginConstants
     private static final String ATTR_JETTY_EMBEDDED = JettyPlugin.PLUGIN_ID + ".jetty.embedded";
     private static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version";
     private static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled";
+    private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled";
+    private static final String ATTR_JNDI_ENABLED = JettyPlugin.PLUGIN_ID + ".jndi.enabled";
+    private static final String ATTR_AJP_ENABLED = JettyPlugin.PLUGIN_ID + ".ajp.enabled";
+    private static final String ATTR_ANNOTATIONS_ENABLED = JettyPlugin.PLUGIN_ID + ".annotations.enabled";
+    private static final String ATTR_PLUS_ENABLED = JettyPlugin.PLUGIN_ID + ".plus.enabled";
+    private static final String ATTR_SERVLETS_ENABLED = JettyPlugin.PLUGIN_ID + ".servlets.enabled";
     private static final String ATTR_EXCLUDE_SCOPE_COMPILE = JettyPlugin.PLUGIN_ID + ".scope.compile.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_PROVIDED = JettyPlugin.PLUGIN_ID + ".scope.provided.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_RUNTIME = JettyPlugin.PLUGIN_ID + ".scope.runtime.exclude";
@@ -150,6 +156,66 @@ public class JettyPluginConstants
     public static void setJspSupport(ILaunchConfigurationWorkingCopy configuration, boolean jspSupport)
     {
         configuration.setAttribute(ATTR_JSP_ENABLED, String.valueOf(jspSupport)); // string for backward compatibility
+    }
+
+    public static boolean isJmxSupport(ILaunchConfiguration configuration) throws CoreException
+    {
+        return "true".equals(configuration.getAttribute(ATTR_JMX_ENABLED, "false")); // string for backward compatibility
+    }
+
+    public static void setJmxSupport(ILaunchConfigurationWorkingCopy configuration, boolean jmxSupport)
+    {
+        configuration.setAttribute(ATTR_JMX_ENABLED, String.valueOf(jmxSupport)); // string for backward compatibility
+    }
+    
+    public static boolean isJndiSupport(ILaunchConfiguration configuration) throws CoreException
+    {
+        return "true".equals(configuration.getAttribute(ATTR_JNDI_ENABLED, "false")); // string for backward compatibility
+    }
+
+    public static void setJndiSupport(ILaunchConfigurationWorkingCopy configuration, boolean jndiSupport)
+    {
+        configuration.setAttribute(ATTR_JNDI_ENABLED, String.valueOf(jndiSupport)); // string for backward compatibility
+    }
+
+    public static boolean isAjpSupport(ILaunchConfiguration configuration) throws CoreException
+    {
+        return "true".equals(configuration.getAttribute(ATTR_AJP_ENABLED, "false")); // string for backward compatibility
+    }
+
+    public static void setAjpSupport(ILaunchConfigurationWorkingCopy configuration, boolean ajpSupport)
+    {
+        configuration.setAttribute(ATTR_AJP_ENABLED, String.valueOf(ajpSupport)); // string for backward compatibility
+    }
+
+    public static boolean isAnnotationsSupport(ILaunchConfiguration configuration) throws CoreException
+    {
+        return "true".equals(configuration.getAttribute(ATTR_ANNOTATIONS_ENABLED, "false")); // string for backward compatibility
+    }
+
+    public static void setAnnotationsSupport(ILaunchConfigurationWorkingCopy configuration, boolean annotationsSupport)
+    {
+        configuration.setAttribute(ATTR_ANNOTATIONS_ENABLED, String.valueOf(annotationsSupport)); // string for backward compatibility
+    }
+
+    public static boolean isPlusSupport(ILaunchConfiguration configuration) throws CoreException
+    {
+        return "true".equals(configuration.getAttribute(ATTR_PLUS_ENABLED, "false")); // string for backward compatibility
+    }
+
+    public static void setPlusSupport(ILaunchConfigurationWorkingCopy configuration, boolean plusSupport)
+    {
+        configuration.setAttribute(ATTR_PLUS_ENABLED, String.valueOf(plusSupport)); // string for backward compatibility
+    }
+
+    public static boolean isServletsSupport(ILaunchConfiguration configuration) throws CoreException
+    {
+        return "true".equals(configuration.getAttribute(ATTR_SERVLETS_ENABLED, "false")); // string for backward compatibility
+    }
+
+    public static void setServletsSupport(ILaunchConfigurationWorkingCopy configuration, boolean servletsSupport)
+    {
+        configuration.setAttribute(ATTR_SERVLETS_ENABLED, String.valueOf(servletsSupport)); // string for backward compatibility
     }
 
     public static boolean isScopeCompileExcluded(ILaunchConfiguration configuration) throws CoreException

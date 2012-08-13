@@ -11,8 +11,6 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.launch;
 
-import static net.sourceforge.eclipsejetty.launch.JettyLaunchClasspathMatcher.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +36,8 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.JavaRuntime;
+
+import static net.sourceforge.eclipsejetty.launch.JettyLaunchClasspathMatcher.*;
 
 /**
  * Launch configuration delegate for Jetty. Based on {@link JavaLaunchDelegate}.
@@ -98,8 +98,32 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         IRuntimeClasspathEntry[] entries = JavaRuntime.computeUnresolvedRuntimeClasspath(configuration);
 
         entries = JavaRuntime.resolveRuntimeClasspath(entries, configuration);
+        Collection<IRuntimeClasspathEntry> matchedEntries =
+            userClasses().match(new LinkedHashSet<IRuntimeClasspathEntry>(Arrays.asList(entries)));
 
-        return userClasses().match(new LinkedHashSet<IRuntimeClasspathEntry>(Arrays.asList(entries)));
+//        System.out.println("Classpath Entries");
+//        System.out.println("=================");
+//        for (IRuntimeClasspathEntry entry : matchedEntries)
+//        {
+//            if (entry.getLocation().contains("antlr-runtime"))
+//            {
+//                System.out.println(entry.getLocation());
+//                System.out.println("\t Classpath Property: " + entry.getClasspathProperty());
+//                System.out.println("\t Type: " + entry.getType());
+//                System.out.println("\t Access Rules: " + Arrays.toString(entry.getClasspathEntry().getAccessRules()));
+//                System.out.println("\t Inclusion Pattern: "
+//                    + Arrays.toString(entry.getClasspathEntry().getInclusionPatterns()));
+//                System.out.println("\t Exclusion Pattern: "
+//                    + Arrays.toString(entry.getClasspathEntry().getExclusionPatterns()));
+//                System.out.println("\t Exported: " + entry.getClasspathEntry().isExported());
+//                System.out.println("\t Referencing Entry: " + entry.getClasspathEntry().getReferencingEntry());
+//                System.out.println("\t Extra Attributes"
+//                    + Arrays.toString(entry.getClasspathEntry().getExtraAttributes()));
+//            }
+//        }
+//        System.out.println("----------------------------------------------------------------------");
+
+        return matchedEntries;
     }
 
     public String[] getCompleteWebappClasspath(ILaunchConfiguration configuration) throws CoreException
@@ -131,6 +155,12 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         final String jettyPath = JettyPluginUtils.resolveVariables(JettyPluginConstants.getPath(configuration));
         final JettyVersion jettyVersion = JettyPluginConstants.getVersion(configuration);
         boolean jspSupport = JettyPluginConstants.isJspSupport(configuration);
+        boolean jmxSupport = JettyPluginConstants.isJmxSupport(configuration);
+        boolean jndiSupport = JettyPluginConstants.isJndiSupport(configuration);
+        boolean ajpSupport = JettyPluginConstants.isAjpSupport(configuration);
+        boolean annotationsSupport = JettyPluginConstants.isAnnotationsSupport(configuration);
+        boolean plusSupport = JettyPluginConstants.isPlusSupport(configuration);
+        boolean servletsSupport = JettyPluginConstants.isServletsSupport(configuration);
 
         try
         {
@@ -142,7 +172,8 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                 FileLocator.find(JettyPlugin.getDefault().getBundle(), Path.fromOSString(jettyVersion.getJar()), null))
                 .getFile())));
 
-            for (final File jettyLib : jettyVersion.getLibStrategy().find(new File(jettyPath), jspSupport))
+            for (final File jettyLib : jettyVersion.getLibStrategy().find(new File(jettyPath), jspSupport, jmxSupport,
+                jndiSupport, ajpSupport, annotationsSupport, plusSupport, servletsSupport))
             {
                 entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(jettyLib.getCanonicalPath())));
             }
@@ -191,9 +222,9 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             vmClasspathMatcher =
                 and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "test")), notExcluded(".*/test-classes"));
         }
-        
+
         String includedLibs = JettyPluginConstants.getIncludedLibs(configuration);
-        
+
         if ((includedLibs != null) && (includedLibs.trim().length() > 0))
         {
             vmClasspathMatcher = or(isIncluded(includedLibs.split("[,\\n\\r]")), vmClasspathMatcher);

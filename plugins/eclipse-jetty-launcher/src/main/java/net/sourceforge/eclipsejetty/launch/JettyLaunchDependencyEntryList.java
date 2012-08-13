@@ -228,6 +228,13 @@ public class JettyLaunchDependencyEntryList
         }
     }
 
+    public void reset() {
+        for (JettyLaunchDependencyEntry entry : entries.values())
+        {
+            entry.setType(Type.DEFAULT);
+        }
+    }
+    
     public void clear(Table table)
     {
         for (JettyLaunchDependencyEntry entry : entries.values())

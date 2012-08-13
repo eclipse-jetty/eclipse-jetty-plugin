@@ -63,6 +63,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button pathBrowseButton;
 
     private Button jspSupportButton;
+    private Button jmxSupportButton;
+    private Button jndiSupportButton;
+    private Button ajpSupportButton;
+    private Button annotationsSupportButton;
+    private Button plusSupportButton;
+    private Button servletsSupportButton;
     private Button showLauncherInfoButon;
 
     private Button mavenIncludeCompile;
@@ -116,11 +122,27 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             }
         });
 
-        createLabel(jettyGroup, "JSP Support:", 128, 1, 1);
-        jspSupportButton = createButton(jettyGroup, SWT.CHECK, "Enabled", -1, 3, 1, modifyDialogListener);
-
-        createLabel(jettyGroup, "Detailed Server Info:", 128, 1, 1);
-        showLauncherInfoButon = createButton(jettyGroup, SWT.CHECK, "Show", -1, 3, 1, modifyDialogListener);
+        final Group jettyFeatureGroup = new Group(tabComposite, SWT.NONE);
+        jettyFeatureGroup.setLayout(new GridLayout(4, false));
+        jettyFeatureGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        jettyFeatureGroup.setText("Jetty Features:");
+        
+        createLabel(jettyFeatureGroup, "Detailed Server Info:", 128, 1, 1);
+        showLauncherInfoButon = createButton(jettyFeatureGroup, SWT.CHECK, "Show", -1, 1, 1, modifyDialogListener);
+        createLabel(jettyFeatureGroup, "AJP Support:", 128, 1, 1);
+        ajpSupportButton = createButton(jettyFeatureGroup, SWT.CHECK, "Enabled", -1, 1, 1, modifyDialogListener);
+        createLabel(jettyFeatureGroup, "JSP Support:", 128, 1, 1);
+        jspSupportButton = createButton(jettyFeatureGroup, SWT.CHECK, "Enabled", -1, 1, 1, modifyDialogListener);
+        createLabel(jettyFeatureGroup, "Annotations Feature:", 128, 1, 1);
+        annotationsSupportButton = createButton(jettyFeatureGroup, SWT.CHECK, "Enabled", -1, 1, 1, modifyDialogListener);
+        createLabel(jettyFeatureGroup, "JMX Support:", 128, 1, 1);
+        jmxSupportButton = createButton(jettyFeatureGroup, SWT.CHECK, "Enabled", -1, 1, 1, modifyDialogListener);
+        createLabel(jettyFeatureGroup, "Plus Feature:", 128, 1, 1);
+        plusSupportButton = createButton(jettyFeatureGroup, SWT.CHECK, "Enabled", -1, 1, 1, modifyDialogListener);
+        createLabel(jettyFeatureGroup, "JNDI Support:", 128, 1, 1);
+        jndiSupportButton = createButton(jettyFeatureGroup, SWT.CHECK, "Enabled", -1, 1, 1, modifyDialogListener);
+        createLabel(jettyFeatureGroup, "Servlets Feature:", 128, 1, 1);
+        servletsSupportButton = createButton(jettyFeatureGroup, SWT.CHECK, "Enabled", -1, 1, 1, modifyDialogListener);
 
         final Group dependencyGroup = new Group(tabComposite, SWT.NONE);
 
@@ -139,6 +161,16 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         dependencyTable =
             createTable(dependencyGroup, SWT.BORDER | SWT.HIDE_SELECTION, -1, 200, 3, 1, "", "Name", "Scope", "Path");
+
+        createButton(dependencyGroup, SWT.NONE, "Reset Dependency Overrides", 196, 3, 1, new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                dependencyEntryList.reset();
+                updateLaunchConfigurationDialog();
+            }
+        });
 
         setControl(tabComposite);
     }
@@ -170,6 +202,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             pathText.setText(JettyPluginConstants.getPath(configuration));
 
             jspSupportButton.setSelection(JettyPluginConstants.isJspSupport(configuration));
+            jmxSupportButton.setSelection(JettyPluginConstants.isJmxSupport(configuration));
+            jndiSupportButton.setSelection(JettyPluginConstants.isJndiSupport(configuration));
+            ajpSupportButton.setSelection(JettyPluginConstants.isAjpSupport(configuration));
+            annotationsSupportButton.setSelection(JettyPluginConstants.isAnnotationsSupport(configuration));
+            plusSupportButton.setSelection(JettyPluginConstants.isPlusSupport(configuration));
+            servletsSupportButton.setSelection(JettyPluginConstants.isServletsSupport(configuration));
             showLauncherInfoButon.setSelection(JettyPluginConstants.isShowLauncherInfo(configuration));
 
             mavenIncludeCompile.setSelection(!JettyPluginConstants.isScopeCompileExcluded(configuration));
@@ -194,6 +232,14 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             JettyPluginConstants.setPath(configuration, JettyPluginConstants.getPath(configuration));
 
             JettyPluginConstants.setJspSupport(configuration, JettyPluginConstants.isJspSupport(configuration));
+            JettyPluginConstants.setJmxSupport(configuration, JettyPluginConstants.isJmxSupport(configuration));
+            JettyPluginConstants.setJndiSupport(configuration, JettyPluginConstants.isJndiSupport(configuration));
+            JettyPluginConstants.setAjpSupport(configuration, JettyPluginConstants.isAjpSupport(configuration));
+            JettyPluginConstants.setAnnotationsSupport(configuration,
+                JettyPluginConstants.isAnnotationsSupport(configuration));
+            JettyPluginConstants.setPlusSupport(configuration, JettyPluginConstants.isPlusSupport(configuration));
+            JettyPluginConstants.setServletsSupport(configuration,
+                JettyPluginConstants.isServletsSupport(configuration));
             JettyPluginConstants.setScopeCompileExcluded(configuration,
                 JettyPluginConstants.isScopeCompileExcluded(configuration));
             JettyPluginConstants.setScopeProvidedExcluded(configuration,
@@ -232,6 +278,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setMainTypeName(configuration, jettyVersion);
         JettyPluginConstants.setVersion(configuration, jettyVersion);
         JettyPluginConstants.setJspSupport(configuration, jspSupportButton.getSelection());
+        JettyPluginConstants.setJmxSupport(configuration, jmxSupportButton.getSelection());
+        JettyPluginConstants.setJndiSupport(configuration, jndiSupportButton.getSelection());
+        JettyPluginConstants.setAjpSupport(configuration, ajpSupportButton.getSelection());
+        JettyPluginConstants.setAnnotationsSupport(configuration, annotationsSupportButton.getSelection());
+        JettyPluginConstants.setPlusSupport(configuration, plusSupportButton.getSelection());
+        JettyPluginConstants.setServletsSupport(configuration, servletsSupportButton.getSelection());
         JettyPluginConstants.setShowLauncherInfo(configuration, showLauncherInfoButon.getSelection());
 
         JettyPluginConstants.setScopeCompileExcluded(configuration, !mavenIncludeCompile.getSelection());

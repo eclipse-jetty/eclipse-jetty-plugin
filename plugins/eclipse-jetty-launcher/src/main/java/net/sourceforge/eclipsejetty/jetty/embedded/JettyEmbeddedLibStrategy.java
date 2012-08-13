@@ -68,6 +68,88 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("org.eclipse.jdt.core");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addJMXDependencies(Collection<String> dependencies)
+    {
+        //    private static final String[] FEATURE_JMX = {"jetty-jmx", "jetty-util"};
+        // TODO verify
+        dependencies.add("jetty-jmx");
+        dependencies.add("jetty-util");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addJNDIDependencies(Collection<String> dependencies)
+    {
+        //    private static final String[] FEATURE_JNDI = {"jetty-jndi", "javax.mail.glassfish", "javax.activation"};
+        // TODO verify
+        dependencies.add("jetty-jndi");
+        dependencies.add("javax.mail.glassfish");
+        dependencies.add("javax.activation");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addAJPDependencies(Collection<String> dependencies)
+    {
+        //    private static final String[] FEATURE_AJP = {"jetty-ajp"};
+        // TODO verify
+        dependencies.add("jetty-ajp");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addAnnotationsDependencies(Collection<String> dependencies)
+    {
+        //    private static final String[] FEATURE_ANNOTATIONS = {"jetty-annotations", "jetty-plus", "jetty-webapp",
+        //        "javax.annotation", "org.objectweb.asm"};
+        // TODO verify
+        dependencies.add("jetty-annotations");
+        dependencies.add("jetty-plus");
+        dependencies.add("jetty-webapp");
+        dependencies.add("javax.annotation");
+        dependencies.add("org.objectweb.asm");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addPlusDependencies(Collection<String> dependencies)
+    {
+        //    private static final String[] FEATURE_PLUS = {"jetty-plus", "javax.transaction", "jetty-webapp", "jetty-jndi"};
+        // TODO verify
+        dependencies.add("jetty-plus");
+        dependencies.add("javax.transaction");
+        dependencies.add("jetty-webapp");
+        dependencies.add("jetty-jndi");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addServletsDependencies(Collection<String> dependencies)
+    {
+        //    private static final String[] FEATURE_SERVLETS = {"jetty-servlets", "jetty-continuation", "jetty-client",
+        //        "jetty-http", "jetty-util"};
+        // TODO verify
+        dependencies.add("jetty-servlets");
+        dependencies.add("jetty-continuation");
+        dependencies.add("jetty-client");
+        dependencies.add("jetty-http");
+        dependencies.add("jetty-util");
+    }
+
     /* (non-Javadoc)
      * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#resolveDependencies(java.util.Collection, java.io.File, java.util.Collection)
      */
@@ -96,13 +178,5 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         }
     }
 
-    //    private static final String[] FEATURE_AJP = {"jetty-ajp"};
-    //    private static final String[] FEATURE_ANNOTATIONS = {"jetty-annotations", "jetty-plus", "jetty-webapp",
-    //        "javax.annotation", "org.objectweb.asm"};
-    //    private static final String[] FEATURE_JMX = {"jetty-jmx", "jetty-util"};
-    //    private static final String[] FEATURE_JNDI = {"jetty-jndi", "javax.mail.glassfish", "javax.activation"};
-    //    private static final String[] FEATURE_PLUS = {"jetty-plus", "javax.transaction", "jetty-webapp", "jetty-jndi"};
-    //    private static final String[] FEATURE_SERVLETS = {"jetty-servlets", "jetty-continuation", "jetty-client",
-    //        "jetty-http", "jetty-util"};
 
 }
