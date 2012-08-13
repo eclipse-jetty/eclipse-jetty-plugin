@@ -14,6 +14,7 @@ package net.sourceforge.eclipsejetty.launch;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
@@ -27,6 +28,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -295,6 +297,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setExcludedLibs(configuration, dependencyEntryList.createExcludedLibs());
         String createIncludedLibs = dependencyEntryList.createIncludedLibs();
         JettyPluginConstants.setIncludedLibs(configuration, createIncludedLibs);
+        
+        updateTable(configuration, false);
     }
 
     @Override
@@ -339,8 +343,6 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             }
         }
 
-        updateTable(configuration, false);
-
         setDirty(true);
 
         return true;
@@ -358,9 +360,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 JettyLaunchConfigurationDelegate delegate =
                     (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
 
+                Collection<IRuntimeClasspathEntry> completeWebappClasspathEntries = delegate.getCompleteWebappClasspathEntries(configuration);
+                Collection<IRuntimeClasspathEntry> webappClasspathEntries = delegate.getWebappClasspathEntries(configuration, completeWebappClasspathEntries);
+                
                 if (dependencyEntryList.update(configuration, dependencyTable,
-                    delegate.getCompleteWebappClasspathEntries(configuration),
-                    delegate.getWebappClasspathEntries(configuration), updateType))
+                    completeWebappClasspathEntries,
+                    webappClasspathEntries, updateType))
                 {
                     if (!dependencyTableFormatted)
                     {

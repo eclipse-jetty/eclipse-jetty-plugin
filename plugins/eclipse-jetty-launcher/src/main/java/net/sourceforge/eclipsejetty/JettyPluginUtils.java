@@ -261,6 +261,17 @@ public class JettyPluginUtils
 
     public static String[] toLocationArray(IRuntimeClasspathEntry... classpathEntries)
     {
+        Collection<String> results = toLocationCollection(classpathEntries);
+        
+        return results.toArray(new String[results.size()]);
+    }
+    
+    public static Collection<String> toLocationCollection(Collection<IRuntimeClasspathEntry> classpathEntries) {
+        return toLocationCollection(classpathEntries.toArray(new IRuntimeClasspathEntry[classpathEntries.size()]));
+    }
+    
+    public static Collection<String> toLocationCollection(IRuntimeClasspathEntry... classpathEntries)
+    {
         Set<String> results = new LinkedHashSet<String>();
 
         for (IRuntimeClasspathEntry entry : classpathEntries)
@@ -273,7 +284,7 @@ public class JettyPluginUtils
             }
         }
 
-        return results.toArray(new String[results.size()]);
+        return results;
     }
 
     public static String toLocation(IRuntimeClasspathEntry entry)

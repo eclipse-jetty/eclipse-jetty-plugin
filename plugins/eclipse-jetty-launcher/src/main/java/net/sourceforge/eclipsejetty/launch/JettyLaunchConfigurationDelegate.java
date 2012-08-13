@@ -130,14 +130,25 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     {
         return JettyPluginUtils.toLocationArray(getCompleteWebappClasspathEntries(configuration));
     }
-
+    
     public Collection<IRuntimeClasspathEntry> getWebappClasspathEntries(ILaunchConfiguration configuration)
         throws CoreException
     {
-        return and(createWebappClasspathMatcher(configuration)).match(getCompleteWebappClasspathEntries(configuration));
+        return getWebappClasspathEntries(configuration, getCompleteWebappClasspathEntries(configuration));
     }
 
     public String[] getWebappClasspath(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getWebappClasspath(configuration, getWebappClasspathEntries(configuration));
+    }
+
+    public Collection<IRuntimeClasspathEntry> getWebappClasspathEntries(ILaunchConfiguration configuration, Collection<IRuntimeClasspathEntry> completeEntries)
+        throws CoreException
+    {
+        return and(createWebappClasspathMatcher(configuration)).match(completeEntries);
+    }
+
+    public String[] getWebappClasspath(ILaunchConfiguration configuration, Collection<IRuntimeClasspathEntry> completeEntries) throws CoreException
     {
         return JettyPluginUtils.toLocationArray(getWebappClasspathEntries(configuration));
     }

@@ -43,6 +43,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
 
     private Type type;
     private boolean included;
+    private boolean defaultIncluded;
     private boolean obsolete;
     private String scope;
     private boolean needsUpdate;
@@ -68,6 +69,20 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         if (this.included != included)
         {
             this.included = included;
+            needsUpdate = true;
+        }
+    }
+
+    public boolean isDefaultIncluded()
+    {
+        return defaultIncluded;
+    }
+
+    public void setDefaultIncluded(boolean defaultIncluded)
+    {
+        if (this.defaultIncluded != defaultIncluded)
+        {
+            this.defaultIncluded = defaultIncluded;
             needsUpdate = true;
         }
     }
@@ -218,7 +233,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         item.setForeground(2, color);
         item.setText(3, path);
         item.setForeground(3, color);
-        
+
         needsUpdate = false;
     }
 
@@ -242,27 +257,29 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
             fillItem(item);
             return true;
         }
-        
+
         return false;
     }
 
     public void deleteItem(Table table)
     {
-        if (item != null) {
+        if (item != null)
+        {
             int indexOf = table.indexOf(item);
-            
+
             item.dispose();
             button.dispose();
-            
-            if (indexOf > 0) {
+
+            if (indexOf > 0)
+            {
                 table.clearAll();
             }
-            
+
             item = null;
             button = null;
         }
     }
-    
+
     public void setItem(TableItem item)
     {
         this.item = item;
@@ -272,7 +289,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
     {
         // TODO this method whole can be heavily enhanced - e.g. it does not look at the path. If you exclude one test-classes entry, all are excluded
         // meanwhile this one-liner should do it
-        
+
         return ".*/" + name.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1");
     }
 

@@ -16,8 +16,8 @@
 
 	<properties>
 		<version.jetty6>6.1.26</version.jetty6>
-		<version.jetty7>7.6.3.v20120416</version.jetty7>
-		<version.jetty8>8.1.3.v20120416</version.jetty8>
+		<version.jetty7>7.6.5.v20120716</version.jetty7>
+		<version.jetty8>8.1.5.v20120716</version.jetty8>
 	</properties>
 
 	<modules>

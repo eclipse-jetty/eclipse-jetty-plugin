@@ -15,11 +15,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
@@ -42,7 +40,7 @@ public class JettyLaunchDependencyEntryList
 
     private final Map<String, JettyLaunchDependencyEntry> entries;
     private final SelectionListener listener;
-    
+
     private int configHash;
 
     public JettyLaunchDependencyEntryList(SelectionListener listener)
@@ -95,14 +93,15 @@ public class JettyLaunchDependencyEntryList
     }
 
     public boolean update(ILaunchConfiguration configuration, Table table,
-        Collection<IRuntimeClasspathEntry> classpathEntries, Collection<IRuntimeClasspathEntry> includedClasspathEntries, boolean updateType)
-        throws CoreException
+        Collection<IRuntimeClasspathEntry> classpathEntries,
+        Collection<IRuntimeClasspathEntry> includedClasspathEntries, boolean updateType) throws CoreException
     {
-        if (configHash != configuration.hashCode()) {
+        if (configHash != configuration.hashCode())
+        {
             clear(table);
             configHash = configuration.hashCode();
         }
-        
+
         boolean updated = false;
         List<RegularMatcher> excludedLibs =
             createRegularMatcherList(JettyPluginConstants.getExcludedLibs(configuration));
@@ -113,44 +112,40 @@ public class JettyLaunchDependencyEntryList
         setObsolete(true);
 
         // create a set of all really included entries
-        Set<String> includedEntries = new HashSet<String>();
-        for (IRuntimeClasspathEntry includedClasspathEntry : includedClasspathEntries)
-        {
-            String location = JettyPluginUtils.toLocation(includedClasspathEntry);
-
-            if (location != null)
-            {
-                includedEntries.add(location);
-            }
-        }
+        Collection<String> includedEntries = JettyPluginUtils.toLocationCollection(includedClasspathEntries);
 
         // run through all entries and update the state of the entry
         for (IRuntimeClasspathEntry classpathEntry : classpathEntries)
         {
             String location = JettyPluginUtils.toLocation(classpathEntry);
-            JettyLaunchDependencyEntry entry = entries.get(location);
 
-            if (entry == null)
+            if (location != null)
             {
-                entry = new JettyLaunchDependencyEntry(getPath(location), getName(location), Type.DEFAULT);
-                entries.put(location, entry);
-            }
+                JettyLaunchDependencyEntry entry = entries.get(location);
 
-            if (updateType) {
-                if (matches(excludedLibs, location))
+                if (entry == null)
                 {
-                    entry.setType(Type.ALWAYS_EXCLUDED);
+                    entry = new JettyLaunchDependencyEntry(getPath(location), getName(location), Type.DEFAULT);
+                    entries.put(location, entry);
                 }
-    
-                if (matches(includedLibs, location))
+
+                if (updateType)
                 {
-                    entry.setType(Type.ALWAYS_INCLUDED);
+                    if (matches(excludedLibs, location))
+                    {
+                        entry.setType(Type.ALWAYS_EXCLUDED);
+                    }
+
+                    if (matches(includedLibs, location))
+                    {
+                        entry.setType(Type.ALWAYS_INCLUDED);
+                    }
                 }
+
+                entry.setIncluded(includedEntries.contains(location));
+                entry.setScope(JettyPluginUtils.getMavenScope(classpathEntry));
+                entry.setObsolete(false);
             }
-            
-            entry.setIncluded(includedEntries.contains(location));
-            entry.setScope(JettyPluginUtils.getMavenScope(classpathEntry));
-            entry.setObsolete(false);
         }
 
         // sort the entries and update the table if entry has changed
