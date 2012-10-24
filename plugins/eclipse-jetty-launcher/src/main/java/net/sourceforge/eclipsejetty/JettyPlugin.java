@@ -31,6 +31,10 @@ public class JettyPlugin extends AbstractUIPlugin
 
     private static final String JETTY_ICON = PLUGIN_ID + ".jettyIcon";
     private static final String JETTY_ADVANCED_ICON = PLUGIN_ID + ".jettyAdvancedIcon";
+    private static final String ADD_CONTEXT_ICON = PLUGIN_ID + ".addContext";
+    private static final String REMOVE_CONTEXT_ICON = PLUGIN_ID + ".removeContext";
+    private static final String MOVE_UP_CONTEXT_ICON = PLUGIN_ID + ".moveUpContext";
+    private static final String MOVE_DOWN_CONTEXT_ICON = PLUGIN_ID + ".moveDownContext";
 
     // The shared instance
     private static JettyPlugin plugin;
@@ -78,28 +82,27 @@ public class JettyPlugin extends AbstractUIPlugin
     @Override
     protected void initializeImageRegistry(final ImageRegistry reg)
     {
-        final URL imageURL = getBundle().getEntry("/icons/jetty.png");
+        initializeImageRegistry(reg, JETTY_ICON, "/icons/jetty.png");
+        initializeImageRegistry(reg, JETTY_ADVANCED_ICON, "/icons/jetty-advanced.png");
+
+        initializeImageRegistry(reg, ADD_CONTEXT_ICON, "/icons/add_context.gif");
+        initializeImageRegistry(reg, REMOVE_CONTEXT_ICON, "/icons/remove_context.gif");
+        initializeImageRegistry(reg, MOVE_UP_CONTEXT_ICON, "/icons/move_up_context.gif");
+        initializeImageRegistry(reg, MOVE_DOWN_CONTEXT_ICON, "/icons/move_down_context.gif");
+    }
+
+    protected void initializeImageRegistry(ImageRegistry reg, String key, String url)
+    {
+        final URL imageURL = getBundle().getEntry(url);
 
         if (imageURL != null)
         {
-            reg.put(JETTY_ICON, ImageDescriptor.createFromURL(imageURL));
+            reg.put(key, ImageDescriptor.createFromURL(imageURL));
         }
         else
         {
-            logError("resource " + "/icons/jetty.gif" + " was not found");
+            logError("resource " + url + " was not found");
         }
-
-        final URL imageAdvancedURL = getBundle().getEntry("/icons/jetty-advanced.png");
-
-        if (imageAdvancedURL != null)
-        {
-            reg.put(JETTY_ADVANCED_ICON, ImageDescriptor.createFromURL(imageAdvancedURL));
-        }
-        else
-        {
-            logError("resource " + "/icons/jetty.gif" + " was not found");
-        }
-
     }
 
     public static Image getJettyIcon()
@@ -110,6 +113,26 @@ public class JettyPlugin extends AbstractUIPlugin
     public static Image getJettyAdvancedIcon()
     {
         return plugin.getImageRegistry().get(JETTY_ADVANCED_ICON);
+    }
+
+    public static Image getAddContextIcon()
+    {
+        return plugin.getImageRegistry().get(ADD_CONTEXT_ICON);
+    }
+
+    public static Image getRemoveContextIcon()
+    {
+        return plugin.getImageRegistry().get(REMOVE_CONTEXT_ICON);
+    }
+
+    public static Image getMoveUpContextIcon()
+    {
+        return plugin.getImageRegistry().get(MOVE_UP_CONTEXT_ICON);
+    }
+
+    public static Image getMoveDownContextIcon()
+    {
+        return plugin.getImageRegistry().get(MOVE_DOWN_CONTEXT_ICON);
     }
 
     public static void logError(final Exception e)

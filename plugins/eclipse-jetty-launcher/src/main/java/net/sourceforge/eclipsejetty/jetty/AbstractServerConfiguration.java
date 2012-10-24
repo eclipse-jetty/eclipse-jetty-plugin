@@ -13,6 +13,7 @@ package net.sourceforge.eclipsejetty.jetty;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import net.sourceforge.eclipsejetty.util.DOMBuilder;
 
@@ -21,6 +22,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     private final Collection<String> defaultClasspath;
 
+    private boolean jndi = false;
     private Integer port;
     private Integer sslPort;
 
@@ -32,6 +34,16 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         super();
 
         defaultClasspath = new LinkedHashSet<String>();
+    }
+
+    public boolean isJndi()
+    {
+        return jndi;
+    }
+
+    public void setJndi(boolean jndi)
+    {
+        this.jndi = jndi;
     }
 
     public Integer getPort()
@@ -96,11 +108,33 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     @Override
     protected void buildContent(DOMBuilder builder)
     {
+        buildJNDI(builder);
         buildConnector(builder);
         buildSSLConnector(builder);
 
         buildHandler(builder);
     }
+
+    protected void buildJNDI(DOMBuilder builder)
+    {
+        if (isJndi())
+        {
+            builder.begin("Array").attribute("id", "plusConfig").attribute("type", "String");
+            for (String item : getJNDIItems()) {
+                builder.element("Item", item);
+            }
+            builder.end();
+            
+            builder.begin("Call").attribute("name", "setAttribute");
+            builder.element("Arg", getConfigurationKey());
+            builder.begin("Arg").element("Ref", "id", "plusConfig").end();
+            builder.end();
+        }
+    }
+
+    protected abstract List<String> getJNDIItems();
+    
+    protected abstract String getConfigurationKey();
 
     protected void buildConnector(DOMBuilder builder)
     {

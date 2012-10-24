@@ -45,10 +45,12 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
     private boolean included;
     private boolean defaultIncluded;
     private boolean obsolete;
+    private boolean global;
     private String scope;
     private boolean needsUpdate;
     private TableItem item;
-    private Button button;
+    private Button includeButton;
+    private Button globalButton;
 
     public JettyLaunchDependencyEntry(String path, String name, Type type)
     {
@@ -118,9 +120,23 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
 
     public void setObsolete(boolean obsolete)
     {
-        if (this.obsolete != obsolete)
+        //        if (this.obsolete != obsolete)
+        //        {
+        this.obsolete = obsolete;
+        // needsUpdate = true;
+        //        }
+    }
+
+    public boolean isGlobal()
+    {
+        return global;
+    }
+
+    public void setGlobal(boolean global)
+    {
+        if (this.global != global)
         {
-            this.obsolete = obsolete;
+            this.global = global;
             needsUpdate = true;
         }
     }
@@ -147,18 +163,18 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
     public void createItem(Table table, SelectionListener listener, int index)
     {
         final TableItem item = new TableItem(table, SWT.NONE, index);
-        TableEditor editor = new TableEditor(table);
+        TableEditor includeEditor = new TableEditor(table);
 
-        button = new Button(table, SWT.CHECK);
-        button.addListener(SWT.Selection, new Listener()
+        includeButton = new Button(table, SWT.CHECK);
+        includeButton.addListener(SWT.Selection, new Listener()
         {
             public void handleEvent(Event e)
             {
-                if (button.getSelection())
+                if (includeButton.getSelection())
                 {
-                    if (!button.getGrayed())
+                    if (!includeButton.getGrayed())
                     {
-                        button.setGrayed(true);
+                        includeButton.setGrayed(true);
                         type = Type.DEFAULT;
                         fillItem(item);
                     }
@@ -170,10 +186,10 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
                 }
                 else
                 {
-                    if (button.getGrayed())
+                    if (includeButton.getGrayed())
                     {
-                        button.setGrayed(false);
-                        button.setSelection(true);
+                        includeButton.setGrayed(false);
+                        includeButton.setSelection(true);
                         type = Type.ALWAYS_INCLUDED;
                         fillItem(item);
                     }
@@ -185,12 +201,30 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
                 }
             }
         });
-        button.addSelectionListener(listener);
-        button.pack();
+        includeButton.addSelectionListener(listener);
+        includeButton.pack();
 
-        editor.minimumWidth = button.getSize().x;
-        editor.horizontalAlignment = SWT.CENTER;
-        editor.setEditor(button, item, 0);
+        includeEditor.minimumWidth = includeButton.getSize().x;
+        includeEditor.horizontalAlignment = SWT.CENTER;
+        includeEditor.setEditor(includeButton, item, 0);
+
+        TableEditor globalEditor = new TableEditor(table);
+
+        globalButton = new Button(table, SWT.CHECK);
+        globalButton.addListener(SWT.Selection, new Listener()
+        {
+            public void handleEvent(Event e)
+            {
+                global = globalButton.getSelection();
+                fillItem(item);
+            }
+        });
+        globalButton.addSelectionListener(listener);
+        globalButton.pack();
+
+        globalEditor.minimumWidth = globalButton.getSize().x;
+        globalEditor.horizontalAlignment = SWT.CENTER;
+        globalEditor.setEditor(globalButton, item, 2);
 
         fillItem(item);
         setItem(item);
@@ -201,18 +235,18 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         switch (type)
         {
             case DEFAULT:
-                button.setGrayed(true);
-                button.setSelection(true);
+                includeButton.setGrayed(true);
+                includeButton.setSelection(true);
                 break;
 
             case ALWAYS_EXCLUDED:
-                button.setGrayed(false);
-                button.setSelection(false);
+                includeButton.setGrayed(false);
+                includeButton.setSelection(false);
                 break;
 
             case ALWAYS_INCLUDED:
-                button.setGrayed(false);
-                button.setSelection(true);
+                includeButton.setGrayed(false);
+                includeButton.setSelection(true);
                 break;
         }
 
@@ -221,18 +255,23 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         if (((included) || (type == Type.ALWAYS_INCLUDED)) && (type != Type.ALWAYS_EXCLUDED))
         {
             color = item.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+            globalButton.setEnabled(true);
         }
         else
         {
             color = item.getDisplay().getSystemColor(SWT.COLOR_GRAY);
+            globalButton.setEnabled(false);
         }
 
         item.setText(1, name);
         item.setForeground(1, color);
-        item.setText(2, scope);
-        item.setForeground(2, color);
-        item.setText(3, path);
+
+        globalButton.setSelection(global);
+        
+        item.setText(3, scope);
         item.setForeground(3, color);
+        item.setText(4, path);
+        item.setForeground(4, color);
 
         needsUpdate = false;
     }
@@ -268,7 +307,8 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
             int indexOf = table.indexOf(item);
 
             item.dispose();
-            button.dispose();
+            includeButton.dispose();
+            globalButton.dispose();
 
             if (indexOf > 0)
             {
@@ -276,7 +316,8 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
             }
 
             item = null;
-            button = null;
+            includeButton = null;
+            globalButton = null;
         }
     }
 

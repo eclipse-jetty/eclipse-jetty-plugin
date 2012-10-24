@@ -3,6 +3,8 @@ package net.sourceforge.eclipsejetty.starter.jetty6;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +20,7 @@ import org.mortbay.jetty.handler.ContextHandler;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.xml.XmlConfiguration;
+import org.xml.sax.SAXException;
 
 /**
  * Main for Jetty 6
@@ -47,23 +50,13 @@ public class Jetty6LauncherMain extends AbstractJettyLauncherMain
     }
 
     @Override
-    protected void start(File configurationFile, boolean showInfo) throws Exception
+    protected void start(File[] configurationFiles, File[] webAppConfigurationFiles, boolean showInfo) throws Exception
     {
-        XmlConfiguration configuration;
-        FileInputStream in = new FileInputStream(configurationFile);
-
-        try
-        {
-            configuration = new XmlConfiguration(in);
-        }
-        finally
-        {
-            in.close();
-        }
-
         Server server = new Server();
 
-        configuration.configure(server);
+        configure("Server-Config", configurationFiles, server, showInfo);
+        configure("WebApp-Config", webAppConfigurationFiles, server.getHandler(), showInfo);
+
         if (showInfo)
         {
             printInfo(server);
@@ -72,11 +65,41 @@ public class Jetty6LauncherMain extends AbstractJettyLauncherMain
         server.start();
     }
 
+    private void configure(String name, File[] configurationFiles, Object object, boolean showInfo)
+        throws FileNotFoundException, SAXException, IOException, Exception
+    {
+        for (int i = 0; i < configurationFiles.length; i += 1)
+        {
+            File configurationFile = configurationFiles[i];
+            XmlConfiguration configuration;
+
+            if (showInfo)
+            {
+                System.out.println(String.format("%18s%s", (i == 0) ? name + ": " : "",
+                    configurationFile.getAbsolutePath()));
+            }
+
+            FileInputStream in = new FileInputStream(configurationFile);
+
+            try
+            {
+                configuration = new XmlConfiguration(in);
+            }
+            finally
+            {
+                in.close();
+            }
+
+            configuration.configure(object);
+        }
+    }
+
     private void printInfo(Server server)
     {
-        System.out.println("Context:   " + getContextPaths(server));
-        System.out.println("Port:      " + getPorts(server));
-        System.out.println("Classpath: " + getClassPaths(server).replaceAll("\\n", "\n           "));
+        System.out.println("         Version: " + Server.getVersion());
+        System.out.println("         Context: " + getContextPaths(server));
+        System.out.println("            Port: " + getPorts(server));
+        System.out.println("       Classpath: " + getClassPaths(server).replaceAll("\\n", "\n                  "));
         System.out.println();
     }
 

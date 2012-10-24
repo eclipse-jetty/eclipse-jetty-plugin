@@ -92,9 +92,30 @@ public class JettyLaunchDependencyEntryList
         return result.toString();
     }
 
+    public String createGlobalLibs()
+    {
+        StringBuilder result = new StringBuilder();
+
+        for (JettyLaunchDependencyEntry entry : getSortedList())
+        {
+            if (entry.isGlobal())
+            {
+                if (result.length() > 0)
+                {
+                    result.append(", ");
+                }
+
+                result.append(entry.createMatcher());
+            }
+        }
+
+        return result.toString();
+    }
+
     public boolean update(ILaunchConfiguration configuration, Table table,
         Collection<IRuntimeClasspathEntry> classpathEntries,
-        Collection<IRuntimeClasspathEntry> includedClasspathEntries, boolean updateType) throws CoreException
+        Collection<IRuntimeClasspathEntry> includedClasspathEntries,
+        Collection<IRuntimeClasspathEntry> globalClasspathEntries, boolean updateType) throws CoreException
     {
         if (configHash != configuration.hashCode())
         {
@@ -114,6 +135,11 @@ public class JettyLaunchDependencyEntryList
         // create a set of all really included entries
         Collection<String> includedEntries = JettyPluginUtils.toLocationCollection(includedClasspathEntries);
 
+        // create a set of all global entries
+        Collection<String> globalEntries = JettyPluginUtils.toLocationCollection(globalClasspathEntries);
+
+        System.out.println("! " + globalEntries);
+        
         // run through all entries and update the state of the entry
         for (IRuntimeClasspathEntry classpathEntry : classpathEntries)
         {
@@ -140,6 +166,8 @@ public class JettyLaunchDependencyEntryList
                     {
                         entry.setType(Type.ALWAYS_INCLUDED);
                     }
+                    
+                    entry.setGlobal(globalEntries.contains(location));
                 }
 
                 entry.setIncluded(includedEntries.contains(location));
@@ -223,13 +251,14 @@ public class JettyLaunchDependencyEntryList
         }
     }
 
-    public void reset() {
+    public void reset()
+    {
         for (JettyLaunchDependencyEntry entry : entries.values())
         {
             entry.setType(Type.DEFAULT);
         }
     }
-    
+
     public void clear(Table table)
     {
         for (JettyLaunchDependencyEntry entry : entries.values())

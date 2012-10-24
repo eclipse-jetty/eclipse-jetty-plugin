@@ -91,6 +91,12 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("jetty-jndi");
         dependencies.add("javax.mail.glassfish");
         dependencies.add("javax.activation");
+        dependencies.add("jetty-annotations");
+        dependencies.add("jetty-plus");
+        dependencies.add("jetty-webapp");
+        dependencies.add("javax.annotation");
+        dependencies.add("org.objectweb.asm");
+        dependencies.add("javax.transaction");
     }
 
     /**
@@ -102,52 +108,6 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         //    private static final String[] FEATURE_AJP = {"jetty-ajp"};
         // TODO verify
         dependencies.add("jetty-ajp");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void addAnnotationsDependencies(Collection<String> dependencies)
-    {
-        //    private static final String[] FEATURE_ANNOTATIONS = {"jetty-annotations", "jetty-plus", "jetty-webapp",
-        //        "javax.annotation", "org.objectweb.asm"};
-        // TODO verify
-        dependencies.add("jetty-annotations");
-        dependencies.add("jetty-plus");
-        dependencies.add("jetty-webapp");
-        dependencies.add("javax.annotation");
-        dependencies.add("org.objectweb.asm");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void addPlusDependencies(Collection<String> dependencies)
-    {
-        //    private static final String[] FEATURE_PLUS = {"jetty-plus", "javax.transaction", "jetty-webapp", "jetty-jndi"};
-        // TODO verify
-        dependencies.add("jetty-plus");
-        dependencies.add("javax.transaction");
-        dependencies.add("jetty-webapp");
-        dependencies.add("jetty-jndi");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void addServletsDependencies(Collection<String> dependencies)
-    {
-        //    private static final String[] FEATURE_SERVLETS = {"jetty-servlets", "jetty-continuation", "jetty-client",
-        //        "jetty-http", "jetty-util"};
-        // TODO verify
-        dependencies.add("jetty-servlets");
-        dependencies.add("jetty-continuation");
-        dependencies.add("jetty-client");
-        dependencies.add("jetty-http");
-        dependencies.add("jetty-util");
     }
 
     /* (non-Javadoc)
@@ -177,6 +137,5 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
                 "Failed to include embedded Jetty libraries", e));
         }
     }
-
 
 }

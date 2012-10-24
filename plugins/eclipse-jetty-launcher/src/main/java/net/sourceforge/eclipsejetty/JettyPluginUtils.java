@@ -242,6 +242,10 @@ public class JettyPluginUtils
 
     public static String resolveVariables(String s)
     {
+        if (s == null) {
+            return null;
+        }
+        
         try
         {
             s = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(s);

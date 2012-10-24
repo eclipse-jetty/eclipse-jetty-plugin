@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -335,7 +334,7 @@ public class DOMBuilder
         }
 
         transformer.setParameter("encoding", "UTF-8");
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        //transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
         try
         {

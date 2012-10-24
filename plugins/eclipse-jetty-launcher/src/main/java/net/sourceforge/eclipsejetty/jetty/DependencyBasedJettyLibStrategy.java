@@ -30,7 +30,7 @@ public abstract class DependencyBasedJettyLibStrategy implements IJettyLibStrate
      * @see net.sourceforge.eclipsejetty.jetty.IJettyLibStrategy#find(java.io.File, boolean)
      */
     public Collection<File> find(File path, boolean jspSupport, boolean jmxSupport, boolean jndiSupport,
-        boolean ajpSupport, boolean annotationsSupport, boolean plusSupport, boolean servletsSupport)
+        boolean ajpSupport)
         throws CoreException
     {
         Collection<String> dependencies = new LinkedHashSet<String>();
@@ -55,21 +55,6 @@ public abstract class DependencyBasedJettyLibStrategy implements IJettyLibStrate
         if (ajpSupport)
         {
             addAJPDependencies(dependencies);
-        }
-
-        if (annotationsSupport)
-        {
-            addAnnotationsDependencies(dependencies);
-        }
-
-        if (plusSupport)
-        {
-            addPlusDependencies(dependencies);
-        }
-
-        if (servletsSupport)
-        {
-            addServerDependencies(dependencies);
         }
 
         Collection<File> results = new LinkedHashSet<File>();
@@ -109,19 +94,13 @@ public abstract class DependencyBasedJettyLibStrategy implements IJettyLibStrate
 
     protected abstract void addAJPDependencies(Collection<String> dependencies);
 
-    protected abstract void addAnnotationsDependencies(Collection<String> dependencies);
-
-    protected abstract void addPlusDependencies(Collection<String> dependencies);
-
-    protected abstract void addServletsDependencies(Collection<String> dependencies);
-
     /**
      * Resolves all dependencies an addes the files to the results.
      * 
      * @param results the results to be filled
      * @param path the path of the jetty
      * @param dependencies the dependencies
-     * @throws CoreException TODO
+     * @throws CoreException on occasion
      */
     protected abstract void resolveDependencies(Collection<File> results, File path, Collection<String> dependencies)
         throws CoreException;

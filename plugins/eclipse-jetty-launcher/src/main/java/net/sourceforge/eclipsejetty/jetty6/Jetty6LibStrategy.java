@@ -31,9 +31,9 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
     @Override
     protected void addServerDependencies(Collection<String> dependencies)
     {
-        dependencies.add("jetty-[\\d\\.]*jar");
-        dependencies.add("jetty-util-.*\\.jar");
-        dependencies.add("servlet-api-.*\\.jar");
+        dependencies.add(".*/jetty-[\\d\\.]*jar");
+        dependencies.add(".*/jetty-util-.*\\.jar");
+        dependencies.add(".*/servlet-api-.*\\.jar");
     }
 
     /* (non-Javadoc)
@@ -42,10 +42,10 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
     @Override
     protected void addJSPDependencies(Collection<String> dependencies)
     {
-        dependencies.add("ant-.*\\.jar");
-        dependencies.add("core-.*\\.jar");
-        dependencies.add("jsp-2.1-.*\\.jar");
-        dependencies.add("jsp-api-.*\\.jar");
+        dependencies.add(".*/ant-.*\\.jar");
+        dependencies.add(".*/core-.*\\.jar");
+        dependencies.add(".*/jsp-2.1-.*\\.jar");
+        dependencies.add(".*/jsp-api-.*\\.jar");
     }
 
     /* (non-Javadoc)
@@ -64,9 +64,9 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
     protected void addJMXDependencies(Collection<String> dependencies)
     {
         // TODO verify
-        dependencies.add("management/jetty-management-.*\\.jar");
-        dependencies.add("management/mx4j/mx4j-.*\\.jar");
-        dependencies.add("management/mx4j/mx4j-tools-.*\\.jar");
+        dependencies.add(".*/management/jetty-management-.*\\.jar");
+        dependencies.add(".*/management/mx4j/mx4j-.*\\.jar");
+        dependencies.add(".*/management/mx4j/mx4j-tools-.*\\.jar");
     }
 
     /**
@@ -76,9 +76,11 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
         // TODO verify
-        dependencies.add("naming/activation-.*\\.jar");
-        dependencies.add("naming/jetty-naming-.*\\.jar");
-        dependencies.add("naming/mail-.*\\.jar");
+        dependencies.add(".*/naming/jetty-naming-.*\\.jar");
+        dependencies.add(".*/naming/mail-.*\\.jar");
+        dependencies.add(".*/annotations/geronimo-annotation_1.0_spec-.*\\.jar");
+        dependencies.add(".*/annotations/jetty-annotations-.*\\.jar");
+        dependencies.add(".*/plus/jetty-plus-.*\\.jar");
     }
 
     /**
@@ -88,37 +90,7 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
     protected void addAJPDependencies(Collection<String> dependencies)
     {
         // TODO verify
-        dependencies.add("ext/jetty-ajp-.*\\.jar");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void addAnnotationsDependencies(Collection<String> dependencies)
-    {
-        // TODO verify
-        dependencies.add("annotations/geronimo-annotation_1.0_spec-.*\\.jar");
-        dependencies.add("annotations/jetty-annotations-.*\\.jar");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void addPlusDependencies(Collection<String> dependencies)
-    {
-        // TODO verify
-        dependencies.add("plus/jetty-plus-.*\\.jar");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void addServletsDependencies(Collection<String> dependencies)
-    {
-        // TODO verify
+        dependencies.add(".*/ext/jetty-ajp-.*\\.jar");
     }
 
 }

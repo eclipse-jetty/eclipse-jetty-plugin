@@ -11,6 +11,9 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty6;
 
+import java.util.Arrays;
+import java.util.List;
+
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
 
 /**
@@ -31,6 +34,22 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     {
         // <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
         return null;
+    }
+
+    @Override
+    protected List<String> getJNDIItems()
+    {
+        return Arrays.asList("org.mortbay.jetty.webapp.WebInfConfiguration",
+            "org.mortbay.jetty.webapp.WebXmlConfiguration", "org.mortbay.jetty.webapp.MetaInfConfiguration",
+            "org.mortbay.jetty.webapp.FragmentConfiguration", "org.mortbay.jetty.plus.webapp.EnvConfiguration",
+            "org.mortbay.jetty.plus.webapp.PlusConfiguration", "org.mortbay.jetty.annotations.AnnotationConfiguration",
+            "org.mortbay.jetty.webapp.JettyWebXmlConfiguration", "org.mortbay.jetty.webapp.TagLibConfiguration");
+    }
+
+    @Override
+    protected String getConfigurationKey()
+    {
+        return "org.mortbay.jetty.webapp.configuration";
     }
 
     @Override

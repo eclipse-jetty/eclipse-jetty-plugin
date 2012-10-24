@@ -11,6 +11,12 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sourceforge.eclipsejetty.jetty.JettyConfig;
+import net.sourceforge.eclipsejetty.jetty.JettyConfigScope;
+import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 
 import org.eclipse.core.runtime.CoreException;
@@ -38,13 +44,14 @@ public class JettyPluginConstants
     private static final String ATTR_JETTY_PATH = JettyPlugin.PLUGIN_ID + ".jetty.path";
     private static final String ATTR_JETTY_EMBEDDED = JettyPlugin.PLUGIN_ID + ".jetty.embedded";
     private static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version";
+    private static final String ATTR_JETTY_CONFIG_PATH = JettyPlugin.PLUGIN_ID + ".jetty.config.path.";
+    private static final String ATTR_JETTY_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".jetty.config.type.";
+    private static final String ATTR_JETTY_CONFIG_SCOPE = JettyPlugin.PLUGIN_ID + ".jetty.config.scope.";
+    private static final String ATTR_JETTY_CONFIG_ACTIVE = JettyPlugin.PLUGIN_ID + ".jetty.config.active.";
     private static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled";
     private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled";
     private static final String ATTR_JNDI_ENABLED = JettyPlugin.PLUGIN_ID + ".jndi.enabled";
     private static final String ATTR_AJP_ENABLED = JettyPlugin.PLUGIN_ID + ".ajp.enabled";
-    private static final String ATTR_ANNOTATIONS_ENABLED = JettyPlugin.PLUGIN_ID + ".annotations.enabled";
-    private static final String ATTR_PLUS_ENABLED = JettyPlugin.PLUGIN_ID + ".plus.enabled";
-    private static final String ATTR_SERVLETS_ENABLED = JettyPlugin.PLUGIN_ID + ".servlets.enabled";
     private static final String ATTR_EXCLUDE_SCOPE_COMPILE = JettyPlugin.PLUGIN_ID + ".scope.compile.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_PROVIDED = JettyPlugin.PLUGIN_ID + ".scope.provided.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_RUNTIME = JettyPlugin.PLUGIN_ID + ".scope.runtime.exclude";
@@ -52,43 +59,96 @@ public class JettyPluginConstants
     private static final String ATTR_EXCLUDE_SCOPE_SYSTEM = JettyPlugin.PLUGIN_ID + ".scope.system.exclude";
     private static final String ATTR_EXCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.excludeLibs";
     private static final String ATTR_INCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.includeLibs";
+    private static final String ATTR_GLOBAL_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.globalLibs";
     private static final String ATTR_SHOW_LAUNCHER_INFO = JettyPlugin.PLUGIN_ID + ".launcher.info";
 
+    /**
+     * Returns the name of the selected eclipse project, that should be launched
+     * 
+     * @param configuration the configuration
+     * @return the project
+     * @throws CoreException on occasion
+     */
     public static String getProject(ILaunchConfiguration configuration) throws CoreException
     {
         return configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
     }
 
+    /**
+     * Sets the name of the selected eclipse project, that should be launched
+     * 
+     * @param configuration the configuration
+     * @param project the project
+     */
     public static void setProject(ILaunchConfigurationWorkingCopy configuration, String project)
     {
         configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
     }
 
+    /**
+     * Returns the context path (path part of the URL) of the application
+     * 
+     * @param configuration the configuration
+     * @return the context path
+     * @throws CoreException on occasion
+     */
     public static String getContext(ILaunchConfiguration configuration) throws CoreException
     {
         return configuration.getAttribute(ATTR_CONTEXT, "/");
     }
 
+    /**
+     * Sets the context path (path part of the URL) of the application
+     * 
+     * @param configuration the configuration
+     * @param context the context
+     */
     public static void setContext(ILaunchConfigurationWorkingCopy configuration, String context)
     {
         configuration.setAttribute(ATTR_CONTEXT, context);
     }
 
+    /**
+     * Returns the location of the webapp directory in the workspace
+     * 
+     * @param configuration the configuration
+     * @return the location of the webapp directory
+     * @throws CoreException on occasion
+     */
     public static String getWebAppDir(ILaunchConfiguration configuration) throws CoreException
     {
         return configuration.getAttribute(ATTR_WEBAPPDIR, "src/main/webapp");
     }
 
+    /**
+     * Sets the location of the webapp directory in the workspace
+     * 
+     * @param configuration the configuration
+     * @param webappdir the location of the webapp directory
+     */
     public static void setWebAppDir(ILaunchConfigurationWorkingCopy configuration, String webappdir)
     {
         configuration.setAttribute(ATTR_WEBAPPDIR, webappdir);
     }
 
+    /**
+     * Returns the (HTTP) port
+     * 
+     * @param configuration the configuration
+     * @return the port
+     * @throws CoreException on occasion
+     */
     public static String getPort(ILaunchConfiguration configuration) throws CoreException
     {
         return configuration.getAttribute(ATTR_PORT, "8080");
     }
 
+    /**
+     * Sets the (HTTP) port
+     * 
+     * @param configuration the configuration
+     * @param port the port
+     */
     public static void setPort(ILaunchConfigurationWorkingCopy configuration, String port)
     {
         configuration.setAttribute(ATTR_PORT, port);
@@ -148,6 +208,73 @@ public class JettyPluginConstants
         configuration.setAttribute(ATTR_JETTY_VERSION, jettyVersion.name());
     }
 
+    /**
+     * Returns the configuration context holders
+     * 
+     * @param configuration the configuration
+     * @return a list of {@link JettyConfig}s
+     * @throws CoreException on occasion
+     */
+    public static List<JettyConfig> getConfigs(ILaunchConfiguration configuration) throws CoreException
+    {
+        List<JettyConfig> results = new ArrayList<JettyConfig>();
+        int index = 0;
+
+        while (true)
+        {
+            String path = configuration.getAttribute(ATTR_JETTY_CONFIG_PATH + index, (String) null);
+
+            if (path == null)
+            {
+                break;
+            }
+
+            JettyConfigType type =
+                JettyConfigType.valueOf(configuration.getAttribute(ATTR_JETTY_CONFIG_TYPE + index,
+                    JettyConfigType.PATH.name()));
+            JettyConfigScope scope =
+                JettyConfigScope.valueOf(configuration.getAttribute(ATTR_JETTY_CONFIG_SCOPE + index,
+                    JettyConfigType.PATH.name()));
+            boolean active = configuration.getAttribute(ATTR_JETTY_CONFIG_ACTIVE + index, true);
+
+            results.add(new JettyConfig(path, type, scope, active));
+            index += 1;
+        }
+
+        if (results.size() == 0)
+        {
+            results.add(new JettyConfig("", JettyConfigType.DEFAULT, JettyConfigScope.SERVER, true));
+        }
+
+        return results;
+    }
+
+    public static void setConfigs(ILaunchConfigurationWorkingCopy configuration, List<JettyConfig> entries)
+        throws CoreException
+    {
+        int index = 0;
+
+        for (JettyConfig entry : entries)
+        {
+            configuration.setAttribute(ATTR_JETTY_CONFIG_PATH + index, entry.getPath());
+            configuration.setAttribute(ATTR_JETTY_CONFIG_TYPE + index, entry.getType().name());
+            configuration.setAttribute(ATTR_JETTY_CONFIG_SCOPE + index, entry.getScope().name());
+            configuration.setAttribute(ATTR_JETTY_CONFIG_ACTIVE + index, entry.isActive());
+
+            index += 1;
+        }
+
+        while (configuration.getAttribute(ATTR_JETTY_CONFIG_PATH + index, (String) null) != null)
+        {
+            configuration.removeAttribute(ATTR_JETTY_CONFIG_PATH + index);
+            configuration.removeAttribute(ATTR_JETTY_CONFIG_TYPE + index);
+            configuration.removeAttribute(ATTR_JETTY_CONFIG_SCOPE + index);
+            configuration.removeAttribute(ATTR_JETTY_CONFIG_ACTIVE + index);
+
+            index += 1;
+        }
+    }
+
     public static boolean isJspSupport(ILaunchConfiguration configuration) throws CoreException
     {
         return !"false".equals(configuration.getAttribute(ATTR_JSP_ENABLED, "true")); // string for backward compatibility
@@ -167,7 +294,7 @@ public class JettyPluginConstants
     {
         configuration.setAttribute(ATTR_JMX_ENABLED, String.valueOf(jmxSupport)); // string for backward compatibility
     }
-    
+
     public static boolean isJndiSupport(ILaunchConfiguration configuration) throws CoreException
     {
         return "true".equals(configuration.getAttribute(ATTR_JNDI_ENABLED, "false")); // string for backward compatibility
@@ -186,36 +313,6 @@ public class JettyPluginConstants
     public static void setAjpSupport(ILaunchConfigurationWorkingCopy configuration, boolean ajpSupport)
     {
         configuration.setAttribute(ATTR_AJP_ENABLED, String.valueOf(ajpSupport)); // string for backward compatibility
-    }
-
-    public static boolean isAnnotationsSupport(ILaunchConfiguration configuration) throws CoreException
-    {
-        return "true".equals(configuration.getAttribute(ATTR_ANNOTATIONS_ENABLED, "false")); // string for backward compatibility
-    }
-
-    public static void setAnnotationsSupport(ILaunchConfigurationWorkingCopy configuration, boolean annotationsSupport)
-    {
-        configuration.setAttribute(ATTR_ANNOTATIONS_ENABLED, String.valueOf(annotationsSupport)); // string for backward compatibility
-    }
-
-    public static boolean isPlusSupport(ILaunchConfiguration configuration) throws CoreException
-    {
-        return "true".equals(configuration.getAttribute(ATTR_PLUS_ENABLED, "false")); // string for backward compatibility
-    }
-
-    public static void setPlusSupport(ILaunchConfigurationWorkingCopy configuration, boolean plusSupport)
-    {
-        configuration.setAttribute(ATTR_PLUS_ENABLED, String.valueOf(plusSupport)); // string for backward compatibility
-    }
-
-    public static boolean isServletsSupport(ILaunchConfiguration configuration) throws CoreException
-    {
-        return "true".equals(configuration.getAttribute(ATTR_SERVLETS_ENABLED, "false")); // string for backward compatibility
-    }
-
-    public static void setServletsSupport(ILaunchConfigurationWorkingCopy configuration, boolean servletsSupport)
-    {
-        configuration.setAttribute(ATTR_SERVLETS_ENABLED, String.valueOf(servletsSupport)); // string for backward compatibility
     }
 
     public static boolean isScopeCompileExcluded(ILaunchConfiguration configuration) throws CoreException
@@ -286,6 +383,16 @@ public class JettyPluginConstants
     public static void setIncludedLibs(ILaunchConfigurationWorkingCopy configuration, String includedLibs)
     {
         configuration.setAttribute(ATTR_INCLUDED_LIBS, includedLibs);
+    }
+
+    public static String getGlobalLibs(ILaunchConfiguration configuration) throws CoreException
+    {
+        return configuration.getAttribute(ATTR_GLOBAL_LIBS, "");
+    }
+
+    public static void setGlobalLibs(ILaunchConfigurationWorkingCopy configuration, String globalLibs)
+    {
+        configuration.setAttribute(ATTR_GLOBAL_LIBS, globalLibs);
     }
 
     public static boolean isShowLauncherInfo(ILaunchConfiguration configuration) throws CoreException

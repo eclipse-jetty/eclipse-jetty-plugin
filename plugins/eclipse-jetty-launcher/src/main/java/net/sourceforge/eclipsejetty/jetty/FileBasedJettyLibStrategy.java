@@ -13,6 +13,7 @@ package net.sourceforge.eclipsejetty.jetty;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashSet;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 
@@ -43,10 +44,21 @@ public abstract class FileBasedJettyLibStrategy extends DependencyBasedJettyLibS
             throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Could not find Jetty libs"));
         }
 
-        crawlDependencies(results, libPath, dependencies);
+        Collection<String> resolvedDependencies = new HashSet<String>();
+
+        crawlDependencies(results, libPath, dependencies, resolvedDependencies);
+
+        dependencies.removeAll(resolvedDependencies);
+
+        if (dependencies.size() > 0)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
+                "Failed to resolve Jetty dependencies: " + dependencies));
+        }
     }
 
-    protected void crawlDependencies(Collection<File> results, File path, Collection<String> dependencies)
+    protected void crawlDependencies(Collection<File> results, File path, Collection<String> dependencies,
+        Collection<String> resolvedDependencies)
     {
         for (File file : path.listFiles())
         {
@@ -54,10 +66,10 @@ public abstract class FileBasedJettyLibStrategy extends DependencyBasedJettyLibS
             {
                 if (isPathIncluded(file, dependencies))
                 {
-                    crawlDependencies(results, file, dependencies);
+                    crawlDependencies(results, file, dependencies, resolvedDependencies);
                 }
             }
-            else if (isFileIncluded(file, dependencies))
+            else if (isFileIncluded(file, dependencies, resolvedDependencies))
             {
                 results.add(file);
             }
@@ -69,12 +81,16 @@ public abstract class FileBasedJettyLibStrategy extends DependencyBasedJettyLibS
         return true;
     }
 
-    protected boolean isFileIncluded(File file, Collection<String> dependencies)
+    protected boolean isFileIncluded(File file, Collection<String> dependencies, Collection<String> resolvedDependencies)
     {
+        String path = file.getPath().replace('\\', '/');
+
         for (String dependency : dependencies)
         {
-            if (file.getName().matches(dependency))
+            if (path.matches(dependency))
             {
+                resolvedDependencies.add(dependency);
+
                 return true;
             }
         }
