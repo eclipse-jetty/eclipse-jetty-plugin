@@ -21,7 +21,6 @@ import java.util.List;
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
-import net.sourceforge.eclipsejetty.jetty.JettyConfigScope;
 import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 
 import org.eclipse.core.resources.IFile;
@@ -148,7 +147,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         configGroup.setText("Jetty Context Configuration:");
 
         configTable =
-            createTable(configGroup, SWT.BORDER | SWT.FULL_SELECTION, -1, 85, 3, 4, "Include", "Jetty Context File", "Scope");
+            createTable(configGroup, SWT.BORDER | SWT.FULL_SELECTION, -1, 85, 3, 4, "Include", "Jetty Context File");
         configTable.addSelectionListener(new SelectionAdapter()
         {
 
@@ -233,12 +232,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
                 if (path != null)
                 {
-                    JettyConfigScope scope =
-                        JettyConfig.determineScope(JettyConfig.getFile(ResourcesPlugin.getWorkspace(),
-                            JettyConfigType.WORKSPACE, path));
-
                     configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path,
-                        JettyConfigType.WORKSPACE, scope, true)));
+                        JettyConfigType.WORKSPACE, true)));
                     updateLaunchConfigurationDialog();
                 }
             }
@@ -252,12 +247,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
                 if (path != null)
                 {
-                    JettyConfigScope scope =
-                        JettyConfig.determineScope(JettyConfig.getFile(ResourcesPlugin.getWorkspace(),
-                            JettyConfigType.PATH, path));
-
                     configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path,
-                        JettyConfigType.PATH, scope, true)));
+                        JettyConfigType.PATH, true)));
                     updateLaunchConfigurationDialog();
                 }
             }

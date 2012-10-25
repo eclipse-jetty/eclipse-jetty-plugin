@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
-import net.sourceforge.eclipsejetty.jetty.JettyConfigScope;
 import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 
@@ -46,7 +45,6 @@ public class JettyPluginConstants
     private static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version";
     private static final String ATTR_JETTY_CONFIG_PATH = JettyPlugin.PLUGIN_ID + ".jetty.config.path.";
     private static final String ATTR_JETTY_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".jetty.config.type.";
-    private static final String ATTR_JETTY_CONFIG_SCOPE = JettyPlugin.PLUGIN_ID + ".jetty.config.scope.";
     private static final String ATTR_JETTY_CONFIG_ACTIVE = JettyPlugin.PLUGIN_ID + ".jetty.config.active.";
     private static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled";
     private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled";
@@ -232,18 +230,15 @@ public class JettyPluginConstants
             JettyConfigType type =
                 JettyConfigType.valueOf(configuration.getAttribute(ATTR_JETTY_CONFIG_TYPE + index,
                     JettyConfigType.PATH.name()));
-            JettyConfigScope scope =
-                JettyConfigScope.valueOf(configuration.getAttribute(ATTR_JETTY_CONFIG_SCOPE + index,
-                    JettyConfigType.PATH.name()));
             boolean active = configuration.getAttribute(ATTR_JETTY_CONFIG_ACTIVE + index, true);
 
-            results.add(new JettyConfig(path, type, scope, active));
+            results.add(new JettyConfig(path, type, active));
             index += 1;
         }
 
         if (results.size() == 0)
         {
-            results.add(new JettyConfig("", JettyConfigType.DEFAULT, JettyConfigScope.SERVER, true));
+            results.add(new JettyConfig("", JettyConfigType.DEFAULT, true));
         }
 
         return results;
@@ -258,7 +253,6 @@ public class JettyPluginConstants
         {
             configuration.setAttribute(ATTR_JETTY_CONFIG_PATH + index, entry.getPath());
             configuration.setAttribute(ATTR_JETTY_CONFIG_TYPE + index, entry.getType().name());
-            configuration.setAttribute(ATTR_JETTY_CONFIG_SCOPE + index, entry.getScope().name());
             configuration.setAttribute(ATTR_JETTY_CONFIG_ACTIVE + index, entry.isActive());
 
             index += 1;
@@ -268,7 +262,6 @@ public class JettyPluginConstants
         {
             configuration.removeAttribute(ATTR_JETTY_CONFIG_PATH + index);
             configuration.removeAttribute(ATTR_JETTY_CONFIG_TYPE + index);
-            configuration.removeAttribute(ATTR_JETTY_CONFIG_SCOPE + index);
             configuration.removeAttribute(ATTR_JETTY_CONFIG_ACTIVE + index);
 
             index += 1;

@@ -27,7 +27,6 @@ import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
-import net.sourceforge.eclipsejetty.jetty.JettyConfigScope;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 
 import org.eclipse.core.resources.IFile;
@@ -53,7 +52,6 @@ import org.eclipse.jdt.launching.JavaRuntime;
 public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 {
     public static final String CONFIGURATION_KEY = "jetty.launcher.configuration";
-    public static final String WEBAPP_CONFIGURATION_KEY = "jetty.launcher.webAppConfiguration";
     public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo";
 
     public JettyLaunchConfigurationDelegate()
@@ -85,13 +83,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         File defaultFile = createJettyConfigurationFile(configuration, jettyVersion, webappClasspath);
         String vmArguments = super.getVMArguments(configuration);
 
-        vmArguments +=
-            " -D" + CONFIGURATION_KEY + "="
-                + getConfigurationParameter(configuration, JettyConfigScope.SERVER, defaultFile);
-
-        vmArguments +=
-            " -D" + WEBAPP_CONFIGURATION_KEY + "="
-                + getConfigurationParameter(configuration, JettyConfigScope.WEBAPPCONTEXT, defaultFile);
+        vmArguments += " -D" + CONFIGURATION_KEY + "=" + getConfigurationParameter(configuration, defaultFile);
 
         if (!JettyPluginConstants.isShowLauncherInfo(configuration))
         {
@@ -101,15 +93,14 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         return vmArguments;
     }
 
-    private String getConfigurationParameter(ILaunchConfiguration configuration, JettyConfigScope scope,
-        File defaultFile) throws CoreException
+    private String getConfigurationParameter(ILaunchConfiguration configuration, File defaultFile) throws CoreException
     {
         StringBuilder configurationParam = new StringBuilder();
         List<JettyConfig> configs = JettyPluginConstants.getConfigs(configuration);
 
         for (JettyConfig config : configs)
         {
-            if ((scope == config.getScope()) && (config.isActive()))
+            if (config.isActive())
             {
                 if (configurationParam.length() > 0)
                 {

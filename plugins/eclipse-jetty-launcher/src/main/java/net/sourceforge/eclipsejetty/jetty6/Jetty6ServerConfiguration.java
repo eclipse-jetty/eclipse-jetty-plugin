@@ -40,16 +40,8 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     protected List<String> getJNDIItems()
     {
         return Arrays.asList("org.mortbay.jetty.webapp.WebInfConfiguration",
-            "org.mortbay.jetty.webapp.WebXmlConfiguration", "org.mortbay.jetty.webapp.MetaInfConfiguration",
-            "org.mortbay.jetty.webapp.FragmentConfiguration", "org.mortbay.jetty.plus.webapp.EnvConfiguration",
-            "org.mortbay.jetty.plus.webapp.PlusConfiguration", "org.mortbay.jetty.annotations.AnnotationConfiguration",
+            "org.mortbay.jetty.plus.webapp.EnvConfiguration", "org.mortbay.jetty.plus.webapp.Configuration",
             "org.mortbay.jetty.webapp.JettyWebXmlConfiguration", "org.mortbay.jetty.webapp.TagLibConfiguration");
-    }
-
-    @Override
-    protected String getConfigurationKey()
-    {
-        return "org.mortbay.jetty.webapp.configuration";
     }
 
     @Override

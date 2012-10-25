@@ -108,7 +108,6 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     @Override
     protected void buildContent(DOMBuilder builder)
     {
-        buildJNDI(builder);
         buildConnector(builder);
         buildSSLConnector(builder);
 
@@ -125,17 +124,14 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
             }
             builder.end();
             
-            builder.begin("Call").attribute("name", "setAttribute");
-            builder.element("Arg", getConfigurationKey());
-            builder.begin("Arg").element("Ref", "id", "plusConfig").end();
+            builder.begin("Set").attribute("name", "configurationClasses");
+            builder.element("Ref", "id", "plusConfig");
             builder.end();
         }
     }
 
     protected abstract List<String> getJNDIItems();
     
-    protected abstract String getConfigurationKey();
-
     protected void buildConnector(DOMBuilder builder)
     {
         if (port != null)
@@ -194,6 +190,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         builder.begin("New").attribute("class", getDefaultHandlerClass());
         builder.begin("Arg").attribute("type", "String").text(getDefaultWar()).end();
         builder.begin("Arg").attribute("type", "String").text(getDefaultContextPath()).end();
+        buildJNDI(builder);
         buildDefaultHandlerSetters(builder);
         builder.end();
 

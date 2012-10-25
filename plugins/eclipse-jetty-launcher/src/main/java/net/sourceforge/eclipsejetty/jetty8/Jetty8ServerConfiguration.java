@@ -11,6 +11,9 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty8;
 
+import java.util.Arrays;
+import java.util.List;
+
 import net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration;
 
 public class Jetty8ServerConfiguration extends Jetty7ServerConfiguration
@@ -19,6 +22,16 @@ public class Jetty8ServerConfiguration extends Jetty7ServerConfiguration
     public Jetty8ServerConfiguration()
     {
         super();
+    }
+
+    @Override
+    protected List<String> getJNDIItems()
+    {
+        return Arrays.asList("org.eclipse.jetty.webapp.WebInfConfiguration",
+            "org.eclipse.jetty.webapp.WebXmlConfiguration", "org.eclipse.jetty.webapp.MetaInfConfiguration",
+            "org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration",
+            "org.eclipse.jetty.plus.webapp.PlusConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration",
+            "org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
     }
 
 }

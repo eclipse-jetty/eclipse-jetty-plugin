@@ -2,7 +2,6 @@ package net.sourceforge.eclipsejetty.launch;
 
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
-import net.sourceforge.eclipsejetty.jetty.JettyConfigScope;
 import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 
 import org.eclipse.swt.SWT;
@@ -20,7 +19,6 @@ public class JettyLaunchConfigEntry
 
     private String path;
     private JettyConfigType type;
-    private JettyConfigScope scope;
     private boolean active;
 
     private boolean needsUpdate;
@@ -38,7 +36,6 @@ public class JettyLaunchConfigEntry
 
         path = config.getPath();
         type = config.getType();
-        scope = config.getScope();
         active = config.isActive();
 
         needsUpdate = true;
@@ -68,20 +65,6 @@ public class JettyLaunchConfigEntry
         if (!JettyPluginUtils.equals(this.type, type))
         {
             this.type = type;
-            needsUpdate = true;
-        }
-    }
-
-    public JettyConfigScope getScope()
-    {
-        return scope;
-    }
-
-    public void setScope(JettyConfigScope scope)
-    {
-        if (!JettyPluginUtils.equals(this.scope, scope))
-        {
-            this.scope = scope;
             needsUpdate = true;
         }
     }
@@ -147,9 +130,6 @@ public class JettyLaunchConfigEntry
 
                 item.setText(1, "Eclipse Jetty Launcher Context");
                 item.setForeground(1, color);
-
-                item.setText(2, scope.getDescription());
-                item.setForeground(2, color);
                 break;
 
             default:
@@ -166,9 +146,6 @@ public class JettyLaunchConfigEntry
 
                 item.setText(1, path);
                 item.setForeground(1, color);
-
-                item.setText(2, scope.getDescription());
-                item.setForeground(2, color);
                 break;
         }
 
@@ -225,7 +202,7 @@ public class JettyLaunchConfigEntry
 
     public JettyConfig getJettyConfig()
     {
-        return new JettyConfig(path, type, scope, active);
+        return new JettyConfig(path, type, active);
     }
 
 }

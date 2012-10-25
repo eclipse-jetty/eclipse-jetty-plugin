@@ -42,12 +42,6 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
-    protected String getConfigurationKey()
-    {
-        return "org.eclipse.jetty.webapp.configuration";
-    }
-
-    @Override
     protected String getClassToConfigure()
     {
         return "org.eclipse.jetty.server.Server";
