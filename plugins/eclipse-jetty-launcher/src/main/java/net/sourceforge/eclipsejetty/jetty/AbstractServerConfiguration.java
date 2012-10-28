@@ -108,22 +108,28 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     @Override
     protected void buildContent(DOMBuilder builder)
     {
+        buildThreadPool(builder);
+        buildHttpConfig(builder);
         buildConnector(builder);
-        buildSSLConnector(builder);
-
         buildHandler(builder);
+        buildExtraOptions(builder);
     }
+
+    protected abstract void buildThreadPool(DOMBuilder builder);
+
+    protected abstract void buildHttpConfig(DOMBuilder builder);
 
     protected void buildJNDI(DOMBuilder builder)
     {
         if (isJndi())
         {
             builder.begin("Array").attribute("id", "plusConfig").attribute("type", "String");
-            for (String item : getJNDIItems()) {
+            for (String item : getJNDIItems())
+            {
                 builder.element("Item", item);
             }
             builder.end();
-            
+
             builder.begin("Set").attribute("name", "configurationClasses");
             builder.element("Ref", "id", "plusConfig");
             builder.end();
@@ -131,52 +137,8 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     protected abstract List<String> getJNDIItems();
-    
-    protected void buildConnector(DOMBuilder builder)
-    {
-        if (port != null)
-        {
-            builder.begin("Call").attribute("name", "addConnector");
-            builder.begin("Arg");
 
-            builder.begin("New").attribute("class", getConnectorClass());
-            buildConnectorSetters(builder);
-            builder.end();
-
-            builder.end();
-            builder.end();
-        }
-    }
-
-    protected abstract String getConnectorClass();
-
-    protected void buildConnectorSetters(DOMBuilder builder)
-    {
-        builder.begin("Set").attribute("name", "port").text(getPort()).end();
-    }
-
-    protected void buildSSLConnector(DOMBuilder builder)
-    {
-        if (sslPort != null)
-        {
-            builder.begin("Call").attribute("name", "addConnector");
-            builder.begin("Arg");
-
-            builder.begin("New").attribute("class", getSSLConnectorClass());
-            buildSSLConnectorSetters(builder);
-            builder.end();
-
-            builder.end();
-            builder.end();
-        }
-    }
-
-    protected abstract String getSSLConnectorClass();
-
-    protected void buildSSLConnectorSetters(DOMBuilder builder)
-    {
-        builder.begin("Set").attribute("name", "port").text(getSslPort()).end();
-    }
+    protected abstract void buildConnector(DOMBuilder builder);
 
     protected void buildHandler(DOMBuilder builder)
     {
@@ -203,5 +165,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     {
         builder.begin("Set").attribute("name", "extraClasspath").text(link(defaultClasspath)).end();
     }
+
+    protected abstract void buildExtraOptions(DOMBuilder builder);
 
 }

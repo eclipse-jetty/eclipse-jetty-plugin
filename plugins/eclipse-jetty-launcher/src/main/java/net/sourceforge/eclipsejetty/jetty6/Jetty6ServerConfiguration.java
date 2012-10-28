@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
+import net.sourceforge.eclipsejetty.util.DOMBuilder;
 
 /**
  * Configuration for Jetty 6
@@ -37,6 +38,26 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
+    protected void buildThreadPool(DOMBuilder builder)
+    {
+        builder.begin("Set").attribute("name", "ThreadPool");
+
+        builder.begin("New").attribute("class", "org.mortbay.thread.QueuedThreadPool");
+        builder.element("Set", "name", "minThreads", 2);
+        builder.element("Set", "name", "maxThreads", 10);
+        builder.element("Set", "name", "lowThreads", 4);
+        builder.end();
+
+        builder.end();
+    }
+
+    @Override
+    protected void buildHttpConfig(DOMBuilder builder)
+    {
+        // nothing to do
+    }
+
+    @Override
     protected List<String> getJNDIItems()
     {
         return Arrays.asList("org.mortbay.jetty.webapp.WebInfConfiguration",
@@ -51,21 +72,36 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
-    protected String getConnectorClass()
+    protected void buildConnector(DOMBuilder builder)
     {
-        return "org.mortbay.jetty.bio.SocketConnector";
-    }
-
-    @Override
-    protected String getSSLConnectorClass()
-    {
-        return "org.mortbay.jetty.bio.SSLSocketConnector";
+        if (getPort() != null)
+        {
+            builder.begin("Call").attribute("name", "addConnector");
+            builder.begin("Arg");
+            builder.begin("New").attribute("class", "org.mortbay.jetty.nio.SelectChannelConnector");
+            builder.element("Set", "name", "port", getPort());
+            builder.element("Set", "name", "maxIdleTime", 30000);
+            builder.element("Set", "name", "Acceptors", 2);
+            builder.element("Set", "name", "statsOn", false);
+            builder.end();
+            builder.end();
+            builder.end();
+        }
     }
 
     @Override
     protected String getDefaultHandlerClass()
     {
         return "org.mortbay.jetty.webapp.WebAppContext";
+    }
+
+    @Override
+    protected void buildExtraOptions(DOMBuilder builder)
+    {
+        builder.element("Set", "name", "stopAtShutdown", true);
+        builder.element("Set", "name", "sendServerVersion", true);
+        builder.element("Set", "name", "sendDateHeader", true);
+        builder.element("Set", "name", "gracefulShutdown", 1000);
     }
 
 }

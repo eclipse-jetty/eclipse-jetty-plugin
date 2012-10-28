@@ -192,6 +192,10 @@ public class JettyPluginUtils
                 {
                     return JettyVersion.JETTY_8;
                 }
+                else if (name.contains("-9."))
+                {
+                    return JettyVersion.JETTY_9;
+                }
             }
         }
 
@@ -242,10 +246,11 @@ public class JettyPluginUtils
 
     public static String resolveVariables(String s)
     {
-        if (s == null) {
+        if (s == null)
+        {
             return null;
         }
-        
+
         try
         {
             s = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(s);
@@ -266,14 +271,15 @@ public class JettyPluginUtils
     public static String[] toLocationArray(IRuntimeClasspathEntry... classpathEntries)
     {
         Collection<String> results = toLocationCollection(classpathEntries);
-        
+
         return results.toArray(new String[results.size()]);
     }
-    
-    public static Collection<String> toLocationCollection(Collection<IRuntimeClasspathEntry> classpathEntries) {
+
+    public static Collection<String> toLocationCollection(Collection<IRuntimeClasspathEntry> classpathEntries)
+    {
         return toLocationCollection(classpathEntries.toArray(new IRuntimeClasspathEntry[classpathEntries.size()]));
     }
-    
+
     public static Collection<String> toLocationCollection(IRuntimeClasspathEntry... classpathEntries)
     {
         Set<String> results = new LinkedHashSet<String>();

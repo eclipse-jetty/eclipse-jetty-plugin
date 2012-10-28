@@ -19,6 +19,8 @@ import net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy;
 import net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
 import net.sourceforge.eclipsejetty.jetty8.Jetty8ServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty9.Jetty9LibStrategy;
+import net.sourceforge.eclipsejetty.jetty9.Jetty9ServerConfiguration;
 
 /**
  * Describes the version of the Jetty
@@ -39,7 +41,10 @@ public enum JettyVersion
         Jetty7ServerConfiguration.class, new Jetty7LibStrategy()),
 
     JETTY_8("net.sourceforge.eclipsejetty.starter.jetty8.Jetty8LauncherMain", "lib/eclipse-jetty-starters-jetty8.jar",
-        Jetty8ServerConfiguration.class, new Jetty8LibStrategy());
+        Jetty8ServerConfiguration.class, new Jetty8LibStrategy()),
+
+    JETTY_9("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-jetty9.jar",
+        Jetty9ServerConfiguration.class, new Jetty9LibStrategy());
 
     private final String mainClass;
     private final String jar;

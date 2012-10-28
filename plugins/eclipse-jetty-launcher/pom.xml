@@ -43,6 +43,13 @@
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-jetty9</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -62,7 +69,8 @@
 								eclipse-jetty-starters-embedded,
 								eclipse-jetty-starters-jetty6,
 								eclipse-jetty-starters-jetty7,
-								eclipse-jetty-starters-jetty8</includeArtifactIds>
+								eclipse-jetty-starters-jetty8,
+								eclipse-jetty-starters-jetty9</includeArtifactIds>
 							<outputDirectory>${project.build.directory}/../lib</outputDirectory>
 							<stripVersion>true</stripVersion>
 						</configuration>

@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
+import net.sourceforge.eclipsejetty.util.DOMBuilder;
 
 public class Jetty7ServerConfiguration extends AbstractServerConfiguration
 {
@@ -29,6 +30,26 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     {
         // <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
         return null;
+    }
+
+    @Override
+    protected void buildThreadPool(DOMBuilder builder)
+    {
+        builder.begin("Set").attribute("name", "ThreadPool");
+
+        builder.begin("New").attribute("class", "org.eclipse.jetty.util.thread.QueuedThreadPool");
+        builder.element("Set", "name", "minThreads", 2);
+        builder.element("Set", "name", "maxThreads", 10);
+        builder.element("Set", "name", "detailedDump", false);
+        builder.end();
+
+        builder.end();
+    }
+
+    @Override
+    protected void buildHttpConfig(DOMBuilder builder)
+    {
+        // nothing to do
     }
 
     @Override
@@ -48,21 +69,38 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
-    protected String getConnectorClass()
+    protected void buildConnector(DOMBuilder builder)
     {
-        return "org.eclipse.jetty.server.bio.SocketConnector";
-    }
-
-    @Override
-    protected String getSSLConnectorClass()
-    {
-        return "org.eclipse.jetty.server.ssl.SslSocketConnector";
+        if (getPort() != null)
+        {
+            builder.begin("Call").attribute("name", "addConnector");
+            builder.begin("Arg");
+            builder.begin("New").attribute("class", "org.eclipse.jetty.server.nio.SelectChannelConnector");
+            builder.element("Set", "name", "port", getPort());
+            builder.element("Set", "name", "maxIdleTime", 30000);
+            builder.element("Set", "name", "Acceptors", 2);
+            builder.element("Set", "name", "statsOn", false);
+            builder.end();
+            builder.end();
+            builder.end();
+        }
     }
 
     @Override
     protected String getDefaultHandlerClass()
     {
         return "org.eclipse.jetty.webapp.WebAppContext";
+    }
+
+    @Override
+    protected void buildExtraOptions(DOMBuilder builder)
+    {
+        builder.element("Set", "name", "stopAtShutdown", true);
+        builder.element("Set", "name", "sendServerVersion", true);
+        builder.element("Set", "name", "sendDateHeader", true);
+        builder.element("Set", "name", "gracefulShutdown", 1000);
+        builder.element("Set", "name", "dumpAfterStart", false);
+        builder.element("Set", "name", "dumpBeforeStop", false);
     }
 
 }
