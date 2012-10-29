@@ -3,11 +3,6 @@
    <description url="http://eclipse-jetty.sourceforge.net/update/">
       Eclipse Jetty Integration
    </description>
-   <!--
-   <feature url="features/net.sourceforge.eclipsejetty.feature_3.4.0.alpha-2.jar" id="net.sourceforge.eclipsejetty.feature" version="3.4.0.alpha-2">
-      <category name="eclipsejetty"/>
-   </feature>
-   -->
    <feature url="features/net.sourceforge.eclipsejetty.feature_3.5.0.jar" id="net.sourceforge.eclipsejetty.feature" version="3.5.0">
       <category name="eclipsejetty"/>
    </feature>

@@ -9,7 +9,7 @@
 		<version>3.5.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>eclipse-jetty-site</artifactId>
-	<packaging>jar</packaging>
+	<packaging>eclipse-repository</packaging>
 
 	<name>Eclipse Jetty Launcher Site</name>
 </project>

@@ -12,8 +12,8 @@
 		<relativePath>../..</relativePath>
 	</parent>
 	
-	<artifactId>eclipse-jetty-feature</artifactId>
-	<packaging>jar</packaging>
+	<artifactId>net.sourceforge.eclipsejetty.feature</artifactId>
+	<packaging>eclipse-feature</packaging>
 
 	<name>Eclipse Jetty Launcher Feature</name>
 	

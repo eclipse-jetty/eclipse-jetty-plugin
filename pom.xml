@@ -36,12 +36,12 @@
 	</developers>
 
 	<properties>
-		<tycho-version>0.11.1</tycho-version>
+		<tycho-version>0.16.0</tycho-version>
 	</properties>
 
 	<scm>
-		<connection>scm:svn:https://eclipse-jetty.svn.sourceforge.net/svnroot/eclipse-jetty/</connection>
-		<url>https://eclipse-jetty.svn.sourceforge.net/svnroot/eclipse-jetty/</url>
+		<connection>scm:svn:https://svn.code.sf.net/p/eclipse-jetty/code/trunk/</connection>
+		<url>http://sourceforge.net/p/eclipse-jetty/code/</url>
 	</scm>
 
 	<modules>
@@ -52,52 +52,13 @@
 	</modules>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<!-- Ignore/Execute plugin execution -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<!-- copy-dependency plugin -->
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-dependency-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>copy-dependencies</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 
 		<plugins>
 			<plugin>
-				<groupId>org.sonatype.tycho</groupId>
+				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<extensions>true</extensions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.sonatype.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho-version}</version>
-				<configuration>
-					<resolver>p2</resolver>
-				</configuration>
 			</plugin>
 
 			<plugin>
@@ -142,4 +103,12 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<repositories>
+		<repository>
+		   <id>eclipse-indigo</id>
+		   <url>http://download.eclipse.org/releases/indigo</url>
+		   <layout>p2</layout>
+		</repository>
+	</repositories>
 </project>
