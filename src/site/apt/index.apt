@@ -3,13 +3,13 @@
  -----
  Christian Köberl
  -----
- May 2011
+ December 2012
  
 Introduction
 
  Eclipse Jetty Integration provides a launch configuration for launching Jetty server out of the Eclipse IDE.
  
- Currently supported versions of Jetty are 5.x, 6.x and 7.x.
+ Currently supported versions of Jetty are 6.x, 7.x, 8.x and 9.x.
  
  This plugin is releases under the Apache 2.0 license ({{http://www.apache.org/licenses/LICENSE-2.0.txt}}).
 

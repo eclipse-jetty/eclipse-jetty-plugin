@@ -7,4 +7,61 @@
 
 Getting started
 
- TODO
+* Running
+
+ To run a web project using Eclipse Jetty - just go to your Run/Debug configurations and click on "New launch 
+ configuration". Select the project (if it's not yet select). Usually you should be able to run and debug your project
+ now.
+
+* WebApp Settings
+
+ Eclipse Jetty defaults to the 
+ {{{http://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html}Maven standard directory layout}}
+ - therfore the default WebApp directory will be "src/main/webapp". If your WebApp directory is located somewhere else
+ choose the correct location.
+
+ Further options on the "WebApp" tab are the context path and the port under which your application should run.
+
+ On the bottom you can add your own Jetty confguration file (jetty.xml) - this enables the whole configration 
+ possibilities provided by Jetty.
+
+[images/DebugDialog.jpg] The WebApp settings
+
+* Options 
+
+[images/Options.jpg] Options for Eclipse Jetty
+
+ On the tab "Options" you can choose your Jetty version. Eclipse Jetty comes with an embedded Jetty7 - if you want to
+ use another version define the path to your Jetty installation. Eclipse Jetty will automatically detect the version
+ (supported are currently 6.x - 9.x).
+
+ The Jetty features can be enabled/disabled below - currenlty supported is JNDI and JSP support. JMX and AJP will be
+ added in future releases.
+ 
+ If you enable "Show Detailed Server Info" a nice ACSII art with additional information will be shown on startup in
+ the console window. Here's an example:
+
++--
+   ____    ___                   __    __  __         ____
+  / __/___/ (_)__  ___ ___   __ / /__ / /_/ /___ __  /_  /
+ / _// __/ / / _ \(_-</ -_) / // / -_) __/ __/ // /   / /
+/___/\__/_/_/ .__/___/\__/  \___/\__/\__/\__/\_, /   /_/
+           /_/                              /___/
+
+   Configuration: C:\temp\jettyLauncherConfiguration396748506452277842.xml
+         Version: 7.6.7.v20120910
+         Context: /
+            Port: 8082
+       Classpath: ...
++--
+
+* Integration with Eclipse m2e Plugin
+
+[images/Maven.jpg] Maven Settings for Eclipse Jetty
+
+ Eclipse Jetty reads information from the m2e plugin (if you use it) and uses it to generate the correct classpath for
+ launching your application. The default is to include compile and runtime scope - you can changed this by selecting
+ other scopes.
+ 
+ Below the scope selection you can override the global inclusion/exclusion on a per library basis. This is sometimes
+ needed when you need a database driver to launch, which you do not want to include in your product.

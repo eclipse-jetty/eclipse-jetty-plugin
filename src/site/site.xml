@@ -13,8 +13,8 @@
 
 		<menu name="Documentation">
 			<item name="Overview" href="index.html" />
-			<item name="Getting started" href="getting_started.html" />
 			<item name="Installation" href="installation.html" />
+			<item name="Getting started" href="getting_started.html" />
 		</menu>
 
 		<menu name="Additional Infos">
