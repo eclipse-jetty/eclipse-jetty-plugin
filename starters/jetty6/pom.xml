@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>net.sourceforge.eclipsejetty</groupId>
 		<artifactId>eclipse-jetty-starters</artifactId>
-		<version>3.5.0</version>
+		<version>3.5.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>eclipse-jetty-starters-jetty6</artifactId>
