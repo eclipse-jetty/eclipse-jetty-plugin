@@ -39,10 +39,10 @@ public class JettyEmbeddedLauncherMain extends AbstractJettyLauncherMain
     @Override
     protected void printLogo()
     {
-        System.out.println("   ____    ___                   __    __  __         ____");
-        System.out.println("  / __/___/ (_)__  ___ ___   __ / /__ / /_/ /___ __  /_  /");
-        System.out.println(" / _// __/ / / _ \\(_-</ -_) / // / -_) __/ __/ // /   / /");
-        System.out.println("/___/\\__/_/_/ .__/___/\\__/  \\___/\\__/\\__/\\__/\\_, /   /_/");
+        System.out.println("   ____    ___                   __    __  __         ___");
+        System.out.println("  / __/___/ (_)__  ___ ___   __ / /__ / /_/ /___ __  ( _ )");
+        System.out.println(" / _// __/ / / _ \\(_-</ -_) / // / -_) __/ __/ // / / _  |");
+        System.out.println("/___/\\__/_/_/ .__/___/\\__/  \\___/\\__/\\__/\\__/\\_, /  \\___/");
         System.out.println("           /_/                              /___/");
     }
 

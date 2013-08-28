@@ -101,7 +101,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jettyGroup.setText("Jetty:");
 
         embeddedButton =
-            createButton(jettyGroup, SWT.RADIO, "Use Jetty provided by launcher plugin (Jetty 7.x)", -1, 4, 1,
+            createButton(jettyGroup, SWT.RADIO, "Use Jetty provided by launcher plugin (Jetty 8.x)", -1, 4, 1,
                 modifyDialogListener);
         externButton = createButton(jettyGroup, SWT.RADIO, "Use Jetty at path:", 128, 1, 1, modifyDialogListener);
         pathText = createText(jettyGroup, SWT.BORDER, -1, -1, 3, 1, modifyDialogListener);
