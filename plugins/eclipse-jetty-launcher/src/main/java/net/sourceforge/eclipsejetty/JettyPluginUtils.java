@@ -23,11 +23,16 @@ import java.util.regex.PatternSyntaxException;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.VariablesPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.project.IMavenProjectFacade;
 
 /**
  * Some utilities
@@ -331,4 +336,34 @@ public class JettyPluginUtils
         return "";
     }
 
+    public static boolean isM2EAvailable()
+    {
+        try
+        {
+            Class.forName("org.eclipse.m2e.core.MavenPlugin");
+        }
+        catch (ClassNotFoundException e)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static IMavenProjectFacade getMavenProjectFacade(ILaunchConfiguration configuration) throws CoreException
+    {
+        String projectName = JettyPluginConstants.getProject(configuration);
+
+        if ((projectName != null) && (projectName.length() > 0))
+        {
+            IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+
+            if (project != null)
+            {
+                return MavenPlugin.getMavenProjectRegistry().getProject(project);
+            }
+        }
+
+        return null;
+    }
 }

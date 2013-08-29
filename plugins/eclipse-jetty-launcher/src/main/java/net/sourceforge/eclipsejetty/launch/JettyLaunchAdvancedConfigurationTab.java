@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
@@ -73,6 +74,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Text ajpPortText;
     private Button showLauncherInfoButon;
 
+    private Label m2eLabel;
     private Button mavenIncludeCompile;
     private Button mavenIncludeProvided;
     private Button mavenIncludeRuntime;
@@ -160,12 +162,13 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         dependencyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
         dependencyGroup.setText("Libraries and Dependencies:");
 
-        createLabel(dependencyGroup, "Included Maven Dependencies:", 224, 1, 3);
+        createLabel(dependencyGroup, "Included Maven Dependencies:", 224, 1, 1);
         mavenIncludeCompile =
             createButton(dependencyGroup, SWT.CHECK, "Compile Scope", 224, 1, 1, modifyDialogListener);
         mavenIncludeProvided =
             createButton(dependencyGroup, SWT.CHECK, "Provided Scope", -1, 1, 1, modifyDialogListener);
 
+        m2eLabel = createLabel(dependencyGroup, "", 224, 1, 2);
         mavenIncludeRuntime =
             createButton(dependencyGroup, SWT.CHECK, "Runtime Scope", 224, 1, 1, modifyDialogListener);
         mavenIncludeSystem = createButton(dependencyGroup, SWT.CHECK, "System Scope", -1, 1, 1, modifyDialogListener);
@@ -354,6 +357,34 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             }
         }
 
+        boolean scopeable = false;
+
+        m2eLabel.setText("");
+
+        if (JettyPluginUtils.isM2EAvailable()) {
+            try
+            {
+                scopeable = JettyPluginUtils.getMavenProjectFacade(configuration) != null;
+            }
+            catch (CoreException e)
+            {
+                // ignore
+            }
+            
+            if (!scopeable) {
+                m2eLabel.setText("(no m2e project)");
+            }
+        }
+        else {
+            m2eLabel.setText("(m2e not available)");
+        }
+        
+        mavenIncludeCompile.setEnabled(scopeable);
+        mavenIncludeProvided.setEnabled(scopeable);
+        mavenIncludeRuntime.setEnabled(scopeable);
+        mavenIncludeTest.setEnabled(scopeable);
+        mavenIncludeSystem.setEnabled(scopeable);
+        
         setDirty(true);
 
         return true;
