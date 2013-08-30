@@ -22,17 +22,11 @@ import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
+import net.sourceforge.eclipsejetty.util.ScopedClasspathEntry;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.VariablesPlugin;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.jdt.core.IClasspathAttribute;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
-import org.eclipse.m2e.core.MavenPlugin;
-import org.eclipse.m2e.core.project.IMavenProjectFacade;
 
 /**
  * Some utilities
@@ -268,9 +262,21 @@ public class JettyPluginUtils
         return s;
     }
 
+    public static String[] toLocationArrayFromScoped(Collection<ScopedClasspathEntry> classpathEntries)
+    {
+        return toLocationArrayFromScoped(classpathEntries.toArray(new ScopedClasspathEntry[classpathEntries.size()]));
+    }
+
     public static String[] toLocationArray(Collection<IRuntimeClasspathEntry> classpathEntries)
     {
-        return toLocationArray(classpathEntries.toArray(new IRuntimeClasspathEntry[classpathEntries.size()]));
+        return toLocationArrayFromScoped(classpathEntries.toArray(new ScopedClasspathEntry[classpathEntries.size()]));
+    }
+
+    public static String[] toLocationArrayFromScoped(ScopedClasspathEntry... classpathEntries)
+    {
+        Collection<String> results = toLocationCollectionFromScoped(classpathEntries);
+
+        return results.toArray(new String[results.size()]);
     }
 
     public static String[] toLocationArray(IRuntimeClasspathEntry... classpathEntries)
@@ -280,9 +286,32 @@ public class JettyPluginUtils
         return results.toArray(new String[results.size()]);
     }
 
+    public static Collection<String> toLocationCollectionFromScoped(Collection<ScopedClasspathEntry> classpathEntries)
+    {
+        return toLocationCollectionFromScoped(classpathEntries
+            .toArray(new ScopedClasspathEntry[classpathEntries.size()]));
+    }
+
     public static Collection<String> toLocationCollection(Collection<IRuntimeClasspathEntry> classpathEntries)
     {
         return toLocationCollection(classpathEntries.toArray(new IRuntimeClasspathEntry[classpathEntries.size()]));
+    }
+
+    public static Collection<String> toLocationCollectionFromScoped(ScopedClasspathEntry... classpathEntries)
+    {
+        Set<String> results = new LinkedHashSet<String>();
+
+        for (ScopedClasspathEntry entry : classpathEntries)
+        {
+            String location = toLocation(entry);
+
+            if (location != null)
+            {
+                results.add(location);
+            }
+        }
+
+        return results;
     }
 
     public static Collection<String> toLocationCollection(IRuntimeClasspathEntry... classpathEntries)
@@ -302,6 +331,11 @@ public class JettyPluginUtils
         return results;
     }
 
+    public static String toLocation(ScopedClasspathEntry entry)
+    {
+        return toLocation(entry.getEntry());
+    }
+
     public static String toLocation(IRuntimeClasspathEntry entry)
     {
         String location = entry.getLocation();
@@ -314,56 +348,28 @@ public class JettyPluginUtils
         return location.replace('\\', '/');
     }
 
-    public static String getMavenScope(IRuntimeClasspathEntry entry)
+    public static String getName(String location)
     {
-        IClasspathEntry classpathEntry = entry.getClasspathEntry();
+        int index = location.lastIndexOf('/');
 
-        if (classpathEntry == null)
+        if (index < 0)
+        {
+            return location;
+        }
+
+        return location.substring(index + 1);
+    };
+
+    public static String getPath(String location)
+    {
+        int index = location.lastIndexOf('/');
+
+        if (index < 0)
         {
             return "";
         }
 
-        IClasspathAttribute[] extraAttributes = classpathEntry.getExtraAttributes();
-
-        for (IClasspathAttribute extraAttribute : extraAttributes)
-        {
-            if ("maven.scope".equals(extraAttribute.getName()))
-            {
-                return extraAttribute.getValue();
-            }
-        }
-
-        return "";
+        return location.substring(0, index);
     }
 
-    public static boolean isM2EAvailable()
-    {
-        try
-        {
-            Class.forName("org.eclipse.m2e.core.MavenPlugin");
-        }
-        catch (ClassNotFoundException e)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    public static IMavenProjectFacade getMavenProjectFacade(ILaunchConfiguration configuration) throws CoreException
-    {
-        String projectName = JettyPluginConstants.getProject(configuration);
-
-        if ((projectName != null) && (projectName.length() > 0))
-        {
-            IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-
-            if (project != null)
-            {
-                return MavenPlugin.getMavenProjectRegistry().getProject(project);
-            }
-        }
-
-        return null;
-    }
 }

@@ -55,6 +55,8 @@ public class JettyPluginConstants
     private static final String ATTR_EXCLUDE_SCOPE_RUNTIME = JettyPlugin.PLUGIN_ID + ".scope.runtime.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_TEST = JettyPlugin.PLUGIN_ID + ".scope.test.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_SYSTEM = JettyPlugin.PLUGIN_ID + ".scope.system.exclude";
+    private static final String ATTR_EXCLUDE_SCOPE_IMPORT = JettyPlugin.PLUGIN_ID + ".scope.import.exclude";
+    private static final String ATTR_EXCLUDE_SCOPE_NONE = JettyPlugin.PLUGIN_ID + ".scope.none.exclude";
     private static final String ATTR_EXCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.excludeLibs";
     private static final String ATTR_INCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.includeLibs";
     private static final String ATTR_GLOBAL_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.globalLibs";
@@ -356,6 +358,26 @@ public class JettyPluginConstants
     public static void setScopeSystemExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
         configuration.setAttribute(ATTR_EXCLUDE_SCOPE_SYSTEM, value);
+    }
+
+    public static boolean isScopeImportExcluded(ILaunchConfiguration configuration) throws CoreException
+    {
+        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_IMPORT, true);
+    }
+
+    public static void setScopeImportExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
+    {
+        configuration.setAttribute(ATTR_EXCLUDE_SCOPE_IMPORT, value);
+    }
+
+    public static boolean isScopeNoneExcluded(ILaunchConfiguration configuration) throws CoreException
+    {
+        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_NONE, false);
+    }
+
+    public static void setScopeNoneExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
+    {
+        configuration.setAttribute(ATTR_EXCLUDE_SCOPE_NONE, value);
     }
 
     public static String getExcludedLibs(ILaunchConfiguration configuration) throws CoreException

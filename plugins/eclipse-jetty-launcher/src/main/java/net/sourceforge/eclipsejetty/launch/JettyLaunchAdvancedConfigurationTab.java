@@ -21,8 +21,10 @@ import java.util.HashSet;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
+import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
+import net.sourceforge.eclipsejetty.util.ScopedClasspathEntry;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.IStringVariable;
@@ -30,7 +32,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
-import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -80,6 +81,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button mavenIncludeRuntime;
     private Button mavenIncludeTest;
     private Button mavenIncludeSystem;
+    private Button mavenIncludeImport;
+    private Button mavenIncludeNone;
     private Table dependencyTable;
     private boolean dependencyTableFormatted = false;
 
@@ -135,25 +138,24 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             createButton(jettyFeatureGroup, SWT.CHECK, "Enable JSP Support", 224, 1, 1, modifyDialogListener);
         ajpSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, "Enable AJP Connector", 224, 1, 1, modifyDialogListener);
-        
+
         // TODO enable when implemented
         ajpSupportButton.setEnabled(false);
 
         createLabel(jettyFeatureGroup, "AJP Port:", 48, 1, 1);
         ajpPortText = createText(jettyFeatureGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
-        
+
         // TODO enable when implemented
         ajpPortText.setEnabled(false);
 
         jndiSupportButton =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JNDI Support", 224, 1, 1,
-                modifyDialogListener);
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JNDI Support", 224, 1, 1, modifyDialogListener);
         showLauncherInfoButon =
             createButton(jettyFeatureGroup, SWT.CHECK, "Show Detailed Server Info", -1, 3, 1, modifyDialogListener);
 
         jmxSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, "Enable JMX Support", 224, 1, 1, modifyDialogListener);
-        
+
         // TODO enable when implemented
         jmxSupportButton.setEnabled(false);
 
@@ -168,13 +170,14 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         mavenIncludeProvided =
             createButton(dependencyGroup, SWT.CHECK, "Provided Scope", -1, 1, 1, modifyDialogListener);
 
-        m2eLabel = createLabel(dependencyGroup, "", 224, 1, 2);
+        m2eLabel = createLabel(dependencyGroup, "", 224, 1, 1);
         mavenIncludeRuntime =
             createButton(dependencyGroup, SWT.CHECK, "Runtime Scope", 224, 1, 1, modifyDialogListener);
         mavenIncludeSystem = createButton(dependencyGroup, SWT.CHECK, "System Scope", -1, 1, 1, modifyDialogListener);
 
-        createLabel(dependencyGroup, "", 224, 1, 1);
-        mavenIncludeTest = createButton(dependencyGroup, SWT.CHECK, "Test Scope", -1, 1, 1, modifyDialogListener);
+        mavenIncludeNone = createButton(dependencyGroup, SWT.CHECK, "Without Scope", 224, 1, 1, modifyDialogListener);
+        mavenIncludeTest = createButton(dependencyGroup, SWT.CHECK, "Test Scope", 224, 1, 1, modifyDialogListener);
+        mavenIncludeImport = createButton(dependencyGroup, SWT.CHECK, "Import Scope", -1, 1, 1, modifyDialogListener);
 
         dependencyTable =
             createTable(dependencyGroup, SWT.BORDER | SWT.HIDE_SELECTION, -1, 200, 3, 1, "Include", "Name", "Global",
@@ -230,6 +233,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             mavenIncludeRuntime.setSelection(!JettyPluginConstants.isScopeRuntimeExcluded(configuration));
             mavenIncludeSystem.setSelection(!JettyPluginConstants.isScopeSystemExcluded(configuration));
             mavenIncludeTest.setSelection(!JettyPluginConstants.isScopeTestExcluded(configuration));
+            mavenIncludeImport.setSelection(!JettyPluginConstants.isScopeImportExcluded(configuration));
+            mavenIncludeNone.setSelection(!JettyPluginConstants.isScopeNoneExcluded(configuration));
 
             updateTable(configuration, true);
         }
@@ -260,6 +265,10 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 JettyPluginConstants.isScopeSystemExcluded(configuration));
             JettyPluginConstants.setScopeTestExcluded(configuration,
                 JettyPluginConstants.isScopeTestExcluded(configuration));
+            JettyPluginConstants.setScopeImportExcluded(configuration,
+                JettyPluginConstants.isScopeImportExcluded(configuration));
+            JettyPluginConstants.setScopeNoneExcluded(configuration,
+                JettyPluginConstants.isScopeNoneExcluded(configuration));
             JettyPluginConstants.setShowLauncherInfo(configuration,
                 JettyPluginConstants.isShowLauncherInfo(configuration));
 
@@ -307,6 +316,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setScopeRuntimeExcluded(configuration, !mavenIncludeRuntime.getSelection());
         JettyPluginConstants.setScopeSystemExcluded(configuration, !mavenIncludeSystem.getSelection());
         JettyPluginConstants.setScopeTestExcluded(configuration, !mavenIncludeTest.getSelection());
+        JettyPluginConstants.setScopeImportExcluded(configuration, !mavenIncludeImport.getSelection());
+        JettyPluginConstants.setScopeNoneExcluded(configuration, !mavenIncludeNone.getSelection());
 
         JettyPluginConstants.setExcludedLibs(configuration, dependencyEntryList.createExcludedLibs());
         JettyPluginConstants.setIncludedLibs(configuration, dependencyEntryList.createIncludedLibs());
@@ -361,30 +372,35 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         m2eLabel.setText("");
 
-        if (JettyPluginUtils.isM2EAvailable()) {
+        if (JettyPluginM2EUtils.isM2EAvailable())
+        {
             try
             {
-                scopeable = JettyPluginUtils.getMavenProjectFacade(configuration) != null;
+                scopeable = JettyPluginM2EUtils.getMavenProjectFacade(configuration) != null;
             }
             catch (CoreException e)
             {
                 // ignore
             }
-            
-            if (!scopeable) {
-                m2eLabel.setText("(no m2e project)");
+
+            if (!scopeable)
+            {
+                m2eLabel.setText("(no m2e nature, no scope info)");
             }
         }
-        else {
-            m2eLabel.setText("(m2e not available)");
+        else
+        {
+            m2eLabel.setText("(m2e not available, no scope info)");
         }
-        
+
         mavenIncludeCompile.setEnabled(scopeable);
         mavenIncludeProvided.setEnabled(scopeable);
         mavenIncludeRuntime.setEnabled(scopeable);
         mavenIncludeTest.setEnabled(scopeable);
         mavenIncludeSystem.setEnabled(scopeable);
-        
+        mavenIncludeImport.setEnabled(scopeable);
+        mavenIncludeNone.setEnabled(true);
+
         setDirty(true);
 
         return true;
@@ -402,11 +418,11 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 JettyLaunchConfigurationDelegate delegate =
                     (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
 
-                Collection<IRuntimeClasspathEntry> originalClasspathEntries =
+                Collection<ScopedClasspathEntry> originalClasspathEntries =
                     delegate.getOriginalClasspathEntries(configuration);
-                Collection<IRuntimeClasspathEntry> webappClasspathEntries =
+                Collection<ScopedClasspathEntry> webappClasspathEntries =
                     delegate.getWebappClasspathEntries(configuration, originalClasspathEntries);
-                Collection<IRuntimeClasspathEntry> globalWebappClasspathEntries =
+                Collection<ScopedClasspathEntry> globalWebappClasspathEntries =
                     delegate.getGlobalWebappClasspathEntries(configuration, webappClasspathEntries);
 
                 if (dependencyEntryList.update(configuration, dependencyTable, originalClasspathEntries,

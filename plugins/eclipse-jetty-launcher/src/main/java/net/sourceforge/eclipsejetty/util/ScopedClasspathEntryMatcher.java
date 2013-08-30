@@ -9,7 +9,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package net.sourceforge.eclipsejetty.launch;
+package net.sourceforge.eclipsejetty.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,13 +21,10 @@ import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
-import net.sourceforge.eclipsejetty.util.RegularMatcher;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.IClasspathAttribute;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 
 /**
@@ -35,7 +32,7 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
  * 
  * @author Manfred Hantschel
  */
-public abstract class JettyLaunchClasspathMatcher
+public abstract class ScopedClasspathEntryMatcher
 {
 
     /**
@@ -43,13 +40,13 @@ public abstract class JettyLaunchClasspathMatcher
      * 
      * @return the matcher
      */
-    public static JettyLaunchClasspathMatcher all()
+    public static ScopedClasspathEntryMatcher all()
     {
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
                 return entries;
             }
@@ -69,7 +66,7 @@ public abstract class JettyLaunchClasspathMatcher
      * @param matchers the matchers
      * @return the matcher
      */
-    public static JettyLaunchClasspathMatcher and(final JettyLaunchClasspathMatcher... matchers)
+    public static ScopedClasspathEntryMatcher and(final ScopedClasspathEntryMatcher... matchers)
     {
         if ((matchers == null) || (matchers.length == 0))
         {
@@ -81,15 +78,15 @@ public abstract class JettyLaunchClasspathMatcher
             return matchers[0];
         }
 
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
-                Collection<IRuntimeClasspathEntry> results = new LinkedHashSet<IRuntimeClasspathEntry>(entries);
+                Collection<ScopedClasspathEntry> results = new LinkedHashSet<ScopedClasspathEntry>(entries);
 
-                for (JettyLaunchClasspathMatcher matcher : matchers)
+                for (ScopedClasspathEntryMatcher matcher : matchers)
                 {
                     results = matcher.match(results);
                 }
@@ -113,7 +110,7 @@ public abstract class JettyLaunchClasspathMatcher
      * @param matchers the matchers
      * @return the matcher
      */
-    public static JettyLaunchClasspathMatcher or(final JettyLaunchClasspathMatcher... matchers)
+    public static ScopedClasspathEntryMatcher or(final ScopedClasspathEntryMatcher... matchers)
     {
         if ((matchers == null) || (matchers.length == 0))
         {
@@ -125,17 +122,17 @@ public abstract class JettyLaunchClasspathMatcher
             return matchers[0];
         }
 
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
-                Collection<IRuntimeClasspathEntry> results = new LinkedHashSet<IRuntimeClasspathEntry>();
+                Collection<ScopedClasspathEntry> results = new LinkedHashSet<ScopedClasspathEntry>();
 
-                for (JettyLaunchClasspathMatcher matcher : matchers)
+                for (ScopedClasspathEntryMatcher matcher : matchers)
                 {
-                    results.addAll(matcher.match(new ArrayList<IRuntimeClasspathEntry>(entries)));
+                    results.addAll(matcher.match(new ArrayList<ScopedClasspathEntry>(entries)));
                 }
 
                 return results;
@@ -157,15 +154,15 @@ public abstract class JettyLaunchClasspathMatcher
      * @param matcher the matcher
      * @return the matcher
      */
-    public static JettyLaunchClasspathMatcher not(final JettyLaunchClasspathMatcher matcher)
+    public static ScopedClasspathEntryMatcher not(final ScopedClasspathEntryMatcher matcher)
     {
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
-                entries.removeAll(matcher.match(new ArrayList<IRuntimeClasspathEntry>(entries)));
+                entries.removeAll(matcher.match(new ArrayList<ScopedClasspathEntry>(entries)));
 
                 return entries;
             }
@@ -179,17 +176,17 @@ public abstract class JettyLaunchClasspathMatcher
         };
     }
 
-    public static JettyLaunchClasspathMatcher bootstrapClasses()
+    public static ScopedClasspathEntryMatcher bootstrapClasses()
     {
         return withClasspathProperty(IRuntimeClasspathEntry.BOOTSTRAP_CLASSES);
     }
 
-    public static JettyLaunchClasspathMatcher standardClasses()
+    public static ScopedClasspathEntryMatcher standardClasses()
     {
         return withClasspathProperty(IRuntimeClasspathEntry.STANDARD_CLASSES);
     }
 
-    public static JettyLaunchClasspathMatcher userClasses()
+    public static ScopedClasspathEntryMatcher userClasses()
     {
         return withClasspathProperty(IRuntimeClasspathEntry.USER_CLASSES);
     }
@@ -201,21 +198,21 @@ public abstract class JettyLaunchClasspathMatcher
      * @param classpathProperty the property as defined in the {@link IRuntimeClasspathEntry} class
      * @return all matching entries
      */
-    public static JettyLaunchClasspathMatcher withClasspathProperty(final int classpathProperty)
+    public static ScopedClasspathEntryMatcher withClasspathProperty(final int classpathProperty)
     {
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
-                Iterator<IRuntimeClasspathEntry> iterator = entries.iterator();
+                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
 
                 while (iterator.hasNext())
                 {
-                    IRuntimeClasspathEntry entry = iterator.next();
+                    ScopedClasspathEntry entry = iterator.next();
 
-                    if (classpathProperty != entry.getClasspathProperty())
+                    if (classpathProperty != entry.getEntry().getClasspathProperty())
                     {
                         iterator.remove();
                     }
@@ -246,27 +243,27 @@ public abstract class JettyLaunchClasspathMatcher
         };
     }
 
-    public static JettyLaunchClasspathMatcher ofTypeArchive(final int type)
+    public static ScopedClasspathEntryMatcher ofTypeArchive(final int type)
     {
         return ofType(IRuntimeClasspathEntry.ARCHIVE);
     }
 
-    public static JettyLaunchClasspathMatcher ofTypeContainer(final int type)
+    public static ScopedClasspathEntryMatcher ofTypeContainer(final int type)
     {
         return ofType(IRuntimeClasspathEntry.CONTAINER);
     }
 
-    public static JettyLaunchClasspathMatcher ofTypeOther(final int type)
+    public static ScopedClasspathEntryMatcher ofTypeOther(final int type)
     {
         return ofType(IRuntimeClasspathEntry.OTHER);
     }
 
-    public static JettyLaunchClasspathMatcher ofTypeProject(final int type)
+    public static ScopedClasspathEntryMatcher ofTypeProject(final int type)
     {
         return ofType(IRuntimeClasspathEntry.PROJECT);
     }
 
-    public static JettyLaunchClasspathMatcher ofTypeVariable(final int type)
+    public static ScopedClasspathEntryMatcher ofTypeVariable(final int type)
     {
         return ofType(IRuntimeClasspathEntry.VARIABLE);
     }
@@ -277,21 +274,21 @@ public abstract class JettyLaunchClasspathMatcher
      * @param type the type as defined in the {@link IRuntimeClasspathEntry} class
      * @return all matching entries
      */
-    public static JettyLaunchClasspathMatcher ofType(final int type)
+    public static ScopedClasspathEntryMatcher ofType(final int type)
     {
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
-                Iterator<IRuntimeClasspathEntry> iterator = entries.iterator();
+                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
 
                 while (iterator.hasNext())
                 {
-                    IRuntimeClasspathEntry entry = iterator.next();
+                    ScopedClasspathEntry entry = iterator.next();
 
-                    if (type != entry.getType())
+                    if (type != entry.getEntry().getType())
                     {
                         iterator.remove();
                     }
@@ -329,45 +326,28 @@ public abstract class JettyLaunchClasspathMatcher
     }
 
     /**
-     * Matches all entries, that contain the specified attribute.
+     * Matches all entries, that match the specified scope.
      * 
-     * @param name the name, regular expression
-     * @param value the value, regular expression
+     * @param scope the scope
      * @return all matching entries
      */
-    public static JettyLaunchClasspathMatcher withExtraAttribute(String name, String value)
+    public static ScopedClasspathEntryMatcher withScope(final MavenScope scope)
     {
-        final RegularMatcher nameMatcher = new RegularMatcher(name);
-        final RegularMatcher valueMatcher = new RegularMatcher(value);
-
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
-                Iterator<IRuntimeClasspathEntry> iterator = entries.iterator();
+                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
 
-                entry: while (iterator.hasNext())
+                while (iterator.hasNext())
                 {
-                    IRuntimeClasspathEntry entry = iterator.next();
-                    IClasspathEntry classpathEntry = entry.getClasspathEntry();
+                    ScopedClasspathEntry entry = iterator.next();
 
-                    if (classpathEntry == null)
+                    if (scope == entry.getScope())
                     {
-                        iterator.remove();
                         continue;
-                    }
-
-                    IClasspathAttribute[] extraAttributes = classpathEntry.getExtraAttributes();
-
-                    for (IClasspathAttribute extraAttribute : extraAttributes)
-                    {
-                        if ((nameMatcher.matches(extraAttribute.getName()))
-                            && (valueMatcher.matches(extraAttribute.getValue())))
-                        {
-                            continue entry;
-                        }
                     }
 
                     iterator.remove();
@@ -379,7 +359,7 @@ public abstract class JettyLaunchClasspathMatcher
             @Override
             public String toString()
             {
-                return "mavenTestScope";
+                return "with scope " + scope;
             }
 
         };
@@ -391,22 +371,23 @@ public abstract class JettyLaunchClasspathMatcher
      * @param excludedEntries a collection of {@link IRuntimeClasspathEntry}s
      * @return all matching entries
      */
-    public static JettyLaunchClasspathMatcher notIn(Collection<IRuntimeClasspathEntry> excludedEntries)
+    public static ScopedClasspathEntryMatcher notIn(Collection<IRuntimeClasspathEntry> excludedEntries)
         throws CoreException
     {
-        final Set<IRuntimeClasspathEntry> excludedEntriesSet = new LinkedHashSet<IRuntimeClasspathEntry>(excludedEntries);
+        final Set<IRuntimeClasspathEntry> excludedEntriesSet =
+            new LinkedHashSet<IRuntimeClasspathEntry>(excludedEntries);
 
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
-                Iterator<IRuntimeClasspathEntry> iterator = entries.iterator();
+                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
 
                 while (iterator.hasNext())
                 {
-                    if (excludedEntriesSet.contains(iterator.next()))
+                    if (excludedEntriesSet.contains(iterator.next().getEntry()))
                     {
                         iterator.remove();
                     }
@@ -431,7 +412,7 @@ public abstract class JettyLaunchClasspathMatcher
      * @return all matching entries
      * @throws CoreException if the included list cannot be parsed
      */
-    public static JettyLaunchClasspathMatcher isIncluded(String... included) throws CoreException
+    public static ScopedClasspathEntryMatcher isIncluded(String... included) throws CoreException
     {
         final List<RegularMatcher> includedLibs = new ArrayList<RegularMatcher>();
 
@@ -444,17 +425,17 @@ public abstract class JettyLaunchClasspathMatcher
             throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, e.getMessage(), e));
         }
 
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
-                Iterator<IRuntimeClasspathEntry> iterator = entries.iterator();
+                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
 
                 entry: while (iterator.hasNext())
                 {
-                    IRuntimeClasspathEntry entry = iterator.next();
+                    IRuntimeClasspathEntry entry = iterator.next().getEntry();
                     String path = entry.getLocation();
                     String forwardSlashes = path.replace('\\', '/');
                     String backSlashes = path.replace('/', '\\');
@@ -466,7 +447,7 @@ public abstract class JettyLaunchClasspathMatcher
                             continue entry;
                         }
                     }
-                    
+
                     iterator.remove();
                 }
 
@@ -489,7 +470,7 @@ public abstract class JettyLaunchClasspathMatcher
      * @return all matching entries
      * @throws CoreException if the excluded list cannot be parsed
      */
-    public static JettyLaunchClasspathMatcher notExcluded(String... excluded) throws CoreException
+    public static ScopedClasspathEntryMatcher notExcluded(String... excluded) throws CoreException
     {
         final List<RegularMatcher> excludedLibs = new ArrayList<RegularMatcher>();
 
@@ -502,17 +483,17 @@ public abstract class JettyLaunchClasspathMatcher
             throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, e.getMessage(), e));
         }
 
-        return new JettyLaunchClasspathMatcher()
+        return new ScopedClasspathEntryMatcher()
         {
 
             @Override
-            public Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries)
+            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
             {
-                Iterator<IRuntimeClasspathEntry> iterator = entries.iterator();
+                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
 
                 entry: while (iterator.hasNext())
                 {
-                    IRuntimeClasspathEntry entry = iterator.next();
+                    IRuntimeClasspathEntry entry = iterator.next().getEntry();
                     String path = entry.getLocation();
                     String forwardSlashes = path.replace('\\', '/');
                     String backSlashes = path.replace('/', '\\');
@@ -539,7 +520,7 @@ public abstract class JettyLaunchClasspathMatcher
         };
     }
 
-    public abstract Collection<IRuntimeClasspathEntry> match(Collection<IRuntimeClasspathEntry> entries);
+    public abstract Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries);
 
     /**
      * {@inheritDoc}

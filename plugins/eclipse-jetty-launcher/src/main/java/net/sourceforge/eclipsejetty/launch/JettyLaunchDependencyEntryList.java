@@ -23,10 +23,10 @@ import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.launch.JettyLaunchDependencyEntry.Type;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
+import net.sourceforge.eclipsejetty.util.ScopedClasspathEntry;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Table;
 
@@ -113,9 +113,8 @@ public class JettyLaunchDependencyEntryList
     }
 
     public boolean update(ILaunchConfiguration configuration, Table table,
-        Collection<IRuntimeClasspathEntry> classpathEntries,
-        Collection<IRuntimeClasspathEntry> includedClasspathEntries,
-        Collection<IRuntimeClasspathEntry> globalClasspathEntries, boolean updateType) throws CoreException
+        Collection<ScopedClasspathEntry> classpathEntries, Collection<ScopedClasspathEntry> includedClasspathEntries,
+        Collection<ScopedClasspathEntry> globalClasspathEntries, boolean updateType) throws CoreException
     {
         if (configHash != configuration.hashCode())
         {
@@ -133,15 +132,13 @@ public class JettyLaunchDependencyEntryList
         setObsolete(true);
 
         // create a set of all really included entries
-        Collection<String> includedEntries = JettyPluginUtils.toLocationCollection(includedClasspathEntries);
+        Collection<String> includedEntries = JettyPluginUtils.toLocationCollectionFromScoped(includedClasspathEntries);
 
         // create a set of all global entries
-        Collection<String> globalEntries = JettyPluginUtils.toLocationCollection(globalClasspathEntries);
+        Collection<String> globalEntries = JettyPluginUtils.toLocationCollectionFromScoped(globalClasspathEntries);
 
-        System.out.println("! " + globalEntries);
-        
         // run through all entries and update the state of the entry
-        for (IRuntimeClasspathEntry classpathEntry : classpathEntries)
+        for (ScopedClasspathEntry classpathEntry : classpathEntries)
         {
             String location = JettyPluginUtils.toLocation(classpathEntry);
 
@@ -151,7 +148,10 @@ public class JettyLaunchDependencyEntryList
 
                 if (entry == null)
                 {
-                    entry = new JettyLaunchDependencyEntry(getPath(location), getName(location), Type.DEFAULT);
+                    entry =
+                        new JettyLaunchDependencyEntry(JettyPluginUtils.getPath(location),
+                            JettyPluginUtils.getName(location), Type.DEFAULT);
+
                     entries.put(location, entry);
                 }
 
@@ -166,12 +166,12 @@ public class JettyLaunchDependencyEntryList
                     {
                         entry.setType(Type.ALWAYS_INCLUDED);
                     }
-                    
+
                     entry.setGlobal(globalEntries.contains(location));
                 }
 
                 entry.setIncluded(includedEntries.contains(location));
-                entry.setScope(JettyPluginUtils.getMavenScope(classpathEntry));
+                entry.setScope(classpathEntry.getScope().text());
                 entry.setObsolete(false);
             }
         }
@@ -267,30 +267,6 @@ public class JettyLaunchDependencyEntryList
         }
 
         entries.clear();
-    }
-
-    private static String getName(String location)
-    {
-        int index = location.lastIndexOf('/');
-
-        if (index < 0)
-        {
-            return location;
-        }
-
-        return location.substring(index + 1);
-    };
-
-    private static String getPath(String location)
-    {
-        int index = location.lastIndexOf('/');
-
-        if (index < 0)
-        {
-            return "";
-        }
-
-        return location.substring(0, index);
     }
 
 }

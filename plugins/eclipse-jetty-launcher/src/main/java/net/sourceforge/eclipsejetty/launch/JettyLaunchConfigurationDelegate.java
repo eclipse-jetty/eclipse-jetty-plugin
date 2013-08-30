@@ -11,16 +11,16 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.launch;
 
-import static net.sourceforge.eclipsejetty.launch.JettyLaunchClasspathMatcher.*;
+import static net.sourceforge.eclipsejetty.util.ScopedClasspathEntryMatcher.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
@@ -28,6 +28,10 @@ import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
+import net.sourceforge.eclipsejetty.util.MavenScope;
+import net.sourceforge.eclipsejetty.util.MavenScopeCollection;
+import net.sourceforge.eclipsejetty.util.ScopedClasspathEntry;
+import net.sourceforge.eclipsejetty.util.ScopedClasspathEntryMatcher;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -132,14 +136,22 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                 getWebappClasspathEntries(configuration, getOriginalClasspathEntries(configuration)))));
     }
 
-    public Collection<IRuntimeClasspathEntry> getOriginalClasspathEntries(ILaunchConfiguration configuration)
+    public Collection<ScopedClasspathEntry> getOriginalClasspathEntries(ILaunchConfiguration configuration)
         throws CoreException
     {
         IRuntimeClasspathEntry[] entries = JavaRuntime.computeUnresolvedRuntimeClasspath(configuration);
 
         entries = JavaRuntime.resolveRuntimeClasspath(entries, configuration);
-        Collection<IRuntimeClasspathEntry> matchedEntries =
-            userClasses().match(new LinkedHashSet<IRuntimeClasspathEntry>(Arrays.asList(entries)));
+
+        MavenScopeCollection mavenScopeCollection = MavenScopeCollection.create(configuration);
+        Set<ScopedClasspathEntry> scopedClasspathEntries = new LinkedHashSet<ScopedClasspathEntry>();
+
+        for (IRuntimeClasspathEntry entry : entries)
+        {
+            scopedClasspathEntries.add(ScopedClasspathEntry.create(mavenScopeCollection, entry));
+        }
+
+        Collection<ScopedClasspathEntry> matchedEntries = userClasses().match(scopedClasspathEntries);
 
         //        System.out.println("Classpath Entries");
         //        System.out.println("=================");
@@ -168,70 +180,72 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
     public String[] getOriginalClasspath(ILaunchConfiguration configuration) throws CoreException
     {
-        return JettyPluginUtils.toLocationArray(getOriginalClasspathEntries(configuration));
+        return JettyPluginUtils.toLocationArrayFromScoped(getOriginalClasspathEntries(configuration));
     }
 
-    public Collection<IRuntimeClasspathEntry> getWebappClasspathEntries(ILaunchConfiguration configuration,
-        Collection<IRuntimeClasspathEntry> originalEntries) throws CoreException
+    public Collection<ScopedClasspathEntry> getWebappClasspathEntries(ILaunchConfiguration configuration,
+        Collection<ScopedClasspathEntry> originalEntries) throws CoreException
     {
         return and(createWebappClasspathMatcher(configuration)).match(
-            new LinkedHashSet<IRuntimeClasspathEntry>(originalEntries));
+            new LinkedHashSet<ScopedClasspathEntry>(originalEntries));
     }
 
     public String[] getWebappClasspath(ILaunchConfiguration configuration,
-        Collection<IRuntimeClasspathEntry> originalEntries) throws CoreException
+        Collection<ScopedClasspathEntry> originalEntries) throws CoreException
     {
-        return JettyPluginUtils.toLocationArray(getWebappClasspathEntries(configuration, originalEntries));
+        return JettyPluginUtils.toLocationArrayFromScoped(getWebappClasspathEntries(configuration, originalEntries));
     }
 
-    public Collection<IRuntimeClasspathEntry> getLocalWebappClasspathEntries(ILaunchConfiguration configuration,
-        Collection<IRuntimeClasspathEntry> webappEntries) throws CoreException
+    public Collection<ScopedClasspathEntry> getLocalWebappClasspathEntries(ILaunchConfiguration configuration,
+        Collection<ScopedClasspathEntry> webappEntries) throws CoreException
     {
         String globalLibs = JettyPluginConstants.getGlobalLibs(configuration);
 
         if ((globalLibs == null) || (globalLibs.trim().length() <= 0))
         {
-            return new LinkedHashSet<IRuntimeClasspathEntry>(webappEntries);
+            return new LinkedHashSet<ScopedClasspathEntry>(webappEntries);
         }
 
-        return notExcluded(globalLibs.split("[,\\n\\r]")).match(
-            new LinkedHashSet<IRuntimeClasspathEntry>(webappEntries));
+        return notExcluded(globalLibs.split("[,\\n\\r]")).match(new LinkedHashSet<ScopedClasspathEntry>(webappEntries));
     }
 
     public String[] getLocalWebappClasspath(ILaunchConfiguration configuration,
-        Collection<IRuntimeClasspathEntry> webappEntries) throws CoreException
+        Collection<ScopedClasspathEntry> webappEntries) throws CoreException
     {
-        return JettyPluginUtils.toLocationArray(getLocalWebappClasspathEntries(configuration, webappEntries));
+        return JettyPluginUtils.toLocationArrayFromScoped(getLocalWebappClasspathEntries(configuration, webappEntries));
     }
 
-    public Collection<IRuntimeClasspathEntry> getGlobalWebappClasspathEntries(ILaunchConfiguration configuration,
-        Collection<IRuntimeClasspathEntry> webappEntries) throws CoreException
+    public Collection<ScopedClasspathEntry> getGlobalWebappClasspathEntries(ILaunchConfiguration configuration,
+        Collection<ScopedClasspathEntry> webappEntries) throws CoreException
     {
         String globalLibs = JettyPluginConstants.getGlobalLibs(configuration);
 
         if ((globalLibs == null) || (globalLibs.trim().length() <= 0))
         {
-            return Collections.<IRuntimeClasspathEntry> emptyList();
+            return Collections.<ScopedClasspathEntry> emptyList();
         }
 
-        return isIncluded(globalLibs.split("[,\\n\\r]"))
-            .match(new LinkedHashSet<IRuntimeClasspathEntry>(webappEntries));
+        return isIncluded(globalLibs.split("[,\\n\\r]")).match(new LinkedHashSet<ScopedClasspathEntry>(webappEntries));
     }
 
     public String[] getGlobalWebappClasspath(ILaunchConfiguration configuration,
-        Collection<IRuntimeClasspathEntry> webappEntries) throws CoreException
+        Collection<ScopedClasspathEntry> webappEntries) throws CoreException
     {
-        return JettyPluginUtils.toLocationArray(getGlobalWebappClasspathEntries(configuration, webappEntries));
+        return JettyPluginUtils
+            .toLocationArrayFromScoped(getGlobalWebappClasspathEntries(configuration, webappEntries));
     }
 
     private static IRuntimeClasspathEntry[] getJettyClasspath(final ILaunchConfiguration configuration,
-        final Collection<IRuntimeClasspathEntry> collection) throws CoreException
+        final Collection<ScopedClasspathEntry> collection) throws CoreException
     {
         final List<IRuntimeClasspathEntry> entries = new ArrayList<IRuntimeClasspathEntry>();
 
         if (collection != null)
         {
-            entries.addAll(collection);
+            for (ScopedClasspathEntry entry : collection)
+            {
+                entries.add(entry.getEntry());
+            }
         }
 
         final String jettyPath = JettyPluginUtils.resolveVariables(JettyPluginConstants.getPath(configuration));
@@ -265,10 +279,10 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         return entries.toArray(new IRuntimeClasspathEntry[entries.size()]);
     }
 
-    private JettyLaunchClasspathMatcher createWebappClasspathMatcher(final ILaunchConfiguration configuration)
+    private ScopedClasspathEntryMatcher createWebappClasspathMatcher(final ILaunchConfiguration configuration)
         throws CoreException
     {
-        JettyLaunchClasspathMatcher vmClasspathMatcher = userClasses();
+        ScopedClasspathEntryMatcher vmClasspathMatcher = userClasses();
         String excludedLibs = JettyPluginConstants.getExcludedLibs(configuration);
 
         if ((excludedLibs != null) && (excludedLibs.trim().length() > 0))
@@ -276,30 +290,42 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             vmClasspathMatcher = and(vmClasspathMatcher, notExcluded(excludedLibs.split("[,\\n\\r]")));
         }
 
+        // FIXME optimize and fix this (none does not work! M2E stuff does not work!)
+
         if (JettyPluginConstants.isScopeCompileExcluded(configuration))
         {
-            vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "compile")));
+            vmClasspathMatcher = and(vmClasspathMatcher, not(withScope(MavenScope.COMPILE)));
         }
 
         if (JettyPluginConstants.isScopeProvidedExcluded(configuration))
         {
-            vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "provided")));
+            vmClasspathMatcher = and(vmClasspathMatcher, not(withScope(MavenScope.PROVIDED)));
         }
 
         if (JettyPluginConstants.isScopeRuntimeExcluded(configuration))
         {
-            vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "runtime")));
+            vmClasspathMatcher = and(vmClasspathMatcher, not(withScope(MavenScope.RUNTIME)));
         }
 
         if (JettyPluginConstants.isScopeSystemExcluded(configuration))
         {
-            vmClasspathMatcher = and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "system")));
+            vmClasspathMatcher = and(vmClasspathMatcher, not(withScope(MavenScope.SYSTEM)));
+        }
+
+        if (JettyPluginConstants.isScopeSystemExcluded(configuration))
+        {
+            vmClasspathMatcher = and(vmClasspathMatcher, not(withScope(MavenScope.IMPORT)));
+        }
+
+        if (JettyPluginConstants.isScopeNoneExcluded(configuration))
+        {
+            vmClasspathMatcher = and(vmClasspathMatcher, not(withScope(MavenScope.NONE)));
         }
 
         if (JettyPluginConstants.isScopeTestExcluded(configuration))
         {
             vmClasspathMatcher =
-                and(vmClasspathMatcher, not(withExtraAttribute("maven.scope", "test")), notExcluded(".*/test-classes"));
+                and(vmClasspathMatcher, not(withScope(MavenScope.TEST)), notExcluded(".*/test-classes"));
         }
 
         String includedLibs = JettyPluginConstants.getIncludedLibs(configuration);
