@@ -395,7 +395,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             IStatus status = workspace.validateName(projectName, IResource.PROJECT);
             if (status.isOK())
             {
-                project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+                project = workspace.getRoot().getProject(projectName);
                 if (!project.exists())
                 {
                     setErrorMessage(MessageFormat.format("Project {0} does not exist", projectName));

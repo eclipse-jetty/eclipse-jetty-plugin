@@ -61,6 +61,12 @@ public class JettyPluginM2EUtils
 
     public static String toPortableString(String groupId, String artifactId, String version, String classifier)
     {
+        return toPortableString(groupId, artifactId, version, classifier, null);
+    }
+
+    public static String toPortableString(String groupId, String artifactId, String version, String classifier,
+        String variant)
+    {
         StringBuilder builder = new StringBuilder();
 
         if (groupId != null)
@@ -90,6 +96,11 @@ public class JettyPluginM2EUtils
         }
 
         builder.append(':');
+
+        if (variant != null)
+        {
+            builder.append(variant);
+        }
 
         return builder.toString();
     }

@@ -15,15 +15,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.launch.JettyLaunchDependencyEntry.Type;
+import net.sourceforge.eclipsejetty.util.Dependency;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
-import net.sourceforge.eclipsejetty.util.ScopedClasspathEntry;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -52,6 +54,11 @@ public class JettyLaunchDependencyEntryList
         this.listener = listener;
     }
 
+    /**
+     * @deprecated The regular expression based including/excluding mechanism was replaced by a generic id based one
+     *             with 3.5.1.
+     */
+    @Deprecated
     public String createExcludedLibs()
     {
         StringBuilder result = new StringBuilder();
@@ -72,6 +79,11 @@ public class JettyLaunchDependencyEntryList
         return result.toString();
     }
 
+    /**
+     * @deprecated The regular expression based including/excluding mechanism was replaced by a generic id based one
+     *             with 3.5.1.
+     */
+    @Deprecated
     public String createIncludedLibs()
     {
         StringBuilder result = new StringBuilder();
@@ -92,6 +104,40 @@ public class JettyLaunchDependencyEntryList
         return result.toString();
     }
 
+    public Collection<String> createExcludedGenericIds()
+    {
+        Collection<String> result = new HashSet<String>();
+
+        for (JettyLaunchDependencyEntry entry : getSortedList())
+        {
+            if (entry.getType() == Type.ALWAYS_EXCLUDED)
+            {
+                result.add(entry.getGenericId());
+            }
+        }
+
+        return result;
+    }
+
+    public Collection<String> createIncludedGenericIds()
+    {
+        Collection<String> result = new HashSet<String>();
+
+        for (JettyLaunchDependencyEntry entry : getSortedList())
+        {
+            if (entry.getType() == Type.ALWAYS_INCLUDED)
+            {
+                result.add(entry.getGenericId());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * @deprecated The regular expression based global mechanism was replaced by a generic id based one with 3.5.1.
+     */
+    @Deprecated
     public String createGlobalLibs()
     {
         StringBuilder result = new StringBuilder();
@@ -112,9 +158,24 @@ public class JettyLaunchDependencyEntryList
         return result.toString();
     }
 
-    public boolean update(ILaunchConfiguration configuration, Table table,
-        Collection<ScopedClasspathEntry> classpathEntries, Collection<ScopedClasspathEntry> includedClasspathEntries,
-        Collection<ScopedClasspathEntry> globalClasspathEntries, boolean updateType) throws CoreException
+    public Collection<String> createGlobalGenericIds()
+    {
+        Collection<String> result = new HashSet<String>();
+
+        for (JettyLaunchDependencyEntry entry : getSortedList())
+        {
+            if (entry.isGlobal())
+            {
+                result.add(entry.getGenericId());
+            }
+        }
+
+        return result;
+    }
+
+    public boolean update(ILaunchConfiguration configuration, Table table, Collection<Dependency> dependencies,
+        Collection<Dependency> includedClasspathEntries, Collection<Dependency> globalClasspathEntries,
+        boolean updateType) throws CoreException
     {
         if (configHash != configuration.hashCode())
         {
@@ -123,10 +184,22 @@ public class JettyLaunchDependencyEntryList
         }
 
         boolean updated = false;
-        List<RegularMatcher> excludedLibs =
-            createRegularMatcherList(JettyPluginConstants.getExcludedLibs(configuration));
-        List<RegularMatcher> includedLibs =
-            createRegularMatcherList(JettyPluginConstants.getIncludedLibs(configuration));
+        List<RegularMatcher> excludedLibs = null;
+        List<RegularMatcher> includedLibs = null;
+        Set<String> excludedGenericIds = new HashSet<String>();
+        Set<String> includedGenericIds = new HashSet<String>();
+        boolean genericIdsSupported = JettyPluginConstants.isGenericIdsSupported(configuration);
+
+        if (genericIdsSupported)
+        {
+            excludedGenericIds.addAll(JettyPluginConstants.getExcludedGenericIds(configuration));
+            includedGenericIds.addAll(JettyPluginConstants.getIncludedGenericIds(configuration));
+        }
+        else
+        {
+            excludedLibs = deprecatedGetExcludedLibs(configuration);
+            includedLibs = deprecatedGetIncludedLibs(configuration);
+        }
 
         // mark all as obsolete, will be reactivated later
         setObsolete(true);
@@ -138,9 +211,9 @@ public class JettyLaunchDependencyEntryList
         Collection<String> globalEntries = JettyPluginUtils.toLocationCollectionFromScoped(globalClasspathEntries);
 
         // run through all entries and update the state of the entry
-        for (ScopedClasspathEntry classpathEntry : classpathEntries)
+        for (Dependency dependency : dependencies)
         {
-            String location = JettyPluginUtils.toLocation(classpathEntry);
+            String location = JettyPluginUtils.toLocation(dependency);
 
             if (location != null)
             {
@@ -149,7 +222,7 @@ public class JettyLaunchDependencyEntryList
                 if (entry == null)
                 {
                     entry =
-                        new JettyLaunchDependencyEntry(JettyPluginUtils.getPath(location),
+                        new JettyLaunchDependencyEntry(dependency.getGenericId(), JettyPluginUtils.getPath(location),
                             JettyPluginUtils.getName(location), Type.DEFAULT);
 
                     entries.put(location, entry);
@@ -157,21 +230,36 @@ public class JettyLaunchDependencyEntryList
 
                 if (updateType)
                 {
-                    if (matches(excludedLibs, location))
+                    if (genericIdsSupported)
                     {
-                        entry.setType(Type.ALWAYS_EXCLUDED);
-                    }
+                        if (excludedGenericIds.contains(entry.getGenericId()))
+                        {
+                            entry.setType(Type.ALWAYS_EXCLUDED);
+                        }
 
-                    if (matches(includedLibs, location))
+                        if (includedGenericIds.contains(entry.getGenericId()))
+                        {
+                            entry.setType(Type.ALWAYS_INCLUDED);
+                        }
+                    }
+                    else
                     {
-                        entry.setType(Type.ALWAYS_INCLUDED);
+                        if (matches(excludedLibs, location))
+                        {
+                            entry.setType(Type.ALWAYS_EXCLUDED);
+                        }
+
+                        if (matches(includedLibs, location))
+                        {
+                            entry.setType(Type.ALWAYS_INCLUDED);
+                        }
                     }
 
                     entry.setGlobal(globalEntries.contains(location));
                 }
 
                 entry.setIncluded(includedEntries.contains(location));
-                entry.setScope(classpathEntry.getScope().text());
+                entry.setScope(dependency.getScope().key());
                 entry.setObsolete(false);
             }
         }
@@ -206,6 +294,18 @@ public class JettyLaunchDependencyEntryList
         return updated;
     }
 
+    @SuppressWarnings("deprecation")
+    private List<RegularMatcher> deprecatedGetIncludedLibs(ILaunchConfiguration configuration) throws CoreException
+    {
+        return createRegularMatcherList(JettyPluginConstants.getIncludedLibs(configuration));
+    }
+
+    @SuppressWarnings("deprecation")
+    private List<RegularMatcher> deprecatedGetExcludedLibs(ILaunchConfiguration configuration) throws CoreException
+    {
+        return createRegularMatcherList(JettyPluginConstants.getExcludedLibs(configuration));
+    }
+
     private List<JettyLaunchDependencyEntry> getSortedList()
     {
         List<JettyLaunchDependencyEntry> list = new ArrayList<JettyLaunchDependencyEntry>(entries.values());
@@ -221,7 +321,7 @@ public class JettyLaunchDependencyEntryList
 
         if ((libs != null) && (libs.trim().length() > 0))
         {
-            for (String lib : libs.split("[,\\n\\r]"))
+            for (String lib : JettyPluginUtils.fromCommaSeparatedString(libs))
             {
                 result.add(new RegularMatcher(lib.trim()));
             }
@@ -230,8 +330,17 @@ public class JettyLaunchDependencyEntryList
         return result;
     }
 
+    /**
+     * @deprecated replaced by the generic id method
+     */
+    @Deprecated
     private boolean matches(List<RegularMatcher> list, String location)
     {
+        if (list == null)
+        {
+            return false;
+        }
+
         for (RegularMatcher matcher : list)
         {
             if (matcher.matches(location))

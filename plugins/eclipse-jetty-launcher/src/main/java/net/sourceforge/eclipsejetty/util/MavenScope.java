@@ -22,39 +22,39 @@ public enum MavenScope
     SYSTEM("system"),
     IMPORT("import");
 
-    private final String text;
+    private final String key;
 
-    private MavenScope(String text)
+    private MavenScope(String key)
     {
-        this.text = text;
+        this.key = key;
     }
 
-    public String text()
+    public String key()
     {
-        return text;
+        return key;
     }
 
     @Override
     public String toString()
     {
-        return text;
+        return key;
     }
 
-    public static MavenScope to(String text)
+    public static MavenScope to(String key)
     {
-        if (text == null)
+        if (key == null)
         {
             return null;
         }
 
         for (MavenScope value : MavenScope.values())
         {
-            if (text.equalsIgnoreCase(value.text()))
+            if (key.equalsIgnoreCase(value.key()))
             {
                 return value;
             }
         }
 
-        throw new IllegalArgumentException("Unknown scope: " + text);
+        throw new IllegalArgumentException("Unknown scope: " + key);
     }
 }

@@ -24,7 +24,7 @@ import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
-import net.sourceforge.eclipsejetty.util.ScopedClasspathEntry;
+import net.sourceforge.eclipsejetty.util.Dependency;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.IStringVariable;
@@ -272,9 +272,14 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             JettyPluginConstants.setShowLauncherInfo(configuration,
                 JettyPluginConstants.isShowLauncherInfo(configuration));
 
-            JettyPluginConstants.setExcludedLibs(configuration, JettyPluginConstants.getExcludedLibs(configuration));
-            JettyPluginConstants.setIncludedLibs(configuration, JettyPluginConstants.getIncludedLibs(configuration));
-            JettyPluginConstants.setGlobalLibs(configuration, JettyPluginConstants.getGlobalLibs(configuration));
+            JettyPluginConstants.setExcludedGenericIds(configuration,
+                JettyPluginConstants.getExcludedGenericIds(configuration));
+            JettyPluginConstants.setIncludedGenericIds(configuration,
+                JettyPluginConstants.getIncludedGenericIds(configuration));
+            JettyPluginConstants.setGlobalGenericIds(configuration,
+                JettyPluginConstants.getGlobalGenericIds(configuration));
+
+            deprecatedSetDefaults(configuration);
         }
         catch (CoreException e)
         {
@@ -282,8 +287,18 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         }
     }
 
+    @SuppressWarnings("deprecation")
+    private void deprecatedSetDefaults(final ILaunchConfigurationWorkingCopy configuration) throws CoreException
+    {
+        JettyPluginConstants.setExcludedLibs(configuration, JettyPluginConstants.getExcludedLibs(configuration));
+        JettyPluginConstants.setIncludedLibs(configuration, JettyPluginConstants.getIncludedLibs(configuration));
+        JettyPluginConstants.setGlobalLibs(configuration, JettyPluginConstants.getGlobalLibs(configuration));
+    }
+
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)
     {
+        JettyPluginConstants.updateConfigVersion(configuration);
+
         boolean embedded = embeddedButton.getSelection();
 
         JettyPluginConstants.setEmbedded(configuration, embedded);
@@ -319,11 +334,21 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setScopeImportExcluded(configuration, !mavenIncludeImport.getSelection());
         JettyPluginConstants.setScopeNoneExcluded(configuration, !mavenIncludeNone.getSelection());
 
+        JettyPluginConstants.setExcludedGenericIds(configuration, dependencyEntryList.createExcludedGenericIds());
+        JettyPluginConstants.setIncludedGenericIds(configuration, dependencyEntryList.createIncludedGenericIds());
+        JettyPluginConstants.setGlobalGenericIds(configuration, dependencyEntryList.createGlobalGenericIds());
+
+        deprecatedPerformApply(configuration);
+
+        updateTable(configuration, false);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void deprecatedPerformApply(final ILaunchConfigurationWorkingCopy configuration)
+    {
         JettyPluginConstants.setExcludedLibs(configuration, dependencyEntryList.createExcludedLibs());
         JettyPluginConstants.setIncludedLibs(configuration, dependencyEntryList.createIncludedLibs());
         JettyPluginConstants.setGlobalLibs(configuration, dependencyEntryList.createGlobalLibs());
-
-        updateTable(configuration, false);
     }
 
     @Override
@@ -418,11 +443,10 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 JettyLaunchConfigurationDelegate delegate =
                     (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
 
-                Collection<ScopedClasspathEntry> originalClasspathEntries =
-                    delegate.getOriginalClasspathEntries(configuration);
-                Collection<ScopedClasspathEntry> webappClasspathEntries =
+                Collection<Dependency> originalClasspathEntries = delegate.getOriginalClasspathEntries(configuration);
+                Collection<Dependency> webappClasspathEntries =
                     delegate.getWebappClasspathEntries(configuration, originalClasspathEntries);
-                Collection<ScopedClasspathEntry> globalWebappClasspathEntries =
+                Collection<Dependency> globalWebappClasspathEntries =
                     delegate.getGlobalWebappClasspathEntries(configuration, webappClasspathEntries);
 
                 if (dependencyEntryList.update(configuration, dependencyTable, originalClasspathEntries,

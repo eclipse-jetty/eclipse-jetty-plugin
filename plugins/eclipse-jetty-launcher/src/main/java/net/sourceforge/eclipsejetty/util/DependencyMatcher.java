@@ -32,7 +32,7 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
  * 
  * @author Manfred Hantschel
  */
-public abstract class ScopedClasspathEntryMatcher
+public abstract class DependencyMatcher
 {
 
     /**
@@ -40,13 +40,13 @@ public abstract class ScopedClasspathEntryMatcher
      * 
      * @return the matcher
      */
-    public static ScopedClasspathEntryMatcher all()
+    public static DependencyMatcher all()
     {
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
                 return entries;
             }
@@ -66,7 +66,7 @@ public abstract class ScopedClasspathEntryMatcher
      * @param matchers the matchers
      * @return the matcher
      */
-    public static ScopedClasspathEntryMatcher and(final ScopedClasspathEntryMatcher... matchers)
+    public static DependencyMatcher and(final DependencyMatcher... matchers)
     {
         if ((matchers == null) || (matchers.length == 0))
         {
@@ -78,15 +78,15 @@ public abstract class ScopedClasspathEntryMatcher
             return matchers[0];
         }
 
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
-                Collection<ScopedClasspathEntry> results = new LinkedHashSet<ScopedClasspathEntry>(entries);
+                Collection<Dependency> results = new LinkedHashSet<Dependency>(entries);
 
-                for (ScopedClasspathEntryMatcher matcher : matchers)
+                for (DependencyMatcher matcher : matchers)
                 {
                     results = matcher.match(results);
                 }
@@ -110,7 +110,7 @@ public abstract class ScopedClasspathEntryMatcher
      * @param matchers the matchers
      * @return the matcher
      */
-    public static ScopedClasspathEntryMatcher or(final ScopedClasspathEntryMatcher... matchers)
+    public static DependencyMatcher or(final DependencyMatcher... matchers)
     {
         if ((matchers == null) || (matchers.length == 0))
         {
@@ -122,17 +122,17 @@ public abstract class ScopedClasspathEntryMatcher
             return matchers[0];
         }
 
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
-                Collection<ScopedClasspathEntry> results = new LinkedHashSet<ScopedClasspathEntry>();
+                Collection<Dependency> results = new LinkedHashSet<Dependency>();
 
-                for (ScopedClasspathEntryMatcher matcher : matchers)
+                for (DependencyMatcher matcher : matchers)
                 {
-                    results.addAll(matcher.match(new ArrayList<ScopedClasspathEntry>(entries)));
+                    results.addAll(matcher.match(new ArrayList<Dependency>(entries)));
                 }
 
                 return results;
@@ -154,15 +154,15 @@ public abstract class ScopedClasspathEntryMatcher
      * @param matcher the matcher
      * @return the matcher
      */
-    public static ScopedClasspathEntryMatcher not(final ScopedClasspathEntryMatcher matcher)
+    public static DependencyMatcher not(final DependencyMatcher matcher)
     {
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
-                entries.removeAll(matcher.match(new ArrayList<ScopedClasspathEntry>(entries)));
+                entries.removeAll(matcher.match(new ArrayList<Dependency>(entries)));
 
                 return entries;
             }
@@ -176,17 +176,17 @@ public abstract class ScopedClasspathEntryMatcher
         };
     }
 
-    public static ScopedClasspathEntryMatcher bootstrapClasses()
+    public static DependencyMatcher bootstrapClasses()
     {
         return withClasspathProperty(IRuntimeClasspathEntry.BOOTSTRAP_CLASSES);
     }
 
-    public static ScopedClasspathEntryMatcher standardClasses()
+    public static DependencyMatcher standardClasses()
     {
         return withClasspathProperty(IRuntimeClasspathEntry.STANDARD_CLASSES);
     }
 
-    public static ScopedClasspathEntryMatcher userClasses()
+    public static DependencyMatcher userClasses()
     {
         return withClasspathProperty(IRuntimeClasspathEntry.USER_CLASSES);
     }
@@ -198,21 +198,21 @@ public abstract class ScopedClasspathEntryMatcher
      * @param classpathProperty the property as defined in the {@link IRuntimeClasspathEntry} class
      * @return all matching entries
      */
-    public static ScopedClasspathEntryMatcher withClasspathProperty(final int classpathProperty)
+    public static DependencyMatcher withClasspathProperty(final int classpathProperty)
     {
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
-                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
+                Iterator<Dependency> iterator = entries.iterator();
 
                 while (iterator.hasNext())
                 {
-                    ScopedClasspathEntry entry = iterator.next();
+                    Dependency entry = iterator.next();
 
-                    if (classpathProperty != entry.getEntry().getClasspathProperty())
+                    if (classpathProperty != entry.getRuntimeClasspathEntry().getClasspathProperty())
                     {
                         iterator.remove();
                     }
@@ -243,27 +243,27 @@ public abstract class ScopedClasspathEntryMatcher
         };
     }
 
-    public static ScopedClasspathEntryMatcher ofTypeArchive(final int type)
+    public static DependencyMatcher ofTypeArchive(final int type)
     {
         return ofType(IRuntimeClasspathEntry.ARCHIVE);
     }
 
-    public static ScopedClasspathEntryMatcher ofTypeContainer(final int type)
+    public static DependencyMatcher ofTypeContainer(final int type)
     {
         return ofType(IRuntimeClasspathEntry.CONTAINER);
     }
 
-    public static ScopedClasspathEntryMatcher ofTypeOther(final int type)
+    public static DependencyMatcher ofTypeOther(final int type)
     {
         return ofType(IRuntimeClasspathEntry.OTHER);
     }
 
-    public static ScopedClasspathEntryMatcher ofTypeProject(final int type)
+    public static DependencyMatcher ofTypeProject(final int type)
     {
         return ofType(IRuntimeClasspathEntry.PROJECT);
     }
 
-    public static ScopedClasspathEntryMatcher ofTypeVariable(final int type)
+    public static DependencyMatcher ofTypeVariable(final int type)
     {
         return ofType(IRuntimeClasspathEntry.VARIABLE);
     }
@@ -274,21 +274,21 @@ public abstract class ScopedClasspathEntryMatcher
      * @param type the type as defined in the {@link IRuntimeClasspathEntry} class
      * @return all matching entries
      */
-    public static ScopedClasspathEntryMatcher ofType(final int type)
+    public static DependencyMatcher ofType(final int type)
     {
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
-                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
+                Iterator<Dependency> iterator = entries.iterator();
 
                 while (iterator.hasNext())
                 {
-                    ScopedClasspathEntry entry = iterator.next();
+                    Dependency entry = iterator.next();
 
-                    if (type != entry.getEntry().getType())
+                    if (type != entry.getRuntimeClasspathEntry().getType())
                     {
                         iterator.remove();
                     }
@@ -331,19 +331,19 @@ public abstract class ScopedClasspathEntryMatcher
      * @param scope the scope
      * @return all matching entries
      */
-    public static ScopedClasspathEntryMatcher withScope(final MavenScope scope)
+    public static DependencyMatcher withScope(final MavenScope scope)
     {
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
-                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
+                Iterator<Dependency> iterator = entries.iterator();
 
                 while (iterator.hasNext())
                 {
-                    ScopedClasspathEntry entry = iterator.next();
+                    Dependency entry = iterator.next();
 
                     if (scope == entry.getScope())
                     {
@@ -371,23 +371,22 @@ public abstract class ScopedClasspathEntryMatcher
      * @param excludedEntries a collection of {@link IRuntimeClasspathEntry}s
      * @return all matching entries
      */
-    public static ScopedClasspathEntryMatcher notIn(Collection<IRuntimeClasspathEntry> excludedEntries)
-        throws CoreException
+    public static DependencyMatcher notIn(Collection<IRuntimeClasspathEntry> excludedEntries) throws CoreException
     {
         final Set<IRuntimeClasspathEntry> excludedEntriesSet =
             new LinkedHashSet<IRuntimeClasspathEntry>(excludedEntries);
 
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
-                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
+                Iterator<Dependency> iterator = entries.iterator();
 
                 while (iterator.hasNext())
                 {
-                    if (excludedEntriesSet.contains(iterator.next().getEntry()))
+                    if (excludedEntriesSet.contains(iterator.next().getRuntimeClasspathEntry()))
                     {
                         iterator.remove();
                     }
@@ -411,8 +410,10 @@ public abstract class ScopedClasspathEntryMatcher
      * @param included a list of regular expression of file or path names
      * @return all matching entries
      * @throws CoreException if the included list cannot be parsed
+     * @deprecated replaced by a mechanism using generic ids
      */
-    public static ScopedClasspathEntryMatcher isIncluded(String... included) throws CoreException
+    @Deprecated
+    public static DependencyMatcher isIncludedRegEx(Collection<String> included) throws CoreException
     {
         final List<RegularMatcher> includedLibs = new ArrayList<RegularMatcher>();
 
@@ -425,17 +426,17 @@ public abstract class ScopedClasspathEntryMatcher
             throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, e.getMessage(), e));
         }
 
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
-                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
+                Iterator<Dependency> iterator = entries.iterator();
 
                 entry: while (iterator.hasNext())
                 {
-                    IRuntimeClasspathEntry entry = iterator.next().getEntry();
+                    IRuntimeClasspathEntry entry = iterator.next().getRuntimeClasspathEntry();
                     String path = entry.getLocation();
                     String forwardSlashes = path.replace('\\', '/');
                     String backSlashes = path.replace('/', '\\');
@@ -457,7 +458,7 @@ public abstract class ScopedClasspathEntryMatcher
             @Override
             public String toString()
             {
-                return "notExcluded" + includedLibs;
+                return "included" + includedLibs;
             }
 
         };
@@ -469,8 +470,10 @@ public abstract class ScopedClasspathEntryMatcher
      * @param excluded a list of regular expression of file or path names
      * @return all matching entries
      * @throws CoreException if the excluded list cannot be parsed
+     * @deprecated replaced by a mechanism using generic ids
      */
-    public static ScopedClasspathEntryMatcher notExcluded(String... excluded) throws CoreException
+    @Deprecated
+    public static DependencyMatcher notExcludedRegEx(Collection<String> excluded) throws CoreException
     {
         final List<RegularMatcher> excludedLibs = new ArrayList<RegularMatcher>();
 
@@ -483,17 +486,17 @@ public abstract class ScopedClasspathEntryMatcher
             throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, e.getMessage(), e));
         }
 
-        return new ScopedClasspathEntryMatcher()
+        return new DependencyMatcher()
         {
 
             @Override
-            public Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries)
+            public Collection<Dependency> match(Collection<Dependency> entries)
             {
-                Iterator<ScopedClasspathEntry> iterator = entries.iterator();
+                Iterator<Dependency> iterator = entries.iterator();
 
                 entry: while (iterator.hasNext())
                 {
-                    IRuntimeClasspathEntry entry = iterator.next().getEntry();
+                    IRuntimeClasspathEntry entry = iterator.next().getRuntimeClasspathEntry();
                     String path = entry.getLocation();
                     String forwardSlashes = path.replace('\\', '/');
                     String backSlashes = path.replace('/', '\\');
@@ -520,7 +523,91 @@ public abstract class ScopedClasspathEntryMatcher
         };
     }
 
-    public abstract Collection<ScopedClasspathEntry> match(Collection<ScopedClasspathEntry> entries);
+    /**
+     * Matches all entries, that are included
+     * 
+     * @param includedGenericIds a list of generic ids
+     * @return all matching entries
+     * @throws CoreException if the included list cannot be parsed
+     */
+    public static DependencyMatcher isIncludedGenericId(final Collection<String> includedGenericIds)
+        throws CoreException
+    {
+        return new DependencyMatcher()
+        {
+
+            @Override
+            public Collection<Dependency> match(Collection<Dependency> entries)
+            {
+                Iterator<Dependency> iterator = entries.iterator();
+
+                while (iterator.hasNext())
+                {
+                    Dependency entry = iterator.next();
+                    
+                    if (includedGenericIds.contains(entry.getGenericId()))
+                    {
+                        continue;
+                    }
+
+                    iterator.remove();
+                }
+
+                return entries;
+            }
+
+            @Override
+            public String toString()
+            {
+                return "included" + includedGenericIds;
+            }
+
+        };
+    }
+
+    /**
+     * Matches all entries, that are not excluded
+     * 
+     * @param excludedGenericIds a list of generic ids
+     * @return all matching entries
+     * @throws CoreException if the excluded list cannot be parsed
+     */
+    public static DependencyMatcher notExcludedGenericIds(final Collection<String> excludedGenericIds)
+        throws CoreException
+    {
+        return new DependencyMatcher()
+        {
+
+            @Override
+            public Collection<Dependency> match(Collection<Dependency> entries)
+            {
+                Iterator<Dependency> iterator = entries.iterator();
+
+                while (iterator.hasNext())
+                {
+                    Dependency entry = iterator.next();
+                    
+                    if (!excludedGenericIds.contains(entry.getGenericId()))
+                    {
+                        continue;
+                    }
+
+                    iterator.remove();
+                }
+
+                return entries;
+            }
+
+            @Override
+            public String toString()
+            {
+                return "notExcluded" + excludedGenericIds;
+            }
+
+        };
+    }
+
+    public abstract Collection<Dependency> match(Collection<Dependency> entries);
 
     /**
      * {@inheritDoc}

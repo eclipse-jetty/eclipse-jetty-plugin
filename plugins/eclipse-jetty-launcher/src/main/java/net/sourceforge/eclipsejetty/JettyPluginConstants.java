@@ -12,6 +12,7 @@
 package net.sourceforge.eclipsejetty;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
@@ -37,6 +38,9 @@ public class JettyPluginConstants
     public static final String LAUNCH_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".launchConfigurationType";
     public static final String CLASSPATH_PROVIDER_JETTY = JettyPlugin.PLUGIN_ID + ".JettyLaunchClassPathProvider";
 
+    private static final int CONFIG_VERSION = 1;
+
+    private static final String ATTR_CONFIG_VERSION = JettyPlugin.PLUGIN_ID + ".configVersion";
     private static final String ATTR_CONTEXT = JettyPlugin.PLUGIN_ID + ".context";
     private static final String ATTR_WEBAPPDIR = JettyPlugin.PLUGIN_ID + ".webappdir";
     private static final String ATTR_PORT = JettyPlugin.PLUGIN_ID + ".port";
@@ -57,10 +61,35 @@ public class JettyPluginConstants
     private static final String ATTR_EXCLUDE_SCOPE_SYSTEM = JettyPlugin.PLUGIN_ID + ".scope.system.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_IMPORT = JettyPlugin.PLUGIN_ID + ".scope.import.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_NONE = JettyPlugin.PLUGIN_ID + ".scope.none.exclude";
+    /**
+     * @deprecated Replaced by mechanism using generic ids
+     */
+    @Deprecated
     private static final String ATTR_EXCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.excludeLibs";
+    /**
+     * @deprecated Replaced by mechanism using generic ids
+     */
+    @Deprecated
     private static final String ATTR_INCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.includeLibs";
+    private static final String ATTR_EXCLUDED_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.excludeGenericIds";
+    private static final String ATTR_INCLUDED_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.includeGenericIds";
+    /**
+     * @deprecated Replaced by mechanism using generic ids
+     */
+    @Deprecated
     private static final String ATTR_GLOBAL_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.globalLibs";
+    private static final String ATTR_GLOBAL_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.globalGenericIds";
     private static final String ATTR_SHOW_LAUNCHER_INFO = JettyPlugin.PLUGIN_ID + ".launcher.info";
+
+    public static int getConfigVersion(ILaunchConfiguration configuration) throws CoreException
+    {
+        return configuration.getAttribute(ATTR_CONFIG_VERSION, 0);
+    }
+
+    public static void updateConfigVersion(ILaunchConfigurationWorkingCopy configuration)
+    {
+        configuration.setAttribute(ATTR_CONFIG_VERSION, CONFIG_VERSION);
+    }
 
     /**
      * Returns the name of the selected eclipse project, that should be launched
@@ -380,34 +409,93 @@ public class JettyPluginConstants
         configuration.setAttribute(ATTR_EXCLUDE_SCOPE_NONE, value);
     }
 
+    /**
+     * @deprecated Replaced by mechanism using generic ids
+     */
+    @Deprecated
     public static String getExcludedLibs(ILaunchConfiguration configuration) throws CoreException
     {
         return configuration.getAttribute(ATTR_EXCLUDED_LIBS, ".*servlet-api.*");
     }
 
+    /**
+     * @deprecated Replaced by mechanism using generic ids
+     */
+    @Deprecated
     public static void setExcludedLibs(ILaunchConfigurationWorkingCopy configuration, String excludedLibs)
     {
         configuration.setAttribute(ATTR_EXCLUDED_LIBS, excludedLibs);
     }
 
+    /**
+     * @deprecated Replaced by mechanism using generic ids
+     */
+    @Deprecated
     public static String getIncludedLibs(ILaunchConfiguration configuration) throws CoreException
     {
         return configuration.getAttribute(ATTR_INCLUDED_LIBS, "");
     }
 
+    /**
+     * @deprecated Replaced by mechanism using generic ids
+     */
+    @Deprecated
     public static void setIncludedLibs(ILaunchConfigurationWorkingCopy configuration, String includedLibs)
     {
         configuration.setAttribute(ATTR_INCLUDED_LIBS, includedLibs);
     }
 
+    public static Collection<String> getExcludedGenericIds(ILaunchConfiguration configuration) throws CoreException
+    {
+        return JettyPluginUtils.fromCommaSeparatedString(configuration.getAttribute(ATTR_EXCLUDED_GENERIC_IDS, ""));
+    }
+
+    public static void setExcludedGenericIds(ILaunchConfigurationWorkingCopy configuration,
+        Collection<String> excludedGenericIds)
+    {
+        configuration.setAttribute(ATTR_EXCLUDED_GENERIC_IDS,
+            JettyPluginUtils.toCommaSeparatedString(excludedGenericIds));
+    }
+
+    public static Collection<String> getIncludedGenericIds(ILaunchConfiguration configuration) throws CoreException
+    {
+        return JettyPluginUtils.fromCommaSeparatedString(configuration.getAttribute(ATTR_INCLUDED_GENERIC_IDS, ""));
+    }
+
+    public static void setIncludedGenericIds(ILaunchConfigurationWorkingCopy configuration,
+        Collection<String> includedGenericIds)
+    {
+        configuration.setAttribute(ATTR_INCLUDED_GENERIC_IDS,
+            JettyPluginUtils.toCommaSeparatedString(includedGenericIds));
+    }
+
+    /**
+     * @deprecated Replaced by mechanism using generic ids
+     */
+    @Deprecated
     public static String getGlobalLibs(ILaunchConfiguration configuration) throws CoreException
     {
         return configuration.getAttribute(ATTR_GLOBAL_LIBS, "");
     }
 
+    /**
+     * @deprecated Replaced by mechanism using generic ids
+     */
+    @Deprecated
     public static void setGlobalLibs(ILaunchConfigurationWorkingCopy configuration, String globalLibs)
     {
         configuration.setAttribute(ATTR_GLOBAL_LIBS, globalLibs);
+    }
+
+    public static Collection<String> getGlobalGenericIds(ILaunchConfiguration configuration) throws CoreException
+    {
+        return JettyPluginUtils.fromCommaSeparatedString(configuration.getAttribute(ATTR_GLOBAL_GENERIC_IDS, ""));
+    }
+
+    public static void setGlobalGenericIds(ILaunchConfigurationWorkingCopy configuration,
+        Collection<String> globalGenericIds)
+    {
+        configuration.setAttribute(ATTR_GLOBAL_GENERIC_IDS, JettyPluginUtils.toCommaSeparatedString(globalGenericIds));
     }
 
     public static boolean isShowLauncherInfo(ILaunchConfiguration configuration) throws CoreException
@@ -433,6 +521,11 @@ public class JettyPluginConstants
     public static void setMainTypeName(ILaunchConfigurationWorkingCopy configuration, JettyVersion jettyVersion)
     {
         configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, jettyVersion.getMainClass());
+    }
+
+    public static boolean isGenericIdsSupported(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getConfigVersion(configuration) >= 1;
     }
 
 }

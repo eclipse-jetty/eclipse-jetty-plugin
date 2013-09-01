@@ -38,6 +38,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         ALWAYS_EXCLUDED;
     }
 
+    private final String genericId;
     private final String path;
     private final String name;
 
@@ -52,10 +53,11 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
     private Button includeButton;
     private Button globalButton;
 
-    public JettyLaunchDependencyEntry(String path, String name, Type type)
+    public JettyLaunchDependencyEntry(String genericId, String path, String name, Type type)
     {
         super();
 
+        this.genericId = genericId;
         this.path = path;
         this.name = name;
         this.type = type;
@@ -87,6 +89,11 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
             this.defaultIncluded = defaultIncluded;
             needsUpdate = true;
         }
+    }
+
+    public String getGenericId()
+    {
+        return genericId;
     }
 
     public String getPath()
@@ -267,10 +274,11 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         item.setForeground(1, color);
 
         globalButton.setSelection(global);
-        
+
         item.setText(3, scope);
         item.setForeground(3, color);
-        item.setText(4, path);
+        // FIXME item.setText(4, path);
+        item.setText(4, genericId);
         item.setForeground(4, color);
 
         needsUpdate = false;
@@ -326,6 +334,10 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         this.item = item;
     }
 
+    /**
+     * @deprecated replaced by a generic id mechanism to solve the problem with the "classes" and "test-classes"
+     */
+    @Deprecated
     public String createMatcher()
     {
         // TODO this method whole can be heavily enhanced - e.g. it does not look at the path. If you exclude one test-classes entry, all are excluded

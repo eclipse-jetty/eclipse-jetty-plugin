@@ -13,7 +13,9 @@ package net.sourceforge.eclipsejetty;
 
 import java.io.File;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,8 +23,8 @@ import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
+import net.sourceforge.eclipsejetty.util.Dependency;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
-import net.sourceforge.eclipsejetty.util.ScopedClasspathEntry;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.VariablesPlugin;
@@ -201,7 +203,7 @@ public class JettyPluginUtils
         throw new IllegalArgumentException("Failed to detect Jetty version.");
     }
 
-    public static List<RegularMatcher> extractPatterns(final List<RegularMatcher> list, final String... text)
+    public static List<RegularMatcher> extractPatterns(final List<RegularMatcher> list, final Collection<String> text)
         throws IllegalArgumentException
     {
         for (final String entry : text)
@@ -243,6 +245,57 @@ public class JettyPluginUtils
         return result.toString();
     }
 
+    public static String toCommaSeparatedString(Collection<String> values)
+    {
+        if (values == null)
+        {
+            return null;
+        }
+
+        List<String> list = new ArrayList<String>(values);
+
+        Collections.sort(list, DICTIONARY_COMPARATOR);
+
+        StringBuilder result = new StringBuilder();
+
+        for (String value : values)
+        {
+            if (result.length() > 0)
+            {
+                result.append(", ");
+            }
+
+            result.append(value);
+        }
+
+        return result.toString();
+    }
+
+    public static Collection<String> fromCommaSeparatedString(String value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+
+        value = value.trim();
+
+        if (value.length() <= 0)
+        {
+            return Collections.<String> emptySet();
+        }
+
+        Collection<String> result = new LinkedHashSet<String>();
+        String[] values = value.split("[,\\n\\r]");
+
+        for (String current : values)
+        {
+            result.add(current.trim());
+        }
+
+        return result;
+    }
+
     public static String resolveVariables(String s)
     {
         if (s == null)
@@ -262,17 +315,17 @@ public class JettyPluginUtils
         return s;
     }
 
-    public static String[] toLocationArrayFromScoped(Collection<ScopedClasspathEntry> classpathEntries)
+    public static String[] toLocationArrayFromScoped(Collection<Dependency> classpathEntries)
     {
-        return toLocationArrayFromScoped(classpathEntries.toArray(new ScopedClasspathEntry[classpathEntries.size()]));
+        return toLocationArrayFromScoped(classpathEntries.toArray(new Dependency[classpathEntries.size()]));
     }
 
     public static String[] toLocationArray(Collection<IRuntimeClasspathEntry> classpathEntries)
     {
-        return toLocationArrayFromScoped(classpathEntries.toArray(new ScopedClasspathEntry[classpathEntries.size()]));
+        return toLocationArrayFromScoped(classpathEntries.toArray(new Dependency[classpathEntries.size()]));
     }
 
-    public static String[] toLocationArrayFromScoped(ScopedClasspathEntry... classpathEntries)
+    public static String[] toLocationArrayFromScoped(Dependency... classpathEntries)
     {
         Collection<String> results = toLocationCollectionFromScoped(classpathEntries);
 
@@ -286,10 +339,9 @@ public class JettyPluginUtils
         return results.toArray(new String[results.size()]);
     }
 
-    public static Collection<String> toLocationCollectionFromScoped(Collection<ScopedClasspathEntry> classpathEntries)
+    public static Collection<String> toLocationCollectionFromScoped(Collection<Dependency> classpathEntries)
     {
-        return toLocationCollectionFromScoped(classpathEntries
-            .toArray(new ScopedClasspathEntry[classpathEntries.size()]));
+        return toLocationCollectionFromScoped(classpathEntries.toArray(new Dependency[classpathEntries.size()]));
     }
 
     public static Collection<String> toLocationCollection(Collection<IRuntimeClasspathEntry> classpathEntries)
@@ -297,11 +349,11 @@ public class JettyPluginUtils
         return toLocationCollection(classpathEntries.toArray(new IRuntimeClasspathEntry[classpathEntries.size()]));
     }
 
-    public static Collection<String> toLocationCollectionFromScoped(ScopedClasspathEntry... classpathEntries)
+    public static Collection<String> toLocationCollectionFromScoped(Dependency... classpathEntries)
     {
         Set<String> results = new LinkedHashSet<String>();
 
-        for (ScopedClasspathEntry entry : classpathEntries)
+        for (Dependency entry : classpathEntries)
         {
             String location = toLocation(entry);
 
@@ -331,9 +383,9 @@ public class JettyPluginUtils
         return results;
     }
 
-    public static String toLocation(ScopedClasspathEntry entry)
+    public static String toLocation(Dependency entry)
     {
-        return toLocation(entry.getEntry());
+        return toLocation(entry.getRuntimeClasspathEntry());
     }
 
     public static String toLocation(IRuntimeClasspathEntry entry)
