@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
@@ -58,9 +60,59 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public static final String CONFIGURATION_KEY = "jetty.launcher.configuration";
     public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo";
 
+    private class CacheEntry
+    {
+        private final ILaunchConfiguration configuration;
+        private final Object object;
+
+        public CacheEntry(ILaunchConfiguration configuration, Object object) throws CoreException
+        {
+            super();
+
+            this.configuration = configuration.copy(configuration.getName());
+            this.object = object;
+        }
+
+        public ILaunchConfiguration getConfiguration()
+        {
+            return configuration;
+        }
+
+        public Object getObject()
+        {
+            return object;
+        }
+    }
+
+    private final Map<String, CacheEntry> cache = new HashMap<String, CacheEntry>();
+
     public JettyLaunchConfigurationDelegate()
     {
         super();
+    }
+
+    protected Object getCached(String key, ILaunchConfiguration configuration)
+    {
+        CacheEntry cacheEntry = cache.get(key);
+
+        if (cacheEntry == null)
+        {
+            return null;
+        }
+
+        if (configuration.contentsEqual(cacheEntry.getConfiguration()))
+        {
+            return cacheEntry.getObject();
+        }
+
+        cache.remove(key);
+
+        return null;
+    }
+
+    protected void putCached(String key, ILaunchConfiguration configuration, Object object) throws CoreException
+    {
+        cache.put(key, new CacheEntry(configuration, object));
     }
 
     @Override
@@ -130,14 +182,34 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     @Override
     public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException
     {
-        return JettyPluginUtils.toLocationArray(getJettyClasspath(
-            configuration,
-            getGlobalWebappClasspathEntries(configuration,
-                getWebappClasspathEntries(configuration, getOriginalClasspathEntries(configuration)))));
+        String[] result = (String[]) getCached("Classpath", configuration);
+
+        if (result != null)
+        {
+            return result;
+        }
+
+        result =
+            JettyPluginUtils.toLocationArray(getJettyClasspath(
+                configuration,
+                getGlobalWebappClasspathEntries(configuration,
+                    getWebappClasspathEntries(configuration, getOriginalClasspathEntries(configuration)))));
+
+        putCached("Classpath", configuration, result);
+
+        return result;
     }
 
     public Collection<Dependency> getOriginalClasspathEntries(ILaunchConfiguration configuration) throws CoreException
     {
+        @SuppressWarnings("unchecked")
+        Collection<Dependency> result = (Collection<Dependency>) getCached("OriginalClasspathEntries", configuration);
+
+        if (result != null)
+        {
+            return result;
+        }
+
         IRuntimeClasspathEntry[] entries = JavaRuntime.computeUnresolvedRuntimeClasspath(configuration);
 
         entries = JavaRuntime.resolveRuntimeClasspath(entries, configuration);
@@ -150,11 +222,11 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             scopedClasspathEntries.add(Dependency.create(mavenScopeCollection, entry));
         }
 
-        Collection<Dependency> matchedEntries = userClasses().match(scopedClasspathEntries);
+        result = Collections.unmodifiableCollection(userClasses().match(scopedClasspathEntries));
 
         //        System.out.println("Classpath Entries");
         //        System.out.println("=================");
-        //        for (IRuntimeClasspathEntry entry : matchedEntries)
+        //        for (IRuntimeClasspathEntry entry : result)
         //        {
         //            if (entry.getLocation().contains("antlr-runtime"))
         //            {
@@ -174,42 +246,101 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         //        }
         //        System.out.println("----------------------------------------------------------------------");
 
-        return matchedEntries;
+        putCached("OriginalClasspathEntries", configuration, result);
+
+        return result;
     }
 
     public String[] getOriginalClasspath(ILaunchConfiguration configuration) throws CoreException
     {
-        return JettyPluginUtils.toLocationArrayFromScoped(getOriginalClasspathEntries(configuration));
+        String[] result = (String[]) getCached("OriginalClasspath", configuration);
+
+        if (result != null)
+        {
+            return result;
+        }
+
+        result = JettyPluginUtils.toLocationArrayFromScoped(getOriginalClasspathEntries(configuration));
+
+        putCached("OriginalClasspath", configuration, result);
+
+        return result;
     }
 
     public Collection<Dependency> getWebappClasspathEntries(ILaunchConfiguration configuration,
         Collection<Dependency> originalEntries) throws CoreException
     {
-        return and(createWebappClasspathMatcher(configuration)).match(new LinkedHashSet<Dependency>(originalEntries));
+        @SuppressWarnings("unchecked")
+        Collection<Dependency> result = (Collection<Dependency>) getCached("WebappClasspathEntries", configuration);
+
+        if (result != null)
+        {
+            return result;
+        }
+
+        result =
+            Collections.unmodifiableCollection(and(createWebappClasspathMatcher(configuration)).match(
+                new LinkedHashSet<Dependency>(originalEntries)));
+
+        putCached("WebappClasspathEntries", configuration, result);
+
+        return result;
     }
 
     public String[] getWebappClasspath(ILaunchConfiguration configuration, Collection<Dependency> originalEntries)
         throws CoreException
     {
-        return JettyPluginUtils.toLocationArrayFromScoped(getWebappClasspathEntries(configuration, originalEntries));
+        String[] result = (String[]) getCached("WebappClasspath", configuration);
+
+        if (result != null)
+        {
+            return result;
+        }
+
+        result = JettyPluginUtils.toLocationArrayFromScoped(getWebappClasspathEntries(configuration, originalEntries));
+
+        putCached("WebappClasspath", configuration, result);
+
+        return result;
     }
 
     public Collection<Dependency> getLocalWebappClasspathEntries(ILaunchConfiguration configuration,
         Collection<Dependency> webappEntries) throws CoreException
     {
+        @SuppressWarnings("unchecked")
+        Collection<Dependency> result =
+            (Collection<Dependency>) getCached("LocalWebappClasspathEntries", configuration);
+
+        if (result != null)
+        {
+            return result;
+        }
+
         if (JettyPluginConstants.isGenericIdsSupported(configuration))
         {
             Collection<String> globalGenericIds = JettyPluginConstants.getGlobalGenericIds(configuration);
 
             if ((globalGenericIds == null) || (globalGenericIds.size() <= 0))
             {
-                return new LinkedHashSet<Dependency>(webappEntries);
+                result = Collections.unmodifiableCollection(new LinkedHashSet<Dependency>(webappEntries));
             }
-
-            return notExcludedGenericIds(globalGenericIds).match(new LinkedHashSet<Dependency>(webappEntries));
+            else
+            {
+                result =
+                    Collections.unmodifiableCollection(notExcludedGenericIds(globalGenericIds).match(
+                        new LinkedHashSet<Dependency>(webappEntries)));
+            }
+        }
+        else
+        {
+            result =
+                Collections.unmodifiableCollection(deprecatedGetLocalWebappClasspathEntries(configuration,
+                    webappEntries));
         }
 
-        return deprecatedGetLocalWebappClasspathEntries(configuration, webappEntries);
+        putCached("LocalWebappClasspathEntries", configuration, result);
+
+        return result;
     }
 
     @SuppressWarnings("deprecation")
@@ -230,25 +361,58 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public String[] getLocalWebappClasspath(ILaunchConfiguration configuration, Collection<Dependency> webappEntries)
         throws CoreException
     {
-        return JettyPluginUtils.toLocationArrayFromScoped(getLocalWebappClasspathEntries(configuration, webappEntries));
+        String[] result = (String[]) getCached("LocalWebappClasspath", configuration);
+
+        if (result != null)
+        {
+            return result;
+        }
+
+        result =
+            JettyPluginUtils.toLocationArrayFromScoped(getLocalWebappClasspathEntries(configuration, webappEntries));
+
+        putCached("LocalWebappClasspath", configuration, result);
+
+        return result;
     }
 
     public Collection<Dependency> getGlobalWebappClasspathEntries(ILaunchConfiguration configuration,
         Collection<Dependency> webappEntries) throws CoreException
     {
+        @SuppressWarnings("unchecked")
+        Collection<Dependency> result =
+            (Collection<Dependency>) getCached("GlobalWebappClasspathEntries", configuration);
+
+        if (result != null)
+        {
+            return result;
+        }
+
         if (JettyPluginConstants.isGenericIdsSupported(configuration))
         {
             Collection<String> globalGenericIds = JettyPluginConstants.getGlobalGenericIds(configuration);
 
             if ((globalGenericIds == null) || (globalGenericIds.size() <= 0))
             {
-                return Collections.<Dependency> emptyList();
+                result = Collections.<Dependency> emptyList();
             }
-
-            return isIncludedGenericId(globalGenericIds).match(new LinkedHashSet<Dependency>(webappEntries));
+            else
+            {
+                result =
+                    Collections.unmodifiableCollection(isIncludedGenericId(globalGenericIds).match(
+                        new LinkedHashSet<Dependency>(webappEntries)));
+            }
+        }
+        else
+        {
+            result =
+                Collections.unmodifiableCollection(deprecatedGetGlobalWebappClasspathEntries(configuration,
+                    webappEntries));
         }
 
-        return deprecatedGetGlobalWebappClasspathEntries(configuration, webappEntries);
+        putCached("GlobalWebappClasspathEntries", configuration, result);
+
+        return result;
     }
 
     @SuppressWarnings("deprecation")
@@ -269,8 +433,19 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public String[] getGlobalWebappClasspath(ILaunchConfiguration configuration, Collection<Dependency> webappEntries)
         throws CoreException
     {
-        return JettyPluginUtils
-            .toLocationArrayFromScoped(getGlobalWebappClasspathEntries(configuration, webappEntries));
+        String[] result = (String[]) getCached("GlobalWebappClasspath", configuration);
+
+        if (result != null)
+        {
+            return result;
+        }
+
+        result =
+            JettyPluginUtils.toLocationArrayFromScoped(getGlobalWebappClasspathEntries(configuration, webappEntries));
+
+        putCached("GlobalWebappClasspath", configuration, result);
+
+        return result;
     }
 
     private static IRuntimeClasspathEntry[] getJettyClasspath(final ILaunchConfiguration configuration,
