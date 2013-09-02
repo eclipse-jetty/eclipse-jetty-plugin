@@ -311,7 +311,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         }
         catch (final IOException e)
         {
-            JettyPlugin.logError(e);
+            JettyPlugin.error("Failed to detect jetty classpath", e);
         }
 
         return entries.toArray(new IRuntimeClasspathEntry[entries.size()]);

@@ -240,7 +240,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         }
         catch (final CoreException e)
         {
-            JettyPlugin.logError(e);
+            JettyPlugin.error("Failed to initialize advanced configuration tab", e);
         }
     }
 
@@ -283,7 +283,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         }
         catch (CoreException e)
         {
-            JettyPlugin.logError(e);
+            JettyPlugin.error("Failed to set defaults in advanced configuration tab", e);
         }
     }
 
@@ -469,7 +469,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         }
         catch (CoreException e)
         {
-            JettyPlugin.logError(e);
+            JettyPlugin.error("Failed to update table in advanced configuration tab", e);
         }
     }
 

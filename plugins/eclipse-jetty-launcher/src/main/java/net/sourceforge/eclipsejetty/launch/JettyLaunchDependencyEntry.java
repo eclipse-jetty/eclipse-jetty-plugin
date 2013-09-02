@@ -127,11 +127,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
 
     public void setObsolete(boolean obsolete)
     {
-        //        if (this.obsolete != obsolete)
-        //        {
         this.obsolete = obsolete;
-        // needsUpdate = true;
-        //        }
     }
 
     public boolean isGlobal()

@@ -308,7 +308,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
         catch (final CoreException e)
         {
-            JettyPlugin.logError(e);
+            JettyPlugin.error("Failed to initialize form in configuration tab", e);
         }
     }
 
@@ -356,7 +356,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
         catch (CoreException e)
         {
-            JettyPlugin.logError(e);
+            JettyPlugin.error("Failed to set defaults in configuration tab", e);
         }
     }
 
@@ -372,7 +372,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
         catch (CoreException e)
         {
-            JettyPlugin.logError(e);
+            JettyPlugin.error("Failed to perform apply in configuration tab", e);
         }
 
         JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
@@ -511,7 +511,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
         catch (CoreException e)
         {
-            JettyPlugin.logError(e);
+            JettyPlugin.error("Failed to update table in configuration tab", e);
         }
     }
 
@@ -525,9 +525,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         {
             dialog.setElements(JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getJavaProjects());
         }
-        catch (final JavaModelException jme)
+        catch (final JavaModelException e)
         {
-            JettyPlugin.logError(jme);
+            JettyPlugin.error("Failed to detect Java projects", e);
         }
 
         IJavaProject javaProject = null;

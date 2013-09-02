@@ -100,7 +100,6 @@ public class JettyLaunchConfigEntry
             {
                 if (type != JettyConfigType.DEFAULT)
                 {
-                    //                    button.setSelection(!button.getSelection());
                     active = button.getSelection();
                     fillItem(item);
                 }
@@ -180,15 +179,8 @@ public class JettyLaunchConfigEntry
     {
         if (item != null)
         {
-            //            int indexOf = table.indexOf(item);
-
             item.dispose();
             button.dispose();
-
-            //            if (indexOf > 0)
-            //            {
-            //                table.clearAll();
-            //            }
 
             item = null;
             button = null;

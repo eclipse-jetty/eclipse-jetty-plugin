@@ -13,6 +13,8 @@ package net.sourceforge.eclipsejetty;
 
 import java.net.URL;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -101,7 +103,7 @@ public class JettyPlugin extends AbstractUIPlugin
         }
         else
         {
-            logError("resource " + url + " was not found");
+            error("Resource " + url + " was not found");
         }
     }
 
@@ -135,13 +137,50 @@ public class JettyPlugin extends AbstractUIPlugin
         return plugin.getImageRegistry().get(MOVE_DOWN_CONTEXT_ICON);
     }
 
-    public static void logError(final Exception e)
+    public static void log(int severety, String message, Throwable e)
     {
-        e.printStackTrace();
+        Status status;
+
+        if (e == null)
+        {
+            status = new Status(severety, PLUGIN_ID, message);
+        }
+        else
+        {
+            status = new Status(severety, PLUGIN_ID, message, e);
+        }
+
+        getDefault().getLog().log(status);
     }
 
-    public static void logError(final String error)
+    public static void info(String message)
     {
-        System.err.println(error);
+        log(IStatus.INFO, message, null);
     }
+
+    public static void info(String message, Throwable e)
+    {
+        log(IStatus.INFO, message, e);
+    }
+
+    public static void warning(String message)
+    {
+        log(IStatus.WARNING, message, null);
+    }
+
+    public static void warning(String message, Throwable e)
+    {
+        log(IStatus.WARNING, message, e);
+    }
+
+    public static void error(String message)
+    {
+        log(IStatus.ERROR, message, null);
+    }
+
+    public static void error(String message, Throwable e)
+    {
+        log(IStatus.ERROR, message, e);
+    }
+
 }

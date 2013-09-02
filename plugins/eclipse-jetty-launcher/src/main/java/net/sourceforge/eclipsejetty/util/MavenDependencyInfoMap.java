@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
@@ -159,6 +160,7 @@ public class MavenDependencyInfoMap
     public MavenDependencyInfo resolve(IRuntimeClasspathEntry runtimeClasspathEntry)
     {
         MavenDependencyInfo suspectedMavenDependency = MavenDependencyInfo.create(runtimeClasspathEntry);
+        String location = JettyPluginUtils.toLocation(runtimeClasspathEntry);
 
         if (suspectedMavenDependency != null)
         {
@@ -169,16 +171,14 @@ public class MavenDependencyInfoMap
             {
                 if (!JettyPluginUtils.equals(suspectedMavenDependency.getScope(), mavenDependency.getScope()))
                 {
-                    //                    System.err.println("Wrong scope: " + suspectedMavenDependency.getScope());
-                    //                    System.err.println("Right scope: " + mavenDependency.getScope());
-                    //                    System.err.println();
+                    JettyPlugin.info("Fixed scope for dependency " + location + ": changed "
+                        + suspectedMavenDependency.getScope() + " to " + mavenDependency.getScope());
                 }
 
                 return mavenDependency;
             }
         }
 
-        String location = JettyPluginUtils.toLocation(runtimeClasspathEntry);
         MavenDependencyInfo mavenDependency = dependencies.get(location);
 
         if (mavenDependency != null)
