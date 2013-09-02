@@ -401,6 +401,11 @@ public class JettyPluginConstants
 
     public static boolean isScopeNoneExcluded(ILaunchConfiguration configuration) throws CoreException
     {
+        if (!configuration.hasAttribute(ATTR_EXCLUDE_SCOPE_NONE)) 
+        {
+            return JettyPluginM2EUtils.getMavenProjectFacade(configuration) != null;
+        }
+        
         return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_NONE, false);
     }
 

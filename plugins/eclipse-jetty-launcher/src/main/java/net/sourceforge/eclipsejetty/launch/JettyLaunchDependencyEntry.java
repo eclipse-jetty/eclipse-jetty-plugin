@@ -277,8 +277,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
 
         item.setText(3, scope);
         item.setForeground(3, color);
-        // FIXME item.setText(4, path);
-        item.setText(4, genericId);
+        item.setText(4, path);
         item.setForeground(4, color);
 
         needsUpdate = false;
