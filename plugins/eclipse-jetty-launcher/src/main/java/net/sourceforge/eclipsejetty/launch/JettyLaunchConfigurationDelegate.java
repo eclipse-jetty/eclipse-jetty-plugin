@@ -611,6 +611,8 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             file = File.createTempFile("jettyLauncherConfiguration", ".xml");
 
             serverConfiguration.write(file);
+            
+            file.deleteOnExit();
         }
         catch (IOException e)
         {
