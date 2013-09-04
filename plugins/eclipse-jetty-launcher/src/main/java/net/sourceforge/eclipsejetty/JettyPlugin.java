@@ -31,6 +31,7 @@ public class JettyPlugin extends AbstractUIPlugin
     // The plug-in ID
     public static final String PLUGIN_ID = "net.sourceforge.eclipsejetty.launcher";
 
+    private static final String JETTY_PLUGIN_LOGO = PLUGIN_ID + ".jettyPluginLogo";
     private static final String JETTY_ICON = PLUGIN_ID + ".jettyIcon";
     private static final String JETTY_ADVANCED_ICON = PLUGIN_ID + ".jettyAdvancedIcon";
     private static final String ADD_CONTEXT_ICON = PLUGIN_ID + ".addContext";
@@ -84,6 +85,8 @@ public class JettyPlugin extends AbstractUIPlugin
     @Override
     protected void initializeImageRegistry(final ImageRegistry reg)
     {
+        initializeImageRegistry(reg, JETTY_PLUGIN_LOGO, "/icons/jetty-plugin-logo.png");
+
         initializeImageRegistry(reg, JETTY_ICON, "/icons/jetty.png");
         initializeImageRegistry(reg, JETTY_ADVANCED_ICON, "/icons/jetty-advanced.png");
 
@@ -105,6 +108,11 @@ public class JettyPlugin extends AbstractUIPlugin
         {
             error("Resource " + url + " was not found");
         }
+    }
+
+    public static Image getJettyPluginLogo()
+    {
+        return plugin.getImageRegistry().get(JETTY_PLUGIN_LOGO);
     }
 
     public static Image getJettyIcon()

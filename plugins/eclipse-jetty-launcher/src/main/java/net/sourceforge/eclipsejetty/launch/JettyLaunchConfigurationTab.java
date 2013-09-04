@@ -53,10 +53,15 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
@@ -97,12 +102,15 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     /**
      * @wbp.parser.entryPoint
      */
-    public void createControl(final Composite parent)
+    public void createControl(Composite parent)
     {
-        final Composite tabComposite = new Composite(parent, SWT.NONE);
-        tabComposite.setLayout(new GridLayout(1, false));
+        Composite tabComposite = new Composite(parent, SWT.NONE);
+        tabComposite.setLayout(new GridLayout(2, false));
 
-        final Group projectGroup = new Group(tabComposite, SWT.NONE);
+        Label label = new Label(tabComposite, SWT.NONE);
+        label.setImage(JettyPlugin.getJettyPluginLogo());
+
+        Group projectGroup = new Group(tabComposite, SWT.NONE);
         projectGroup.setLayout(new GridLayout(2, false));
         projectGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         projectGroup.setText("Project:");
@@ -111,15 +119,15 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         createButton(projectGroup, SWT.NONE, "Browse...", 128, 1, 1, new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(final SelectionEvent e)
+            public void widgetSelected(SelectionEvent e)
             {
                 chooseJavaProject();
             }
         });
 
-        final Group applicationGroup = new Group(tabComposite, SWT.NONE);
+        Group applicationGroup = new Group(tabComposite, SWT.NONE);
         applicationGroup.setLayout(new GridLayout(3, false));
-        applicationGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        applicationGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         applicationGroup.setText("Web Application:");
 
         createLabel(applicationGroup, "WebApp Directory:", 128, 1, 1);
@@ -127,7 +135,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         webAppButton = createButton(applicationGroup, SWT.NONE, "Browse...", 128, 1, 1, new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(final SelectionEvent e)
+            public void widgetSelected(SelectionEvent e)
             {
                 chooseWebappDir();
             }
@@ -141,9 +149,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         portText = createText(applicationGroup, SWT.BORDER, 64, -1, 1, 1, modifyDialogListener);
         createLabel(applicationGroup, "", 0, 1, 1);
 
-        final Group configGroup = new Group(tabComposite, SWT.NONE);
+        Group configGroup = new Group(tabComposite, SWT.NONE);
         configGroup.setLayout(new GridLayout(4, false));
-        configGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        configGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         configGroup.setText("Jetty Context Configuration:");
 
         configTable =
@@ -161,7 +169,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         editConfigButton = createButton(configGroup, SWT.NONE, "Edit...", 128, 1, 1, new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(final SelectionEvent e)
+            public void widgetSelected(SelectionEvent e)
             {
                 int index = configTable.getSelectionIndex();
 
@@ -195,7 +203,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         moveUpConfigButton = createButton(configGroup, SWT.NONE, "Up", 128, 1, 1, new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(final SelectionEvent e)
+            public void widgetSelected(SelectionEvent e)
             {
                 int index = configTable.getSelectionIndex();
 
@@ -210,7 +218,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         moveDownConfigButton = createButton(configGroup, SWT.NONE, "Down", 128, 1, 2, new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(final SelectionEvent e)
+            public void widgetSelected(SelectionEvent e)
             {
                 int index = configTable.getSelectionIndex();
 
@@ -226,7 +234,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         createButton(configGroup, SWT.NONE, "Add...", 128, 1, 1, new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(final SelectionEvent e)
+            public void widgetSelected(SelectionEvent e)
             {
                 String path = chooseConfig(null);
 
@@ -241,7 +249,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         createButton(configGroup, SWT.NONE, "Add External...", 128, 1, 1, new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(final SelectionEvent e)
+            public void widgetSelected(SelectionEvent e)
             {
                 String path = chooseConfigFromFileSystem(null);
 
@@ -256,7 +264,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         removeConfigButton = createButton(configGroup, SWT.NONE, "Remove", 128, 1, 1, new SelectionAdapter()
         {
             @Override
-            public void widgetSelected(final SelectionEvent e)
+            public void widgetSelected(SelectionEvent e)
             {
                 int index = configTable.getSelectionIndex();
 
@@ -270,6 +278,21 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
                         updateLaunchConfigurationDialog();
                     }
                 }
+            }
+        });
+
+        Composite helpGroup = new Composite(tabComposite, SWT.NONE);
+        helpGroup.setLayout(new GridLayout(1, false));
+        helpGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+
+        Link link = new Link(helpGroup, SWT.NONE);
+        link.setText("Visit the <a>Eclipse Jetty Plugin homepage</a> at SourceForge.");
+        link.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1));
+        link.addListener(SWT.Selection, new Listener()
+        {
+            public void handleEvent(Event event)
+            {
+                Program.launch("http://eclipse-jetty.sourceforge.net/");
             }
         });
 
@@ -294,7 +317,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     }
 
     @Override
-    public void initializeFrom(final ILaunchConfiguration configuration)
+    public void initializeFrom(ILaunchConfiguration configuration)
     {
         try
         {
@@ -306,15 +329,15 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             updateTable(configuration, true);
             updateButtonState();
         }
-        catch (final CoreException e)
+        catch (CoreException e)
         {
             JettyPlugin.error("Failed to initialize form in configuration tab", e);
         }
     }
 
-    public void setDefaults(final ILaunchConfigurationWorkingCopy configuration)
+    public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
     {
-        final IJavaElement javaElement = getContext();
+        IJavaElement javaElement = getContext();
         if (javaElement != null)
         {
             initializeJavaProject(javaElement, configuration);
@@ -333,7 +356,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             // try to base the launch config name on the current project
             launchConfigName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
         }
-        catch (final CoreException e)
+        catch (CoreException e)
         {
             // ignore
         }
@@ -360,7 +383,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
     }
 
-    public void performApply(final ILaunchConfigurationWorkingCopy configuration)
+    public void performApply(ILaunchConfigurationWorkingCopy configuration)
     {
         try
         {
@@ -382,7 +405,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     }
 
     @Override
-    public boolean isValid(final ILaunchConfiguration config)
+    public boolean isValid(ILaunchConfiguration config)
     {
         setErrorMessage(null);
         setMessage(null);
@@ -487,7 +510,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         return true;
     }
 
-    private void updateTable(final ILaunchConfiguration configuration, boolean updateType)
+    private void updateTable(ILaunchConfiguration configuration, boolean updateType)
     {
         try
         {
@@ -517,15 +540,15 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
     protected void chooseJavaProject()
     {
-        final ILabelProvider labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
-        final ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), labelProvider);
+        ILabelProvider labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
+        ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), labelProvider);
         dialog.setTitle("Project Selection");
         dialog.setMessage("Select a project to constrain your search.");
         try
         {
             dialog.setElements(JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getJavaProjects());
         }
-        catch (final JavaModelException e)
+        catch (JavaModelException e)
         {
             JettyPlugin.error("Failed to detect Java projects", e);
         }
@@ -534,7 +557,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         String projectName = projectText.getText().trim();
         if (projectName.length() > 0)
         {
-            final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+            IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
             javaProject = JavaCore.create(workspaceRoot).getJavaProject(projectName);
         }
         if (javaProject != null)
@@ -543,7 +566,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
         if (dialog.open() == Window.OK)
         {
-            final IJavaProject selectedProject = (IJavaProject) dialog.getFirstResult();
+            IJavaProject selectedProject = (IJavaProject) dialog.getFirstResult();
             projectName = selectedProject.getElementName();
             projectText.setText(projectName);
         }
@@ -645,21 +668,21 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         removeConfigButton.setEnabled((type == JettyConfigType.PATH) || (type == JettyConfigType.WORKSPACE));
     }
 
-    public final class ModifyDialogListener implements ModifyListener, SelectionListener
+    public class ModifyDialogListener implements ModifyListener, SelectionListener
     {
         @SuppressWarnings("synthetic-access")
-        public void modifyText(final ModifyEvent e)
+        public void modifyText(ModifyEvent e)
         {
             updateLaunchConfigurationDialog();
         }
 
-        public void widgetDefaultSelected(final SelectionEvent arg0)
+        public void widgetDefaultSelected(SelectionEvent arg0)
         {
             // intentionally left blank
         }
 
         @SuppressWarnings("synthetic-access")
-        public void widgetSelected(final SelectionEvent arg0)
+        public void widgetSelected(SelectionEvent arg0)
         {
             updateLaunchConfigurationDialog();
         }
