@@ -23,12 +23,14 @@ import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.launch.JettyLaunchDependencyEntry.Kind;
 import net.sourceforge.eclipsejetty.launch.JettyLaunchDependencyEntry.Type;
 import net.sourceforge.eclipsejetty.util.Dependency;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Table;
 
@@ -221,9 +223,28 @@ public class JettyLaunchDependencyEntryList
 
                 if (entry == null)
                 {
+                    Kind kind;
+
+                    switch (dependency.getRuntimeClasspathEntry().getType())
+                    {
+                        case IRuntimeClasspathEntry.PROJECT:
+                            kind = Kind.PROJECT;
+                            break;
+
+                        case IRuntimeClasspathEntry.ARCHIVE:
+                        case IRuntimeClasspathEntry.CONTAINER:
+                            kind = Kind.JAR;
+                            break;
+
+                        case IRuntimeClasspathEntry.VARIABLE:
+                        default:
+                            kind = Kind.OTHER;
+                            break;
+                    }
+
                     entry =
                         new JettyLaunchDependencyEntry(dependency.getGenericId(), JettyPluginUtils.getPath(location),
-                            JettyPluginUtils.getName(location), Type.DEFAULT);
+                            JettyPluginUtils.getName(location), kind, Type.DEFAULT);
 
                     entries.put(location, entry);
                 }

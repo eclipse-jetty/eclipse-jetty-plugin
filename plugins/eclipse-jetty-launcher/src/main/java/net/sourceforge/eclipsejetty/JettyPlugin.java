@@ -38,6 +38,13 @@ public class JettyPlugin extends AbstractUIPlugin
     private static final String REMOVE_CONTEXT_ICON = PLUGIN_ID + ".removeContext";
     private static final String MOVE_UP_CONTEXT_ICON = PLUGIN_ID + ".moveUpContext";
     private static final String MOVE_DOWN_CONTEXT_ICON = PLUGIN_ID + ".moveDownContext";
+    
+    public static final String DEPENDENCY_OTHER = PLUGIN_ID + ".dependencyOther";
+    public static final String DEPENDENCY_JAR = PLUGIN_ID + ".dependencyJar";
+    public static final String DEPENDENCY_PROJECT = PLUGIN_ID + ".dependencyProject";
+    public static final String DEPENDENCY_OTHER_DEACTIVATED = PLUGIN_ID + ".dependencyOtherDeactivated";
+    public static final String DEPENDENCY_JAR_DEACTIVATED = PLUGIN_ID + ".dependencyJarDeactivated";
+    public static final String DEPENDENCY_PROJECT_DEACTIVATED = PLUGIN_ID + ".dependencyProjectDeactivated";
 
     // The shared instance
     private static JettyPlugin plugin;
@@ -94,6 +101,13 @@ public class JettyPlugin extends AbstractUIPlugin
         initializeImageRegistry(reg, REMOVE_CONTEXT_ICON, "/icons/remove_context.gif");
         initializeImageRegistry(reg, MOVE_UP_CONTEXT_ICON, "/icons/move_up_context.gif");
         initializeImageRegistry(reg, MOVE_DOWN_CONTEXT_ICON, "/icons/move_down_context.gif");
+
+        initializeImageRegistry(reg, DEPENDENCY_OTHER, "/icons/dependency-other.gif");
+        initializeImageRegistry(reg, DEPENDENCY_JAR, "/icons/dependency-jar.gif");
+        initializeImageRegistry(reg, DEPENDENCY_PROJECT, "/icons/dependency-project.gif");
+        initializeImageRegistry(reg, DEPENDENCY_OTHER_DEACTIVATED, "/icons/dependency-other-deactivated.gif");
+        initializeImageRegistry(reg, DEPENDENCY_JAR_DEACTIVATED, "/icons/dependency-jar-deactivated.gif");
+        initializeImageRegistry(reg, DEPENDENCY_PROJECT_DEACTIVATED, "/icons/dependency-project-deactivated.gif");
     }
 
     protected void initializeImageRegistry(ImageRegistry reg, String key, String url)
@@ -108,6 +122,11 @@ public class JettyPlugin extends AbstractUIPlugin
         {
             error("Resource " + url + " was not found");
         }
+    }
+
+    public static Image getIcon(String icon)
+    {
+        return plugin.getImageRegistry().get(icon);
     }
 
     public static Image getJettyPluginLogo()

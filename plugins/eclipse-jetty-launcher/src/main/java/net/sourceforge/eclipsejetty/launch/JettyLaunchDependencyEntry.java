@@ -11,12 +11,14 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.launch;
 
+import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -38,9 +40,36 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         ALWAYS_EXCLUDED;
     }
 
+    public enum Kind
+    {
+        OTHER(JettyPlugin.DEPENDENCY_OTHER, JettyPlugin.DEPENDENCY_OTHER_DEACTIVATED),
+        JAR(JettyPlugin.DEPENDENCY_JAR, JettyPlugin.DEPENDENCY_JAR_DEACTIVATED),
+        PROJECT(JettyPlugin.DEPENDENCY_PROJECT, JettyPlugin.DEPENDENCY_PROJECT_DEACTIVATED);
+
+        private final String id;
+        private final String deactivatedId;
+
+        private Kind(String id, String deactivatedId)
+        {
+            this.id = id;
+            this.deactivatedId = deactivatedId;
+        }
+
+        public Image getIcon()
+        {
+            return JettyPlugin.getIcon(id);
+        }
+
+        public Image getDeactivatedIcon()
+        {
+            return JettyPlugin.getIcon(deactivatedId);
+        }
+    }
+
     private final String genericId;
     private final String path;
     private final String name;
+    private final Kind kind;
 
     private Type type;
     private boolean included;
@@ -53,13 +82,14 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
     private Button includeButton;
     private Button globalButton;
 
-    public JettyLaunchDependencyEntry(String genericId, String path, String name, Type type)
+    public JettyLaunchDependencyEntry(String genericId, String path, String name, Kind kind, Type type)
     {
         super();
 
         this.genericId = genericId;
         this.path = path;
         this.name = name;
+        this.kind = kind;
         this.type = type;
     }
 
@@ -259,11 +289,13 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         {
             color = item.getDisplay().getSystemColor(SWT.COLOR_BLACK);
             globalButton.setEnabled(true);
+            item.setImage(0, kind.getIcon());
         }
         else
         {
             color = item.getDisplay().getSystemColor(SWT.COLOR_GRAY);
             globalButton.setEnabled(false);
+            item.setImage(0, kind.getDeactivatedIcon());
         }
 
         item.setText(1, name);
