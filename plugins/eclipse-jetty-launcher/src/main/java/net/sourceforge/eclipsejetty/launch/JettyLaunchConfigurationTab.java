@@ -86,6 +86,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     private Button webAppButton;
     private Text contextText;
     private Text portText;
+    private Text httpsPortText;
+    private Button httpsEnabledButton;
     private Table configTable;
     private boolean configTableFormatted = false;
     private Button editConfigButton;
@@ -126,12 +128,12 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         });
 
         Group applicationGroup = new Group(tabComposite, SWT.NONE);
-        applicationGroup.setLayout(new GridLayout(3, false));
+        applicationGroup.setLayout(new GridLayout(6, false));
         applicationGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         applicationGroup.setText("Web Application:");
 
         createLabel(applicationGroup, "WebApp Directory:", 128, 1, 1);
-        webAppText = createText(applicationGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
+        webAppText = createText(applicationGroup, SWT.BORDER, -1, -1, 4, 1, modifyDialogListener);
         webAppButton = createButton(applicationGroup, SWT.NONE, "Browse...", 128, 1, 1, new SelectionAdapter()
         {
             @Override
@@ -142,12 +144,14 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         });
 
         createLabel(applicationGroup, "Context Path:", 128, 1, 1);
-        contextText = createText(applicationGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
+        contextText = createText(applicationGroup, SWT.BORDER, -1, -1, 4, 1, modifyDialogListener);
         createLabel(applicationGroup, "", 0, 1, 1);
 
-        createLabel(applicationGroup, "HTTP Port:", 128, 1, 1);
+        createLabel(applicationGroup, "HTTP / HTTPs Port:", 128, 1, 1);
         portText = createText(applicationGroup, SWT.BORDER, 64, -1, 1, 1, modifyDialogListener);
-        createLabel(applicationGroup, "", 0, 1, 1);
+        createLabel(applicationGroup, "/", 16, 1, 1).setAlignment(SWT.CENTER);
+        httpsPortText = createText(applicationGroup, SWT.BORDER, 64, -1, 1, 1, modifyDialogListener);
+        httpsEnabledButton = createButton(applicationGroup, SWT.CHECK, "Enable HTTPs", -1, 2, 1, modifyDialogListener);
 
         Group configGroup = new Group(tabComposite, SWT.NONE);
         configGroup.setLayout(new GridLayout(4, false));
@@ -325,6 +329,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             webAppText.setText(JettyPluginConstants.getWebAppDir(configuration));
             contextText.setText(JettyPluginConstants.getContext(configuration));
             portText.setText(JettyPluginConstants.getPort(configuration));
+            httpsPortText.setText(JettyPluginConstants.getHttpsPort(configuration));
+            httpsEnabledButton.setSelection(JettyPluginConstants.isHttpsEnabled(configuration));
 
             updateTable(configuration, true);
             updateButtonState();
@@ -391,6 +397,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             JettyPluginConstants.setContext(configuration, contextText.getText().trim());
             JettyPluginConstants.setWebAppDir(configuration, webAppText.getText().trim());
             JettyPluginConstants.setPort(configuration, portText.getText().trim());
+            JettyPluginConstants.setHttpsPort(configuration, httpsPortText.getText().trim());
+            JettyPluginConstants.setHttpsEnabled(configuration, httpsEnabledButton.getSelection());
             JettyPluginConstants.setConfigs(configuration, configEntryList.getConfigs());
         }
         catch (CoreException e)
@@ -409,6 +417,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     {
         setErrorMessage(null);
         setMessage(null);
+
+        httpsPortText.setEnabled(httpsEnabledButton.getSelection());
 
         String projectName = projectText.getText().trim();
         IProject project = null;
@@ -480,19 +490,47 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
                 if ((port <= 0) || (port >= 65536))
                 {
-                    setErrorMessage(MessageFormat.format("The port {0} must be a number between 0 and 65536.",
+                    setErrorMessage(MessageFormat.format("The HTTP port {0} must be a number between 0 and 65536.",
                         jettyPort));
                 }
             }
             catch (NumberFormatException e)
             {
-                setErrorMessage(MessageFormat.format("The port {0} must be a number between 0 and 65536.", jettyPort));
+                setErrorMessage(MessageFormat.format("The HTTP port {0} must be a number between 0 and 65536.", jettyPort));
             }
         }
         else
         {
-            setErrorMessage("Jetty port is not set");
+            setErrorMessage("Jetty HTTP port is not set");
             return false;
+        }
+
+        if (httpsEnabledButton.getSelection())
+        {
+            String jettyHttpsPort = httpsPortText.getText().trim();
+            if (jettyHttpsPort.length() > 0)
+            {
+                try
+                {
+                    int port = Integer.parseInt(jettyHttpsPort);
+
+                    if ((port <= 0) || (port >= 65536))
+                    {
+                        setErrorMessage(MessageFormat.format("The HTTPs port {0} must be a number between 0 and 65536.",
+                            jettyHttpsPort));
+                    }
+                }
+                catch (NumberFormatException e)
+                {
+                    setErrorMessage(MessageFormat.format("The HTTPs port {0} must be a number between 0 and 65536.",
+                        jettyHttpsPort));
+                }
+            }
+            else
+            {
+                setErrorMessage("Jetty HTTPs port is not set");
+                return false;
+            }
         }
 
         List<JettyConfig> contexts = configEntryList.getConfigs();

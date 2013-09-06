@@ -11,6 +11,7 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty;
 
+import java.io.File;
 import java.net.URL;
 
 import org.eclipse.core.runtime.IStatus;
@@ -38,7 +39,7 @@ public class JettyPlugin extends AbstractUIPlugin
     private static final String REMOVE_CONTEXT_ICON = PLUGIN_ID + ".removeContext";
     private static final String MOVE_UP_CONTEXT_ICON = PLUGIN_ID + ".moveUpContext";
     private static final String MOVE_DOWN_CONTEXT_ICON = PLUGIN_ID + ".moveDownContext";
-    
+
     public static final String DEPENDENCY_OTHER = PLUGIN_ID + ".dependencyOther";
     public static final String DEPENDENCY_JAR = PLUGIN_ID + ".dependencyJar";
     public static final String DEPENDENCY_PROJECT = PLUGIN_ID + ".dependencyProject";
@@ -48,6 +49,8 @@ public class JettyPlugin extends AbstractUIPlugin
 
     // The shared instance
     private static JettyPlugin plugin;
+
+    private static File defaultKeystoreFile;
 
     /**
      * The constructor
@@ -208,6 +211,16 @@ public class JettyPlugin extends AbstractUIPlugin
     public static void error(String message, Throwable e)
     {
         log(IStatus.ERROR, message, e);
+    }
+
+    public static File getDefaultKeystoreFile()
+    {
+        return defaultKeystoreFile;
+    }
+
+    public static void setDefaultKeystoreFile(File defaultKeystoreFile)
+    {
+        JettyPlugin.defaultKeystoreFile = defaultKeystoreFile;
     }
 
 }

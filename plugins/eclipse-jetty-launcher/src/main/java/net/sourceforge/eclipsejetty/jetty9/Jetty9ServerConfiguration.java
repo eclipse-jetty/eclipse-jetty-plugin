@@ -28,13 +28,28 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
     @Override
     protected void buildThreadPool(DOMBuilder builder)
     {
-        builder.begin("Arg").attribute("name", "threadpool");
-        builder.begin("New").attribute("id", "threadpool")
-            .attribute("class", "org.eclipse.jetty.util.thread.QueuedThreadPool");
-        builder.element("Set", "name", "minThreads", 2);
-        builder.element("Set", "name", "maxThreads", 10);
-        builder.element("Set", "name", "detailedDump", false);
-        builder.end();
+        builder.begin("Get").attribute("name", "ThreadPool");
+        {
+            builder.begin("Set").attribute("name", "minThreads").attribute("type", "int");
+            {
+                builder.begin("Property").attribute("name", "threads.min").attribute("default", 2).end();
+            }
+            builder.end();
+
+            builder.begin("Set").attribute("name", "maxThreads").attribute("type", "int");
+            {
+                builder.begin("Property").attribute("name", "threads.max").attribute("default", 10).end();
+            }
+            builder.end();
+
+            builder.begin("Set").attribute("name", "idleTimeout").attribute("type", "int");
+            {
+                builder.begin("Property").attribute("name", "threads.timeout").attribute("default", 60000).end();
+            }
+            builder.end();
+
+            builder.element("Set", "name", "detailedDump", false);
+        }
         builder.end();
     }
 
@@ -42,37 +57,207 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
     protected void buildHttpConfig(DOMBuilder builder)
     {
         builder.begin("New").attribute("id", "httpConfig")
-            .attribute("class", "org.eclipse.jetty.server.HttpChannelConfig");
-        builder.element("Set", "name", "secureScheme", "https");
-        builder.element("Set", "name", "securePort", 8443);
-        builder.element("Set", "name", "outputBufferSize", 32768);
-        builder.element("Set", "name", "requestHeaderSize", 8192);
-        builder.element("Set", "name", "responseHeaderSize", 8192);
+            .attribute("class", "org.eclipse.jetty.server.HttpConfiguration");
+        {
+            builder.element("Set", "name", "secureScheme", "https");
+            builder.element("Set", "name", "securePort", 8443);
+            builder.element("Set", "name", "outputBufferSize", 32768);
+            builder.element("Set", "name", "requestHeaderSize", 8192);
+            builder.element("Set", "name", "responseHeaderSize", 8192);
+            builder.element("Set", "name", "sendServerVersion", true);
+            builder.element("Set", "name", "sendDateHeader", false);
+            builder.element("Set", "name", "headerCacheSize", 512);
+        }
         builder.end();
     }
 
     @Override
-    protected void buildConnector(DOMBuilder builder)
+    protected void buildHttpsConfig(DOMBuilder builder)
+    {
+        if (getSslPort() != null)
+        {
+            builder.begin("New").attribute("id", "sslContextFactory")
+                .attribute("class", "org.eclipse.jetty.util.ssl.SslContextFactory");
+            {
+                builder.element("Set", "name", "KeyStorePath", getKeyStorePath());
+                builder.element("Set", "name", "KeyStorePassword", getKeyStorePassword());
+                builder.element("Set", "name", "KeyManagerPassword", getKeyManagerPassword());
+                builder.element("Set", "name", "TrustStorePath", getKeyStorePath());
+                builder.element("Set", "name", "TrustStorePassword", getKeyStorePassword());
+                builder.element("Set", "name", "EndpointIdentificationAlgorithm");
+                builder.begin("Set").attribute("name", "ExcludeCipherSuites");
+                {
+                    builder.begin("Array").attribute("type", "String");
+                    {
+                        builder.element("Item", "SSL_RSA_WITH_DES_CBC_SHA");
+                        builder.element("Item", "SSL_DHE_RSA_WITH_DES_CBC_SHA");
+                        builder.element("Item", "SSL_DHE_DSS_WITH_DES_CBC_SHA");
+                        builder.element("Item", "SSL_RSA_EXPORT_WITH_RC4_40_MD5");
+                        builder.element("Item", "SSL_RSA_EXPORT_WITH_DES40_CBC_SHA");
+                        builder.element("Item", "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA");
+                        builder.element("Item", "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA");
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
+            builder.end();
+
+            builder.begin("New").attribute("id", "sslHttpConfig")
+                .attribute("class", "org.eclipse.jetty.server.HttpConfiguration");
+            {
+                builder.begin("Arg");
+                {
+                    builder.element("Ref", "refid", "httpConfig");
+                }
+                builder.end();
+
+                builder.begin("Call").attribute("name", "addCustomizer");
+                {
+                    builder.begin("Arg");
+                    {
+                        builder.element("New", "class", "org.eclipse.jetty.server.SecureRequestCustomizer");
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
+            builder.end();
+        }
+    }
+
+    @Override
+    protected void buildHttpConnector(DOMBuilder builder)
     {
         if (getPort() != null)
         {
             builder.begin("Call").attribute("name", "addConnector");
-            builder.begin("Arg");
-            builder.begin("New").attribute("class", "org.eclipse.jetty.server.ServerConnector");
-            builder.begin("Arg").attribute("name", "server").element("Ref", "id", "Server").end();
-            builder.begin("Arg").attribute("name", "factories");
-            builder.begin("Array").attribute("type", "org.eclipse.jetty.server.ConnectionFactory");
-            builder.begin("Item");
-            builder.begin("New").attribute("class", "org.eclipse.jetty.server.HttpConnectionFactory");
-            builder.begin("Arg").attribute("name", "config").element("Ref", "id", "httpConfig").end();
+            {
+                builder.begin("Arg");
+                {
+                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.ServerConnector");
+                    {
+                        builder.begin("Arg").attribute("name", "server");
+                        {
+                            builder.element("Ref", "refid", "Server");
+                        }
+                        builder.end();
+
+                        builder.begin("Arg").attribute("name", "factories");
+                        {
+                            builder.begin("Array").attribute("type", "org.eclipse.jetty.server.ConnectionFactory");
+                            {
+                                builder.begin("Item");
+                                {
+                                    builder.begin("New").attribute("class",
+                                        "org.eclipse.jetty.server.HttpConnectionFactory");
+                                    {
+                                        builder.begin("Arg").attribute("name", "config");
+                                        {
+                                            builder.element("Ref", "refid", "httpConfig");
+                                        }
+                                        builder.end();
+                                    }
+                                    builder.end();
+                                }
+                                builder.end();
+                            }
+                            builder.end();
+                        }
+                        builder.end();
+
+                        builder.begin("Set").attribute("name", "host");
+                        {
+                            builder.element("Property", "name", "jetty.host");
+                        }
+                        builder.end();
+
+                        builder.element("Set", "name", "port", getPort());
+                        builder.element("Set", "name", "idleTimeout", 30000);
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
             builder.end();
-            builder.end();
-            builder.end();
-            builder.end();
-            builder.element("Set", "name", "port", getPort());
-            builder.element("Set", "name", "idleTimeout", 30000);
-            builder.end();
-            builder.end();
+        }
+    }
+
+    @Override
+    protected void buildHttpsConnector(DOMBuilder builder)
+    {
+        if (getSslPort() != null)
+        {
+            builder.begin("Call").attribute("id", "sslConnector").attribute("name", "addConnector");
+            {
+                builder.begin("Arg");
+                {
+                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.ServerConnector");
+                    {
+                        builder.begin("Arg").attribute("name", "server");
+                        {
+                            builder.element("Ref", "refid", "Server");
+                        }
+                        builder.end();
+
+                        builder.begin("Arg").attribute("name", "factories");
+                        {
+                            builder.begin("Array").attribute("type", "org.eclipse.jetty.server.ConnectionFactory");
+                            {
+                                builder.begin("Item");
+                                {
+                                    builder.begin("New").attribute("class",
+                                        "org.eclipse.jetty.server.SslConnectionFactory");
+                                    {
+                                        builder.element("Arg", "name", "next", "http/1.1");
+                                        builder.begin("Arg").attribute("name", "sslContextFactory");
+                                        {
+                                            builder.element("Ref", "refid", "sslContextFactory");
+                                        }
+                                        builder.end();
+                                    }
+                                    builder.end();
+                                }
+                                builder.end();
+
+                                builder.begin("Item");
+                                {
+                                    builder.begin("New").attribute("class",
+                                        "org.eclipse.jetty.server.HttpConnectionFactory");
+                                    {
+                                        builder.begin("Arg").attribute("name", "config");
+                                        {
+                                            builder.element("Ref", "refid", "sslHttpConfig");
+                                        }
+                                        builder.end();
+                                    }
+                                    builder.end();
+                                }
+                                builder.end();
+                            }
+                            builder.end();
+                        }
+                        builder.end();
+
+                        builder.begin("Set").attribute("name", "host");
+                        {
+                            builder.element("Property", "name", "jetty.host");
+                        }
+                        builder.end();
+
+                        builder.begin("Set").attribute("name", "port");
+                        {
+                            builder.begin("Property").attribute("name", "jetty.https.port")
+                                .attribute("default", getSslPort()).end();
+                        }
+                        builder.end();
+
+                        builder.element("Set", "name", "idleTimeout", 30000);
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
             builder.end();
         }
     }
@@ -91,8 +276,6 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
     protected void buildExtraOptions(DOMBuilder builder)
     {
         builder.element("Set", "name", "stopAtShutdown", true);
-        builder.element("Set", "name", "sendServerVersion", true);
-        builder.element("Set", "name", "sendDateHeader", true);
         builder.element("Set", "name", "stopTimeout", 1000);
         builder.element("Set", "name", "dumpAfterStart", false);
         builder.element("Set", "name", "dumpBeforeStop", false);

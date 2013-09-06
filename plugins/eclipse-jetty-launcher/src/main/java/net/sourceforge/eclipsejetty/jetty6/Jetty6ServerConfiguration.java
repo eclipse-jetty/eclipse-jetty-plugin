@@ -41,18 +41,26 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     protected void buildThreadPool(DOMBuilder builder)
     {
         builder.begin("Set").attribute("name", "ThreadPool");
-
-        builder.begin("New").attribute("class", "org.mortbay.thread.QueuedThreadPool");
-        builder.element("Set", "name", "minThreads", 2);
-        builder.element("Set", "name", "maxThreads", 10);
-        builder.element("Set", "name", "lowThreads", 4);
-        builder.end();
-
+        {
+            builder.begin("New").attribute("class", "org.mortbay.thread.QueuedThreadPool");
+            {
+                builder.element("Set", "name", "minThreads", 2);
+                builder.element("Set", "name", "maxThreads", 10);
+                builder.element("Set", "name", "lowThreads", 4);
+            }
+            builder.end();
+        }
         builder.end();
     }
 
     @Override
     protected void buildHttpConfig(DOMBuilder builder)
+    {
+        // nothing to do
+    }
+
+    @Override
+    protected void buildHttpsConfig(DOMBuilder builder)
     {
         // nothing to do
     }
@@ -72,19 +80,53 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
-    protected void buildConnector(DOMBuilder builder)
+    protected void buildHttpConnector(DOMBuilder builder)
     {
         if (getPort() != null)
         {
             builder.begin("Call").attribute("name", "addConnector");
-            builder.begin("Arg");
-            builder.begin("New").attribute("class", "org.mortbay.jetty.nio.SelectChannelConnector");
-            builder.element("Set", "name", "port", getPort());
-            builder.element("Set", "name", "maxIdleTime", 30000);
-            builder.element("Set", "name", "Acceptors", 2);
-            builder.element("Set", "name", "statsOn", false);
+            {
+                builder.begin("Arg");
+                {
+                    builder.begin("New").attribute("class", "org.mortbay.jetty.nio.SelectChannelConnector");
+                    {
+                        builder.element("Set", "name", "port", getPort());
+                        builder.element("Set", "name", "maxIdleTime", 30000);
+                        builder.element("Set", "name", "Acceptors", 2);
+                        builder.element("Set", "name", "statsOn", false);
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
             builder.end();
-            builder.end();
+        }
+    }
+
+    @Override
+    protected void buildHttpsConnector(DOMBuilder builder)
+    {
+        if (getSslPort() != null)
+        {
+            builder.begin("Call").attribute("name", "addConnector");
+            {
+                builder.begin("Arg");
+                {
+                    builder.begin("New").attribute("class", "org.mortbay.jetty.security.SslSocketConnector");
+                    {
+                        builder.element("Set", "name", "Port", getSslPort());
+                        builder.element("Set", "name", "maxIdleTime", 30000);
+                        builder.element("Set", "name", "handshakeTimeout", 2000);
+                        builder.element("Set", "name", "keystore", getKeyStorePath());
+                        builder.element("Set", "name", "password", getKeyStorePassword());
+                        builder.element("Set", "name", "keyPassword", getKeyManagerPassword());
+                        builder.element("Set", "name", "truststore", getKeyStorePath());
+                        builder.element("Set", "name", "trustPassword", getKeyStorePassword());
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
             builder.end();
         }
     }

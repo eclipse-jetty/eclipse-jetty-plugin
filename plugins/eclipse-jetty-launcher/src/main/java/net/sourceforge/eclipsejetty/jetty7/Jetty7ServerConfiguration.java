@@ -36,13 +36,15 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     protected void buildThreadPool(DOMBuilder builder)
     {
         builder.begin("Set").attribute("name", "ThreadPool");
-
-        builder.begin("New").attribute("class", "org.eclipse.jetty.util.thread.QueuedThreadPool");
-        builder.element("Set", "name", "minThreads", 2);
-        builder.element("Set", "name", "maxThreads", 10);
-        builder.element("Set", "name", "detailedDump", false);
-        builder.end();
-
+        {
+            builder.begin("New").attribute("class", "org.eclipse.jetty.util.thread.QueuedThreadPool");
+            {
+                builder.element("Set", "name", "minThreads", 2);
+                builder.element("Set", "name", "maxThreads", 10);
+                builder.element("Set", "name", "detailedDump", false);
+            }
+            builder.end();
+        }
         builder.end();
     }
 
@@ -50,6 +52,24 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     protected void buildHttpConfig(DOMBuilder builder)
     {
         // nothing to do
+    }
+
+    @Override
+    protected void buildHttpsConfig(DOMBuilder builder)
+    {
+        if (getSslPort() != null)
+        {
+            builder.begin("New").attribute("id", "sslContextFactory")
+                .attribute("class", "org.eclipse.jetty.http.ssl.SslContextFactory");
+            {
+                builder.element("Set", "name", "KeyStore", getKeyStorePath());
+                builder.element("Set", "name", "KeyStorePassword", getKeyStorePassword());
+                builder.element("Set", "name", "KeyManagerPassword", getKeyManagerPassword());
+                builder.element("Set", "name", "TrustStore", getKeyStorePath());
+                builder.element("Set", "name", "TrustStorePassword", getKeyStorePassword());
+            }
+            builder.end();
+        }
     }
 
     @Override
@@ -69,19 +89,54 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
-    protected void buildConnector(DOMBuilder builder)
+    protected void buildHttpConnector(DOMBuilder builder)
     {
         if (getPort() != null)
         {
             builder.begin("Call").attribute("name", "addConnector");
-            builder.begin("Arg");
-            builder.begin("New").attribute("class", "org.eclipse.jetty.server.nio.SelectChannelConnector");
-            builder.element("Set", "name", "port", getPort());
-            builder.element("Set", "name", "maxIdleTime", 30000);
-            builder.element("Set", "name", "Acceptors", 2);
-            builder.element("Set", "name", "statsOn", false);
+            {
+                builder.begin("Arg");
+                {
+                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.nio.SelectChannelConnector");
+                    {
+                        builder.element("Set", "name", "port", getPort());
+                        builder.element("Set", "name", "maxIdleTime", 30000);
+                        builder.element("Set", "name", "Acceptors", 2);
+                        builder.element("Set", "name", "statsOn", false);
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
             builder.end();
-            builder.end();
+        }
+    }
+
+    @Override
+    protected void buildHttpsConnector(DOMBuilder builder)
+    {
+        if (getSslPort() != null)
+        {
+            builder.begin("Call").attribute("name", "addConnector");
+            {
+                builder.begin("Arg");
+                {
+                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.ssl.SslSelectChannelConnector");
+                    {
+                        builder.begin("Arg");
+                        {
+                            builder.element("Ref", "id", "sslContextFactory");
+                        }
+                        builder.end();
+                        builder.element("Set", "name", "Port", getSslPort());
+                        builder.element("Set", "name", "maxIdleTime", 30000);
+                        builder.element("Set", "name", "Acceptors", 2);
+                        builder.element("Set", "name", "AcceptQueueSize", 100);
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
             builder.end();
         }
     }

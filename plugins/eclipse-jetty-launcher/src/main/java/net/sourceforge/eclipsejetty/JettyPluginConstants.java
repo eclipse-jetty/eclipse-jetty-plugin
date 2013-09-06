@@ -44,6 +44,8 @@ public class JettyPluginConstants
     private static final String ATTR_CONTEXT = JettyPlugin.PLUGIN_ID + ".context";
     private static final String ATTR_WEBAPPDIR = JettyPlugin.PLUGIN_ID + ".webappdir";
     private static final String ATTR_PORT = JettyPlugin.PLUGIN_ID + ".port";
+    private static final String ATTR_HTTPS_PORT = JettyPlugin.PLUGIN_ID + ".httpsPort";
+    private static final String ATTR_HTTPS_ENABLED = JettyPlugin.PLUGIN_ID + ".httpsEnabled";
     private static final String ATTR_JETTY_PATH = JettyPlugin.PLUGIN_ID + ".jetty.path";
     private static final String ATTR_JETTY_EMBEDDED = JettyPlugin.PLUGIN_ID + ".jetty.embedded";
     private static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version";
@@ -181,6 +183,39 @@ public class JettyPluginConstants
     public static void setPort(ILaunchConfigurationWorkingCopy configuration, String port)
     {
         configuration.setAttribute(ATTR_PORT, port);
+    }
+
+    /**
+     * Returns the (HTTPs) port
+     * 
+     * @param configuration the configuration
+     * @return the port
+     * @throws CoreException on occasion
+     */
+    public static String getHttpsPort(ILaunchConfiguration configuration) throws CoreException
+    {
+        return configuration.getAttribute(ATTR_HTTPS_PORT, "8443");
+    }
+
+    /**
+     * Sets the (HTTPs) port
+     * 
+     * @param configuration the configuration
+     * @param httpsPort the port
+     */
+    public static void setHttpsPort(ILaunchConfigurationWorkingCopy configuration, String httpsPort)
+    {
+        configuration.setAttribute(ATTR_HTTPS_PORT, httpsPort);
+    }
+
+    public static boolean isHttpsEnabled(ILaunchConfiguration configuration) throws CoreException
+    {
+        return configuration.getAttribute(ATTR_HTTPS_ENABLED, false);
+    }
+
+    public static void setHttpsEnabled(ILaunchConfigurationWorkingCopy configuration, boolean httpsEnabled)
+    {
+        configuration.setAttribute(ATTR_HTTPS_ENABLED, httpsEnabled);
     }
 
     public static String getPath(ILaunchConfiguration configuration) throws CoreException
@@ -401,11 +436,11 @@ public class JettyPluginConstants
 
     public static boolean isScopeNoneExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        if (!configuration.hasAttribute(ATTR_EXCLUDE_SCOPE_NONE)) 
+        if (!configuration.hasAttribute(ATTR_EXCLUDE_SCOPE_NONE))
         {
             return JettyPluginM2EUtils.getMavenProjectFacade(configuration) != null;
         }
-        
+
         return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_NONE, false);
     }
 

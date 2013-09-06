@@ -11,6 +11,8 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty9;
 
+import java.util.Collection;
+
 import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
 
 /**
@@ -22,6 +24,21 @@ import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
 public class Jetty9LibStrategy extends Jetty8LibStrategy
 {
 
-    // intentionally left blank
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addJNDIDependencies(Collection<String> dependencies)
+    {
+        dependencies.add(".*/jetty-jndi-.*\\.jar");
+        dependencies.add(".*/jndi/javax.mail.glassfish-.*\\.jar");
+        dependencies.add(".*/jndi/javax.activation-.*\\.jar");
+        dependencies.add(".*/jndi/javax.transaction-.*\\.jar");
+        dependencies.add(".*/jetty-annotations-.*\\.jar");
+        dependencies.add(".*/jetty-plus-.*\\.jar");
+        dependencies.add(".*/jetty-webapp-.*\\.jar");
+        dependencies.add(".*/annotations/javax.annotation-.*\\.jar");
+        dependencies.add(".*/annotations/org.objectweb.asm-.*\\.jar");
+    }
 
 }

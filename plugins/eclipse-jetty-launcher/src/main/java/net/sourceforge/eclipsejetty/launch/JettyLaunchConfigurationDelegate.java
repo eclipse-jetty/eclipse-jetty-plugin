@@ -14,7 +14,10 @@ package net.sourceforge.eclipsejetty.launch;
 import static net.sourceforge.eclipsejetty.util.DependencyMatcher.*;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -601,6 +604,23 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         serverConfiguration.setDefaultContextPath(JettyPluginConstants.getContext(configuration));
         serverConfiguration.setDefaultWar(JettyPluginConstants.getWebAppDir(configuration));
         serverConfiguration.setPort(Integer.valueOf(JettyPluginConstants.getPort(configuration)));
+
+        if (JettyPluginConstants.isHttpsEnabled(configuration))
+        {
+            serverConfiguration.setSslPort(Integer.valueOf(JettyPluginConstants.getHttpsPort(configuration)));
+
+            File defaultKeystoreFile = JettyPlugin.getDefaultKeystoreFile();
+
+            if ((defaultKeystoreFile == null) || (!defaultKeystoreFile.exists()) || (!defaultKeystoreFile.canRead()))
+            {
+                defaultKeystoreFile = createDefaultKeystoreFile(defaultKeystoreFile);
+            }
+
+            serverConfiguration.setKeyStorePath(defaultKeystoreFile.getAbsolutePath());
+            serverConfiguration.setKeyStorePassword("correct horse battery staple");
+            serverConfiguration.setKeyManagerPassword("correct horse battery staple");
+        }
+
         serverConfiguration.setJndi(JettyPluginConstants.isJndiSupport(configuration));
         serverConfiguration.addDefaultClasspath(classpath);
 
@@ -608,10 +628,10 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         try
         {
-            file = File.createTempFile("jettyLauncherConfiguration", ".xml");
+            file = File.createTempFile("eclipseJettyPlugin.", ".xml");
 
             serverConfiguration.write(file);
-            
+
             file.deleteOnExit();
         }
         catch (IOException e)
@@ -623,4 +643,41 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         return file;
     }
 
+    private File createDefaultKeystoreFile(File defaultKeystoreFile) throws CoreException
+    {
+        try
+        {
+            defaultKeystoreFile = File.createTempFile("eclipseJettyPlugin.", ".keystore");
+
+            InputStream in = getClass().getResourceAsStream("eclipseJettyPlugin.keystore");
+
+            try
+            {
+                OutputStream out = new FileOutputStream(defaultKeystoreFile);
+
+                try
+                {
+                    JettyPluginUtils.copy(in, out);
+                }
+                finally
+                {
+                    out.close();
+                }
+            }
+            finally
+            {
+                in.close();
+            }
+
+            defaultKeystoreFile.deleteOnExit();
+
+            JettyPlugin.setDefaultKeystoreFile(defaultKeystoreFile);
+        }
+        catch (IOException e)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
+                "Failed to store tmp file with keystore"));
+        }
+        return defaultKeystoreFile;
+    }
 }

@@ -26,6 +26,10 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     private Integer port;
     private Integer sslPort;
 
+    private String keyStorePath;
+    private String keyStorePassword;
+    private String keyManagerPassword;
+
     private String defaultWar;
     private String defaultContextPath;
 
@@ -64,6 +68,36 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     public void setSslPort(Integer sslPort)
     {
         this.sslPort = sslPort;
+    }
+
+    public String getKeyStorePath()
+    {
+        return keyStorePath;
+    }
+
+    public void setKeyStorePath(String keyStorePath)
+    {
+        this.keyStorePath = keyStorePath;
+    }
+
+    public String getKeyStorePassword()
+    {
+        return keyStorePassword;
+    }
+
+    public void setKeyStorePassword(String keyStorePassword)
+    {
+        this.keyStorePassword = keyStorePassword;
+    }
+
+    public String getKeyManagerPassword()
+    {
+        return keyManagerPassword;
+    }
+
+    public void setKeyManagerPassword(String keyManagerPassword)
+    {
+        this.keyManagerPassword = keyManagerPassword;
     }
 
     public String getDefaultWar()
@@ -110,7 +144,9 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     {
         buildThreadPool(builder);
         buildHttpConfig(builder);
-        buildConnector(builder);
+        buildHttpConnector(builder);
+        buildHttpsConfig(builder);
+        buildHttpsConnector(builder);
         buildHandler(builder);
         buildExtraOptions(builder);
     }
@@ -119,26 +155,34 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     protected abstract void buildHttpConfig(DOMBuilder builder);
 
+    protected abstract void buildHttpsConfig(DOMBuilder builder);
+
     protected void buildJNDI(DOMBuilder builder)
     {
         if (isJndi())
         {
             builder.begin("Array").attribute("id", "plusConfig").attribute("type", "String");
-            for (String item : getJNDIItems())
             {
-                builder.element("Item", item);
+                for (String item : getJNDIItems())
+                {
+                    builder.element("Item", item);
+                }
             }
             builder.end();
 
             builder.begin("Set").attribute("name", "configurationClasses");
-            builder.element("Ref", "id", "plusConfig");
+            {
+                builder.element("Ref", "id", "plusConfig");
+            }
             builder.end();
         }
     }
 
     protected abstract List<String> getJNDIItems();
 
-    protected abstract void buildConnector(DOMBuilder builder);
+    protected abstract void buildHttpConnector(DOMBuilder builder);
+
+    protected abstract void buildHttpsConnector(DOMBuilder builder);
 
     protected void buildHandler(DOMBuilder builder)
     {
@@ -148,14 +192,16 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     protected void buildDefaultHandler(DOMBuilder builder)
     {
         builder.begin("Set").attribute("name", "handler");
-
-        builder.begin("New").attribute("class", getDefaultHandlerClass());
-        builder.begin("Arg").attribute("type", "String").text(getDefaultWar()).end();
-        builder.begin("Arg").attribute("type", "String").text(getDefaultContextPath()).end();
-        buildJNDI(builder);
-        buildDefaultHandlerSetters(builder);
-        builder.end();
-
+        {
+            builder.begin("New").attribute("class", getDefaultHandlerClass());
+            {
+                builder.element("Arg", "type", "String", getDefaultWar());
+                builder.element("Arg", "type", "String", getDefaultContextPath());
+                buildJNDI(builder);
+                buildDefaultHandlerSetters(builder);
+            }
+            builder.end();
+        }
         builder.end();
     }
 
@@ -163,7 +209,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     protected void buildDefaultHandlerSetters(DOMBuilder builder)
     {
-        builder.begin("Set").attribute("name", "extraClasspath").text(link(defaultClasspath)).end();
+        builder.element("Set", "name", "extraClasspath", link(defaultClasspath));
     }
 
     protected abstract void buildExtraOptions(DOMBuilder builder);

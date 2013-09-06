@@ -12,6 +12,9 @@
 package net.sourceforge.eclipsejetty;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -423,5 +426,17 @@ public class JettyPluginUtils
 
         return location.substring(0, index);
     }
+
+    public static void copy(InputStream in, OutputStream out) throws IOException
+    {
+        int length = 0;
+        byte[] buffer = new byte[4096];
+
+        while ((length = in.read(buffer)) >= 0)
+        {
+            out.write(buffer, 0, length);
+        }
+    }
+
 
 }
