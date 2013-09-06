@@ -225,21 +225,28 @@ public class JettyLaunchDependencyEntryList
                 {
                     Kind kind;
 
-                    switch (dependency.getRuntimeClasspathEntry().getType())
+                    if (dependency.isProjectDependent())
                     {
-                        case IRuntimeClasspathEntry.PROJECT:
-                            kind = Kind.PROJECT;
-                            break;
+                        kind = Kind.PROJECT;
+                    }
+                    else
+                    {
+                        switch (dependency.getRuntimeClasspathEntry().getType())
+                        {
+                            case IRuntimeClasspathEntry.PROJECT:
+                                kind = Kind.PROJECT;
+                                break;
 
-                        case IRuntimeClasspathEntry.ARCHIVE:
-                        case IRuntimeClasspathEntry.CONTAINER:
-                            kind = Kind.JAR;
-                            break;
+                            case IRuntimeClasspathEntry.ARCHIVE:
+                            case IRuntimeClasspathEntry.CONTAINER:
+                                kind = Kind.JAR;
+                                break;
 
-                        case IRuntimeClasspathEntry.VARIABLE:
-                        default:
-                            kind = Kind.OTHER;
-                            break;
+                            case IRuntimeClasspathEntry.VARIABLE:
+                            default:
+                                kind = Kind.OTHER;
+                                break;
+                        }
                     }
 
                     entry =

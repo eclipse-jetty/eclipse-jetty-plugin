@@ -73,6 +73,16 @@ public class Dependency
         return mavenDependencyInfo;
     }
 
+    public boolean isProjectDependent()
+    {
+        if (mavenDependencyInfo != null)
+        {
+            return mavenDependencyInfo.isProjectDependent();
+        }
+
+        return false;
+    }
+
     public MavenScope getScope()
     {
         if (mavenDependencyInfo != null)

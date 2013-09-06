@@ -30,13 +30,13 @@ public class MavenDependencyInfo
     public static MavenDependencyInfo create(ArtifactRef artifactRef)
     {
         return new MavenDependencyInfo(artifactRef.getGroupId(), artifactRef.getArtifactId(), artifactRef.getVersion(),
-            artifactRef.getClassifier(), null, MavenScope.to(artifactRef.getScope()));
+            artifactRef.getClassifier(), null, false, MavenScope.to(artifactRef.getScope()));
     }
 
     public static MavenDependencyInfo create(IMavenProjectFacade facade, String variant, MavenScope scope)
     {
         return new MavenDependencyInfo(facade.getArtifactKey().getGroupId(), facade.getArtifactKey().getArtifactId(),
-            facade.getArtifactKey().getVersion(), facade.getArtifactKey().getClassifier(), variant, scope);
+            facade.getArtifactKey().getVersion(), facade.getArtifactKey().getClassifier(), variant, true, scope);
     }
 
     public static MavenDependencyInfo create(IRuntimeClasspathEntry runtimeClasspathEntry)
@@ -84,7 +84,7 @@ public class MavenDependencyInfo
             return null;
         }
 
-        return new MavenDependencyInfo(groupId, artifactId, version, classifier, null, scope);
+        return new MavenDependencyInfo(groupId, artifactId, version, classifier, null, false, scope);
     }
 
     private final String groupId;
@@ -93,6 +93,7 @@ public class MavenDependencyInfo
     private final String classifier;
     private final String variant;
 
+    private boolean projectDependent;
     private MavenScope scope;
 
     public MavenDependencyInfo(String groupId, String artifactId, String version, String classifier)
@@ -112,10 +113,11 @@ public class MavenDependencyInfo
     }
 
     public MavenDependencyInfo(String groupId, String artifactId, String version, String classifier, String variant,
-        MavenScope scope)
+        boolean projectDependent, MavenScope scope)
     {
         this(groupId, artifactId, version, classifier, variant);
 
+        setProjectDependent(projectDependent);
         setScope(scope);
     }
 
@@ -142,6 +144,16 @@ public class MavenDependencyInfo
     public String getVariant()
     {
         return variant;
+    }
+
+    public boolean isProjectDependent()
+    {
+        return projectDependent;
+    }
+
+    public void setProjectDependent(boolean projectDependent)
+    {
+        this.projectDependent = projectDependent;
     }
 
     public MavenScope getScope()
