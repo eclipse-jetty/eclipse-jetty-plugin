@@ -16,6 +16,8 @@ import static org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants.*;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
@@ -23,6 +25,7 @@ import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
 import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 
+import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -36,6 +39,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -64,11 +68,21 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * UI
@@ -90,6 +104,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     private Button httpsEnabledButton;
     private Table configTable;
     private boolean configTableFormatted = false;
+    private Button openConfigButton;
     private Button editConfigButton;
     private Button removeConfigButton;
     private Button moveUpConfigButton;
@@ -159,7 +174,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         configGroup.setText("Jetty Context Configuration:");
 
         configTable =
-            createTable(configGroup, SWT.BORDER | SWT.FULL_SELECTION, -1, 85, 3, 4, "Include", "Jetty Context File");
+            createTable(configGroup, SWT.BORDER | SWT.FULL_SELECTION, -1, 128, 3, 5, "Include", "Jetty Context File");
         configTable.addSelectionListener(new SelectionAdapter()
         {
 
@@ -170,6 +185,80 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             }
 
         });
+
+        openConfigButton = createButton(configGroup, SWT.NONE, "Open...", 128, 1, 1, new SelectionAdapter()
+        {
+
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                int index = configTable.getSelectionIndex();
+
+                if (index >= 0)
+                {
+                    JettyLaunchConfigEntry entry = configEntryList.get(index);
+                    IWorkbench workbench = PlatformUI.getWorkbench();
+                    IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+                    IWorkbenchPage page = window.getActivePage();
+                    IEditorInput input = null;
+                    IEditorDescriptor descriptor = null;
+
+                    switch (entry.getType())
+                    {
+                        case DEFAULT:
+                            try
+                            {
+                                ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
+                                ILaunchDelegate[] delegates =
+                                    configuration.getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
+
+                                if (delegates.length == 1)
+                                {
+                                    JettyLaunchConfigurationDelegate delegate =
+                                        (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
+
+                                    File file = delegate.createJettyConfigurationFile(configuration, true);
+                                    descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                                    input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
+                                }
+                            }
+                            catch (CoreException ex)
+                            {
+                                JettyPlugin.error("Failed to create default context file", ex);
+                            }
+
+                            break;
+
+                        case PATH:
+                        {
+                            File file = new File(entry.getPath());
+                            descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                            input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
+                        }
+                            break;
+
+                        case WORKSPACE:
+                        {
+                            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(entry.getPath()));
+                            descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                            input = new FileEditorInput(file);
+                        }
+                            break;
+                    }
+
+                    try
+                    {
+                        IDE.openEditor(page, input, descriptor.getId());
+                    }
+                    catch (PartInitException ex)
+                    {
+                        JettyPlugin.error("Failed to open", ex);
+                    }
+                }
+            }
+
+        });
+
         editConfigButton = createButton(configGroup, SWT.NONE, "Edit...", 128, 1, 1, new SelectionAdapter()
         {
             @Override
@@ -323,6 +412,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     @Override
     public void initializeFrom(ILaunchConfiguration configuration)
     {
+        super.initializeFrom(configuration);
+
         try
         {
             projectText.setText(JettyPluginConstants.getProject(configuration));
@@ -496,7 +587,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             }
             catch (NumberFormatException e)
             {
-                setErrorMessage(MessageFormat.format("The HTTP port {0} must be a number between 0 and 65536.", jettyPort));
+                setErrorMessage(MessageFormat.format("The HTTP port {0} must be a number between 0 and 65536.",
+                    jettyPort));
             }
         }
         else
@@ -516,8 +608,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
                     if ((port <= 0) || (port >= 65536))
                     {
-                        setErrorMessage(MessageFormat.format("The HTTPs port {0} must be a number between 0 and 65536.",
-                            jettyHttpsPort));
+                        setErrorMessage(MessageFormat.format(
+                            "The HTTPs port {0} must be a number between 0 and 65536.", jettyHttpsPort));
                     }
                 }
                 catch (NumberFormatException e)
@@ -537,7 +629,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         for (JettyConfig context : contexts)
         {
-            if (!context.isValid(ResourcesPlugin.getWorkspace()))
+            if ((context.isActive()) && (!context.isValid(ResourcesPlugin.getWorkspace())))
             {
                 setErrorMessage(MessageFormat.format("The Jetty context file {0} does not exist.", context.getPath()));
             }
@@ -700,6 +792,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         JettyLaunchConfigEntry entry = (index >= 0) ? configEntryList.get(index) : null;
         JettyConfigType type = (entry != null) ? entry.getType() : null;
 
+        openConfigButton.setEnabled(configTable.getSelectionIndex() >= 0);
         editConfigButton.setEnabled((type == JettyConfigType.PATH) || (type == JettyConfigType.WORKSPACE));
         moveUpConfigButton.setEnabled(index > 0);
         moveDownConfigButton.setEnabled((index >= 0) && (index < (configTable.getItemCount() - 1)));

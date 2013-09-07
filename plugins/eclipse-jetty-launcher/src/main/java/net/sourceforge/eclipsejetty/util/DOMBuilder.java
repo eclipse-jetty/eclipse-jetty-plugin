@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -25,6 +26,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -172,6 +174,21 @@ public class DOMBuilder
     }
 
     /**
+     * Adds a comment
+     * 
+     * @param comment the comment
+     * @return the DOM builder instance
+     */
+    public DOMBuilder comment(Object comment)
+    {
+        Comment commentElement = document.createComment(String.valueOf(comment));
+
+        activeNode.appendChild(commentElement);
+
+        return this;
+    }
+
+    /**
      * Begins a new element and adds it at the current position
      * 
      * @param name the name of the element
@@ -299,7 +316,7 @@ public class DOMBuilder
 
             try
             {
-                write(out);
+                write(out, true);
             }
             finally
             {
@@ -318,11 +335,18 @@ public class DOMBuilder
      * Exports the specified document to the specified stream
      * 
      * @param out the stream
+     * @param formatted true if formatted
      * @throws IOException on occasion
      */
-    public void write(OutputStream out) throws IOException
+    public void write(OutputStream out, boolean formatted) throws IOException
     {
         TransformerFactory factory = TransformerFactory.newInstance();
+
+        if (formatted)
+        {
+            factory.setAttribute("indent-number", 4);
+        }
+
         Transformer transformer;
         try
         {
@@ -334,7 +358,12 @@ public class DOMBuilder
         }
 
         transformer.setParameter("encoding", "UTF-8");
-        //transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+        if (formatted)
+        {
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        }
 
         try
         {

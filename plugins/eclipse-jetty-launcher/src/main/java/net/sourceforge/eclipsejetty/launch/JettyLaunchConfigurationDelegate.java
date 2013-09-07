@@ -38,7 +38,6 @@ import net.sourceforge.eclipsejetty.util.DependencyMatcher;
 import net.sourceforge.eclipsejetty.util.MavenDependencyInfoMap;
 import net.sourceforge.eclipsejetty.util.MavenScope;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
@@ -134,12 +133,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     @Override
     public String getVMArguments(ILaunchConfiguration configuration) throws CoreException
     {
-        String[] webappClasspath =
-            getLocalWebappClasspath(configuration,
-                getWebappClasspathEntries(configuration, getOriginalClasspathEntries(configuration)));
-
-        final JettyVersion jettyVersion = JettyPluginConstants.getVersion(configuration);
-        File defaultFile = createJettyConfigurationFile(configuration, jettyVersion, webappClasspath);
+        File defaultFile = createJettyConfigurationFile(configuration, false);
         String vmArguments = super.getVMArguments(configuration);
 
         vmArguments += " -D" + CONFIGURATION_KEY + "=" + getConfigurationParameter(configuration, defaultFile);
@@ -166,15 +160,20 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                     configurationParam.append(File.pathSeparator);
                 }
 
-                IFile file = config.getFile(ResourcesPlugin.getWorkspace());
+                switch (config.getType())
+                {
+                    case DEFAULT:
+                        configurationParam.append(defaultFile.getAbsolutePath());
+                        break;
 
-                if (file != null)
-                {
-                    configurationParam.append(file.getLocation().toOSString());
-                }
-                else
-                {
-                    configurationParam.append(defaultFile.getAbsolutePath());
+                    case PATH:
+                        configurationParam.append(new File(config.getPath()).getAbsolutePath());
+                        break;
+
+                    case WORKSPACE:
+                        configurationParam.append(ResourcesPlugin.getWorkspace().getRoot()
+                            .getFile(new Path(config.getPath())).getLocation().toOSString());
+                        break;
                 }
             }
         }
@@ -596,8 +595,19 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         return vmClasspathMatcher;
     }
 
+    public File createJettyConfigurationFile(ILaunchConfiguration configuration, boolean formatted)
+        throws CoreException
+    {
+        String[] webappClasspath =
+            getLocalWebappClasspath(configuration,
+                getWebappClasspathEntries(configuration, getOriginalClasspathEntries(configuration)));
+        JettyVersion jettyVersion = JettyPluginConstants.getVersion(configuration);
+
+        return createJettyConfigurationFile(configuration, jettyVersion, formatted, webappClasspath);
+    }
+
     private File createJettyConfigurationFile(ILaunchConfiguration configuration, JettyVersion version,
-        String[] classpath) throws CoreException
+        boolean formatted, String[] classpath) throws CoreException
     {
         AbstractServerConfiguration serverConfiguration = version.createServerConfiguration();
 
@@ -628,9 +638,9 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         try
         {
-            file = File.createTempFile("eclipseJettyPlugin.", ".xml");
+            file = JettyPluginUtils.getNonRandomTempFile("eclipseJettyPlugin.", configuration.getName().trim(), ".xml");
 
-            serverConfiguration.write(file);
+            serverConfiguration.write(file, formatted);
 
             file.deleteOnExit();
         }

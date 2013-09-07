@@ -21,14 +21,31 @@ import net.sourceforge.eclipsejetty.util.DOMBuilder;
 public abstract class AbstractConfiguration
 {
 
+    protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
     public AbstractConfiguration()
     {
         super();
     }
 
-    public DOMBuilder build()
+    public DOMBuilder build(boolean warning)
     {
         DOMBuilder builder = new DOMBuilder();
+
+        if (warning)
+        {
+            StringBuilder comment = new StringBuilder();
+
+            comment.append(LINE_SEPARATOR);
+            comment.append("This is a temporary file.");
+            comment.append(LINE_SEPARATOR);
+            comment.append("It was created automatically by the Eclipse Jetty Plugin.");
+            comment.append(LINE_SEPARATOR);
+            comment.append("There is no need, nor sense to edit this file!");
+            comment.append(LINE_SEPARATOR);
+
+            builder.comment(comment);
+        }
 
         builder.begin("Configure").attribute("id", getIdToConfigure()).attribute("class", getClassToConfigure());
         buildContent(builder);
@@ -37,13 +54,13 @@ public abstract class AbstractConfiguration
         return builder;
     }
 
-    public void write(File file) throws IOException
+    public void write(File file, boolean formatted) throws IOException
     {
         FileOutputStream out = new FileOutputStream(file);
 
         try
         {
-            build().write(out);
+            build(formatted).write(out, formatted);
         }
         finally
         {

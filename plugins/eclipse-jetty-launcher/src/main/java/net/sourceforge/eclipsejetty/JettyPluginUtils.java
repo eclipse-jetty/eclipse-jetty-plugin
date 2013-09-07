@@ -438,5 +438,13 @@ public class JettyPluginUtils
         }
     }
 
+    public static File getNonRandomTempFile(String prefix, String name, String suffix)
+    {
+        return new File(System.getProperty("java.io.tmpdir"), prefix + fixFilename(name) + suffix);
+    }
 
+    public static String fixFilename(String filename)
+    {
+        return filename.replaceAll("[\\W]", "_");
+    }
 }
