@@ -169,12 +169,12 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         httpsEnabledButton = createButton(applicationGroup, SWT.CHECK, "Enable HTTPs", -1, 2, 1, modifyDialogListener);
 
         Group configGroup = new Group(tabComposite, SWT.NONE);
-        configGroup.setLayout(new GridLayout(4, false));
+        configGroup.setLayout(new GridLayout(6, false));
         configGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         configGroup.setText("Jetty Context Configuration:");
 
         configTable =
-            createTable(configGroup, SWT.BORDER | SWT.FULL_SELECTION, -1, 128, 3, 5, "Include", "Jetty Context File");
+            createTable(configGroup, SWT.BORDER | SWT.FULL_SELECTION, -1, 64, 5, 3, "Include", "Jetty Context File");
         configTable.addSelectionListener(new SelectionAdapter()
         {
 
@@ -186,126 +186,12 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         });
 
-        openConfigButton = createButton(configGroup, SWT.NONE, "Open...", 128, 1, 1, new SelectionAdapter()
-        {
-
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                int index = configTable.getSelectionIndex();
-
-                if (index >= 0)
-                {
-                    JettyLaunchConfigEntry entry = configEntryList.get(index);
-                    IWorkbench workbench = PlatformUI.getWorkbench();
-                    IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-                    IWorkbenchPage page = window.getActivePage();
-                    IEditorInput input = null;
-                    IEditorDescriptor descriptor = null;
-
-                    switch (entry.getType())
-                    {
-                        case DEFAULT:
-                            try
-                            {
-                                ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
-                                ILaunchDelegate[] delegates =
-                                    configuration.getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
-
-                                if (delegates.length == 1)
-                                {
-                                    JettyLaunchConfigurationDelegate delegate =
-                                        (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
-
-                                    File file = delegate.createJettyConfigurationFile(configuration, true);
-                                    descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
-                                    input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
-                                }
-                            }
-                            catch (CoreException ex)
-                            {
-                                JettyPlugin.error("Failed to create default context file", ex);
-                            }
-
-                            break;
-
-                        case PATH:
-                        {
-                            File file = new File(entry.getPath());
-                            descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
-                            input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
-                        }
-                            break;
-
-                        case WORKSPACE:
-                        {
-                            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(entry.getPath()));
-                            descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
-                            input = new FileEditorInput(file);
-                        }
-                            break;
-                    }
-
-                    try
-                    {
-                        IDE.openEditor(page, input, descriptor.getId());
-                    }
-                    catch (PartInitException ex)
-                    {
-                        JettyPlugin.error("Failed to open", ex);
-                    }
-                }
-            }
-
-        });
-
-        editConfigButton = createButton(configGroup, SWT.NONE, "Edit...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                int index = configTable.getSelectionIndex();
-
-                if (index > 0)
-                {
-                    String path = null;
-                    JettyLaunchConfigEntry entry = configEntryList.get(index);
-
-                    switch (entry.getType())
-                    {
-                        case PATH:
-                            path = chooseConfigFromFileSystem(entry.getPath());
-                            break;
-
-                        case WORKSPACE:
-                            path = chooseConfig(entry.getPath());
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    if (path != null)
-                    {
-                        entry.setPath(path);
-                        updateLaunchConfigurationDialog();
-                    }
-                }
-            }
-        });
         moveUpConfigButton = createButton(configGroup, SWT.NONE, "Up", 128, 1, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                int index = configTable.getSelectionIndex();
-
-                if (index > 0)
-                {
-                    configEntryList.exchange(configTable, index - 1);
-                    configTable.setSelection(index - 1);
-                    updateLaunchConfigurationDialog();
-                }
+                moveUpConfig();
             }
         });
         moveDownConfigButton = createButton(configGroup, SWT.NONE, "Down", 128, 1, 2, new SelectionAdapter()
@@ -313,30 +199,28 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                int index = configTable.getSelectionIndex();
-
-                if ((index >= 0) && (index < (configTable.getItemCount() - 1)))
-                {
-                    configEntryList.exchange(configTable, index);
-                    configTable.setSelection(index + 1);
-                    updateLaunchConfigurationDialog();
-                }
+                moveDownConfig();
             }
         });
+        
+        openConfigButton = createButton(configGroup, SWT.NONE, "Open...", 128, 1, 1, new SelectionAdapter()
+        {
+
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                openConfig();
+            }
+
+        });
+
         createLabel(configGroup, "", -1, 1, 1);
         createButton(configGroup, SWT.NONE, "Add...", 128, 1, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                String path = chooseConfig(null);
-
-                if (path != null)
-                {
-                    configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path,
-                        JettyConfigType.WORKSPACE, true)));
-                    updateLaunchConfigurationDialog();
-                }
+                addConig();
             }
         });
         createButton(configGroup, SWT.NONE, "Add External...", 128, 1, 1, new SelectionAdapter()
@@ -344,33 +228,25 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                String path = chooseConfigFromFileSystem(null);
-
-                if (path != null)
-                {
-                    configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path,
-                        JettyConfigType.PATH, true)));
-                    updateLaunchConfigurationDialog();
-                }
+                addExternalConfig();
             }
         });
+
+        editConfigButton = createButton(configGroup, SWT.NONE, "Edit...", 128, 1, 1, new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                editConfig();
+            }
+        });
+
         removeConfigButton = createButton(configGroup, SWT.NONE, "Remove", 128, 1, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                int index = configTable.getSelectionIndex();
-
-                if (index >= 0)
-                {
-                    JettyLaunchConfigEntry entry = configEntryList.get(index);
-
-                    if ((entry.getType() == JettyConfigType.PATH) || (entry.getType() == JettyConfigType.WORKSPACE))
-                    {
-                        configEntryList.remove(configTable, index);
-                        updateLaunchConfigurationDialog();
-                    }
-                }
+                removeConfig();
             }
         });
 
@@ -797,6 +673,168 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         moveUpConfigButton.setEnabled(index > 0);
         moveDownConfigButton.setEnabled((index >= 0) && (index < (configTable.getItemCount() - 1)));
         removeConfigButton.setEnabled((type == JettyConfigType.PATH) || (type == JettyConfigType.WORKSPACE));
+    }
+
+    private void moveUpConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if (index > 0)
+        {
+            configEntryList.exchange(configTable, index - 1);
+            configTable.setSelection(index - 1);
+            updateLaunchConfigurationDialog();
+        }
+    }
+
+    private void moveDownConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if ((index >= 0) && (index < (configTable.getItemCount() - 1)))
+        {
+            configEntryList.exchange(configTable, index);
+            configTable.setSelection(index + 1);
+            updateLaunchConfigurationDialog();
+        }
+    }
+
+    private void addConig()
+    {
+        String path = chooseConfig(null);
+
+        if (path != null)
+        {
+            configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path,
+                JettyConfigType.WORKSPACE, true)));
+            updateLaunchConfigurationDialog();
+        }
+    }
+
+    private void addExternalConfig()
+    {
+        String path = chooseConfigFromFileSystem(null);
+
+        if (path != null)
+        {
+            configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path,
+                JettyConfigType.PATH, true)));
+            updateLaunchConfigurationDialog();
+        }
+    }
+
+    private void openConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if (index >= 0)
+        {
+            JettyLaunchConfigEntry entry = configEntryList.get(index);
+            IWorkbench workbench = PlatformUI.getWorkbench();
+            IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+            IWorkbenchPage page = window.getActivePage();
+            IEditorInput input = null;
+            IEditorDescriptor descriptor = null;
+
+            switch (entry.getType())
+            {
+                case DEFAULT:
+                    try
+                    {
+                        ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
+                        ILaunchDelegate[] delegates =
+                            configuration.getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
+
+                        if (delegates.length == 1)
+                        {
+                            JettyLaunchConfigurationDelegate delegate =
+                                (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
+
+                            File file = delegate.createJettyConfigurationFile(configuration, true);
+                            descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                            input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
+                        }
+                    }
+                    catch (CoreException ex)
+                    {
+                        JettyPlugin.error("Failed to create default context file", ex);
+                    }
+
+                    break;
+
+                case PATH:
+                {
+                    File file = new File(entry.getPath());
+                    descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                    input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
+                }
+                    break;
+
+                case WORKSPACE:
+                {
+                    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(entry.getPath()));
+                    descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                    input = new FileEditorInput(file);
+                }
+                    break;
+            }
+
+            try
+            {
+                IDE.openEditor(page, input, descriptor.getId());
+            }
+            catch (PartInitException ex)
+            {
+                JettyPlugin.error("Failed to open", ex);
+            }
+        }
+    }
+
+    private void editConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if (index > 0)
+        {
+            String path = null;
+            JettyLaunchConfigEntry entry = configEntryList.get(index);
+
+            switch (entry.getType())
+            {
+                case PATH:
+                    path = chooseConfigFromFileSystem(entry.getPath());
+                    break;
+
+                case WORKSPACE:
+                    path = chooseConfig(entry.getPath());
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (path != null)
+            {
+                entry.setPath(path);
+                updateLaunchConfigurationDialog();
+            }
+        }
+    }
+
+    private void removeConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if (index >= 0)
+        {
+            JettyLaunchConfigEntry entry = configEntryList.get(index);
+
+            if ((entry.getType() == JettyConfigType.PATH) || (entry.getType() == JettyConfigType.WORKSPACE))
+            {
+                configEntryList.remove(configTable, index);
+                updateLaunchConfigurationDialog();
+            }
+        }
     }
 
     public class ModifyDialogListener implements ModifyListener, SelectionListener

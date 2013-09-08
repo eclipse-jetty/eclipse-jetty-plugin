@@ -31,28 +31,32 @@ Getting started
 
 [images/Options.jpg] Options for Eclipse Jetty
 
- On the tab "Options" you can choose your Jetty version. Eclipse Jetty comes with an embedded Jetty7 - if you want to
+ On the tab "Options" you can choose your Jetty version. Eclipse Jetty comes with an embedded Jetty 8 - if you want to
  use another version define the path to your Jetty installation. Eclipse Jetty will automatically detect the version
  (supported are currently 6.x - 9.x).
 
  The Jetty features can be enabled/disabled below - currenlty supported is JNDI and JSP support. JMX and AJP will be
  added in future releases.
  
- If you enable "Show Detailed Server Info" a nice ACSII art with additional information will be shown on startup in
+ If you enable "Show Detailed Server Info" additional information will be shown on startup in
  the console window. Here's an example:
 
 +--
-   ____    ___                   __    __  __         ____
-  / __/___/ (_)__  ___ ___   __ / /__ / /_/ /___ __  /_  /
- / _// __/ / / _ \(_-</ -_) / // / -_) __/ __/ // /   / /
-/___/\__/_/_/ .__/___/\__/  \___/\__/\__/\__/\_, /   /_/
+   ____    ___                   __    __  __         ___
+  / __/___/ (_)__  ___ ___   __ / /__ / /_/ /___ __  ( _ )
+ / _// __/ / / _ \(_-</ -_) / // / -_) __/ __/ // / / _  |
+/___/\__/_/_/ .__/___/\__/  \___/\__/\__/\__/\_, /  \___/
            /_/                              /___/
 
-   Configuration: C:\temp\jettyLauncherConfiguration396748506452277842.xml
-         Version: 7.6.7.v20120910
+   Configuration: C:\Temp\eclipseJettyPlugin.quickstart_jetty_embedded.xml
+                  C:\workspace\quickstart\src\main\webapp\jetty7-web.xml
+         Version: 8.1.12.v20130726
          Context: /
-            Port: 8082
-       Classpath: ...
+            Port: 8080, 8443
+       Classpath: C:/Repository/antlr/antlr/2.7.7/antlr-2.7.7.jar
+                  C:/Repository/com/yahoo/platform/yui/yuicompressor/2.4.6/yuicompressor-2.4.6.jar
+                  C:/Repository/commons-codec/commons-codec/1.5/commons-codec-1.5.jar
+                  [...]
 +--
 
 * Integration with Eclipse m2e Plugin
@@ -61,7 +65,13 @@ Getting started
 
  Eclipse Jetty reads information from the m2e plugin (if you use it) and uses it to generate the correct classpath for
  launching your application. The default is to include compile and runtime scope - you can changed this by selecting
- other scopes.
+ other scopes. 
  
- Below the scope selection you can override the global inclusion/exclusion on a per library basis. This is sometimes
- needed when you need a database driver to launch, which you do not want to include in your product.
+ The scopes are listed in the table. If the dependency is unknown to Maven, or you are not using
+ the m2e plugin, the scope is left blank. The default include/exclude settings can be overwritten with the left check box
+ in the table.
+ 
+ All libraries will be loaded by Jetty within the web application. Sometimes, however, it is necessary, to provide libraries
+ in the global classloader (e.g. if you need a database driver as JNDI resource). In such a case, you can check the right check box
+ labeled "Global".
+ 

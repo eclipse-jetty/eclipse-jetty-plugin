@@ -16,6 +16,8 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -51,6 +53,7 @@ public class JettyPlugin extends AbstractUIPlugin
     private static JettyPlugin plugin;
 
     private static File defaultKeystoreFile;
+    private static IScopeContext defaultScope;
 
     /**
      * The constructor
@@ -221,6 +224,36 @@ public class JettyPlugin extends AbstractUIPlugin
     public static void setDefaultKeystoreFile(File defaultKeystoreFile)
     {
         JettyPlugin.defaultKeystoreFile = defaultKeystoreFile;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static IScopeContext getDefaultScope()
+    {
+        if (defaultScope != null)
+        {
+            return defaultScope;
+        }
+
+        try
+        {
+            DefaultScope.class.getField("INSTANCE");
+
+            defaultScope = DefaultScope.INSTANCE;
+
+            return defaultScope;
+        }
+        catch (SecurityException e)
+        {
+            error("No DefaultScope.INSTANCE (< Eclipse 3.4)", e);
+        }
+        catch (NoSuchFieldException e)
+        {
+            warning("No DefaultScope.INSTANCE (< Eclipse 3.4)", e);
+        }
+
+        defaultScope = new DefaultScope();
+
+        return defaultScope;
     }
 
 }

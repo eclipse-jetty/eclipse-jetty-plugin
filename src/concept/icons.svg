@@ -704,6 +704,14 @@
        y1="304.36218"
        x2="374"
        y2="310.36218" />
+    <filter
+       inkscape:collect="always"
+       id="filter3904">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.87665039"
+         id="feGaussianBlur3906" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -712,9 +720,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="288.99843"
-     inkscape:cy="709.6621"
+     inkscape:zoom="2.0000001"
+     inkscape:cx="333.89498"
+     inkscape:cy="653.58855"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -889,6 +897,81 @@
          rx="6"
          ry="6"
          clip-path="url(#clipPath4709)" />
+    </g>
+    <g
+       id="g3910">
+      <rect
+         inkscape:export-ydpi="180"
+         inkscape:export-xdpi="180"
+         inkscape:export-filename="C:\home\dev\java\w.plugins\eclipse-jetty-code\src\site\resources\images\title.png"
+         ry="0"
+         rx="0"
+         y="416.36218"
+         x="256"
+         height="40"
+         width="384"
+         id="rect3908"
+         style="color:#000000;fill:#e6e6e6;fill-opacity:0;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <text
+         inkscape:export-ydpi="180"
+         inkscape:export-xdpi="180"
+         inkscape:export-filename="C:\home\dev\java\w.plugins\eclipse-jetty-code\src\site\resources\images\title.png"
+         xml:space="preserve"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:0.25098039;stroke:none;filter:url(#filter3904);font-family:Deutsche Zierschrift;-inkscape-font-specification:Deutsche Zierschrift"
+         x="301.77344"
+         y="446.59656"
+         id="text3132"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan3134"
+           x="301.77344"
+           y="446.59656"
+           style="font-size:24px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#000000;fill-opacity:0.25098039;font-family:Verdana;-inkscape-font-specification:Verdana Bold">Eclipse Jetty Integration</tspan></text>
+      <g
+         inkscape:export-ydpi="180"
+         inkscape:export-xdpi="180"
+         inkscape:export-filename="C:\home\dev\java\w.plugins\eclipse-jetty-code\src\site\resources\images\title.png"
+         id="g3120"
+         transform="translate(0,124)">
+        <path
+           id="path3122"
+           d="m 210,300.375 c -3.324,0 -6,2.676 -6,6 l 0,20 c 0,3.324 2.676,6 6,6 l 20,0 c 3.324,0 6,-2.676 6,-6 l 0,-20 c 0,-3.324 -2.676,-6 -6,-6 l -20,0 z m 6.6875,3.5 8.21875,0 -1.15625,4.4375 -8.1875,0 1.125,-4.4375 z m -1.34375,5.34375 8.1875,0 -4.09375,16.0625 c -0.91089,3.12507 -1.82984,3.59375 -4.5625,3.59375 l -4.5625,0 -1.8125,-0.0312 0.90625,-3.5625 0.90625,0 c 0.45544,-0.006 0.91955,0.005 1.375,-1.78125 l 3.65625,-14.28125 z m 10.25,0.21875 5.90625,0 -1.375,5.375 -5.90625,0 1.375,-5.375 z m -2.0625,8.71875 5.90625,0 -1.34375,5.34375 -5.9375,0 1.375,-5.34375 z"
+           style="color:#000000;fill:#ffcc00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4661);enable-background:accumulate"
+           clip-path="url(#clipPath4697)"
+           inkscape:connector-curvature="0"
+           transform="translate(60,-4.0128174)" />
+        <path
+           sodipodi:nodetypes="ccccccsccccsccccccccccccc"
+           inkscape:connector-curvature="0"
+           id="path3124"
+           d="m 276.69802,299.86218 -1.13862,4.46438 8.19803,0 1.1386,-4.46438 z m -1.36634,5.35725 -3.64357,14.28601 c -0.45545,1.78576 -0.91089,1.77431 -1.36633,1.78003 l -0.91089,0 -0.91089,3.5715 1.82178,0.005 4.55446,0 c 2.73266,0 3.64356,-0.44643 4.55445,-3.5715 l 4.09902,-16.07176 z m 10.24752,0.22323 -1.36632,5.35725 5.92079,0 1.36633,-5.35725 z m -2.04949,8.70553 -1.36634,5.35725 5.92079,0 1.36634,-5.35725 z"
+           style="fill:#ff0000;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <rect
+           style="opacity:0.5;color:#000000;fill:none;stroke:#000000;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           id="rect3126"
+           width="32"
+           height="32"
+           x="264"
+           y="296.36218"
+           rx="6"
+           ry="6"
+           clip-path="url(#clipPath4709)" />
+      </g>
+      <text
+         inkscape:export-ydpi="180"
+         inkscape:export-xdpi="180"
+         inkscape:export-filename="C:\home\dev\java\w.plugins\eclipse-jetty-code\src\site\resources\images\title.png"
+         sodipodi:linespacing="125%"
+         id="text3128"
+         y="445.59656"
+         x="300.77344"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:none;font-family:Deutsche Zierschrift;-inkscape-font-specification:Deutsche Zierschrift"
+         xml:space="preserve"><tspan
+           style="font-size:24px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#333333;font-family:Verdana;-inkscape-font-specification:Verdana Bold"
+           y="445.59656"
+           x="300.77344"
+           id="tspan3130"
+           sodipodi:role="line">Eclipse Jetty Integration</tspan></text>
     </g>
   </g>
 </svg>

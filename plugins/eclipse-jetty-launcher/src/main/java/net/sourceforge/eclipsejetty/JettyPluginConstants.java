@@ -20,7 +20,6 @@ import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
@@ -85,12 +84,12 @@ public class JettyPluginConstants
 
     public static int getConfigVersion(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_CONFIG_VERSION, 0);
+        return getAttribute(configuration, false, ATTR_CONFIG_VERSION, 0);
     }
 
     public static void updateConfigVersion(ILaunchConfigurationWorkingCopy configuration)
     {
-        configuration.setAttribute(ATTR_CONFIG_VERSION, CONFIG_VERSION);
+        setAttribute(configuration, false, ATTR_CONFIG_VERSION, CONFIG_VERSION);
     }
 
     /**
@@ -102,7 +101,7 @@ public class JettyPluginConstants
      */
     public static String getProject(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
+        return getAttribute(configuration, false, IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
     }
 
     /**
@@ -113,7 +112,7 @@ public class JettyPluginConstants
      */
     public static void setProject(ILaunchConfigurationWorkingCopy configuration, String project)
     {
-        configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
+        setAttribute(configuration, false, IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
     }
 
     /**
@@ -125,7 +124,7 @@ public class JettyPluginConstants
      */
     public static String getContext(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_CONTEXT, "/");
+        return getAttribute(configuration, true, ATTR_CONTEXT, "/");
     }
 
     /**
@@ -136,7 +135,7 @@ public class JettyPluginConstants
      */
     public static void setContext(ILaunchConfigurationWorkingCopy configuration, String context)
     {
-        configuration.setAttribute(ATTR_CONTEXT, context);
+        setAttribute(configuration, true, ATTR_CONTEXT, context);
     }
 
     /**
@@ -148,7 +147,7 @@ public class JettyPluginConstants
      */
     public static String getWebAppDir(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_WEBAPPDIR, "src/main/webapp");
+        return getAttribute(configuration, true, ATTR_WEBAPPDIR, "src/main/webapp");
     }
 
     /**
@@ -159,7 +158,7 @@ public class JettyPluginConstants
      */
     public static void setWebAppDir(ILaunchConfigurationWorkingCopy configuration, String webappdir)
     {
-        configuration.setAttribute(ATTR_WEBAPPDIR, webappdir);
+        setAttribute(configuration, true, ATTR_WEBAPPDIR, webappdir);
     }
 
     /**
@@ -171,7 +170,7 @@ public class JettyPluginConstants
      */
     public static String getPort(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_PORT, "8080");
+        return getAttribute(configuration, true, ATTR_PORT, "8080");
     }
 
     /**
@@ -182,7 +181,7 @@ public class JettyPluginConstants
      */
     public static void setPort(ILaunchConfigurationWorkingCopy configuration, String port)
     {
-        configuration.setAttribute(ATTR_PORT, port);
+        setAttribute(configuration, true, ATTR_PORT, port);
     }
 
     /**
@@ -194,7 +193,7 @@ public class JettyPluginConstants
      */
     public static String getHttpsPort(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_HTTPS_PORT, "8443");
+        return getAttribute(configuration, true, ATTR_HTTPS_PORT, "8443");
     }
 
     /**
@@ -205,71 +204,48 @@ public class JettyPluginConstants
      */
     public static void setHttpsPort(ILaunchConfigurationWorkingCopy configuration, String httpsPort)
     {
-        configuration.setAttribute(ATTR_HTTPS_PORT, httpsPort);
+        setAttribute(configuration, true, ATTR_HTTPS_PORT, httpsPort);
     }
 
     public static boolean isHttpsEnabled(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_HTTPS_ENABLED, false);
+        return getAttribute(configuration, true, ATTR_HTTPS_ENABLED, false);
     }
 
     public static void setHttpsEnabled(ILaunchConfigurationWorkingCopy configuration, boolean httpsEnabled)
     {
-        configuration.setAttribute(ATTR_HTTPS_ENABLED, httpsEnabled);
+        setAttribute(configuration, true, ATTR_HTTPS_ENABLED, httpsEnabled);
     }
 
     public static String getPath(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_JETTY_PATH,
-            DefaultScope.INSTANCE.getNode(JettyPlugin.PLUGIN_ID).get(ATTR_JETTY_PATH, ""));
+        return getAttribute(configuration, true, ATTR_JETTY_PATH, "");
     }
 
     public static void setPath(ILaunchConfigurationWorkingCopy configuration, String path)
     {
-        configuration.setAttribute(ATTR_JETTY_PATH, path);
-
-        DefaultScope.INSTANCE.getNode(JettyPlugin.PLUGIN_ID).put(ATTR_JETTY_PATH, path);
-
-        try
-        {
-            DefaultScope.INSTANCE.getNode(JettyPlugin.PLUGIN_ID).flush();
-        }
-        catch (BackingStoreException e)
-        {
-            // ignore
-        }
+        setAttribute(configuration, true, ATTR_JETTY_PATH, path);
     }
 
     public static boolean isEmbedded(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_JETTY_EMBEDDED, DefaultScope.INSTANCE.getNode(JettyPlugin.PLUGIN_ID)
-            .getBoolean(ATTR_JETTY_EMBEDDED, true));
+        return getAttribute(configuration, true, ATTR_JETTY_EMBEDDED, true);
     }
 
     public static void setEmbedded(ILaunchConfigurationWorkingCopy configuration, boolean extern)
     {
-        configuration.setAttribute(ATTR_JETTY_EMBEDDED, extern);
-
-        DefaultScope.INSTANCE.getNode(JettyPlugin.PLUGIN_ID).putBoolean(ATTR_JETTY_EMBEDDED, extern);
-
-        try
-        {
-            DefaultScope.INSTANCE.getNode(JettyPlugin.PLUGIN_ID).flush();
-        }
-        catch (BackingStoreException e)
-        {
-            // ignore
-        }
+        setAttribute(configuration, true, ATTR_JETTY_EMBEDDED, extern);
     }
 
     public static JettyVersion getVersion(ILaunchConfiguration configuration) throws CoreException
     {
-        return JettyVersion.valueOf(configuration.getAttribute(ATTR_JETTY_VERSION, JettyVersion.JETTY_EMBEDDED.name()));
+        return JettyVersion.valueOf(getAttribute(configuration, true, ATTR_JETTY_VERSION,
+            JettyVersion.JETTY_EMBEDDED.name()));
     }
 
     public static void setVersion(ILaunchConfigurationWorkingCopy configuration, JettyVersion jettyVersion)
     {
-        configuration.setAttribute(ATTR_JETTY_VERSION, jettyVersion.name());
+        setAttribute(configuration, true, ATTR_JETTY_VERSION, jettyVersion.name());
     }
 
     /**
@@ -286,7 +262,7 @@ public class JettyPluginConstants
 
         while (true)
         {
-            String path = configuration.getAttribute(ATTR_JETTY_CONFIG_PATH + index, (String) null);
+            String path = getAttribute(configuration, false, ATTR_JETTY_CONFIG_PATH + index, (String) null);
 
             if (path == null)
             {
@@ -294,9 +270,9 @@ public class JettyPluginConstants
             }
 
             JettyConfigType type =
-                JettyConfigType.valueOf(configuration.getAttribute(ATTR_JETTY_CONFIG_TYPE + index,
+                JettyConfigType.valueOf(getAttribute(configuration, false, ATTR_JETTY_CONFIG_TYPE + index,
                     JettyConfigType.PATH.name()));
-            boolean active = configuration.getAttribute(ATTR_JETTY_CONFIG_ACTIVE + index, true);
+            boolean active = getAttribute(configuration, false, ATTR_JETTY_CONFIG_ACTIVE + index, true);
 
             results.add(new JettyConfig(path, type, active));
             index += 1;
@@ -317,9 +293,9 @@ public class JettyPluginConstants
 
         for (JettyConfig entry : entries)
         {
-            configuration.setAttribute(ATTR_JETTY_CONFIG_PATH + index, entry.getPath());
-            configuration.setAttribute(ATTR_JETTY_CONFIG_TYPE + index, entry.getType().name());
-            configuration.setAttribute(ATTR_JETTY_CONFIG_ACTIVE + index, entry.isActive());
+            setAttribute(configuration, false, ATTR_JETTY_CONFIG_PATH + index, entry.getPath());
+            setAttribute(configuration, false, ATTR_JETTY_CONFIG_TYPE + index, entry.getType().name());
+            setAttribute(configuration, false, ATTR_JETTY_CONFIG_ACTIVE + index, entry.isActive());
 
             index += 1;
         }
@@ -336,117 +312,117 @@ public class JettyPluginConstants
 
     public static boolean isJspSupport(ILaunchConfiguration configuration) throws CoreException
     {
-        return !"false".equals(configuration.getAttribute(ATTR_JSP_ENABLED, "true")); // string for backward compatibility
+        return !"false".equals(getAttribute(configuration, true, ATTR_JSP_ENABLED, "true")); // string for backward compatibility
     }
 
     public static void setJspSupport(ILaunchConfigurationWorkingCopy configuration, boolean jspSupport)
     {
-        configuration.setAttribute(ATTR_JSP_ENABLED, String.valueOf(jspSupport)); // string for backward compatibility
+        setAttribute(configuration, true, ATTR_JSP_ENABLED, String.valueOf(jspSupport)); // string for backward compatibility
     }
 
     public static boolean isJmxSupport(ILaunchConfiguration configuration) throws CoreException
     {
-        return "true".equals(configuration.getAttribute(ATTR_JMX_ENABLED, "false")); // string for backward compatibility
+        return "true".equals(getAttribute(configuration, true, ATTR_JMX_ENABLED, "false")); // string for backward compatibility
     }
 
     public static void setJmxSupport(ILaunchConfigurationWorkingCopy configuration, boolean jmxSupport)
     {
-        configuration.setAttribute(ATTR_JMX_ENABLED, String.valueOf(jmxSupport)); // string for backward compatibility
+        setAttribute(configuration, true, ATTR_JMX_ENABLED, String.valueOf(jmxSupport)); // string for backward compatibility
     }
 
     public static boolean isJndiSupport(ILaunchConfiguration configuration) throws CoreException
     {
-        return "true".equals(configuration.getAttribute(ATTR_JNDI_ENABLED, "false")); // string for backward compatibility
+        return "true".equals(getAttribute(configuration, true, ATTR_JNDI_ENABLED, "false")); // string for backward compatibility
     }
 
     public static void setJndiSupport(ILaunchConfigurationWorkingCopy configuration, boolean jndiSupport)
     {
-        configuration.setAttribute(ATTR_JNDI_ENABLED, String.valueOf(jndiSupport)); // string for backward compatibility
+        setAttribute(configuration, true, ATTR_JNDI_ENABLED, String.valueOf(jndiSupport)); // string for backward compatibility
     }
 
     public static boolean isAjpSupport(ILaunchConfiguration configuration) throws CoreException
     {
-        return "true".equals(configuration.getAttribute(ATTR_AJP_ENABLED, "false")); // string for backward compatibility
+        return "true".equals(getAttribute(configuration, true, ATTR_AJP_ENABLED, "false")); // string for backward compatibility
     }
 
     public static void setAjpSupport(ILaunchConfigurationWorkingCopy configuration, boolean ajpSupport)
     {
-        configuration.setAttribute(ATTR_AJP_ENABLED, String.valueOf(ajpSupport)); // string for backward compatibility
+        setAttribute(configuration, true, ATTR_AJP_ENABLED, String.valueOf(ajpSupport)); // string for backward compatibility
     }
 
     public static boolean isScopeCompileExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_COMPILE, false);
+        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_COMPILE, false);
     }
 
     public static void setScopeCompileExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        configuration.setAttribute(ATTR_EXCLUDE_SCOPE_COMPILE, value);
+        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_COMPILE, value);
     }
 
     public static boolean isScopeProvidedExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_PROVIDED, true);
+        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_PROVIDED, true);
     }
 
     public static void setScopeProvidedExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        configuration.setAttribute(ATTR_EXCLUDE_SCOPE_PROVIDED, value);
+        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_PROVIDED, value);
     }
 
     public static boolean isScopeRuntimeExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_RUNTIME, false);
+        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_RUNTIME, false);
     }
 
     public static void setScopeRuntimeExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        configuration.setAttribute(ATTR_EXCLUDE_SCOPE_RUNTIME, value);
+        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_RUNTIME, value);
     }
 
     public static boolean isScopeTestExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_TEST, true);
+        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_TEST, true);
     }
 
     public static void setScopeTestExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        configuration.setAttribute(ATTR_EXCLUDE_SCOPE_TEST, value);
+        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_TEST, value);
     }
 
     public static boolean isScopeSystemExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_SYSTEM, true);
+        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_SYSTEM, true);
     }
 
     public static void setScopeSystemExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        configuration.setAttribute(ATTR_EXCLUDE_SCOPE_SYSTEM, value);
+        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_SYSTEM, value);
     }
 
     public static boolean isScopeImportExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_IMPORT, true);
+        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_IMPORT, true);
     }
 
     public static void setScopeImportExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        configuration.setAttribute(ATTR_EXCLUDE_SCOPE_IMPORT, value);
+        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_IMPORT, value);
     }
 
     public static boolean isScopeNoneExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        if (!configuration.hasAttribute(ATTR_EXCLUDE_SCOPE_NONE))
+        if (!hasAttribute(configuration, ATTR_EXCLUDE_SCOPE_NONE))
         {
             return JettyPluginM2EUtils.getMavenProjectFacade(configuration) != null;
         }
 
-        return configuration.getAttribute(ATTR_EXCLUDE_SCOPE_NONE, false);
+        return getAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_NONE, false);
     }
 
     public static void setScopeNoneExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        configuration.setAttribute(ATTR_EXCLUDE_SCOPE_NONE, value);
+        setAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_NONE, value);
     }
 
     /**
@@ -455,7 +431,7 @@ public class JettyPluginConstants
     @Deprecated
     public static String getExcludedLibs(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_EXCLUDED_LIBS, ".*servlet-api.*");
+        return getAttribute(configuration, false, ATTR_EXCLUDED_LIBS, ".*servlet-api.*");
     }
 
     /**
@@ -464,7 +440,7 @@ public class JettyPluginConstants
     @Deprecated
     public static void setExcludedLibs(ILaunchConfigurationWorkingCopy configuration, String excludedLibs)
     {
-        configuration.setAttribute(ATTR_EXCLUDED_LIBS, excludedLibs);
+        setAttribute(configuration, false, ATTR_EXCLUDED_LIBS, excludedLibs);
     }
 
     /**
@@ -473,7 +449,7 @@ public class JettyPluginConstants
     @Deprecated
     public static String getIncludedLibs(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_INCLUDED_LIBS, "");
+        return getAttribute(configuration, false, ATTR_INCLUDED_LIBS, "");
     }
 
     /**
@@ -482,30 +458,32 @@ public class JettyPluginConstants
     @Deprecated
     public static void setIncludedLibs(ILaunchConfigurationWorkingCopy configuration, String includedLibs)
     {
-        configuration.setAttribute(ATTR_INCLUDED_LIBS, includedLibs);
+        setAttribute(configuration, false, ATTR_INCLUDED_LIBS, includedLibs);
     }
 
     public static Collection<String> getExcludedGenericIds(ILaunchConfiguration configuration) throws CoreException
     {
-        return JettyPluginUtils.fromCommaSeparatedString(configuration.getAttribute(ATTR_EXCLUDED_GENERIC_IDS, ""));
+        return JettyPluginUtils.fromCommaSeparatedString(getAttribute(configuration, false, ATTR_EXCLUDED_GENERIC_IDS,
+            ""));
     }
 
     public static void setExcludedGenericIds(ILaunchConfigurationWorkingCopy configuration,
         Collection<String> excludedGenericIds)
     {
-        configuration.setAttribute(ATTR_EXCLUDED_GENERIC_IDS,
+        setAttribute(configuration, false, ATTR_EXCLUDED_GENERIC_IDS,
             JettyPluginUtils.toCommaSeparatedString(excludedGenericIds));
     }
 
     public static Collection<String> getIncludedGenericIds(ILaunchConfiguration configuration) throws CoreException
     {
-        return JettyPluginUtils.fromCommaSeparatedString(configuration.getAttribute(ATTR_INCLUDED_GENERIC_IDS, ""));
+        return JettyPluginUtils.fromCommaSeparatedString(getAttribute(configuration, false, ATTR_INCLUDED_GENERIC_IDS,
+            ""));
     }
 
     public static void setIncludedGenericIds(ILaunchConfigurationWorkingCopy configuration,
         Collection<String> includedGenericIds)
     {
-        configuration.setAttribute(ATTR_INCLUDED_GENERIC_IDS,
+        setAttribute(configuration, false, ATTR_INCLUDED_GENERIC_IDS,
             JettyPluginUtils.toCommaSeparatedString(includedGenericIds));
     }
 
@@ -515,7 +493,7 @@ public class JettyPluginConstants
     @Deprecated
     public static String getGlobalLibs(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_GLOBAL_LIBS, "");
+        return getAttribute(configuration, false, ATTR_GLOBAL_LIBS, "");
     }
 
     /**
@@ -524,48 +502,161 @@ public class JettyPluginConstants
     @Deprecated
     public static void setGlobalLibs(ILaunchConfigurationWorkingCopy configuration, String globalLibs)
     {
-        configuration.setAttribute(ATTR_GLOBAL_LIBS, globalLibs);
+        setAttribute(configuration, false, ATTR_GLOBAL_LIBS, globalLibs);
     }
 
     public static Collection<String> getGlobalGenericIds(ILaunchConfiguration configuration) throws CoreException
     {
-        return JettyPluginUtils.fromCommaSeparatedString(configuration.getAttribute(ATTR_GLOBAL_GENERIC_IDS, ""));
+        return JettyPluginUtils
+            .fromCommaSeparatedString(getAttribute(configuration, false, ATTR_GLOBAL_GENERIC_IDS, ""));
     }
 
     public static void setGlobalGenericIds(ILaunchConfigurationWorkingCopy configuration,
         Collection<String> globalGenericIds)
     {
-        configuration.setAttribute(ATTR_GLOBAL_GENERIC_IDS, JettyPluginUtils.toCommaSeparatedString(globalGenericIds));
+        setAttribute(configuration, false, ATTR_GLOBAL_GENERIC_IDS,
+            JettyPluginUtils.toCommaSeparatedString(globalGenericIds));
     }
 
     public static boolean isShowLauncherInfo(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(ATTR_SHOW_LAUNCHER_INFO, true);
+        return getAttribute(configuration, true, ATTR_SHOW_LAUNCHER_INFO, true);
     }
 
     public static void setShowLauncherInfo(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        configuration.setAttribute(ATTR_SHOW_LAUNCHER_INFO, value);
+        setAttribute(configuration, true, ATTR_SHOW_LAUNCHER_INFO, value);
     }
 
     public static void setClasspathProvider(ILaunchConfigurationWorkingCopy configuration, String classpathProvider)
     {
-        configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, classpathProvider);
+        setAttribute(configuration, false, IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, classpathProvider);
     }
 
     public static String getMainTypeName(ILaunchConfiguration configuration) throws CoreException
     {
-        return configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "");
+        return getAttribute(configuration, false, IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "");
     }
 
     public static void setMainTypeName(ILaunchConfigurationWorkingCopy configuration, JettyVersion jettyVersion)
     {
-        configuration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, jettyVersion.getMainClass());
+        setAttribute(configuration, false, IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
+            jettyVersion.getMainClass());
     }
 
     public static boolean isGenericIdsSupported(ILaunchConfiguration configuration) throws CoreException
     {
         return getConfigVersion(configuration) >= 1;
+    }
+
+    protected static boolean getAttribute(ILaunchConfiguration configuration, boolean globalFallback, String name,
+        boolean defaultValue) throws CoreException
+    {
+        return configuration.getAttribute(
+            name,
+            (globalFallback) ? JettyPlugin.getDefaultScope().getNode(JettyPlugin.PLUGIN_ID)
+                .getBoolean(name, defaultValue) : defaultValue);
+    }
+
+    protected static int getAttribute(ILaunchConfiguration configuration, boolean globalFallback, String name,
+        int defaultValue) throws CoreException
+    {
+        return configuration.getAttribute(name,
+            (globalFallback) ? JettyPlugin.getDefaultScope().getNode(JettyPlugin.PLUGIN_ID).getInt(name, defaultValue)
+                : defaultValue);
+    }
+
+    protected static String getAttribute(ILaunchConfiguration configuration, boolean globalFallback, String name,
+        String defaultValue) throws CoreException
+    {
+        return configuration.getAttribute(name,
+            (globalFallback) ? JettyPlugin.getDefaultScope().getNode(JettyPlugin.PLUGIN_ID).get(name, defaultValue)
+                : defaultValue);
+    }
+
+    protected static boolean hasAttribute(ILaunchConfiguration configuration, String name) throws CoreException {
+        try
+        {
+            configuration.getClass().getMethod("hasAttribute", String.class);
+            
+            return configuration.hasAttribute(name);
+        }
+        catch (SecurityException e)
+        {
+            JettyPlugin.error("No hasAttribute (< Eclipse 3.4)", e);
+        }
+        catch (NoSuchMethodException e)
+        {
+            JettyPlugin.warning("No DefaultScope.INSTANCE (< Eclipse 3.4)", e);
+        }
+        
+        return configuration.getAttributes().containsKey(name);
+    }
+    
+    protected static void setAttribute(ILaunchConfigurationWorkingCopy configuration, boolean globalFallback,
+        String name, boolean value)
+    {
+        configuration.setAttribute(name, value);
+
+        if (!globalFallback)
+        {
+            return;
+        }
+
+        JettyPlugin.getDefaultScope().getNode(JettyPlugin.PLUGIN_ID).putBoolean(name, value);
+
+        try
+        {
+            JettyPlugin.getDefaultScope().getNode(JettyPlugin.PLUGIN_ID).flush();
+        }
+        catch (BackingStoreException e)
+        {
+            // ignore
+        }
+    }
+
+    protected static void setAttribute(ILaunchConfigurationWorkingCopy configuration, boolean globalFallback,
+        String name, int value)
+    {
+        configuration.setAttribute(name, value);
+
+        if (!globalFallback)
+        {
+            return;
+        }
+
+        JettyPlugin.getDefaultScope().getNode(JettyPlugin.PLUGIN_ID).putInt(name, value);
+
+        try
+        {
+            JettyPlugin.getDefaultScope().getNode(JettyPlugin.PLUGIN_ID).flush();
+        }
+        catch (BackingStoreException e)
+        {
+            // ignore
+        }
+    }
+
+    protected static void setAttribute(ILaunchConfigurationWorkingCopy configuration, boolean globalFallback,
+        String name, String value)
+    {
+        configuration.setAttribute(name, value);
+
+        if (!globalFallback)
+        {
+            return;
+        }
+
+        JettyPlugin.getDefaultScope().getNode(JettyPlugin.PLUGIN_ID).put(name, value);
+
+        try
+        {
+            JettyPlugin.getDefaultScope().getNode(JettyPlugin.PLUGIN_ID).flush();
+        }
+        catch (BackingStoreException e)
+        {
+            // ignore
+        }
     }
 
 }
