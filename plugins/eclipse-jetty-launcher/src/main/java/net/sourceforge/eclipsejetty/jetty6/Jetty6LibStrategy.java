@@ -63,10 +63,7 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
     @Override
     protected void addJMXDependencies(Collection<String> dependencies)
     {
-        // TODO verify
         dependencies.add(".*/management/jetty-management-.*\\.jar");
-        dependencies.add(".*/management/mx4j/mx4j-.*\\.jar");
-        dependencies.add(".*/management/mx4j/mx4j-tools-.*\\.jar");
     }
 
     /**
@@ -75,7 +72,6 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
     @Override
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
-        // TODO verify
         dependencies.add(".*/naming/jetty-naming-.*\\.jar");
         dependencies.add(".*/naming/mail-.*\\.jar");
         dependencies.add(".*/annotations/geronimo-annotation_1.0_spec-.*\\.jar");

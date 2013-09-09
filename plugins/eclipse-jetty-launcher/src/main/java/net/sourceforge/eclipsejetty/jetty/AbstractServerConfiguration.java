@@ -23,6 +23,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     private final Collection<String> defaultClasspath;
 
     private boolean jndi = false;
+    private boolean jmx = false;
     private Integer port;
     private Integer sslPort;
 
@@ -48,6 +49,16 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     public void setJndi(boolean jndi)
     {
         this.jndi = jndi;
+    }
+
+    public boolean isJmx()
+    {
+        return jmx;
+    }
+
+    public void setJmx(boolean jmx)
+    {
+        this.jmx = jmx;
     }
 
     public Integer getPort()
@@ -148,7 +159,9 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         buildHttpsConfig(builder);
         buildHttpsConnector(builder);
         buildHandler(builder);
+        buildJMX(builder);
         buildExtraOptions(builder);
+
     }
 
     protected abstract void buildThreadPool(DOMBuilder builder);
@@ -179,6 +192,8 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     protected abstract List<String> getJNDIItems();
+
+    protected abstract void buildJMX(DOMBuilder builder);
 
     protected abstract void buildHttpConnector(DOMBuilder builder);
 

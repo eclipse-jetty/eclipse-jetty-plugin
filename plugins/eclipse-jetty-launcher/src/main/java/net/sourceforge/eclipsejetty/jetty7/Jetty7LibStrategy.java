@@ -63,7 +63,6 @@ public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
     @Override
     protected void addJMXDependencies(Collection<String> dependencies)
     {
-        // TODO verify
         dependencies.add(".*/jetty-jmx-.*\\.jar");
         dependencies.add(".*/jetty-util-.*\\.jar");
     }

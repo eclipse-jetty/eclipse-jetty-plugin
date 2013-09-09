@@ -24,6 +24,12 @@ import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
 public class Jetty9LibStrategy extends Jetty8LibStrategy
 {
 
+    @Override
+    protected void addJMXDependencies(Collection<String> dependencies)
+    {
+        dependencies.add(".*/jetty-jmx-.*\\.jar");
+    }
+
     /**
      * {@inheritDoc}
      */

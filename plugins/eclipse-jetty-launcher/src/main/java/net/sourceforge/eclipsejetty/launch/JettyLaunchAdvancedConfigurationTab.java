@@ -156,9 +156,6 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jmxSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, "Enable JMX Support", 224, 1, 1, modifyDialogListener);
 
-        // TODO enable when implemented
-        jmxSupportButton.setEnabled(false);
-
         final Group dependencyGroup = new Group(tabComposite, SWT.NONE);
         dependencyGroup.setLayout(new GridLayout(3, false));
         dependencyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));

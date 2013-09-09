@@ -143,6 +143,11 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             vmArguments += " -D" + HIDE_LAUNCH_INFO_KEY;
         }
 
+        if (JettyPluginConstants.isJmxSupport(configuration))
+        {
+            vmArguments += " -Dcom.sun.management.jmxremote";
+        }
+
         return vmArguments;
     }
 
@@ -632,6 +637,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         }
 
         serverConfiguration.setJndi(JettyPluginConstants.isJndiSupport(configuration));
+        serverConfiguration.setJmx(JettyPluginConstants.isJmxSupport(configuration));
         serverConfiguration.addDefaultClasspath(classpath);
 
         File file;

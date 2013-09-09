@@ -273,6 +273,46 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
     }
 
     @Override
+    protected void buildJMX(DOMBuilder builder)
+    {
+        if (isJmx())
+        {
+            builder.begin("Call").attribute("id", "MBeanServer")
+                .attribute("class", "java.lang.management.ManagementFactory")
+                .attribute("name", "getPlatformMBeanServer").end();
+
+            builder.begin("Call").attribute("name", "addBean");
+            {
+                builder.begin("Arg");
+                {
+                    builder.begin("New").attribute("id", "MBeanContainer")
+                        .attribute("class", "org.eclipse.jetty.jmx.MBeanContainer");
+                    {
+                        builder.begin("Arg");
+                        {
+                            builder.element("Ref", "refid", "MBeanServer");
+                        }
+                        builder.end();
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
+            builder.end();
+
+            builder.begin("Call").attribute("name", "addBean");
+            {
+                builder.begin("Arg");
+                {
+                    builder.element("New", "class", "org.eclipse.jetty.util.log.Log");
+                }
+                builder.end();
+            }
+            builder.end();
+        }
+    }
+
+    @Override
     protected void buildExtraOptions(DOMBuilder builder)
     {
         builder.element("Set", "name", "stopAtShutdown", true);

@@ -75,7 +75,6 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
     protected void addJMXDependencies(Collection<String> dependencies)
     {
         //    private static final String[] FEATURE_JMX = {"jetty-jmx", "jetty-util"};
-        // TODO verify
         dependencies.add("jetty-jmx");
         dependencies.add("jetty-util");
     }
@@ -87,7 +86,6 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
         //    private static final String[] FEATURE_JNDI = {"jetty-jndi", "javax.mail.glassfish", "javax.activation"};
-        // TODO verify
         dependencies.add("jetty-jndi");
         dependencies.add("javax.mail.glassfish");
         dependencies.add("javax.activation");

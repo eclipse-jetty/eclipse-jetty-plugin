@@ -74,6 +74,41 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
+    protected void buildJMX(DOMBuilder builder)
+    {
+        if (isJmx())
+        {
+            builder.begin("Call").attribute("id", "MBeanServer")
+                .attribute("class", "java.lang.management.ManagementFactory")
+                .attribute("name", "getPlatformMBeanServer").end();
+
+            builder.begin("Get").attribute("id", "Container").attribute("name", "container");
+            {
+                builder.begin("Call").attribute("name", "addEventListener");
+                {
+                    builder.begin("Arg");
+                    {
+                        builder.begin("New").attribute("class", "org.mortbay.management.MBeanContainer");
+                        {
+                            builder.begin("Arg");
+                            {
+                                builder.element("Ref", "id", "MBeanServer");
+                            }
+                            builder.end();
+
+                            builder.element("Call", "name", "start");
+                        }
+                        builder.end();
+                    }
+                    builder.end();
+                }
+                builder.end();
+            }
+            builder.end();
+        }
+    }
+
+    @Override
     protected String getClassToConfigure()
     {
         return "org.mortbay.jetty.Server";

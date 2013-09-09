@@ -11,9 +11,9 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty.embedded;
 
-import net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty8.Jetty8ServerConfiguration;
 
-public class JettyEmbeddedServerConfiguration extends Jetty7ServerConfiguration
+public class JettyEmbeddedServerConfiguration extends Jetty8ServerConfiguration
 {
 
     public JettyEmbeddedServerConfiguration()

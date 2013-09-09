@@ -35,11 +35,36 @@ Getting started
  use another version define the path to your Jetty installation. Eclipse Jetty will automatically detect the version
  (supported are currently 6.x - 9.x).
 
- The Jetty features can be enabled/disabled below - currenlty supported is JNDI and JSP support. JMX and AJP will be
- added in future releases.
- 
- If you enable "Show Detailed Server Info" additional information will be shown on startup in
- the console window. Here's an example:
+** The Jetty features
+
+*** Enable JSP Support
+
+ This enables support for Java Server Pages in order to let Jetty compile JSPs. 
+ If you don't need JSPs support, disable this option; you server will start faster.
+
+*** Enable JNDI Support
+
+ This enables support for the Java Naming and Directory Interface. If you use 
+ this for a data source, for example, you have to specified a context file, with the data source 
+ (see {{http://wiki.eclipse.org/Jetty/Howto/Configure_JNDI_Datasource}}). You will also have to mark 
+ the needed JARs as "Global" in the dependencies table. This checkbox just adds the needed JARs when
+ launching Jetty.
+
+*** Enable JMX Support
+
+ This enables the Java Management Extension of the JVM and adds some MBeans provided by Jetty.
+ You can only connect to the JVM locally.
+
+*** Enable AJP Connector
+
+ This feature is currently not implemented. If you need this, or other features, you have to 
+ add the JARs of Jetty manually and mark them as "Global" in the dependencies table. Additionally 
+ you have to provide needed context files.  
+
+*** Show Detailed Server Info
+
+ When enabled, some additional information will be shown on startup. Usually this provides
+ great help when searching for problems with dependencies:
 
 +--
    ____    ___                   __    __  __         ___

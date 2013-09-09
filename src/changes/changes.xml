@@ -10,6 +10,10 @@
 
 	<body>
 		<release version="3.6.0.qualifier" date="2012-12-07">
+			<action dev="thred" type="add">
+				Enabled JMX Support option
+			</action>
+			
 			<action dev="thred" type="fix">
 				Eclipse 3.3 and 3.4 weren't even supported since some time. Reenabled 3.4 at least (3.3 misses some basic UI functions). Updated dependency definitions accordingly. 
 			</action>
