@@ -62,10 +62,14 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public static final String CONFIGURATION_KEY = "jetty.launcher.configuration";
     public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo";
 
+    private static final long DEFAULT_LIFESPAN = 5 * 1000; // 10 seconds
+
     private class CacheEntry
     {
         private final ILaunchConfiguration configuration;
         private final Object object;
+
+        private long endOfLife;
 
         public CacheEntry(ILaunchConfiguration configuration, Object object) throws CoreException
         {
@@ -73,6 +77,8 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
             this.configuration = configuration.copy(configuration.getName());
             this.object = object;
+
+            extendLife();
         }
 
         public ILaunchConfiguration getConfiguration()
@@ -83,6 +89,16 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         public Object getObject()
         {
             return object;
+        }
+
+        public void extendLife()
+        {
+            endOfLife = System.currentTimeMillis() + DEFAULT_LIFESPAN;
+        }
+
+        public boolean isAlive()
+        {
+            return System.currentTimeMillis() < endOfLife;
         }
     }
 
@@ -99,14 +115,19 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         if (cacheEntry == null)
         {
+            // System.err.println("Fail! " + key);
             return null;
         }
 
-        if (configuration.contentsEqual(cacheEntry.getConfiguration()))
+        if ((cacheEntry.isAlive()) && (configuration.contentsEqual(cacheEntry.getConfiguration())))
         {
+            // System.out.println("Hit! " + key);
+            cacheEntry.extendLife();
+
             return cacheEntry.getObject();
         }
 
+        // System.err.println("Don't want! " + key);
         cache.remove(key);
 
         return null;
