@@ -3,6 +3,7 @@ package net.sourceforge.eclipsejetty.starter.jetty9;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain;
+import net.sourceforge.eclipsejetty.starter.common.BufferedPrintWriter;
 
 import org.eclipse.jetty.server.AbstractNetworkConnector;
 import org.eclipse.jetty.server.Connector;
@@ -38,32 +40,43 @@ public class Jetty9LauncherMain extends AbstractJettyLauncherMain
      * @see net.sourceforge.eclipsejetty.jetty5.Jetty5LauncherMain#printLogo()
      */
     @Override
-    protected void printLogo()
+    protected void printLogo(PrintWriter writer)
     {
-        System.out.println("   ____    ___                   __    __  __         ___");
-        System.out.println("  / __/___/ (_)__  ___ ___   __ / /__ / /_/ /___ __  / _ \\");
-        System.out.println(" / _// __/ / / _ \\(_-</ -_) / // / -_) __/ __/ // /  \\_, /");
-        System.out.println("/___/\\__/_/_/ .__/___/\\__/  \\___/\\__/\\__/\\__/\\_, /  /___/");
-        System.out.println("           /_/                              /___/");
+        writer.println("   ____    ___                   __    __  __         ___");
+        writer.println("  / __/___/ (_)__  ___ ___   __ / /__ / /_/ /___ __  / _ \\");
+        writer.println(" / _// __/ / / _ \\(_-</ -_) / // / -_) __/ __/ // /  \\_, /");
+        writer.println("/___/\\__/_/_/ .__/___/\\__/  \\___/\\__/\\__/\\__/\\_, /  /___/");
+        writer.println("           /_/                              /___/");
     }
 
     @Override
     protected void start(File[] configurationFiles, boolean showInfo) throws Exception
     {
         Server server = new Server();
+        BufferedPrintWriter writer = (showInfo) ? new BufferedPrintWriter() : null;
 
-        configure(configurationFiles, server, showInfo);
-
-        if (showInfo)
+        try
         {
-            printInfo(server);
+            configure(writer, configurationFiles, server);
+
+            if (writer != null)
+            {
+                printInfo(writer, server);
+            }
+        }
+        finally
+        {
+            if (writer != null)
+            {
+                System.out.println(writer.toString());
+            }
         }
 
         server.start();
     }
 
     @Override
-    protected void configure(FileInputStream in, Class<?> type, Object server, boolean showInfo) throws Exception
+    protected void configure(PrintWriter writer, FileInputStream in, Class<?> type, Object server) throws Exception
     {
         XmlConfiguration configuration = new XmlConfiguration(in);
 
@@ -95,13 +108,13 @@ public class Jetty9LauncherMain extends AbstractJettyLauncherMain
             + ". No matching object found in server.");
     }
 
-    private void printInfo(Server server)
+    private void printInfo(PrintWriter writer, Server server)
     {
-        System.out.println("         Version: " + Server.getVersion());
-        System.out.println("         Context: " + getContextPaths(server));
-        System.out.println("            Port: " + getPorts(server));
-        System.out.println("       Classpath: " + getClassPaths(server).replaceAll("\\n", "\n                  "));
-        System.out.println();
+        writer.println("         Version: " + Server.getVersion());
+        writer.println("         Context: " + getContextPaths(server));
+        writer.println("            Port: " + getPorts(server));
+        writer.println("       Classpath: " + getClassPaths(server).replaceAll("\\n", "\n                  "));
+        writer.println();
     }
 
     protected String getPorts(Server server)

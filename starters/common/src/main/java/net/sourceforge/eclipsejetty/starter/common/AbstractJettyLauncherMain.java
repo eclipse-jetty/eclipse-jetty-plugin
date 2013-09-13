@@ -4,6 +4,7 @@ package net.sourceforge.eclipsejetty.starter.common;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +32,22 @@ public abstract class AbstractJettyLauncherMain
 
     protected void launch(String[] args) throws Exception
     {
+        long millis = System.currentTimeMillis();
         boolean showInfo = System.getProperty(HIDE_LAUNCH_INFO_KEY) == null;
 
         if (showInfo)
         {
-            printLogo();
-            System.out.println();
+            BufferedPrintWriter writer = new BufferedPrintWriter();
+
+            try
+            {
+                printLogo(writer);
+                writer.println();
+            }
+            finally
+            {
+                System.out.println(writer);
+            }
         }
 
         String configurationFileDef = System.getProperty(CONFIGURATION_KEY);
@@ -49,21 +60,36 @@ public abstract class AbstractJettyLauncherMain
         File[] configurationFiles = getConfigurationFiles(configurationFileDef);
 
         start(configurationFiles, showInfo);
+
+        if (showInfo)
+        {
+            BufferedPrintWriter writer = new BufferedPrintWriter();
+
+            try
+            {
+                printStartupTime(writer, millis);
+            }
+            finally
+            {
+                System.out.println(writer);
+            }
+        }
     }
 
     protected abstract void start(File[] configurationFiles, boolean showInfo) throws Exception;
 
-    protected abstract void printLogo();
+    protected abstract void printLogo(PrintWriter writer);
 
-    protected void configure(File[] configurationFiles, Object server, boolean showInfo) throws Exception
+    protected void configure(PrintWriter writer, File[] configurationFiles, Object server)
+        throws Exception
     {
         for (int i = 0; i < configurationFiles.length; i += 1)
         {
             File configurationFile = configurationFiles[i];
 
-            if (showInfo)
+            if (writer != null)
             {
-                System.out.println(String.format("%18s%s", (i == 0) ? "Configuration: " : "",
+                writer.println(String.format("%18s%s", (i == 0) ? "Configuration: " : "",
                     configurationFile.getAbsolutePath()));
             }
 
@@ -72,7 +98,7 @@ public abstract class AbstractJettyLauncherMain
 
             try
             {
-                configure(in, type, server, showInfo);
+                configure(writer, in, type, server);
             }
             finally
             {
@@ -81,7 +107,7 @@ public abstract class AbstractJettyLauncherMain
         }
     }
 
-    protected abstract void configure(FileInputStream in, Class<?> type, Object server, boolean showInfo)
+    protected abstract void configure(PrintWriter writer, FileInputStream in, Class<?> type, Object server)
         throws Exception;
 
     private static File[] getConfigurationFiles(String definitionList) throws IOException
@@ -172,4 +198,105 @@ public abstract class AbstractJettyLauncherMain
         }
     }
 
+    public void printStartupTime(BufferedPrintWriter writer, long millis)
+    {
+        Runtime runtime = Runtime.getRuntime();
+
+        System.gc();
+
+        double seconds = ((double) System.currentTimeMillis() - millis) / 1000d;
+        long maxMemory = runtime.maxMemory();
+        long totalMemory = runtime.totalMemory();
+        long freeMemory = runtime.freeMemory();
+
+        String duration = "Jetty startup finished in " + formatSeconds(seconds) + ".";
+        String memory =
+            "Used memory: " + formatBytes(totalMemory - freeMemory) + " of " + formatBytes(totalMemory) + " ("
+                + formatBytes(maxMemory) + " maximum)";
+
+        String line = repeat("-", Math.max(duration.length(), memory.length()));
+
+        writer.println(line);
+        writer.println(duration);
+        writer.println(memory);
+        writer.println(line);
+    }
+
+    protected static String formatSeconds(double seconds)
+    {
+        StringBuilder result = new StringBuilder();
+        int minutes = (int) (seconds / 60);
+
+        seconds -= minutes * 60;
+
+        if (minutes > 0)
+        {
+            result.append(minutes).append(" m ");
+        }
+
+        result.append(String.format("%,.3f s", seconds));
+
+        return result.toString();
+    }
+
+    protected static String formatBytes(long bytes)
+    {
+        if (Long.MAX_VALUE == bytes)
+        {
+            return "\u221e Bytes";
+        }
+
+        String unit = "Bytes";
+        double value = bytes;
+
+        if (value > 1024)
+        {
+            value /= 1024;
+            unit = "KB";
+        }
+
+        if (value > 1024)
+        {
+            value /= 1024;
+            unit = "MB";
+        }
+
+        if (value > 1024)
+        {
+            value /= 1024;
+            unit = "GB";
+        }
+
+        if (value > 1024)
+        {
+            value /= 1024;
+            unit = "TB";
+        }
+
+        if (value > 1024)
+        {
+            value /= 1024;
+            unit = "PB";
+        }
+
+        if (value > 1024)
+        {
+            value /= 1024;
+            unit = "EB"; // the Enterprise might still use it. 
+        }
+
+        return String.format("%,.1f %s", value, unit);
+    }
+
+    protected static String repeat(String s, int length)
+    {
+        StringBuilder builder = new StringBuilder();
+
+        while (builder.length() < length)
+        {
+            builder.append(s);
+        }
+
+        return builder.substring(0, length);
+    }
 }
