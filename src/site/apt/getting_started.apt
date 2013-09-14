@@ -44,11 +44,10 @@ Getting started
 
 *** Enable JNDI Support
 
- This enables support for the Java Naming and Directory Interface. If you use 
- this for a data source, for example, you have to specified a context file, with the data source 
- (see {{http://wiki.eclipse.org/Jetty/Howto/Configure_JNDI_Datasource}}). You will also have to mark 
- the needed JARs as "Global" in the dependencies table. This checkbox just adds the needed JARs when
- launching Jetty.
+ This enables support for the Java Naming and Directory Interface. If you use this for a data
+ source, for example, you have to specified a context file, with the data source. You will also have
+ to mark the needed JARs as "Global" in the dependencies table. This checkbox just adds the needed
+ JARs when launching Jetty. For more infos see the {{{./jndi_howto.html}JNDI Howto}}.
 
 *** Enable JMX Support
 

@@ -1,0 +1,64 @@
+ -----
+ Eclipse Jetty Integration - JNDI Howto
+ -----
+ Christian Köberl
+ -----
+ September 2013
+
+JNDI Howto
+
+* Activating JNDI
+
+ For publishing resources via JNDI you'll have to enable JNDI on the Options tab:
+
+[images/Options.jpg] Options for Eclipse Jetty
+
+ This enables JNDI generally but does not publish any resources. 
+
+* Configuring JNDI Resources
+
+ For configuring JNDI resources in Jetty you have to create a Jetty XML configuration file and add
+ it on the WebApp tab in the section Jetty Conext Configuration. The file can either be in the 
+ Eclipse workspace (Add...) or somewhere else in the file system (Add External...).
+ 
+[images/ContextConfiguration.jpg] Use Context Configuration to add JNDI configuration
+
+ For more information on Jetty JNDI config see 
+ {{http://wiki.eclipse.org/Jetty/Feature/JNDI}} on the Eclipse site.
+ 
+* Example JNDI Data Source
+
+ The most common case for using JNDI ist configure a data source with connection pool. To accomplish
+ that with Eclipse Jetty you have to follow this steps:
+
+ [[1]] Activate JNDI on the Options tab
+
+ [[2]] Make sure the JARs for the connection pool and database driver are in the classpath.
+       On the Options tab in the list of all the libraries make sure the JARs are in the
+       selected scopes or manually add them by checking "Include". Also make sure all JARs
+       are marked as "Global" - this will add them to the Jetty classpath and not only to the 
+       application's classpath.
+ 
+ [[3]] Create a Jetty configuration and add it to the Jetty Context Configuration. See
+       {{http://wiki.eclipse.org/Jetty/Howto/Configure_JNDI_Datasource}} for a complete reference.
+       Here is an example for c3p0 connection pool with Oracle database:
+
+----------------------------------------
+<Configure id="wac" class="org.eclipse.jetty.webapp.WebAppContext">
+  <New id="myds" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg></Arg>
+    <Arg>jdbc/myds</Arg>
+    <Arg>
+      <New class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <Set name="driverClass">oracle.jdbc.OracleDriver</Set>
+        <Set name="jdbcUrl">jdbc:oracle:thin:@localhost:1521:XE</Set>
+        <Set name="user">MYUSER</Set>
+        <Set name="password">MYPASS</Set>
+      </New>
+    </Arg>
+  </New>
+</Configure>
+----------------------------------------
+
+ [[4]] Voilà. You're done. You can now lookup the data source in your application via 
+       "java:comp/env/jdbc/myds".

@@ -10,17 +10,20 @@
 	<bannerLeft>
 		<name>Eclipse Jetty Integration</name>
 		<src>images/title.png</src>
+		<href>${project.url}</href>
 	</bannerLeft>
 	<body>
 		<links>
 			<item name="Eclipse" href="http://www.eclipse.org/" />
 			<item name="Jetty" href="http://www.mortbay.org/jetty/" />
+			<item name="Marketplace" href="http://marketplace.eclipse.org/node/581283" />
 		</links>
 
 		<menu name="Documentation">
 			<item name="Overview" href="index.html" />
 			<item name="Installation" href="installation.html" />
 			<item name="Getting started" href="getting_started.html" />
+			<item name="JNDI Howto" href="jndi_howto.html" />
 		</menu>
 
 		<menu name="Additional Infos">

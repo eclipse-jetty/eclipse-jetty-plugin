@@ -9,39 +9,31 @@
 	</properties>
 
 	<body>
-		<release version="3.6.0.qualifier" date="2012-12-07">
+		<release version="3.6.0" date="2013-09-14">
 			<action dev="thred" type="add">
 				Enabled JMX Support option
 			</action>
-			
 			<action dev="thred" type="fix">
 				Eclipse 3.3 and 3.4 weren't even supported since some time. Reenabled 3.4 at least (3.3 misses some basic UI functions). Updated dependency definitions accordingly. 
 			</action>
-			
 			<action dev="thred" type="add">
 				Added "Open..." link for Jetty configs
 			</action>
-			
 			<action dev="thred" type="fix">
 				Fixed external Jetty configs - but dropped support for Eclipse 3.2 (sorry, but's time to grade up!)
 			</action>
-			
 			<action dev="thred" type="fix">
 				Fixed support for Jetty 9
 			</action>
-			
 			<action dev="thred" type="add">
 				Added basic HTTPs support
 			</action>
-			
 			<action dev="thred" type="add">
 				Added visual sugar
 			</action>
-			
 			<action dev="thred" type="fix" issue="#7 Invalid Maven Scopes">
 				Added direct m2e support for correct Maven scopes
 			</action>
-
 			<action dev="thred" type="change">
 				Embedded Jetty is now version 8
 			</action>
@@ -91,16 +83,17 @@
 				Refactored and beautified UI
 			</action>
 		</release>
+
 		<release version="3.4.0-beta-1" date="2011-06-01">
 			<action dev="ckoeberl" type="add">
 				Jetty 7 compatability.
 			</action>
 			<action dev="thred" type="add">
 				Enable JSP Support: JSP support and version can be selected in the run configuration.
-      		</action>
-      		<action dev="thred" type="add">
-      			Excluded libraries can now be edited - default value is &quot;.*servlet-api.*, .*selenium-server.*standalone\.jar&quot;
-      		</action>
+			</action>
+			<action dev="thred" type="add">
+				Excluded libraries can now be edited - default value is &quot;.*servlet-api.*, .*selenium-server.*standalone\.jar&quot;
+			</action>
 		</release>
 
 		<release version="3.4.0-alpha-2" date="2009-03-06">
@@ -109,8 +102,7 @@
 			</action>
 		</release>
 
-		<release version="3.4.0-alpha-1" date="2009-02-23"
-			description="Initial release">
+		<release version="3.4.0-alpha-1" date="2009-02-23" description="Initial release">
 		</release>
 	</body>
 </document>
