@@ -13,6 +13,19 @@
 		<href>${project.url}</href>
 	</bannerLeft>
 	<body>
+		<head>
+			<meta name="og:title" content="Eclipse Jetty Plugin" />
+			<meta itemprop="name" content="Eclipse Jetty Plugin" />
+			<meta name="description" content="The Eclipse Jetty Plugin enables running/debugging of Java web applications with Jetty in the Eclipse IDE. It supports Jetty 6-9 (has an own Jetty 8 included) and works well in conjunction with the m2e Maven integration." />
+			<meta itemprop="description" content="The Eclipse Jetty Plugin enables running/debugging of Java web applications with Jetty in the Eclipse IDE. It supports Jetty 6-9 (has an own Jetty 8 included) and works well in conjunction with the m2e Maven integration." />
+			<meta name="og:image" content="http://eclipse-jetty.sourceforge.net/images/logo.png" />
+			<meta itemprop="image" content="http://eclipse-jetty.sourceforge.net/images/logo.png" />
+			<meta name="og:type" content="website" />
+			<meta name="og:url" content="http://eclipse-jetty.sourceforge.net/" />
+			<meta name="og:site_name" content="Eclipse Jetty Plugin" />
+			<link href="http://eclipse-jetty.sourceforge.net/" rel="canonical" />
+		</head>
+		
 		<links>
 			<item name="Eclipse" href="http://www.eclipse.org/" />
 			<item name="Jetty" href="http://www.mortbay.org/jetty/" />
