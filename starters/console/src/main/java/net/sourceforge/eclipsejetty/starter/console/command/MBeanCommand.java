@@ -562,7 +562,7 @@ public class MBeanCommand extends AbstractCommand
         return true;
     }
 
-    protected static Object convert(String typeName, String value)
+    protected static Object convert(String typeName, String value) throws IllegalArgumentException
     {
         if ("null".equals(value))
         {
@@ -573,7 +573,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (type == null)
         {
-            new IllegalArgumentException("Unsupported parameter " + toParameter(type));
+            throw new IllegalArgumentException("Unsupported parameter " + toParameter(null));
         }
 
         if ((type.isAssignableFrom(Boolean.class)) || (type == Boolean.TYPE))

@@ -706,13 +706,16 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                     break;
             }
 
-            try
+            if (descriptor != null)
             {
-                IDE.openEditor(page, input, descriptor.getId());
-            }
-            catch (PartInitException ex)
-            {
-                JettyPlugin.error("Failed to open", ex);
+                try
+                {
+                    IDE.openEditor(page, input, descriptor.getId());
+                }
+                catch (PartInitException ex)
+                {
+                    JettyPlugin.error("Failed to open", ex);
+                }
             }
         }
     }

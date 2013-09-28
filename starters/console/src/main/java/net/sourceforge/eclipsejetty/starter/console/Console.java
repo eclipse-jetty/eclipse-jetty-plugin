@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 import net.sourceforge.eclipsejetty.starter.console.util.Scanner;
 import net.sourceforge.eclipsejetty.starter.console.util.Tokenizer;
@@ -25,15 +26,10 @@ public class Console implements Runnable
 
     public static void main(String[] args) throws InterruptedException
     {
-        final Object semaphore = new Object();
-        
         Console.INSTANCE.initialize(GlobalServiceResolver.INSTANCE);
         Console.INSTANCE.start();
 
-        synchronized (semaphore)
-        {
-            semaphore.wait();
-        }
+        new Semaphore(0).acquire();
     }
 
     private final Map<String, Command> commands = new LinkedHashMap<String, Command>();

@@ -252,7 +252,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         {
             String webAppDir = "src/main/webapp";
             
-            if (projectName.length() > 0) {
+            if ((projectName != null) && (projectName.length() > 0)) {
                 IResource resource = findWebappDir(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName));
     
                 if (resource != null)
