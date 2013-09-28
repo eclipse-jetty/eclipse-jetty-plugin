@@ -36,11 +36,17 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
             }
             builder.end();
 
-            builder.begin("Set").attribute("name", "maxThreads").attribute("type", "int");
+            Integer connectionLimit = getConnectionLimit();
+
+            if (connectionLimit != null)
             {
-                builder.begin("Property").attribute("name", "threads.max").attribute("default", 10).end();
+                builder.begin("Set").attribute("name", "maxThreads").attribute("type", "int");
+                {
+                    builder.begin("Property").attribute("name", "threads.max").attribute("default", connectionLimit)
+                        .end();
+                }
+                builder.end();
             }
-            builder.end();
 
             builder.begin("Set").attribute("name", "idleTimeout").attribute("type", "int");
             {

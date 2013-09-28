@@ -55,6 +55,8 @@ public class JettyPluginConstants
     private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled";
     private static final String ATTR_JNDI_ENABLED = JettyPlugin.PLUGIN_ID + ".jndi.enabled";
     private static final String ATTR_AJP_ENABLED = JettyPlugin.PLUGIN_ID + ".ajp.enabled";
+    private static final String ATTR_CONNECTION_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".collection.limit.enabled";
+    private static final String ATTR_CONNECTION_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".connection.limit.count";
     private static final String ATTR_EXCLUDE_SCOPE_COMPILE = JettyPlugin.PLUGIN_ID + ".scope.compile.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_PROVIDED = JettyPlugin.PLUGIN_ID + ".scope.provided.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_RUNTIME = JettyPlugin.PLUGIN_ID + ".scope.runtime.exclude";
@@ -148,7 +150,7 @@ public class JettyPluginConstants
      */
     public static String getWebAppDir(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_WEBAPPDIR, "src/main/webapp");
+        return getAttribute(configuration, false, ATTR_WEBAPPDIR, "src/main/webapp");
     }
 
     /**
@@ -159,7 +161,7 @@ public class JettyPluginConstants
      */
     public static void setWebAppDir(ILaunchConfigurationWorkingCopy configuration, String webappdir)
     {
-        setAttribute(configuration, true, ATTR_WEBAPPDIR, webappdir);
+        setAttribute(configuration, false, ATTR_WEBAPPDIR, webappdir);
     }
 
     /**
@@ -169,9 +171,16 @@ public class JettyPluginConstants
      * @return the port
      * @throws CoreException on occasion
      */
-    public static String getPort(ILaunchConfiguration configuration) throws CoreException
+    public static int getPort(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_PORT, "8080");
+        try
+        {
+            return Integer.parseInt(getAttribute(configuration, true, ATTR_PORT, "8080")); // string for backward compatibility
+        }
+        catch (NumberFormatException e)
+        {
+            return 8080;
+        }
     }
 
     /**
@@ -180,9 +189,9 @@ public class JettyPluginConstants
      * @param configuration the configuration
      * @param port the port
      */
-    public static void setPort(ILaunchConfigurationWorkingCopy configuration, String port)
+    public static void setPort(ILaunchConfigurationWorkingCopy configuration, int port)
     {
-        setAttribute(configuration, true, ATTR_PORT, port);
+        setAttribute(configuration, true, ATTR_PORT, String.valueOf(port)); // string for backward compatibility
     }
 
     /**
@@ -192,9 +201,16 @@ public class JettyPluginConstants
      * @return the port
      * @throws CoreException on occasion
      */
-    public static String getHttpsPort(ILaunchConfiguration configuration) throws CoreException
+    public static int getHttpsPort(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_HTTPS_PORT, "8443");
+        try
+        {
+            return Integer.parseInt(getAttribute(configuration, true, ATTR_HTTPS_PORT, "8443")); // string for backward compatibility
+        }
+        catch (NumberFormatException e)
+        {
+            return 8443;
+        }
     }
 
     /**
@@ -203,9 +219,9 @@ public class JettyPluginConstants
      * @param configuration the configuration
      * @param httpsPort the port
      */
-    public static void setHttpsPort(ILaunchConfigurationWorkingCopy configuration, String httpsPort)
+    public static void setHttpsPort(ILaunchConfigurationWorkingCopy configuration, int httpsPort)
     {
-        setAttribute(configuration, true, ATTR_HTTPS_PORT, httpsPort);
+        setAttribute(configuration, true, ATTR_HTTPS_PORT, String.valueOf(httpsPort)); // string for backward compatibility
     }
 
     public static boolean isHttpsEnabled(ILaunchConfiguration configuration) throws CoreException
@@ -349,6 +365,26 @@ public class JettyPluginConstants
     public static void setAjpSupport(ILaunchConfigurationWorkingCopy configuration, boolean ajpSupport)
     {
         setAttribute(configuration, true, ATTR_AJP_ENABLED, String.valueOf(ajpSupport)); // string for backward compatibility
+    }
+
+    public static boolean isConnectionLimitEnabled(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getAttribute(configuration, true, ATTR_CONNECTION_LIMIT_ENABLED, true);
+    }
+
+    public static void setConnectionLimitEnabled(ILaunchConfigurationWorkingCopy configuration, boolean value)
+    {
+        setAttribute(configuration, true, ATTR_CONNECTION_LIMIT_ENABLED, value);
+    }
+
+    public static int getConnectionLimitCount(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getAttribute(configuration, true, ATTR_CONNECTION_LIMIT_COUNT, 8);
+    }
+
+    public static void setConnectionLimitCount(ILaunchConfigurationWorkingCopy configuration, int value)
+    {
+        setAttribute(configuration, true, ATTR_CONNECTION_LIMIT_COUNT, value);
     }
 
     public static boolean isScopeCompileExcluded(ILaunchConfiguration configuration) throws CoreException
@@ -585,11 +621,12 @@ public class JettyPluginConstants
                 : defaultValue);
     }
 
-    protected static boolean hasAttribute(ILaunchConfiguration configuration, String name) throws CoreException {
+    protected static boolean hasAttribute(ILaunchConfiguration configuration, String name) throws CoreException
+    {
         try
         {
             configuration.getClass().getMethod("hasAttribute", String.class);
-            
+
             return configuration.hasAttribute(name);
         }
         catch (SecurityException e)
@@ -600,10 +637,10 @@ public class JettyPluginConstants
         {
             JettyPlugin.warning("No DefaultScope.INSTANCE (< Eclipse 3.4)", e);
         }
-        
+
         return configuration.getAttributes().containsKey(name);
     }
-    
+
     protected static void setAttribute(ILaunchConfigurationWorkingCopy configuration, boolean globalFallback,
         String name, boolean value)
     {

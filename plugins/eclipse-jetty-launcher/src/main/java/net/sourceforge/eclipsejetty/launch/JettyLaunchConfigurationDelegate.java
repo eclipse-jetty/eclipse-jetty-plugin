@@ -164,8 +164,9 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         {
             vmArguments += " -D" + HIDE_LAUNCH_INFO_KEY;
         }
-        
-        if (!JettyPluginConstants.isConsoleEnabled(configuration)) {
+
+        if (!JettyPluginConstants.isConsoleEnabled(configuration))
+        {
             vmArguments += " -D" + DISABLE_CONSOLE_KEY;
         }
 
@@ -512,7 +513,8 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                 FileLocator.find(JettyPlugin.getDefault().getBundle(),
                     Path.fromOSString("lib/eclipse-jetty-starters-util.jar"), null)).getFile())));
 
-            if (consoleEnabled) {
+            if (consoleEnabled)
+            {
                 entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
                     FileLocator.find(JettyPlugin.getDefault().getBundle(),
                         Path.fromOSString("lib/eclipse-jetty-starters-console.jar"), null)).getFile())));
@@ -675,6 +677,12 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         serverConfiguration.setJndi(JettyPluginConstants.isJndiSupport(configuration));
         serverConfiguration.setJmx(JettyPluginConstants.isJmxSupport(configuration));
+
+        if (JettyPluginConstants.isConnectionLimitEnabled(configuration))
+        {
+            serverConfiguration.setConnectionLimit(JettyPluginConstants.getConnectionLimitCount(configuration));
+        }
+
         serverConfiguration.addDefaultClasspath(classpath);
 
         File file;

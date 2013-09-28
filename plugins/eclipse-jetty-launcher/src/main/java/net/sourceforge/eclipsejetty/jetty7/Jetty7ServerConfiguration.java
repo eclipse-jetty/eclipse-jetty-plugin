@@ -39,8 +39,13 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
         {
             builder.begin("New").attribute("class", "org.eclipse.jetty.util.thread.QueuedThreadPool");
             {
-                builder.element("Set", "name", "minThreads", 2);
-                builder.element("Set", "name", "maxThreads", 10);
+                builder.element("Set", "name", "minThreads", 1);
+                Integer connectionLimit = getConnectionLimit();
+
+                if (connectionLimit != null)
+                {
+                    builder.element("Set", "name", "maxThreads", connectionLimit);
+                }
                 builder.element("Set", "name", "detailedDump", false);
             }
             builder.end();

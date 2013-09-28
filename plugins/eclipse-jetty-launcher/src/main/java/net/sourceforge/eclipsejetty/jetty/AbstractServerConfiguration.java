@@ -26,6 +26,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     private boolean jmx = false;
     private Integer port;
     private Integer sslPort;
+    private Integer connectionLimit;
 
     private String keyStorePath;
     private String keyStorePassword;
@@ -79,6 +80,16 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     public void setSslPort(Integer sslPort)
     {
         this.sslPort = sslPort;
+    }
+
+    public Integer getConnectionLimit()
+    {
+        return connectionLimit;
+    }
+
+    public void setConnectionLimit(Integer connectionLimit)
+    {
+        this.connectionLimit = connectionLimit;
     }
 
     public String getKeyStorePath()

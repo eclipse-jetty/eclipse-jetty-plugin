@@ -44,9 +44,13 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
         {
             builder.begin("New").attribute("class", "org.mortbay.thread.QueuedThreadPool");
             {
-                builder.element("Set", "name", "minThreads", 2);
-                builder.element("Set", "name", "maxThreads", 10);
-                builder.element("Set", "name", "lowThreads", 4);
+                builder.element("Set", "name", "minThreads", 1);
+                
+                Integer connectionLimit = getConnectionLimit();
+                
+                if (connectionLimit != null) {
+                    builder.element("Set", "name", "maxThreads", connectionLimit);
+                }
             }
             builder.end();
         }

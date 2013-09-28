@@ -11,6 +11,26 @@
 	<body>
 		<release version="3.7.0">
 			<action dev="thred" type="add">
+				Moved context table to options tab to simplify main tab.
+			</action>
+		
+			<action dev="thred" type="add">
+				Moved dependencies table to separate tab to make room for connection limit option.
+			</action>
+		
+			<action dev="thred" type="add">
+				Added connection limit option.
+			</action>
+		
+			<action dev="thred" type="add">
+				Added scan button for WebApp Directory.
+			</action>
+		
+			<action dev="thred" type="add">
+				Added automatic detection of WebApp Directory.
+			</action>
+		
+			<action dev="thred" type="add">
 				Added console feature. Now you can talk to your Jetty via the Eclipse Console and do things like: 
 				stopping the server gracefully, dumping the state, change properties and much more.
 			</action>

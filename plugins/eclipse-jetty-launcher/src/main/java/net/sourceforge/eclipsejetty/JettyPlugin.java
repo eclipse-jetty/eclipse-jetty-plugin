@@ -37,6 +37,7 @@ public class JettyPlugin extends AbstractUIPlugin
     private static final String JETTY_PLUGIN_LOGO = PLUGIN_ID + ".jettyPluginLogo";
     private static final String JETTY_ICON = PLUGIN_ID + ".jettyIcon";
     private static final String JETTY_ADVANCED_ICON = PLUGIN_ID + ".jettyAdvancedIcon";
+    private static final String JETTY_DEPENDENCY_ICON = PLUGIN_ID + ".jettyDependencyIcon";
     private static final String ADD_CONTEXT_ICON = PLUGIN_ID + ".addContext";
     private static final String REMOVE_CONTEXT_ICON = PLUGIN_ID + ".removeContext";
     private static final String MOVE_UP_CONTEXT_ICON = PLUGIN_ID + ".moveUpContext";
@@ -102,6 +103,7 @@ public class JettyPlugin extends AbstractUIPlugin
 
         initializeImageRegistry(reg, JETTY_ICON, "/icons/jetty.png");
         initializeImageRegistry(reg, JETTY_ADVANCED_ICON, "/icons/jetty-advanced.png");
+        initializeImageRegistry(reg, JETTY_DEPENDENCY_ICON, "/icons/jetty-dependency.png");
 
         initializeImageRegistry(reg, ADD_CONTEXT_ICON, "/icons/add_context.gif");
         initializeImageRegistry(reg, REMOVE_CONTEXT_ICON, "/icons/remove_context.gif");
@@ -148,6 +150,11 @@ public class JettyPlugin extends AbstractUIPlugin
     public static Image getJettyAdvancedIcon()
     {
         return plugin.getImageRegistry().get(JETTY_ADVANCED_ICON);
+    }
+
+    public static Image getJettyDependencyIcon()
+    {
+        return plugin.getImageRegistry().get(JETTY_DEPENDENCY_ICON);
     }
 
     public static Image getAddContextIcon()

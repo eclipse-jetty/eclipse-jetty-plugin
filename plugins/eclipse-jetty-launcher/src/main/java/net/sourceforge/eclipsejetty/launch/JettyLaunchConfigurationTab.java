@@ -14,18 +14,12 @@ package net.sourceforge.eclipsejetty.launch;
 import static net.sourceforge.eclipsejetty.launch.JettyLaunchUI.*;
 import static org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants.*;
 
-import java.io.File;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
-import net.sourceforge.eclipsejetty.jetty.JettyConfig;
-import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
+import net.sourceforge.eclipsejetty.JettyPluginUtils;
 
-import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -39,13 +33,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -60,29 +54,16 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.ide.FileStoreEditorInput;
-import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.model.BaseWorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * UI
@@ -93,27 +74,19 @@ import org.eclipse.ui.part.FileEditorInput;
 public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfigurationTab
 {
     private final ModifyDialogListener modifyDialogListener;
-    private final JettyLaunchConfigEntryList configEntryList;
 
     private Text projectText;
     private Text webAppText;
-    private Button webAppButton;
+    private Button webAppBrowseButton;
+    private Button webAppScanButton;
     private Text contextText;
-    private Text portText;
-    private Text httpsPortText;
+    private Spinner portSpinner;
+    private Spinner httpsPortSpinner;
     private Button httpsEnabledButton;
-    private Table configTable;
-    private boolean configTableFormatted = false;
-    private Button openConfigButton;
-    private Button editConfigButton;
-    private Button removeConfigButton;
-    private Button moveUpConfigButton;
-    private Button moveDownConfigButton;
 
     public JettyLaunchConfigurationTab()
     {
         modifyDialogListener = new ModifyDialogListener();
-        configEntryList = new JettyLaunchConfigEntryList(modifyDialogListener);
     }
 
     /**
@@ -142,14 +115,19 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             }
         });
 
-        Group applicationGroup = new Group(tabComposite, SWT.NONE);
-        applicationGroup.setLayout(new GridLayout(6, false));
-        applicationGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        applicationGroup.setText("Web Application:");
+        Composite applicationGroup = createComposite(tabComposite, SWT.NONE, 4, -1, false, 2, 1);
 
         createLabel(applicationGroup, "WebApp Directory:", 128, 1, 1);
-        webAppText = createText(applicationGroup, SWT.BORDER, -1, -1, 4, 1, modifyDialogListener);
-        webAppButton = createButton(applicationGroup, SWT.NONE, "Browse...", 128, 1, 1, new SelectionAdapter()
+        webAppText = createText(applicationGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
+        webAppScanButton = createButton(applicationGroup, SWT.NONE, "Scan...", 128, 1, 1, new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                scanWebappDir();
+            }
+        });
+        webAppBrowseButton = createButton(applicationGroup, SWT.NONE, "Browse...", 128, 1, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
@@ -158,97 +136,24 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             }
         });
 
-        createLabel(applicationGroup, "Context Path:", 128, 1, 1);
-        contextText = createText(applicationGroup, SWT.BORDER, -1, -1, 4, 1, modifyDialogListener);
-        createLabel(applicationGroup, "", 0, 1, 1);
+        Composite serverGroup = createComposite(tabComposite, SWT.NONE, 7, -1, false, 2, 1);
 
-        createLabel(applicationGroup, "HTTP / HTTPs Port:", 128, 1, 1);
-        portText = createText(applicationGroup, SWT.BORDER, 64, -1, 1, 1, modifyDialogListener);
-        createLabel(applicationGroup, "/", 16, 1, 1).setAlignment(SWT.CENTER);
-        httpsPortText = createText(applicationGroup, SWT.BORDER, 64, -1, 1, 1, modifyDialogListener);
-        httpsEnabledButton = createButton(applicationGroup, SWT.CHECK, "Enable HTTPs", -1, 2, 1, modifyDialogListener);
+        createLabel(serverGroup, "Context Path:", 128, 1, 1);
+        contextText = createText(serverGroup, SWT.BORDER, -1, -1, 6, 1, modifyDialogListener);
 
-        Group configGroup = new Group(tabComposite, SWT.NONE);
-        configGroup.setLayout(new GridLayout(6, false));
-        configGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        configGroup.setText("Jetty Context Configuration:");
-
-        configTable =
-            createTable(configGroup, SWT.BORDER | SWT.FULL_SELECTION, -1, 64, 5, 3, "Include", "Jetty Context File");
-        configTable.addSelectionListener(new SelectionAdapter()
-        {
-
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                updateButtonState();
-            }
-
-        });
-
-        moveUpConfigButton = createButton(configGroup, SWT.NONE, "Up", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                moveUpConfig();
-            }
-        });
-        moveDownConfigButton = createButton(configGroup, SWT.NONE, "Down", 128, 1, 2, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                moveDownConfig();
-            }
-        });
-        
-        openConfigButton = createButton(configGroup, SWT.NONE, "Open...", 128, 1, 1, new SelectionAdapter()
-        {
-
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                openConfig();
-            }
-
-        });
-
-        createLabel(configGroup, "", -1, 1, 1);
-        createButton(configGroup, SWT.NONE, "Add...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                addConig();
-            }
-        });
-        createButton(configGroup, SWT.NONE, "Add External...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                addExternalConfig();
-            }
-        });
-
-        editConfigButton = createButton(configGroup, SWT.NONE, "Edit...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                editConfig();
-            }
-        });
-
-        removeConfigButton = createButton(configGroup, SWT.NONE, "Remove", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                removeConfig();
-            }
-        });
+        createLabel(serverGroup, "HTTP / HTTPs Port:", 128, 1, 1);
+        portSpinner = createSpinner(serverGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+        portSpinner.setMinimum(0);
+        portSpinner.setMaximum(65535);
+        portSpinner.setIncrement(1);
+        portSpinner.setPageIncrement(1000);
+        createLabel(serverGroup, "/", 16, 1, 1).setAlignment(SWT.CENTER);
+        httpsPortSpinner = createSpinner(serverGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+        httpsPortSpinner.setMinimum(0);
+        httpsPortSpinner.setMaximum(65535);
+        httpsPortSpinner.setIncrement(1);
+        httpsPortSpinner.setPageIncrement(1000);
+        httpsEnabledButton = createButton(serverGroup, SWT.CHECK, "Enable HTTPs", -1, 3, 1, modifyDialogListener);
 
         Composite helpGroup = new Composite(tabComposite, SWT.NONE);
         helpGroup.setLayout(new GridLayout(1, false));
@@ -295,12 +200,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             projectText.setText(JettyPluginConstants.getProject(configuration));
             webAppText.setText(JettyPluginConstants.getWebAppDir(configuration));
             contextText.setText(JettyPluginConstants.getContext(configuration));
-            portText.setText(JettyPluginConstants.getPort(configuration));
-            httpsPortText.setText(JettyPluginConstants.getHttpsPort(configuration));
+            portSpinner.setSelection(JettyPluginConstants.getPort(configuration));
+            httpsPortSpinner.setSelection(JettyPluginConstants.getHttpsPort(configuration));
             httpsEnabledButton.setSelection(JettyPluginConstants.isHttpsEnabled(configuration));
-
-            updateTable(configuration, true);
-            updateButtonState();
         }
         catch (CoreException e)
         {
@@ -323,16 +225,19 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
         // get the name for this launch configuration
-        String launchConfigName = "";
+        String projectName = "";
+
         try
         {
-            // try to base the launch config name on the current project
-            launchConfigName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
+            projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
         }
         catch (CoreException e)
         {
             // ignore
         }
+
+        String launchConfigName = projectName;
+
         if ((launchConfigName == null) || (launchConfigName.length() == 0))
         {
             // if no project name was found, base on a default name
@@ -345,7 +250,18 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         try
         {
-            JettyPluginConstants.setWebAppDir(configuration, JettyPluginConstants.getWebAppDir(configuration));
+            String webAppDir = "src/main/webapp";
+            
+            if (projectName.length() > 0) {
+                IResource resource = findWebappDir(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName));
+    
+                if (resource != null)
+                {
+                    webAppDir = getWebappText(resource);
+                }
+            }
+
+            JettyPluginConstants.setWebAppDir(configuration, webAppDir);
             JettyPluginConstants.setContext(configuration, JettyPluginConstants.getContext(configuration));
             JettyPluginConstants.setPort(configuration, JettyPluginConstants.getPort(configuration));
             JettyPluginConstants.setConfigs(configuration, JettyPluginConstants.getConfigs(configuration));
@@ -358,25 +274,14 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
     public void performApply(ILaunchConfigurationWorkingCopy configuration)
     {
-        try
-        {
-            JettyPluginConstants.setProject(configuration, projectText.getText().trim());
-            JettyPluginConstants.setContext(configuration, contextText.getText().trim());
-            JettyPluginConstants.setWebAppDir(configuration, webAppText.getText().trim());
-            JettyPluginConstants.setPort(configuration, portText.getText().trim());
-            JettyPluginConstants.setHttpsPort(configuration, httpsPortText.getText().trim());
-            JettyPluginConstants.setHttpsEnabled(configuration, httpsEnabledButton.getSelection());
-            JettyPluginConstants.setConfigs(configuration, configEntryList.getConfigs());
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.error("Failed to perform apply in configuration tab", e);
-        }
+        JettyPluginConstants.setProject(configuration, projectText.getText().trim());
+        JettyPluginConstants.setContext(configuration, contextText.getText().trim());
+        JettyPluginConstants.setWebAppDir(configuration, webAppText.getText().trim());
+        JettyPluginConstants.setPort(configuration, portSpinner.getSelection());
+        JettyPluginConstants.setHttpsPort(configuration, httpsPortSpinner.getSelection());
+        JettyPluginConstants.setHttpsEnabled(configuration, httpsEnabledButton.getSelection());
 
         JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
-
-        updateTable(configuration, false);
-        updateButtonState();
     }
 
     @Override
@@ -385,7 +290,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         setErrorMessage(null);
         setMessage(null);
 
-        httpsPortText.setEnabled(httpsEnabledButton.getSelection());
+        httpsPortSpinner.setEnabled(httpsEnabledButton.getSelection());
 
         String projectName = projectText.getText().trim();
         IProject project = null;
@@ -399,149 +304,66 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
                 if (!project.exists())
                 {
                     setErrorMessage(MessageFormat.format("Project {0} does not exist", projectName));
-                    webAppButton.setEnabled(false);
+                    webAppBrowseButton.setEnabled(false);
+                    webAppScanButton.setEnabled(false);
                     return false;
                 }
                 if (!project.isOpen())
                 {
                     setErrorMessage(MessageFormat.format("Project {0} is closed", projectName));
-                    webAppButton.setEnabled(false);
+                    webAppBrowseButton.setEnabled(false);
+                    webAppScanButton.setEnabled(false);
                     return false;
                 }
             }
             else
             {
                 setErrorMessage(MessageFormat.format("Illegal project name: {0}", status.getMessage()));
-                webAppButton.setEnabled(false);
+                webAppBrowseButton.setEnabled(false);
+                webAppScanButton.setEnabled(false);
                 return false;
             }
-            webAppButton.setEnabled(true);
+            webAppBrowseButton.setEnabled(true);
+            webAppScanButton.setEnabled(true);
         }
         else
         {
             setErrorMessage("No project selected");
+            webAppBrowseButton.setEnabled(false);
+            webAppScanButton.setEnabled(false);
             return false;
         }
 
+        IFile file;
         String directory = webAppText.getText().trim();
         if (directory.length() > 0)
         {
             IFolder folder = project.getFolder(directory);
+
             if (!folder.exists())
             {
                 setErrorMessage(MessageFormat.format("Folder {0} does not exist in project {1}", directory,
                     project.getName()));
                 return false;
             }
-            IFile file = project.getFile(new Path(directory + "/WEB-INF/web.xml"));
-            if (!file.exists())
-            {
-                setErrorMessage(MessageFormat.format(
-                    "Directoy {0} does not contain WEB-INF/web.xml; it is not a valid web application directory",
+            file = project.getFile(new Path(directory + "/WEB-INF/web.xml"));
+        }
+        else
+        {
+            file = project.getFile(new Path("/WEB-INF/web.xml"));
+        }
+
+        if (!file.exists())
+        {
+            setErrorMessage(MessageFormat
+                .format("Directoy {0} does not contain WEB-INF/web.xml; it is not a valid web application directory",
                     directory));
-                return false;
-            }
-        }
-        else
-        {
-            setErrorMessage("Web application directory is not set");
             return false;
-        }
-
-        String jettyPort = portText.getText().trim();
-        if (jettyPort.length() > 0)
-        {
-            try
-            {
-                int port = Integer.parseInt(jettyPort);
-
-                if ((port <= 0) || (port >= 65536))
-                {
-                    setErrorMessage(MessageFormat.format("The HTTP port {0} must be a number between 0 and 65536.",
-                        jettyPort));
-                }
-            }
-            catch (NumberFormatException e)
-            {
-                setErrorMessage(MessageFormat.format("The HTTP port {0} must be a number between 0 and 65536.",
-                    jettyPort));
-            }
-        }
-        else
-        {
-            setErrorMessage("Jetty HTTP port is not set");
-            return false;
-        }
-
-        if (httpsEnabledButton.getSelection())
-        {
-            String jettyHttpsPort = httpsPortText.getText().trim();
-            if (jettyHttpsPort.length() > 0)
-            {
-                try
-                {
-                    int port = Integer.parseInt(jettyHttpsPort);
-
-                    if ((port <= 0) || (port >= 65536))
-                    {
-                        setErrorMessage(MessageFormat.format(
-                            "The HTTPs port {0} must be a number between 0 and 65536.", jettyHttpsPort));
-                    }
-                }
-                catch (NumberFormatException e)
-                {
-                    setErrorMessage(MessageFormat.format("The HTTPs port {0} must be a number between 0 and 65536.",
-                        jettyHttpsPort));
-                }
-            }
-            else
-            {
-                setErrorMessage("Jetty HTTPs port is not set");
-                return false;
-            }
-        }
-
-        List<JettyConfig> contexts = configEntryList.getConfigs();
-
-        for (JettyConfig context : contexts)
-        {
-            if ((context.isActive()) && (!context.isValid(ResourcesPlugin.getWorkspace())))
-            {
-                setErrorMessage(MessageFormat.format("The Jetty context file {0} does not exist.", context.getPath()));
-            }
         }
 
         setDirty(true);
 
         return true;
-    }
-
-    private void updateTable(ILaunchConfiguration configuration, boolean updateType)
-    {
-        try
-        {
-            List<JettyConfig> contexts = JettyPluginConstants.getConfigs(configuration);
-
-            if (configEntryList.update(configuration, configTable, contexts))
-            {
-                if (!configTableFormatted)
-                {
-                    for (int i = 0; i < configTable.getColumnCount(); i += 1)
-                    {
-                        configTable.getColumn(i).pack();
-                    }
-                }
-
-                if (configTable.getItemCount() > 0)
-                {
-                    configTableFormatted = true;
-                }
-            }
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.error("Failed to update table in configuration tab", e);
-        }
     }
 
     protected void chooseJavaProject()
@@ -576,6 +398,57 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             projectName = selectedProject.getElementName();
             projectText.setText(projectName);
         }
+    }
+
+    protected void scanWebappDir()
+    {
+        IResource resource = findWebappDir(ResourcesPlugin.getWorkspace().getRoot().getProject(projectText.getText()));
+
+        if (resource == null)
+        {
+            Display.getCurrent().syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), "WebApp Directory not found",
+                        "Could not to find the folder \"WEB-INF\" in project " + projectText.getText()
+                            + ".\n\nPlease locate the WebApp Directory manually.");
+                }
+            });
+
+            return;
+        }
+
+        String containerName = getWebappText(resource);
+
+        webAppText.setText(containerName);
+    }
+
+    protected String getWebappText(IResource resource)
+    {
+        IPath path = resource.getFullPath().removeLastSegments(2);
+
+        path = path.removeFirstSegments(1);
+
+        String containerName = path.makeRelative().toString();
+
+        return containerName;
+    }
+
+    protected IResource findWebappDir(IProject project)
+    {
+        IResource resource = null;
+
+        try
+        {
+            resource = JettyPluginUtils.findResource(project, "WEB-INF", "web.xml");
+        }
+        catch (CoreException e)
+        {
+            JettyPlugin.warning("Failed to scan project", e);
+        }
+
+        return resource;
     }
 
     protected void chooseWebappDir()
@@ -613,227 +486,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
             String containerName = path.makeRelative().toString();
             webAppText.setText(containerName);
-        }
-    }
-
-    protected String chooseConfig(String path)
-    {
-        ElementTreeSelectionDialog dialog =
-            new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
-
-        dialog.setTitle("Resource Selection");
-        dialog.setMessage("Select a resource as Jetty Context file:");
-        dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-
-        if (path != null)
-        {
-            dialog.setInitialSelection(path);
-        }
-
-        dialog.open();
-
-        Object[] results = dialog.getResult();
-
-        if ((results != null) && (results.length > 0) && (results[0] instanceof IFile))
-        {
-            IFile file = (IFile) results[0];
-            return file.getFullPath().toString();
-        }
-
-        return null;
-    }
-
-    protected String chooseConfigFromFileSystem(String path)
-    {
-        FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
-
-        dialog.setText("Select Jetty Context File");
-
-        if (path != null)
-        {
-            File file = new File(path);
-
-            dialog.setFileName(file.getName());
-            dialog.setFilterPath(file.getParent());
-        }
-
-        dialog.setFilterExtensions(new String[]{"*.xml", "*.*"});
-
-        return dialog.open();
-    }
-
-    public void updateButtonState()
-    {
-        int index = configTable.getSelectionIndex();
-        JettyLaunchConfigEntry entry = (index >= 0) ? configEntryList.get(index) : null;
-        JettyConfigType type = (entry != null) ? entry.getType() : null;
-
-        openConfigButton.setEnabled(configTable.getSelectionIndex() >= 0);
-        editConfigButton.setEnabled((type == JettyConfigType.PATH) || (type == JettyConfigType.WORKSPACE));
-        moveUpConfigButton.setEnabled(index > 0);
-        moveDownConfigButton.setEnabled((index >= 0) && (index < (configTable.getItemCount() - 1)));
-        removeConfigButton.setEnabled((type == JettyConfigType.PATH) || (type == JettyConfigType.WORKSPACE));
-    }
-
-    private void moveUpConfig()
-    {
-        int index = configTable.getSelectionIndex();
-
-        if (index > 0)
-        {
-            configEntryList.exchange(configTable, index - 1);
-            configTable.setSelection(index - 1);
-            updateLaunchConfigurationDialog();
-        }
-    }
-
-    private void moveDownConfig()
-    {
-        int index = configTable.getSelectionIndex();
-
-        if ((index >= 0) && (index < (configTable.getItemCount() - 1)))
-        {
-            configEntryList.exchange(configTable, index);
-            configTable.setSelection(index + 1);
-            updateLaunchConfigurationDialog();
-        }
-    }
-
-    private void addConig()
-    {
-        String path = chooseConfig(null);
-
-        if (path != null)
-        {
-            configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path,
-                JettyConfigType.WORKSPACE, true)));
-            updateLaunchConfigurationDialog();
-        }
-    }
-
-    private void addExternalConfig()
-    {
-        String path = chooseConfigFromFileSystem(null);
-
-        if (path != null)
-        {
-            configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path,
-                JettyConfigType.PATH, true)));
-            updateLaunchConfigurationDialog();
-        }
-    }
-
-    private void openConfig()
-    {
-        int index = configTable.getSelectionIndex();
-
-        if (index >= 0)
-        {
-            JettyLaunchConfigEntry entry = configEntryList.get(index);
-            IWorkbench workbench = PlatformUI.getWorkbench();
-            IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-            IWorkbenchPage page = window.getActivePage();
-            IEditorInput input = null;
-            IEditorDescriptor descriptor = null;
-
-            switch (entry.getType())
-            {
-                case DEFAULT:
-                    try
-                    {
-                        ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
-                        ILaunchDelegate[] delegates =
-                            configuration.getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
-
-                        if (delegates.length == 1)
-                        {
-                            JettyLaunchConfigurationDelegate delegate =
-                                (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
-
-                            File file = delegate.createJettyConfigurationFile(configuration, true);
-                            descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
-                            input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
-                        }
-                    }
-                    catch (CoreException ex)
-                    {
-                        JettyPlugin.error("Failed to create default context file", ex);
-                    }
-
-                    break;
-
-                case PATH:
-                {
-                    File file = new File(entry.getPath());
-                    descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
-                    input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
-                }
-                    break;
-
-                case WORKSPACE:
-                {
-                    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(entry.getPath()));
-                    descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
-                    input = new FileEditorInput(file);
-                }
-                    break;
-            }
-
-            try
-            {
-                IDE.openEditor(page, input, descriptor.getId());
-            }
-            catch (PartInitException ex)
-            {
-                JettyPlugin.error("Failed to open", ex);
-            }
-        }
-    }
-
-    private void editConfig()
-    {
-        int index = configTable.getSelectionIndex();
-
-        if (index > 0)
-        {
-            String path = null;
-            JettyLaunchConfigEntry entry = configEntryList.get(index);
-
-            switch (entry.getType())
-            {
-                case PATH:
-                    path = chooseConfigFromFileSystem(entry.getPath());
-                    break;
-
-                case WORKSPACE:
-                    path = chooseConfig(entry.getPath());
-                    break;
-
-                default:
-                    break;
-            }
-
-            if (path != null)
-            {
-                entry.setPath(path);
-                updateLaunchConfigurationDialog();
-            }
-        }
-    }
-
-    private void removeConfig()
-    {
-        int index = configTable.getSelectionIndex();
-
-        if (index >= 0)
-        {
-            JettyLaunchConfigEntry entry = configEntryList.get(index);
-
-            if ((entry.getType() == JettyConfigType.PATH) || (entry.getType() == JettyConfigType.WORKSPACE))
-            {
-                configEntryList.remove(configTable, index);
-                updateLaunchConfigurationDialog();
-            }
         }
     }
 

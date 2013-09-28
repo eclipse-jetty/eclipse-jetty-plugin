@@ -16,17 +16,21 @@ import static net.sourceforge.eclipsejetty.launch.JettyLaunchUI.*;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
-import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.jetty.JettyConfig;
+import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
-import net.sourceforge.eclipsejetty.util.Dependency;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -45,10 +49,24 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.model.BaseWorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * UI
@@ -58,8 +76,8 @@ import org.eclipse.swt.widgets.Text;
  */
 public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConfigurationTab
 {
-    private final JettyLaunchDependencyEntryList dependencyEntryList;
     private final ModifyDialogListener modifyDialogListener;
+    private final JettyLaunchConfigEntryList configEntryList;
 
     private Composite tabComposite;
     private Button embeddedButton;
@@ -72,25 +90,26 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button jmxSupportButton;
     private Button jndiSupportButton;
     private Button ajpSupportButton;
-    private Text ajpPortText;
+    private Spinner ajpPortSpinner;
+
+    private Button connectionLimitEnabledButton;
+    private Spinner connectionLimitCountSpinner;
+
+    private Table configTable;
+    private boolean configTableFormatted = false;
+    private Button openConfigButton;
+    private Button editConfigButton;
+    private Button removeConfigButton;
+    private Button moveUpConfigButton;
+    private Button moveDownConfigButton;
+
     private Button showLauncherInfoButton;
     private Button consoleEnabledButton;
-
-    private Label m2eLabel;
-    private Button mavenIncludeCompile;
-    private Button mavenIncludeProvided;
-    private Button mavenIncludeRuntime;
-    private Button mavenIncludeTest;
-    private Button mavenIncludeSystem;
-    private Button mavenIncludeImport;
-    private Button mavenIncludeNone;
-    private Table dependencyTable;
-    private boolean dependencyTableFormatted = false;
 
     public JettyLaunchAdvancedConfigurationTab()
     {
         modifyDialogListener = new ModifyDialogListener();
-        dependencyEntryList = new JettyLaunchDependencyEntryList(modifyDialogListener);
+        configEntryList = new JettyLaunchConfigEntryList(modifyDialogListener);
     }
 
     /**
@@ -99,11 +118,11 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     public void createControl(final Composite parent)
     {
         tabComposite = new Composite(parent, SWT.NONE);
-        tabComposite.setLayout(new GridLayout(1, false));
+        tabComposite.setLayout(new GridLayout(2, true));
 
         final Group jettyGroup = new Group(tabComposite, SWT.NONE);
         jettyGroup.setLayout(new GridLayout(4, false));
-        jettyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        jettyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         jettyGroup.setText("Jetty:");
 
         embeddedButton =
@@ -131,65 +150,130 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         });
 
         final Group jettyFeatureGroup = new Group(tabComposite, SWT.NONE);
-        jettyFeatureGroup.setLayout(new GridLayout(4, false));
-        jettyFeatureGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        jettyFeatureGroup.setLayout(new GridLayout(1, false));
+        jettyFeatureGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         jettyFeatureGroup.setText("Jetty Features:");
 
         jspSupportButton =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JSP Support", 224, 1, 1, modifyDialogListener);
-        ajpSupportButton =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable AJP Connector", 224, 1, 1, modifyDialogListener);
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JSP Support", -1, 1, 1, modifyDialogListener);
+        jndiSupportButton =
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JNDI Support", -1, 1, 1, modifyDialogListener);
+        jmxSupportButton =
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JMX Support", -1, 1, 1, modifyDialogListener);
 
+        final Group pluginFeatureGroup = new Group(tabComposite, SWT.NONE);
+        pluginFeatureGroup.setLayout(new GridLayout(1, false));
+        pluginFeatureGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        pluginFeatureGroup.setText("Plugin Features:");
+
+        showLauncherInfoButton =
+            createButton(pluginFeatureGroup, SWT.CHECK, "Enable Jetty Launch Info", 224, 1, 1, modifyDialogListener);
+        consoleEnabledButton =
+            createButton(pluginFeatureGroup, SWT.CHECK, "Enable Jetty Plugin Console", 224, 1, 1, modifyDialogListener);
+
+        final Group configGroup = new Group(tabComposite, SWT.NONE);
+        configGroup.setLayout(new GridLayout(2, false));
+        configGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        configGroup.setText("Jetty Configuration:");
+        connectionLimitEnabledButton =
+            createButton(configGroup, SWT.CHECK, "Limit Number of Connections:", 224, 1, 1, modifyDialogListener);
+        connectionLimitCountSpinner = createSpinner(configGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+        connectionLimitCountSpinner.setMinimum(1);
+        connectionLimitCountSpinner.setMaximum(128);
+        connectionLimitCountSpinner.setIncrement(1);
+        connectionLimitCountSpinner.setPageIncrement(8);
+
+        ajpSupportButton =
+            createButton(configGroup, SWT.CHECK, "Enable AJP Connector on Port:", 224, 1, 1, modifyDialogListener);
         // TODO enable when implemented
         ajpSupportButton.setEnabled(false);
-
-        createLabel(jettyFeatureGroup, "AJP Port:", 48, 1, 1);
-        ajpPortText = createText(jettyFeatureGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
-
+        ajpPortSpinner = createSpinner(configGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+        ajpPortSpinner.setMinimum(0);
+        ajpPortSpinner.setMaximum(65535);
+        ajpPortSpinner.setIncrement(1);
+        ajpPortSpinner.setPageIncrement(1000);
         // TODO enable when implemented
-        ajpPortText.setEnabled(false);
+        ajpPortSpinner.setEnabled(false);
 
-        jndiSupportButton =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JNDI Support", 224, 1, 1, modifyDialogListener);
-        showLauncherInfoButton =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable Jetty Launch Info", -1, 3, 1, modifyDialogListener);
+        Group contextGroup = new Group(tabComposite, SWT.NONE);
+        contextGroup.setLayout(new GridLayout(6, false));
+        contextGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        contextGroup.setText("Jetty Context Configuration:");
 
-        jmxSupportButton =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JMX Support", 224, 1, 1, modifyDialogListener);
-        consoleEnabledButton=
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable Jetty Plugin Console", -1, 3, 1, modifyDialogListener);
-        
-        final Group dependencyGroup = new Group(tabComposite, SWT.NONE);
-        dependencyGroup.setLayout(new GridLayout(3, false));
-        dependencyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
-        dependencyGroup.setText("Libraries and Dependencies:");
+        configTable =
+            createTable(contextGroup, SWT.BORDER | SWT.FULL_SELECTION, -1, 64, 5, 3, "Include", "Jetty Context File");
+        configTable.addSelectionListener(new SelectionAdapter()
+        {
 
-        createLabel(dependencyGroup, "Included Maven Dependencies:", 224, 1, 1);
-        mavenIncludeCompile =
-            createButton(dependencyGroup, SWT.CHECK, "Compile Scope", 224, 1, 1, modifyDialogListener);
-        mavenIncludeProvided =
-            createButton(dependencyGroup, SWT.CHECK, "Provided Scope", -1, 1, 1, modifyDialogListener);
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                updateButtonState();
+            }
 
-        m2eLabel = createLabel(dependencyGroup, "", 224, 1, 1);
-        mavenIncludeRuntime =
-            createButton(dependencyGroup, SWT.CHECK, "Runtime Scope", 224, 1, 1, modifyDialogListener);
-        mavenIncludeSystem = createButton(dependencyGroup, SWT.CHECK, "System Scope", -1, 1, 1, modifyDialogListener);
+        });
 
-        mavenIncludeNone = createButton(dependencyGroup, SWT.CHECK, "Without Scope", 224, 1, 1, modifyDialogListener);
-        mavenIncludeTest = createButton(dependencyGroup, SWT.CHECK, "Test Scope", 224, 1, 1, modifyDialogListener);
-        mavenIncludeImport = createButton(dependencyGroup, SWT.CHECK, "Import Scope", -1, 1, 1, modifyDialogListener);
-
-        dependencyTable =
-            createTable(dependencyGroup, SWT.BORDER | SWT.HIDE_SELECTION, -1, 200, 3, 1, "Include", "Name", "Global",
-                "Scope", "Path");
-
-        createButton(dependencyGroup, SWT.NONE, "Reset Dependency Overrides", 196, 3, 1, new SelectionAdapter()
+        moveUpConfigButton = createButton(contextGroup, SWT.NONE, "Up", 128, 1, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                dependencyEntryList.reset();
-                updateLaunchConfigurationDialog();
+                moveUpConfig();
+            }
+        });
+        moveDownConfigButton = createButton(contextGroup, SWT.NONE, "Down", 128, 1, 2, new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                moveDownConfig();
+            }
+        });
+
+        openConfigButton = createButton(contextGroup, SWT.NONE, "Open...", 128, 1, 1, new SelectionAdapter()
+        {
+
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                openConfig();
+            }
+
+        });
+
+        createLabel(contextGroup, "", -1, 1, 1);
+        createButton(contextGroup, SWT.NONE, "Add...", 128, 1, 1, new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                addConig();
+            }
+        });
+        createButton(contextGroup, SWT.NONE, "Add External...", 128, 1, 1, new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                addExternalConfig();
+            }
+        });
+
+        editConfigButton = createButton(contextGroup, SWT.NONE, "Edit...", 128, 1, 1, new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                editConfig();
+            }
+        });
+
+        removeConfigButton = createButton(contextGroup, SWT.NONE, "Remove", 128, 1, 1, new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                removeConfig();
             }
         });
 
@@ -216,6 +300,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     @Override
     public void initializeFrom(final ILaunchConfiguration configuration)
     {
+        super.initializeFrom(configuration);
+
         try
         {
             embeddedButton.setSelection(JettyPluginConstants.isEmbedded(configuration));
@@ -226,18 +312,15 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             jmxSupportButton.setSelection(JettyPluginConstants.isJmxSupport(configuration));
             jndiSupportButton.setSelection(JettyPluginConstants.isJndiSupport(configuration));
             ajpSupportButton.setSelection(JettyPluginConstants.isAjpSupport(configuration));
-            showLauncherInfoButton.setSelection(JettyPluginConstants.isShowLauncherInfo(configuration));
-            consoleEnabledButton.setSelection(JettyPluginConstants.isConsoleEnabled(configuration));
 
-            mavenIncludeCompile.setSelection(!JettyPluginConstants.isScopeCompileExcluded(configuration));
-            mavenIncludeProvided.setSelection(!JettyPluginConstants.isScopeProvidedExcluded(configuration));
-            mavenIncludeRuntime.setSelection(!JettyPluginConstants.isScopeRuntimeExcluded(configuration));
-            mavenIncludeSystem.setSelection(!JettyPluginConstants.isScopeSystemExcluded(configuration));
-            mavenIncludeTest.setSelection(!JettyPluginConstants.isScopeTestExcluded(configuration));
-            mavenIncludeImport.setSelection(!JettyPluginConstants.isScopeImportExcluded(configuration));
-            mavenIncludeNone.setSelection(!JettyPluginConstants.isScopeNoneExcluded(configuration));
+            connectionLimitEnabledButton.setSelection(JettyPluginConstants.isConnectionLimitEnabled(configuration));
+            connectionLimitCountSpinner.setSelection(JettyPluginConstants.getConnectionLimitCount(configuration));
 
             updateTable(configuration, true);
+            updateButtonState();
+
+            showLauncherInfoButton.setSelection(JettyPluginConstants.isShowLauncherInfo(configuration));
+            consoleEnabledButton.setSelection(JettyPluginConstants.isConsoleEnabled(configuration));
         }
         catch (final CoreException e)
         {
@@ -256,44 +339,20 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             JettyPluginConstants.setJmxSupport(configuration, JettyPluginConstants.isJmxSupport(configuration));
             JettyPluginConstants.setJndiSupport(configuration, JettyPluginConstants.isJndiSupport(configuration));
             JettyPluginConstants.setAjpSupport(configuration, JettyPluginConstants.isAjpSupport(configuration));
-            JettyPluginConstants.setScopeCompileExcluded(configuration,
-                JettyPluginConstants.isScopeCompileExcluded(configuration));
-            JettyPluginConstants.setScopeProvidedExcluded(configuration,
-                JettyPluginConstants.isScopeProvidedExcluded(configuration));
-            JettyPluginConstants.setScopeRuntimeExcluded(configuration,
-                JettyPluginConstants.isScopeRuntimeExcluded(configuration));
-            JettyPluginConstants.setScopeSystemExcluded(configuration,
-                JettyPluginConstants.isScopeSystemExcluded(configuration));
-            JettyPluginConstants.setScopeTestExcluded(configuration,
-                JettyPluginConstants.isScopeTestExcluded(configuration));
-            JettyPluginConstants.setScopeImportExcluded(configuration,
-                JettyPluginConstants.isScopeImportExcluded(configuration));
-            JettyPluginConstants.setScopeNoneExcluded(configuration,
-                JettyPluginConstants.isScopeNoneExcluded(configuration));
+
+            JettyPluginConstants.setConnectionLimitEnabled(configuration,
+                JettyPluginConstants.isConnectionLimitEnabled(configuration));
+            JettyPluginConstants.setConnectionLimitCount(configuration,
+                JettyPluginConstants.getConnectionLimitCount(configuration));
+
             JettyPluginConstants.setShowLauncherInfo(configuration,
                 JettyPluginConstants.isShowLauncherInfo(configuration));
-
-            JettyPluginConstants.setExcludedGenericIds(configuration,
-                JettyPluginConstants.getExcludedGenericIds(configuration));
-            JettyPluginConstants.setIncludedGenericIds(configuration,
-                JettyPluginConstants.getIncludedGenericIds(configuration));
-            JettyPluginConstants.setGlobalGenericIds(configuration,
-                JettyPluginConstants.getGlobalGenericIds(configuration));
-
-            deprecatedSetDefaults(configuration);
+            JettyPluginConstants.setConsoleEnabled(configuration, JettyPluginConstants.isConsoleEnabled(configuration));
         }
         catch (CoreException e)
         {
             JettyPlugin.error("Failed to set defaults in advanced configuration tab", e);
         }
-    }
-
-    @SuppressWarnings("deprecation")
-    private void deprecatedSetDefaults(final ILaunchConfigurationWorkingCopy configuration) throws CoreException
-    {
-        JettyPluginConstants.setExcludedLibs(configuration, JettyPluginConstants.getExcludedLibs(configuration));
-        JettyPluginConstants.setIncludedLibs(configuration, JettyPluginConstants.getIncludedLibs(configuration));
-        JettyPluginConstants.setGlobalLibs(configuration, JettyPluginConstants.getGlobalLibs(configuration));
     }
 
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)
@@ -325,32 +384,26 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setJmxSupport(configuration, jmxSupportButton.getSelection());
         JettyPluginConstants.setJndiSupport(configuration, jndiSupportButton.getSelection());
         JettyPluginConstants.setAjpSupport(configuration, ajpSupportButton.getSelection());
+
+        JettyPluginConstants.setConnectionLimitEnabled(configuration, connectionLimitEnabledButton.getSelection());
+        JettyPluginConstants.setConnectionLimitCount(configuration, connectionLimitCountSpinner.getSelection());
+
         JettyPluginConstants.setShowLauncherInfo(configuration, showLauncherInfoButton.getSelection());
         JettyPluginConstants.setConsoleEnabled(configuration, consoleEnabledButton.getSelection());
 
-        JettyPluginConstants.setScopeCompileExcluded(configuration, !mavenIncludeCompile.getSelection());
-        JettyPluginConstants.setScopeProvidedExcluded(configuration, !mavenIncludeProvided.getSelection());
-        JettyPluginConstants.setScopeRuntimeExcluded(configuration, !mavenIncludeRuntime.getSelection());
-        JettyPluginConstants.setScopeSystemExcluded(configuration, !mavenIncludeSystem.getSelection());
-        JettyPluginConstants.setScopeTestExcluded(configuration, !mavenIncludeTest.getSelection());
-        JettyPluginConstants.setScopeImportExcluded(configuration, !mavenIncludeImport.getSelection());
-        JettyPluginConstants.setScopeNoneExcluded(configuration, !mavenIncludeNone.getSelection());
+        try
+        {
+            JettyPluginConstants.setConfigs(configuration, configEntryList.getConfigs());
+        }
+        catch (CoreException e)
+        {
+            JettyPlugin.error("Failed to perform apply in advanced configuration tab", e);
+        }
 
-        JettyPluginConstants.setExcludedGenericIds(configuration, dependencyEntryList.createExcludedGenericIds());
-        JettyPluginConstants.setIncludedGenericIds(configuration, dependencyEntryList.createIncludedGenericIds());
-        JettyPluginConstants.setGlobalGenericIds(configuration, dependencyEntryList.createGlobalGenericIds());
-
-        deprecatedPerformApply(configuration);
+        JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
         updateTable(configuration, false);
-    }
-
-    @SuppressWarnings("deprecation")
-    private void deprecatedPerformApply(final ILaunchConfigurationWorkingCopy configuration)
-    {
-        JettyPluginConstants.setExcludedLibs(configuration, dependencyEntryList.createExcludedLibs());
-        JettyPluginConstants.setIncludedLibs(configuration, dependencyEntryList.createIncludedLibs());
-        JettyPluginConstants.setGlobalLibs(configuration, dependencyEntryList.createGlobalLibs());
+        updateButtonState();
     }
 
     @Override
@@ -364,6 +417,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         pathText.setEnabled(!embedded);
         pathVariablesButton.setEnabled(!embedded);
         pathBrowseButton.setEnabled(!embedded);
+
+        connectionLimitCountSpinner.setEnabled(connectionLimitEnabledButton.getSelection());
 
         if (!embedded)
         {
@@ -395,83 +450,46 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             }
         }
 
-        boolean scopeable = false;
+        List<JettyConfig> contexts = configEntryList.getConfigs();
 
-        m2eLabel.setText("");
-
-        if (JettyPluginM2EUtils.isM2EAvailable())
+        for (JettyConfig context : contexts)
         {
-            try
+            if ((context.isActive()) && (!context.isValid(ResourcesPlugin.getWorkspace())))
             {
-                scopeable = JettyPluginM2EUtils.getMavenProjectFacade(configuration) != null;
-            }
-            catch (CoreException e)
-            {
-                // ignore
-            }
-
-            if (!scopeable)
-            {
-                m2eLabel.setText("(no m2e nature, no scope info)");
+                setErrorMessage(MessageFormat.format("The Jetty context file {0} does not exist.", context.getPath()));
             }
         }
-        else
-        {
-            m2eLabel.setText("(m2e not available, no scope info)");
-        }
-
-        mavenIncludeCompile.setEnabled(scopeable);
-        mavenIncludeProvided.setEnabled(scopeable);
-        mavenIncludeRuntime.setEnabled(scopeable);
-        mavenIncludeTest.setEnabled(scopeable);
-        mavenIncludeSystem.setEnabled(scopeable);
-        mavenIncludeImport.setEnabled(scopeable);
-        mavenIncludeNone.setEnabled(true);
 
         setDirty(true);
 
         return true;
     }
 
-    private void updateTable(final ILaunchConfiguration configuration, boolean updateType)
+    private void updateTable(ILaunchConfiguration configuration, boolean updateType)
     {
         try
         {
-            ILaunchDelegate[] delegates =
-                configuration.getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
+            List<JettyConfig> contexts = JettyPluginConstants.getConfigs(configuration);
 
-            if (delegates.length == 1)
+            if (configEntryList.update(configuration, configTable, contexts))
             {
-                JettyLaunchConfigurationDelegate delegate =
-                    (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
-
-                Collection<Dependency> originalClasspathEntries = delegate.getOriginalClasspathEntries(configuration);
-                Collection<Dependency> webappClasspathEntries =
-                    delegate.getWebappClasspathEntries(configuration, originalClasspathEntries);
-                Collection<Dependency> globalWebappClasspathEntries =
-                    delegate.getGlobalWebappClasspathEntries(configuration, webappClasspathEntries);
-
-                if (dependencyEntryList.update(configuration, dependencyTable, originalClasspathEntries,
-                    webappClasspathEntries, globalWebappClasspathEntries, updateType))
+                if (!configTableFormatted)
                 {
-                    if (!dependencyTableFormatted)
+                    for (int i = 0; i < configTable.getColumnCount(); i += 1)
                     {
-                        for (int i = 0; i < dependencyTable.getColumnCount(); i += 1)
-                        {
-                            dependencyTable.getColumn(i).pack();
-                        }
+                        configTable.getColumn(i).pack();
                     }
+                }
 
-                    if (dependencyTable.getItemCount() > 0)
-                    {
-                        dependencyTableFormatted = true;
-                    }
+                if (configTable.getItemCount() > 0)
+                {
+                    configTableFormatted = true;
                 }
             }
         }
         catch (CoreException e)
         {
-            JettyPlugin.error("Failed to update table in advanced configuration tab", e);
+            JettyPlugin.error("Failed to update table in configuration tab", e);
         }
     }
 
@@ -522,6 +540,227 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         if (jettyPath != null)
         {
             pathText.setText(jettyPath);
+        }
+    }
+
+    protected String chooseConfig(String path)
+    {
+        ElementTreeSelectionDialog dialog =
+            new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
+
+        dialog.setTitle("Resource Selection");
+        dialog.setMessage("Select a resource as Jetty Context file:");
+        dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+
+        if (path != null)
+        {
+            dialog.setInitialSelection(path);
+        }
+
+        dialog.open();
+
+        Object[] results = dialog.getResult();
+
+        if ((results != null) && (results.length > 0) && (results[0] instanceof IFile))
+        {
+            IFile file = (IFile) results[0];
+            return file.getFullPath().toString();
+        }
+
+        return null;
+    }
+
+    protected String chooseConfigFromFileSystem(String path)
+    {
+        FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
+
+        dialog.setText("Select Jetty Context File");
+
+        if (path != null)
+        {
+            File file = new File(path);
+
+            dialog.setFileName(file.getName());
+            dialog.setFilterPath(file.getParent());
+        }
+
+        dialog.setFilterExtensions(new String[]{"*.xml", "*.*"});
+
+        return dialog.open();
+    }
+
+    public void updateButtonState()
+    {
+        int index = configTable.getSelectionIndex();
+        JettyLaunchConfigEntry entry = (index >= 0) ? configEntryList.get(index) : null;
+        JettyConfigType type = (entry != null) ? entry.getType() : null;
+
+        openConfigButton.setEnabled(configTable.getSelectionIndex() >= 0);
+        editConfigButton.setEnabled((type == JettyConfigType.PATH) || (type == JettyConfigType.WORKSPACE));
+        moveUpConfigButton.setEnabled(index > 0);
+        moveDownConfigButton.setEnabled((index >= 0) && (index < (configTable.getItemCount() - 1)));
+        removeConfigButton.setEnabled((type == JettyConfigType.PATH) || (type == JettyConfigType.WORKSPACE));
+    }
+
+    private void moveUpConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if (index > 0)
+        {
+            configEntryList.exchange(configTable, index - 1);
+            configTable.setSelection(index - 1);
+            updateLaunchConfigurationDialog();
+        }
+    }
+
+    private void moveDownConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if ((index >= 0) && (index < (configTable.getItemCount() - 1)))
+        {
+            configEntryList.exchange(configTable, index);
+            configTable.setSelection(index + 1);
+            updateLaunchConfigurationDialog();
+        }
+    }
+
+    private void addConig()
+    {
+        String path = chooseConfig(null);
+
+        if (path != null)
+        {
+            configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path,
+                JettyConfigType.WORKSPACE, true)));
+            updateLaunchConfigurationDialog();
+        }
+    }
+
+    private void addExternalConfig()
+    {
+        String path = chooseConfigFromFileSystem(null);
+
+        if (path != null)
+        {
+            configEntryList.add(configTable, new JettyLaunchConfigEntry(new JettyConfig(path, JettyConfigType.PATH,
+                true)));
+            updateLaunchConfigurationDialog();
+        }
+    }
+
+    private void openConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if (index >= 0)
+        {
+            JettyLaunchConfigEntry entry = configEntryList.get(index);
+            IWorkbench workbench = PlatformUI.getWorkbench();
+            IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+            IWorkbenchPage page = window.getActivePage();
+            IEditorInput input = null;
+            IEditorDescriptor descriptor = null;
+
+            switch (entry.getType())
+            {
+                case DEFAULT:
+                    try
+                    {
+                        ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
+                        ILaunchDelegate[] delegates =
+                            configuration.getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
+
+                        if (delegates.length == 1)
+                        {
+                            JettyLaunchConfigurationDelegate delegate =
+                                (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
+
+                            File file = delegate.createJettyConfigurationFile(configuration, true);
+                            descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                            input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
+                        }
+                    }
+                    catch (CoreException ex)
+                    {
+                        JettyPlugin.error("Failed to create default context file", ex);
+                    }
+
+                    break;
+
+                case PATH:
+                {
+                    File file = new File(entry.getPath());
+                    descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                    input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
+                }
+                    break;
+
+                case WORKSPACE:
+                {
+                    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(entry.getPath()));
+                    descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
+                    input = new FileEditorInput(file);
+                }
+                    break;
+            }
+
+            try
+            {
+                IDE.openEditor(page, input, descriptor.getId());
+            }
+            catch (PartInitException ex)
+            {
+                JettyPlugin.error("Failed to open", ex);
+            }
+        }
+    }
+
+    private void editConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if (index > 0)
+        {
+            String path = null;
+            JettyLaunchConfigEntry entry = configEntryList.get(index);
+
+            switch (entry.getType())
+            {
+                case PATH:
+                    path = chooseConfigFromFileSystem(entry.getPath());
+                    break;
+
+                case WORKSPACE:
+                    path = chooseConfig(entry.getPath());
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (path != null)
+            {
+                entry.setPath(path);
+                updateLaunchConfigurationDialog();
+            }
+        }
+    }
+
+    private void removeConfig()
+    {
+        int index = configTable.getSelectionIndex();
+
+        if (index >= 0)
+        {
+            JettyLaunchConfigEntry entry = configEntryList.get(index);
+
+            if ((entry.getType() == JettyConfigType.PATH) || (entry.getType() == JettyConfigType.WORKSPACE))
+            {
+                configEntryList.remove(configTable, index);
+                updateLaunchConfigurationDialog();
+            }
         }
     }
 
