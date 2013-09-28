@@ -14,6 +14,7 @@ import java.util.Map;
 
 import net.sourceforge.eclipsejetty.starter.console.util.Scanner;
 import net.sourceforge.eclipsejetty.starter.console.util.Tokenizer;
+import net.sourceforge.eclipsejetty.starter.util.service.GlobalServiceResolver;
 import net.sourceforge.eclipsejetty.starter.util.service.ServiceResolver;
 import net.sourceforge.eclipsejetty.starter.util.service.ServiceUtils;
 
@@ -21,6 +22,19 @@ public class Console implements Runnable
 {
 
     public static final Console INSTANCE = new Console();
+
+    public static void main(String[] args) throws InterruptedException
+    {
+        final Object semaphore = new Object();
+        
+        Console.INSTANCE.initialize(GlobalServiceResolver.INSTANCE);
+        Console.INSTANCE.start();
+
+        synchronized (semaphore)
+        {
+            semaphore.wait();
+        }
+    }
 
     private final Map<String, Command> commands = new LinkedHashMap<String, Command>();
 
