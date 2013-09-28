@@ -21,6 +21,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-console</artifactId>
+			<version>${project.version}</version>
+			<optional>true</optional>			
+		</dependency>
+
+		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 			<version>${version.jetty9}</version>

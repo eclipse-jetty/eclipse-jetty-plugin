@@ -73,7 +73,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button jndiSupportButton;
     private Button ajpSupportButton;
     private Text ajpPortText;
-    private Button showLauncherInfoButon;
+    private Button showLauncherInfoButton;
+    private Button consoleEnabledButton;
 
     private Label m2eLabel;
     private Button mavenIncludeCompile;
@@ -150,12 +151,14 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         jndiSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, "Enable JNDI Support", 224, 1, 1, modifyDialogListener);
-        showLauncherInfoButon =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Show Detailed Server Info", -1, 3, 1, modifyDialogListener);
+        showLauncherInfoButton =
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable Jetty Launch Info", -1, 3, 1, modifyDialogListener);
 
         jmxSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, "Enable JMX Support", 224, 1, 1, modifyDialogListener);
-
+        consoleEnabledButton=
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable Jetty Plugin Console", -1, 3, 1, modifyDialogListener);
+        
         final Group dependencyGroup = new Group(tabComposite, SWT.NONE);
         dependencyGroup.setLayout(new GridLayout(3, false));
         dependencyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
@@ -223,7 +226,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             jmxSupportButton.setSelection(JettyPluginConstants.isJmxSupport(configuration));
             jndiSupportButton.setSelection(JettyPluginConstants.isJndiSupport(configuration));
             ajpSupportButton.setSelection(JettyPluginConstants.isAjpSupport(configuration));
-            showLauncherInfoButon.setSelection(JettyPluginConstants.isShowLauncherInfo(configuration));
+            showLauncherInfoButton.setSelection(JettyPluginConstants.isShowLauncherInfo(configuration));
+            consoleEnabledButton.setSelection(JettyPluginConstants.isConsoleEnabled(configuration));
 
             mavenIncludeCompile.setSelection(!JettyPluginConstants.isScopeCompileExcluded(configuration));
             mavenIncludeProvided.setSelection(!JettyPluginConstants.isScopeProvidedExcluded(configuration));
@@ -321,7 +325,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setJmxSupport(configuration, jmxSupportButton.getSelection());
         JettyPluginConstants.setJndiSupport(configuration, jndiSupportButton.getSelection());
         JettyPluginConstants.setAjpSupport(configuration, ajpSupportButton.getSelection());
-        JettyPluginConstants.setShowLauncherInfo(configuration, showLauncherInfoButon.getSelection());
+        JettyPluginConstants.setShowLauncherInfo(configuration, showLauncherInfoButton.getSelection());
+        JettyPluginConstants.setConsoleEnabled(configuration, consoleEnabledButton.getSelection());
 
         JettyPluginConstants.setScopeCompileExcluded(configuration, !mavenIncludeCompile.getSelection());
         JettyPluginConstants.setScopeProvidedExcluded(configuration, !mavenIncludeProvided.getSelection());

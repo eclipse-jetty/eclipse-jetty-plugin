@@ -4,13 +4,17 @@ package net.sourceforge.eclipsejetty.starter.common;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import net.sourceforge.eclipsejetty.starter.console.Console;
+import net.sourceforge.eclipsejetty.starter.util.Utils;
+import net.sourceforge.eclipsejetty.starter.util.service.GlobalServiceResolver;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -29,25 +33,17 @@ public abstract class AbstractJettyLauncherMain
 
     public static final String CONFIGURATION_KEY = "jetty.launcher.configuration";
     public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo";
+    public static final String DISABLE_CONSOLE_KEY = "jetty.launcher.disableConsole";
 
     protected void launch(String[] args) throws Exception
     {
         long millis = System.currentTimeMillis();
         boolean showInfo = System.getProperty(HIDE_LAUNCH_INFO_KEY) == null;
+        boolean consoleEnabled = System.getProperty(DISABLE_CONSOLE_KEY) == null;
 
         if (showInfo)
         {
-            BufferedPrintWriter writer = new BufferedPrintWriter();
-
-            try
-            {
-                printLogo(writer);
-                writer.println();
-            }
-            finally
-            {
-                System.out.println(writer);
-            }
+            printLogo(System.out);
         }
 
         String configurationFileDef = System.getProperty(CONFIGURATION_KEY);
@@ -58,38 +54,63 @@ public abstract class AbstractJettyLauncherMain
         }
 
         File[] configurationFiles = getConfigurationFiles(configurationFileDef);
+        ServerAdapter adapter = createAdapter(configurationFiles, showInfo);
 
-        start(configurationFiles, showInfo);
+        configure(System.out, adapter, configurationFiles, showInfo);
 
         if (showInfo)
         {
-            BufferedPrintWriter writer = new BufferedPrintWriter();
+            adapter.info(System.out);
+        }
 
+        initConsole(consoleEnabled, adapter);
+
+        adapter.start();
+
+        if (showInfo)
+        {
+            printStartupTime(System.out, millis, consoleEnabled);
+        }
+    }
+
+    private void initConsole(boolean consoleEnabled, ServerAdapter adapter)
+    {
+        if (consoleEnabled)
+        {
             try
             {
-                printStartupTime(writer, millis);
+                Class.forName("net.sourceforge.eclipsejetty.starter.console.Console");
+
+                GlobalServiceResolver serviceResolver = GlobalServiceResolver.INSTANCE;
+                
+                serviceResolver.register(adapter);
+
+                Console console = Console.INSTANCE;
+                
+                console.initialize(serviceResolver);
+                console.start();
             }
-            finally
+            catch (ClassNotFoundException e)
             {
-                System.out.println(writer);
+                // ignore
             }
         }
     }
 
-    protected abstract void start(File[] configurationFiles, boolean showInfo) throws Exception;
+    protected abstract ServerAdapter createAdapter(File[] configurationFiles, boolean showInfo) throws Exception;
 
-    protected abstract void printLogo(PrintWriter writer);
+    protected abstract void printLogo(PrintStream out);
 
-    protected void configure(PrintWriter writer, File[] configurationFiles, Object server)
+    protected void configure(PrintStream out, ServerAdapter adapter, File[] configurationFiles, boolean showInfo)
         throws Exception
     {
         for (int i = 0; i < configurationFiles.length; i += 1)
         {
             File configurationFile = configurationFiles[i];
 
-            if (writer != null)
+            if (showInfo)
             {
-                writer.println(String.format("%18s%s", (i == 0) ? "Configuration: " : "",
+                out.println(String.format("%18s%s", (i == 0) ? "Configuration: " : "",
                     configurationFile.getAbsolutePath()));
             }
 
@@ -98,7 +119,7 @@ public abstract class AbstractJettyLauncherMain
 
             try
             {
-                configure(writer, in, type, server);
+                configure(in, type, adapter);
             }
             finally
             {
@@ -107,10 +128,9 @@ public abstract class AbstractJettyLauncherMain
         }
     }
 
-    protected abstract void configure(PrintWriter writer, FileInputStream in, Class<?> type, Object server)
-        throws Exception;
+    protected abstract void configure(FileInputStream in, Class<?> type, ServerAdapter adapter) throws Exception;
 
-    private static File[] getConfigurationFiles(String definitionList) throws IOException
+    protected static File[] getConfigurationFiles(String definitionList) throws IOException
     {
         String[] definitions = definitionList.split(File.pathSeparator);
         List<File> files = new ArrayList<File>();
@@ -135,7 +155,7 @@ public abstract class AbstractJettyLauncherMain
         return files.toArray(new File[files.size()]);
     }
 
-    public static Class<?> determineClass(File file) throws IOException
+    protected static Class<?> determineClass(File file) throws IOException
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -198,7 +218,7 @@ public abstract class AbstractJettyLauncherMain
         }
     }
 
-    public void printStartupTime(BufferedPrintWriter writer, long millis)
+    protected void printStartupTime(PrintStream out, long millis, boolean consoleEnabled)
     {
         Runtime runtime = Runtime.getRuntime();
 
@@ -209,94 +229,24 @@ public abstract class AbstractJettyLauncherMain
         long totalMemory = runtime.totalMemory();
         long freeMemory = runtime.freeMemory();
 
-        String duration = "Jetty startup finished in " + formatSeconds(seconds) + ".";
+        String duration = "Jetty startup finished in " + Utils.formatSeconds(seconds) + ".";
+        String console = (consoleEnabled) ? "Console available: type \"help\"." : "";
         String memory =
-            "Used memory: " + formatBytes(totalMemory - freeMemory) + " of " + formatBytes(totalMemory) + " ("
-                + formatBytes(maxMemory) + " maximum)";
+            "Used memory: " + Utils.formatBytes(totalMemory - freeMemory) + " of " + Utils.formatBytes(totalMemory)
+                + " (" + Utils.formatBytes(maxMemory) + " maximum)";
 
-        String line = repeat("-", Math.max(duration.length(), memory.length()));
+        String line = Utils.repeat("-", Math.max(duration.length(), Math.max(memory.length(), console.length())));
 
-        writer.println(line);
-        writer.println(duration);
-        writer.println(memory);
-        writer.println(line);
+        out.println(line);
+        out.println(duration);
+        out.println(memory);
+
+        if (console.length() > 0)
+        {
+            out.println(console);
+        }
+
+        out.println(line);
     }
 
-    protected static String formatSeconds(double seconds)
-    {
-        StringBuilder result = new StringBuilder();
-        int minutes = (int) (seconds / 60);
-
-        seconds -= minutes * 60;
-
-        if (minutes > 0)
-        {
-            result.append(minutes).append(" m ");
-        }
-
-        result.append(String.format("%,.3f s", seconds));
-
-        return result.toString();
-    }
-
-    protected static String formatBytes(long bytes)
-    {
-        if (Long.MAX_VALUE == bytes)
-        {
-            return "\u221e Bytes";
-        }
-
-        String unit = "Bytes";
-        double value = bytes;
-
-        if (value > 1024)
-        {
-            value /= 1024;
-            unit = "KB";
-        }
-
-        if (value > 1024)
-        {
-            value /= 1024;
-            unit = "MB";
-        }
-
-        if (value > 1024)
-        {
-            value /= 1024;
-            unit = "GB";
-        }
-
-        if (value > 1024)
-        {
-            value /= 1024;
-            unit = "TB";
-        }
-
-        if (value > 1024)
-        {
-            value /= 1024;
-            unit = "PB";
-        }
-
-        if (value > 1024)
-        {
-            value /= 1024;
-            unit = "EB"; // the Enterprise might still use it. 
-        }
-
-        return String.format("%,.1f %s", value, unit);
-    }
-
-    protected static String repeat(String s, int length)
-    {
-        StringBuilder builder = new StringBuilder();
-
-        while (builder.length() < length)
-        {
-            builder.append(s);
-        }
-
-        return builder.substring(0, length);
-    }
 }

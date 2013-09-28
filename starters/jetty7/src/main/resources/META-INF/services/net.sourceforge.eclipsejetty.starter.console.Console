@@ -1,0 +1,3 @@
+net.sourceforge.eclipsejetty.starter.common.command.DumpCommand
+net.sourceforge.eclipsejetty.starter.common.command.InfoCommand
+net.sourceforge.eclipsejetty.starter.common.command.StopCommand

@@ -9,6 +9,13 @@
 	</properties>
 
 	<body>
+		<release version="3.7.0">
+			<action dev="thred" type="add">
+				Added console feature. Now you can talk to your Jetty via the Eclipse Console and do things like: 
+				stopping the server gracefully, dumping the state, change properties and much more.
+			</action>
+		</release>
+		
 		<release version="3.6.0" date="2013-09-14">
 			<action dev="thred" type="add">
 				Enabled JMX Support option

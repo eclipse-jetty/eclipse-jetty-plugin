@@ -1,0 +1,8 @@
+net.sourceforge.eclipsejetty.starter.console.command.ExitCommand
+net.sourceforge.eclipsejetty.starter.console.command.EchoCommand
+net.sourceforge.eclipsejetty.starter.console.command.HelpCommand
+net.sourceforge.eclipsejetty.starter.console.command.MBeanCommand
+net.sourceforge.eclipsejetty.starter.console.command.MemoryCommand
+net.sourceforge.eclipsejetty.starter.console.command.PropCommand
+net.sourceforge.eclipsejetty.starter.console.command.SnackCommand
+net.sourceforge.eclipsejetty.starter.console.command.ThreadCommand

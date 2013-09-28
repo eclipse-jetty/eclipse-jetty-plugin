@@ -12,6 +12,21 @@
 	<artifactId>eclipse-jetty-starters-common</artifactId>
 	<name>Eclipse Jetty Launcher Starters Common</name>
 
+	<dependencies>
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-console</artifactId>
+			<version>${project.version}</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-util</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>

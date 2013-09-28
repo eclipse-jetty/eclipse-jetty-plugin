@@ -81,6 +81,7 @@ public class JettyPluginConstants
     private static final String ATTR_GLOBAL_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.globalLibs";
     private static final String ATTR_GLOBAL_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.globalGenericIds";
     private static final String ATTR_SHOW_LAUNCHER_INFO = JettyPlugin.PLUGIN_ID + ".launcher.info";
+    private static final String ATTR_CONSOLE_ENABLED = JettyPlugin.PLUGIN_ID + ".console.enabled";
 
     public static int getConfigVersion(ILaunchConfiguration configuration) throws CoreException
     {
@@ -526,6 +527,16 @@ public class JettyPluginConstants
     public static void setShowLauncherInfo(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
         setAttribute(configuration, true, ATTR_SHOW_LAUNCHER_INFO, value);
+    }
+
+    public static boolean isConsoleEnabled(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getAttribute(configuration, true, ATTR_CONSOLE_ENABLED, true);
+    }
+
+    public static void setConsoleEnabled(ILaunchConfigurationWorkingCopy configuration, boolean value)
+    {
+        setAttribute(configuration, true, ATTR_CONSOLE_ENABLED, value);
     }
 
     public static void setClasspathProvider(ILaunchConfigurationWorkingCopy configuration, String classpathProvider)

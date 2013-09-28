@@ -61,6 +61,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 {
     public static final String CONFIGURATION_KEY = "jetty.launcher.configuration";
     public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo";
+    public static final String DISABLE_CONSOLE_KEY = "jetty.launcher.disableConsole";
 
     private static final long DEFAULT_LIFESPAN = 5 * 1000; // 10 seconds
 
@@ -162,6 +163,10 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         if (!JettyPluginConstants.isShowLauncherInfo(configuration))
         {
             vmArguments += " -D" + HIDE_LAUNCH_INFO_KEY;
+        }
+        
+        if (!JettyPluginConstants.isConsoleEnabled(configuration)) {
+            vmArguments += " -D" + DISABLE_CONSOLE_KEY;
         }
 
         if (JettyPluginConstants.isJmxSupport(configuration))
@@ -495,12 +500,23 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         boolean jmxSupport = JettyPluginConstants.isJmxSupport(configuration);
         boolean jndiSupport = JettyPluginConstants.isJndiSupport(configuration);
         boolean ajpSupport = JettyPluginConstants.isAjpSupport(configuration);
+        boolean consoleEnabled = JettyPluginConstants.isConsoleEnabled(configuration);
 
         try
         {
             entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
                 FileLocator.find(JettyPlugin.getDefault().getBundle(),
                     Path.fromOSString("lib/eclipse-jetty-starters-common.jar"), null)).getFile())));
+
+            entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
+                FileLocator.find(JettyPlugin.getDefault().getBundle(),
+                    Path.fromOSString("lib/eclipse-jetty-starters-util.jar"), null)).getFile())));
+
+            if (consoleEnabled) {
+                entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
+                    FileLocator.find(JettyPlugin.getDefault().getBundle(),
+                        Path.fromOSString("lib/eclipse-jetty-starters-console.jar"), null)).getFile())));
+            }
 
             entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
                 FileLocator.find(JettyPlugin.getDefault().getBundle(), Path.fromOSString(jettyVersion.getJar()), null))
