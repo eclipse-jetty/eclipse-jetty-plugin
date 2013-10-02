@@ -30,9 +30,13 @@ import net.sourceforge.eclipsejetty.util.Dependency;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 
@@ -490,4 +494,164 @@ public class JettyPluginUtils
 
         return null;
     }
+
+    /**
+     * Tries to resolve the file: first as absolute (external) file, second as workspace (internal) file, third as
+     * project file. Returns null if the file does not exist. The name may contain variables.
+     * 
+     * @param project the project, may be null
+     * @param name the name of the file
+     * @return the file
+     */
+    public static File resolveFile(IProject project, String name)
+    {
+        if (name == null)
+        {
+            return null;
+        }
+
+        name = JettyPluginUtils.resolveVariables(name);
+
+        File file = new File(name);
+
+        if ((file.isAbsolute()) && (file.exists()))
+        {
+            return file;
+        }
+
+        try
+        {
+            IFile resource = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name));
+
+            if (resource.exists())
+            {
+                return resource.getLocation().toFile().getAbsoluteFile();
+            }
+        }
+        catch (IllegalArgumentException e)
+        {
+            // ignore
+        }
+
+        if (project == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            IFile resource = project.getFile(name);
+
+            if (resource.exists())
+            {
+                return resource.getLocation().toFile().getAbsoluteFile();
+            }
+        }
+        catch (IllegalArgumentException e)
+        {
+            // ignore
+        }
+
+        return null;
+    }
+
+    /**
+     * Tries to resolve the folder: first as absolute (external) file, second as workspace (internal) file, third as
+     * project file. Returns null if the file does not exist. The name may contain variables.
+     * 
+     * @param project the project, may be null
+     * @param name the name of the file
+     * @return the file
+     */
+    public static File resolveFolder(IProject project, String name)
+    {
+        if (name == null)
+        {
+            return null;
+        }
+
+        name = JettyPluginUtils.resolveVariables(name);
+
+        File file = new File(name);
+
+        if ((file.isAbsolute()) && (file.exists() && (file.isDirectory())))
+        {
+            return file;
+        }
+
+        try
+        {
+            IFolder resource = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(name));
+
+            if (resource.exists())
+            {
+                return resource.getLocation().toFile().getAbsoluteFile();
+            }
+        }
+        catch (IllegalArgumentException e)
+        {
+            // ignore
+        }
+
+        if (project == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            IFolder resource = project.getFolder(name);
+
+            if (resource.exists())
+            {
+                return resource.getLocation().toFile().getAbsoluteFile();
+            }
+        }
+        catch (IllegalArgumentException e)
+        {
+            // ignore
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts the path to a project relative path, if it points to a location within the project
+     * 
+     * @param project the project
+     * @param path the path
+     * @return the corrected path
+     */
+    public static String toRelativePath(IProject project, String path)
+    {
+        if (project == null)
+        {
+            return path;
+        }
+
+        if ((path == null) || (path.length() == 0))
+        {
+            return path;
+        }
+
+        return new Path(path).makeRelativeTo(project.getFullPath()).toString();
+    }
+
+    public static IProject getProject(String projectName)
+    {
+        if ((projectName == null) || (projectName.length() == 0))
+        {
+            return null;
+        }
+
+        IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+
+        if (!project.exists())
+        {
+            return null;
+        }
+        
+        return project;
+    }
+
 }

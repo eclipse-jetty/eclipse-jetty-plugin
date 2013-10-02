@@ -99,7 +99,7 @@
 
 					<execution>
 						<id>copy-dependencies-jetty</id>
-						<phase>package</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>copy-dependencies</goal>
 						</goals>

@@ -11,6 +11,78 @@
 	<body>
 		<release version="3.7.0">
 			<action dev="thred" type="add">
+				Added web defaults option.
+			</action>
+			
+			<action dev="thred" type="fix">
+				Updated advanced configuration tab layout.
+			</action>
+			
+			<action dev="thred" type="add">
+				Added acceptor and thread pool limits.
+			</action>
+			
+			<action dev="thred" type="fix">
+				Unified file and folder access code.
+			</action>
+			
+			<action dev="thred" type="fix">
+				DEV: Fixed package building task.
+			</action>
+
+			<action dev="thred" type="fix">
+				Fixed the sitemap and added a favicon.
+			</action>
+
+			<action dev="thred" type="add">
+				Added the info command to the console, that shows the launch info.
+			</action>
+
+			<action dev="thred" type="add">
+				Added the restart command to the console.
+			</action>
+
+			<action dev="thred" type="add">
+				Added the stop command to console, to stop the server gracefully.
+			</action>
+
+			<action dev="thred" type="add">
+				Added the open command to console, to open a browser.
+			</action>
+			
+			<action dev="thred" type="add">
+				Added the dump command to console, to dump the state of Jetty.
+			</action>
+			
+			<action dev="thred" type="add">
+				Added the exit command to console.
+			</action>
+			
+			<action dev="thred" type="add">
+				Added the echo command, just for fun.
+			</action>
+			
+			<action dev="thred" type="add">
+				Added the help command.
+			</action>
+			
+			<action dev="thred" type="add">
+				Added the mbean command, to access mbeans.
+			</action>
+			
+			<action dev="thred" type="add">
+				Added the memory command, to show memory statistics and perform a garbage collection.
+			</action>
+			
+			<action dev="thred" type="add">
+				Added the prop command, to show and modify system properties.
+			</action>
+			
+			<action dev="thred" type="add">
+				Added the thread command, to show thread statistics.
+			</action>
+			
+			<action dev="thred" type="add">
 				Moved context table to options tab to simplify main tab.
 			</action>
 		
@@ -32,7 +104,8 @@
 		
 			<action dev="thred" type="add">
 				Added console feature. Now you can talk to your Jetty via the Eclipse Console and do things like: 
-				stopping the server gracefully, dumping the state, change properties and much more.
+				stopping the server gracefully, dumping the state, change properties and much more. If you like
+				give it a snack.
 			</action>
 		</release>
 		

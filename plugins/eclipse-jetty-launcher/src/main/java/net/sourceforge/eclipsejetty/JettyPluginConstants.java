@@ -11,6 +11,7 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +20,8 @@ import net.sourceforge.eclipsejetty.jetty.JettyConfig;
 import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -55,8 +58,13 @@ public class JettyPluginConstants
     private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled";
     private static final String ATTR_JNDI_ENABLED = JettyPlugin.PLUGIN_ID + ".jndi.enabled";
     private static final String ATTR_AJP_ENABLED = JettyPlugin.PLUGIN_ID + ".ajp.enabled";
-    private static final String ATTR_CONNECTION_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".collection.limit.enabled";
-    private static final String ATTR_CONNECTION_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".connection.limit.count";
+    private static final String ATTR_THREAD_POOL_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".threadPool.limit.enabled";
+    private static final String ATTR_THREAD_POOL_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".threadPool.limit.count";
+    private static final String ATTR_ACCEPTOR_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".acceptor.limit.enabled";
+    private static final String ATTR_ACCEPTOR_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".acceptor.limit.count";
+    private static final String ATTR_CUSTOM_WEB_DEFAULTS_ENABLED = JettyPlugin.PLUGIN_ID + ".customWebDefaults.enabled";
+    private static final String ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE = JettyPlugin.PLUGIN_ID
+        + ".customWebDefaults.resource";
     private static final String ATTR_EXCLUDE_SCOPE_COMPILE = JettyPlugin.PLUGIN_ID + ".scope.compile.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_PROVIDED = JettyPlugin.PLUGIN_ID + ".scope.provided.exclude";
     private static final String ATTR_EXCLUDE_SCOPE_RUNTIME = JettyPlugin.PLUGIN_ID + ".scope.runtime.exclude";
@@ -102,7 +110,7 @@ public class JettyPluginConstants
      * @return the project
      * @throws CoreException on occasion
      */
-    public static String getProject(ILaunchConfiguration configuration) throws CoreException
+    public static String getProjectName(ILaunchConfiguration configuration) throws CoreException
     {
         return getAttribute(configuration, false, IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
     }
@@ -113,9 +121,21 @@ public class JettyPluginConstants
      * @param configuration the configuration
      * @param project the project
      */
-    public static void setProject(ILaunchConfigurationWorkingCopy configuration, String project)
+    public static void setProjectName(ILaunchConfigurationWorkingCopy configuration, String project)
     {
         setAttribute(configuration, false, IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
+    }
+
+    public static IProject getProject(ILaunchConfiguration configuration)
+    {
+        try
+        {
+             return JettyPluginUtils.getProject(getProjectName(configuration));
+        }
+        catch (CoreException e)
+        {
+            return null;
+        }
     }
 
     /**
@@ -127,7 +147,7 @@ public class JettyPluginConstants
      */
     public static String getContext(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_CONTEXT, "/");
+        return getAttribute(configuration, false, ATTR_CONTEXT, "/");
     }
 
     /**
@@ -138,7 +158,7 @@ public class JettyPluginConstants
      */
     public static void setContext(ILaunchConfigurationWorkingCopy configuration, String context)
     {
-        setAttribute(configuration, true, ATTR_CONTEXT, context);
+        setAttribute(configuration, false, ATTR_CONTEXT, context);
     }
 
     /**
@@ -148,7 +168,7 @@ public class JettyPluginConstants
      * @return the location of the webapp directory
      * @throws CoreException on occasion
      */
-    public static String getWebAppDir(ILaunchConfiguration configuration) throws CoreException
+    public static String getWebAppString(ILaunchConfiguration configuration) throws CoreException
     {
         return getAttribute(configuration, false, ATTR_WEBAPPDIR, "src/main/webapp");
     }
@@ -159,9 +179,21 @@ public class JettyPluginConstants
      * @param configuration the configuration
      * @param webappdir the location of the webapp directory
      */
-    public static void setWebAppDir(ILaunchConfigurationWorkingCopy configuration, String webappdir)
+    public static void setWebAppString(ILaunchConfigurationWorkingCopy configuration, String webappdir)
     {
         setAttribute(configuration, false, ATTR_WEBAPPDIR, webappdir);
+    }
+
+    public static File getWebAppPath(ILaunchConfiguration configuration)
+    {
+        try
+        {
+            return JettyPluginUtils.resolveFolder(getProject(configuration), getWebAppString(configuration));
+        }
+        catch (CoreException e)
+        {
+            return null;
+        }
     }
 
     /**
@@ -234,14 +266,26 @@ public class JettyPluginConstants
         setAttribute(configuration, true, ATTR_HTTPS_ENABLED, httpsEnabled);
     }
 
-    public static String getPath(ILaunchConfiguration configuration) throws CoreException
+    public static String getPathString(ILaunchConfiguration configuration) throws CoreException
     {
         return getAttribute(configuration, true, ATTR_JETTY_PATH, "");
     }
 
-    public static void setPath(ILaunchConfigurationWorkingCopy configuration, String path)
+    public static void setPathString(ILaunchConfigurationWorkingCopy configuration, String path)
     {
         setAttribute(configuration, true, ATTR_JETTY_PATH, path);
+    }
+
+    public static File getPath(ILaunchConfiguration configuration)
+    {
+        try
+        {
+            return JettyPluginUtils.resolveFolder(getProject(configuration), getPathString(configuration));
+        }
+        catch (CoreException e)
+        {
+            return null;
+        }
     }
 
     public static boolean isEmbedded(ILaunchConfiguration configuration) throws CoreException
@@ -367,84 +411,143 @@ public class JettyPluginConstants
         setAttribute(configuration, true, ATTR_AJP_ENABLED, String.valueOf(ajpSupport)); // string for backward compatibility
     }
 
-    public static boolean isConnectionLimitEnabled(ILaunchConfiguration configuration) throws CoreException
+    public static boolean isThreadPoolLimitEnabled(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_CONNECTION_LIMIT_ENABLED, true);
+        return getAttribute(configuration, true, ATTR_THREAD_POOL_LIMIT_ENABLED, false);
     }
 
-    public static void setConnectionLimitEnabled(ILaunchConfigurationWorkingCopy configuration, boolean value)
+    public static void setThreadPoolLimitEnabled(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        setAttribute(configuration, true, ATTR_CONNECTION_LIMIT_ENABLED, value);
+        setAttribute(configuration, true, ATTR_THREAD_POOL_LIMIT_ENABLED, value);
     }
 
-    public static int getConnectionLimitCount(ILaunchConfiguration configuration) throws CoreException
+    public static int getThreadPoolLimitCount(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_CONNECTION_LIMIT_COUNT, 8);
+        return getAttribute(configuration, true, ATTR_THREAD_POOL_LIMIT_COUNT, 16);
     }
 
-    public static void setConnectionLimitCount(ILaunchConfigurationWorkingCopy configuration, int value)
+    public static void setThreadPoolLimitCount(ILaunchConfigurationWorkingCopy configuration, int value)
     {
-        setAttribute(configuration, true, ATTR_CONNECTION_LIMIT_COUNT, value);
+        setAttribute(configuration, true, ATTR_THREAD_POOL_LIMIT_COUNT, value);
+    }
+
+    public static boolean isAcceptorLimitEnabled(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getAttribute(configuration, true, ATTR_ACCEPTOR_LIMIT_ENABLED, false);
+    }
+
+    public static void setAcceptorLimitEnabled(ILaunchConfigurationWorkingCopy configuration, boolean value)
+    {
+        setAttribute(configuration, true, ATTR_ACCEPTOR_LIMIT_ENABLED, value);
+    }
+
+    public static int getAcceptorLimitCount(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getAttribute(configuration, true, ATTR_ACCEPTOR_LIMIT_COUNT, 8);
+    }
+
+    public static void setAcceptorLimitCount(ILaunchConfigurationWorkingCopy configuration, int value)
+    {
+        setAttribute(configuration, true, ATTR_ACCEPTOR_LIMIT_COUNT, value);
+    }
+
+    public static boolean isCustomWebDefaultsEnabled(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getAttribute(configuration, false, ATTR_CUSTOM_WEB_DEFAULTS_ENABLED, false);
+    }
+
+    public static void setCustomWebDefaultsEnabled(ILaunchConfigurationWorkingCopy configuration, boolean value)
+    {
+        setAttribute(configuration, false, ATTR_CUSTOM_WEB_DEFAULTS_ENABLED, value);
+    }
+
+    public static String getCustomWebDefaultsResource(ILaunchConfiguration configuration) throws CoreException
+    {
+        return getAttribute(configuration, false, ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE, "");
+    }
+
+    public static void setCustomWebDefaultsResource(ILaunchConfigurationWorkingCopy configuration, String value)
+    {
+        setAttribute(configuration, false, ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE, value);
+    }
+
+    public static File getCustomWebDefaultFile(ILaunchConfiguration configuration)
+    {
+        try
+        {
+            if (!isCustomWebDefaultsEnabled(configuration))
+            {
+                return null;
+            }
+
+            return JettyPluginUtils.resolveFile(getProject(configuration), getCustomWebDefaultsResource(configuration));
+        }
+        catch (CoreException e)
+        {
+            // ignore
+        }
+
+        return null;
     }
 
     public static boolean isScopeCompileExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_COMPILE, false);
+        return getAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_COMPILE, false);
     }
 
     public static void setScopeCompileExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_COMPILE, value);
+        setAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_COMPILE, value);
     }
 
     public static boolean isScopeProvidedExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_PROVIDED, true);
+        return getAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_PROVIDED, true);
     }
 
     public static void setScopeProvidedExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_PROVIDED, value);
+        setAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_PROVIDED, value);
     }
 
     public static boolean isScopeRuntimeExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_RUNTIME, false);
+        return getAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_RUNTIME, false);
     }
 
     public static void setScopeRuntimeExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_RUNTIME, value);
+        setAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_RUNTIME, value);
     }
 
     public static boolean isScopeTestExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_TEST, true);
+        return getAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_TEST, true);
     }
 
     public static void setScopeTestExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_TEST, value);
+        setAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_TEST, value);
     }
 
     public static boolean isScopeSystemExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_SYSTEM, true);
+        return getAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_SYSTEM, true);
     }
 
     public static void setScopeSystemExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_SYSTEM, value);
+        setAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_SYSTEM, value);
     }
 
     public static boolean isScopeImportExcluded(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_IMPORT, true);
+        return getAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_IMPORT, true);
     }
 
     public static void setScopeImportExcluded(ILaunchConfigurationWorkingCopy configuration, boolean value)
     {
-        setAttribute(configuration, true, ATTR_EXCLUDE_SCOPE_IMPORT, value);
+        setAttribute(configuration, false, ATTR_EXCLUDE_SCOPE_IMPORT, value);
     }
 
     public static boolean isScopeNoneExcluded(ILaunchConfiguration configuration) throws CoreException
@@ -567,7 +670,7 @@ public class JettyPluginConstants
 
     public static boolean isConsoleEnabled(ILaunchConfiguration configuration) throws CoreException
     {
-        return getAttribute(configuration, true, ATTR_CONSOLE_ENABLED, true);
+        return getAttribute(configuration, true, ATTR_CONSOLE_ENABLED, false);
     }
 
     public static void setConsoleEnabled(ILaunchConfigurationWorkingCopy configuration, boolean value)

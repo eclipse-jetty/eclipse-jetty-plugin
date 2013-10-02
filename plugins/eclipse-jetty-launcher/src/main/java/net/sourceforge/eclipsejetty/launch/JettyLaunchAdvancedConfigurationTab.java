@@ -31,12 +31,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchDelegate;
-import org.eclipse.debug.ui.StringVariableSelectionDialog;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -48,8 +45,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
@@ -61,11 +56,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.model.BaseWorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.FileEditorInput;
 
 /**
@@ -92,8 +84,15 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button ajpSupportButton;
     private Spinner ajpPortSpinner;
 
-    private Button connectionLimitEnabledButton;
-    private Spinner connectionLimitCountSpinner;
+    private Button threadPoolLimitEnabledButton;
+    private Spinner threadPoolLimitCountSpinner;
+    private Button acceptorLimitEnabledButton;
+    private Spinner acceptorLimitCountSpinner;
+    private Button customWebDefaultsEnabledButton;
+    private Text customWebDefaultsResourceText;
+    private Button customWebDefaultsWorkspaceButton;
+    private Button customWebDefaultsFileSystemButton;
+    private Button customWebDefaultsVariablesButton;
 
     private Table configTable;
     private boolean configTableFormatted = false;
@@ -137,15 +136,25 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                chooseJettyPathVariable();
+                chooseVariable(getShell(), pathText);
             }
         });
-        pathBrowseButton = createButton(jettyGroup, SWT.NONE, "Browse...", 96, 1, 1, new SelectionAdapter()
+        pathBrowseButton = createButton(jettyGroup, SWT.NONE, "External...", 96, 1, 1, new SelectionAdapter()
         {
             @Override
             public void widgetSelected(final SelectionEvent e)
             {
-                chooseJettyPath();
+                String path =
+                    chooseExternalDirectory(
+                        getShell(),
+                        "Select Jetty Home Directory",
+                        "Choose the installation directory of your Jetty. Currenty, the versions 6 to 9 are supported.",
+                        pathText.getText());
+
+                if (path != null)
+                {
+                    pathText.setText(path);
+                }
             }
         });
 
@@ -175,13 +184,22 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         configGroup.setLayout(new GridLayout(2, false));
         configGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         configGroup.setText("Jetty Configuration:");
-        connectionLimitEnabledButton =
-            createButton(configGroup, SWT.CHECK, "Limit Number of Connections:", 224, 1, 1, modifyDialogListener);
-        connectionLimitCountSpinner = createSpinner(configGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
-        connectionLimitCountSpinner.setMinimum(1);
-        connectionLimitCountSpinner.setMaximum(128);
-        connectionLimitCountSpinner.setIncrement(1);
-        connectionLimitCountSpinner.setPageIncrement(8);
+
+        threadPoolLimitEnabledButton =
+            createButton(configGroup, SWT.CHECK, "Limit Size of Thread Pool:", 224, 1, 1, modifyDialogListener);
+        threadPoolLimitCountSpinner = createSpinner(configGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+        threadPoolLimitCountSpinner.setMinimum(8);
+        threadPoolLimitCountSpinner.setMaximum(128);
+        threadPoolLimitCountSpinner.setIncrement(1);
+        threadPoolLimitCountSpinner.setPageIncrement(8);
+
+        acceptorLimitEnabledButton =
+            createButton(configGroup, SWT.CHECK, "Limit Number of Acceptors:", 224, 1, 1, modifyDialogListener);
+        acceptorLimitCountSpinner = createSpinner(configGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+        acceptorLimitCountSpinner.setMinimum(2);
+        acceptorLimitCountSpinner.setMaximum(64);
+        acceptorLimitCountSpinner.setIncrement(1);
+        acceptorLimitCountSpinner.setPageIncrement(8);
 
         ajpSupportButton =
             createButton(configGroup, SWT.CHECK, "Enable AJP Connector on Port:", 224, 1, 1, modifyDialogListener);
@@ -194,6 +212,55 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         ajpPortSpinner.setPageIncrement(1000);
         // TODO enable when implemented
         ajpPortSpinner.setEnabled(false);
+
+        customWebDefaultsEnabledButton =
+            createButton(configGroup, SWT.CHECK, "Custom Web Defaults XML:", 224, 1, 1, modifyDialogListener);
+        customWebDefaultsResourceText = createText(configGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
+
+        Composite customWebDefaultsButtons = createComposite(configGroup, SWT.NONE, 4, -1, false, 2, 1);
+        createLabel(customWebDefaultsButtons, "", -1, 1, 1);
+        customWebDefaultsWorkspaceButton =
+            createButton(customWebDefaultsButtons, SWT.NONE, "Workspace...", 96, 1, 1, new SelectionAdapter()
+            {
+                @Override
+                public void widgetSelected(final SelectionEvent e)
+                {
+                    String path =
+                        chooseWorkspaceFile(JettyPluginConstants.getProject(getCurrentLaunchConfiguration()),
+                            getShell(), "Resource Selection", "Select a resource as Jetty Context file:",
+                            customWebDefaultsResourceText.getText());
+
+                    if (path != null)
+                    {
+                        customWebDefaultsResourceText.setText(path);
+                    }
+                }
+            });
+        customWebDefaultsFileSystemButton =
+            createButton(customWebDefaultsButtons, SWT.NONE, "File System...", 96, 1, 1, new SelectionAdapter()
+            {
+                @Override
+                public void widgetSelected(final SelectionEvent e)
+                {
+                    String path =
+                        chooseExternalFile(getShell(), customWebDefaultsResourceText.getText(),
+                            "Select Custom Web Defaults XML", "*.xml", "*.*");
+
+                    if (path != null)
+                    {
+                        customWebDefaultsResourceText.setText(path);
+                    }
+                }
+            });
+        customWebDefaultsVariablesButton =
+            createButton(customWebDefaultsButtons, SWT.NONE, "Variables...", 96, 1, 1, new SelectionAdapter()
+            {
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                    chooseVariable(getShell(), customWebDefaultsResourceText);
+                }
+            });
 
         Group contextGroup = new Group(tabComposite, SWT.NONE);
         contextGroup.setLayout(new GridLayout(6, false));
@@ -208,7 +275,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                updateButtonState();
+                updateConfigButtonState();
             }
 
         });
@@ -306,18 +373,23 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         {
             embeddedButton.setSelection(JettyPluginConstants.isEmbedded(configuration));
             externButton.setSelection(!JettyPluginConstants.isEmbedded(configuration));
-            pathText.setText(JettyPluginConstants.getPath(configuration));
+            pathText.setText(JettyPluginConstants.getPathString(configuration));
 
             jspSupportButton.setSelection(JettyPluginConstants.isJspSupport(configuration));
             jmxSupportButton.setSelection(JettyPluginConstants.isJmxSupport(configuration));
             jndiSupportButton.setSelection(JettyPluginConstants.isJndiSupport(configuration));
             ajpSupportButton.setSelection(JettyPluginConstants.isAjpSupport(configuration));
 
-            connectionLimitEnabledButton.setSelection(JettyPluginConstants.isConnectionLimitEnabled(configuration));
-            connectionLimitCountSpinner.setSelection(JettyPluginConstants.getConnectionLimitCount(configuration));
+            threadPoolLimitEnabledButton.setSelection(JettyPluginConstants.isThreadPoolLimitEnabled(configuration));
+            threadPoolLimitCountSpinner.setSelection(JettyPluginConstants.getThreadPoolLimitCount(configuration));
+            acceptorLimitEnabledButton.setSelection(JettyPluginConstants.isAcceptorLimitEnabled(configuration));
+            acceptorLimitCountSpinner.setSelection(JettyPluginConstants.getAcceptorLimitCount(configuration));
+
+            customWebDefaultsEnabledButton.setSelection(JettyPluginConstants.isCustomWebDefaultsEnabled(configuration));
+            customWebDefaultsResourceText.setText(JettyPluginConstants.getCustomWebDefaultsResource(configuration));
 
             updateTable(configuration, true);
-            updateButtonState();
+            updateConfigButtonState();
 
             showLauncherInfoButton.setSelection(JettyPluginConstants.isShowLauncherInfo(configuration));
             consoleEnabledButton.setSelection(JettyPluginConstants.isConsoleEnabled(configuration));
@@ -330,29 +402,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     public void setDefaults(final ILaunchConfigurationWorkingCopy configuration)
     {
-        try
-        {
-            JettyPluginConstants.setEmbedded(configuration, JettyPluginConstants.isEmbedded(configuration));
-            JettyPluginConstants.setPath(configuration, JettyPluginConstants.getPath(configuration));
-
-            JettyPluginConstants.setJspSupport(configuration, JettyPluginConstants.isJspSupport(configuration));
-            JettyPluginConstants.setJmxSupport(configuration, JettyPluginConstants.isJmxSupport(configuration));
-            JettyPluginConstants.setJndiSupport(configuration, JettyPluginConstants.isJndiSupport(configuration));
-            JettyPluginConstants.setAjpSupport(configuration, JettyPluginConstants.isAjpSupport(configuration));
-
-            JettyPluginConstants.setConnectionLimitEnabled(configuration,
-                JettyPluginConstants.isConnectionLimitEnabled(configuration));
-            JettyPluginConstants.setConnectionLimitCount(configuration,
-                JettyPluginConstants.getConnectionLimitCount(configuration));
-
-            JettyPluginConstants.setShowLauncherInfo(configuration,
-                JettyPluginConstants.isShowLauncherInfo(configuration));
-            JettyPluginConstants.setConsoleEnabled(configuration, JettyPluginConstants.isConsoleEnabled(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.error("Failed to set defaults in advanced configuration tab", e);
-        }
+        // intentionally left blank
     }
 
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)
@@ -365,7 +415,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         String jettyPath = pathText.getText().trim();
 
-        JettyPluginConstants.setPath(configuration, jettyPath);
+        JettyPluginConstants.setPathString(configuration, jettyPath);
 
         try
         {
@@ -385,11 +435,16 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setJndiSupport(configuration, jndiSupportButton.getSelection());
         JettyPluginConstants.setAjpSupport(configuration, ajpSupportButton.getSelection());
 
-        JettyPluginConstants.setConnectionLimitEnabled(configuration, connectionLimitEnabledButton.getSelection());
-        JettyPluginConstants.setConnectionLimitCount(configuration, connectionLimitCountSpinner.getSelection());
+        JettyPluginConstants.setThreadPoolLimitEnabled(configuration, threadPoolLimitEnabledButton.getSelection());
+        JettyPluginConstants.setThreadPoolLimitCount(configuration, threadPoolLimitCountSpinner.getSelection());
+        JettyPluginConstants.setAcceptorLimitEnabled(configuration, acceptorLimitEnabledButton.getSelection());
+        JettyPluginConstants.setAcceptorLimitCount(configuration, acceptorLimitCountSpinner.getSelection());
 
         JettyPluginConstants.setShowLauncherInfo(configuration, showLauncherInfoButton.getSelection());
         JettyPluginConstants.setConsoleEnabled(configuration, consoleEnabledButton.getSelection());
+
+        JettyPluginConstants.setCustomWebDefaultsEnabled(configuration, customWebDefaultsEnabledButton.getSelection());
+        JettyPluginConstants.setCustomWebDefaultsResource(configuration, customWebDefaultsResourceText.getText());
 
         try
         {
@@ -403,7 +458,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
 
         updateTable(configuration, false);
-        updateButtonState();
+        updateConfigButtonState();
     }
 
     @Override
@@ -418,7 +473,32 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         pathVariablesButton.setEnabled(!embedded);
         pathBrowseButton.setEnabled(!embedded);
 
-        connectionLimitCountSpinner.setEnabled(connectionLimitEnabledButton.getSelection());
+        boolean threadPoolLimitEnabled = threadPoolLimitEnabledButton.getSelection();
+
+        threadPoolLimitCountSpinner.setEnabled(threadPoolLimitEnabled);
+
+        boolean acceptorLimitEnabled = acceptorLimitEnabledButton.getSelection();
+
+        acceptorLimitCountSpinner.setEnabled(acceptorLimitEnabled);
+
+        if (acceptorLimitEnabled)
+        {
+            int minimum = Math.max(8, acceptorLimitCountSpinner.getSelection() * 2);
+
+            threadPoolLimitCountSpinner.setMinimum(minimum);
+
+            if (threadPoolLimitCountSpinner.getSelection() < minimum)
+            {
+                threadPoolLimitCountSpinner.setSelection(minimum);
+            }
+        }
+
+        boolean customWebDefaultsEnabled = customWebDefaultsEnabledButton.getSelection();
+
+        customWebDefaultsResourceText.setEnabled(customWebDefaultsEnabled);
+        customWebDefaultsVariablesButton.setEnabled(customWebDefaultsEnabled);
+        customWebDefaultsFileSystemButton.setEnabled(customWebDefaultsEnabled);
+        customWebDefaultsWorkspaceButton.setEnabled(customWebDefaultsEnabled);
 
         if (!embedded)
         {
@@ -447,6 +527,30 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             {
                 setErrorMessage("Failed to find and detect Jetty version at path \"" + jettyPath + "\"");
                 return false;
+            }
+        }
+
+        if (customWebDefaultsEnabled)
+        {
+            String customWebDefaultsPath =
+                JettyPluginUtils.resolveVariables(customWebDefaultsResourceText.getText()).trim();
+
+            if (customWebDefaultsPath.length() > 0)
+            {
+                File file =
+                    JettyPluginUtils.resolveFile(JettyPluginConstants.getProject(configuration), customWebDefaultsPath);
+
+                if ((file == null) || (!file.exists()))
+                {
+                    setErrorMessage(String.format("The custom web defaults XML %s does not exist.",
+                        customWebDefaultsPath));
+
+                    return false;
+                }
+            }
+            else
+            {
+                setErrorMessage(String.format("The custom web defaults XML is missing."));
             }
         }
 
@@ -493,103 +597,18 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         }
     }
 
-    protected void chooseJettyPathVariable()
-    {
-        StringVariableSelectionDialog dialog = new StringVariableSelectionDialog(getShell());
-
-        if (Window.OK == dialog.open())
-        {
-            Object[] results = dialog.getResult();
-
-            for (int i = results.length - 1; i >= 0; i -= 1)
-            {
-                String placeholder = "${" + ((IStringVariable) results[i]).getName() + "}";
-                int position = pathText.getCaretPosition();
-                String text = pathText.getText();
-
-                if (position <= 0)
-                {
-                    text = placeholder + text;
-                }
-                else if (position >= text.length())
-                {
-                    text = text + placeholder;
-                }
-                else
-                {
-                    text = text.substring(0, position) + placeholder + text.substring(position);
-                }
-
-                pathText.setText(text);
-            }
-        }
-    }
-
-    protected void chooseJettyPath()
-    {
-        String jettyPath = JettyPluginUtils.resolveVariables(pathText.getText());
-        DirectoryDialog dialog = new DirectoryDialog(getShell(), SWT.OPEN);
-
-        dialog.setText("Select Jetty Home Directory");
-        dialog
-            .setMessage("Choose the installation directory of your Jetty. Currenty, the versions 5 to 8 are supported.");
-        dialog.setFilterPath(jettyPath);
-
-        jettyPath = dialog.open();
-
-        if (jettyPath != null)
-        {
-            pathText.setText(jettyPath);
-        }
-    }
-
     protected String chooseConfig(String path)
     {
-        ElementTreeSelectionDialog dialog =
-            new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
-
-        dialog.setTitle("Resource Selection");
-        dialog.setMessage("Select a resource as Jetty Context file:");
-        dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
-
-        if (path != null)
-        {
-            dialog.setInitialSelection(path);
-        }
-
-        dialog.open();
-
-        Object[] results = dialog.getResult();
-
-        if ((results != null) && (results.length > 0) && (results[0] instanceof IFile))
-        {
-            IFile file = (IFile) results[0];
-            return file.getFullPath().toString();
-        }
-
-        return null;
+        return chooseWorkspaceFile(JettyPluginConstants.getProject(getCurrentLaunchConfiguration()), getShell(),
+            "Resource Selection", "Select a resource as Jetty Context file:", path);
     }
 
     protected String chooseConfigFromFileSystem(String path)
     {
-        FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
-
-        dialog.setText("Select Jetty Context File");
-
-        if (path != null)
-        {
-            File file = new File(path);
-
-            dialog.setFileName(file.getName());
-            dialog.setFilterPath(file.getParent());
-        }
-
-        dialog.setFilterExtensions(new String[]{"*.xml", "*.*"});
-
-        return dialog.open();
+        return chooseExternalFile(getShell(), path, "Select Jetty Context File", "*.xml", "*.*");
     }
 
-    public void updateButtonState()
+    public void updateConfigButtonState()
     {
         int index = configTable.getSelectionIndex();
         JettyLaunchConfigEntry entry = (index >= 0) ? configEntryList.get(index) : null;

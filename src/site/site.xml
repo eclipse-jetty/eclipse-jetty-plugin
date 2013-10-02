@@ -24,6 +24,7 @@
 			<meta name="og:url" content="http://eclipse-jetty.sourceforge.net/" />
 			<meta name="og:site_name" content="Eclipse Jetty Plugin" />
 			<link href="http://eclipse-jetty.sourceforge.net/" rel="canonical" />
+			<link rel="shortcut icon" type="image/x-icon" href="http://eclipse-jetty.sourceforge.net/favicon.ico" />			
 		</head>
 		
 		<links>

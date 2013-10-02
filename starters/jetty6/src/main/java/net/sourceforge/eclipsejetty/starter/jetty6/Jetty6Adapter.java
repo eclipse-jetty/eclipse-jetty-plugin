@@ -14,7 +14,6 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandler;
 import org.mortbay.jetty.handler.HandlerCollection;
-import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 public class Jetty6Adapter extends AbstractServerAdapter
@@ -44,6 +43,11 @@ public class Jetty6Adapter extends AbstractServerAdapter
         server.stop();
     }
 
+    public boolean isRunning()
+    {
+        return server.isRunning();
+    }
+
     public Collection<Integer> getPorts()
     {
         Collection<Integer> results = new LinkedHashSet<Integer>();
@@ -53,7 +57,7 @@ public class Jetty6Adapter extends AbstractServerAdapter
         {
             for (Connector connector : connectors)
             {
-                if (!(connector instanceof SslSocketConnector))
+                if (!connector.getClass().getSimpleName().toLowerCase().contains("ssl"))
                 {
                     results.add(connector.getPort());
                 }
@@ -72,7 +76,7 @@ public class Jetty6Adapter extends AbstractServerAdapter
         {
             for (Connector connector : connectors)
             {
-                if (connector instanceof SslSocketConnector)
+                if (connector.getClass().getSimpleName().toLowerCase().contains("ssl"))
                 {
                     results.add(connector.getPort());
                 }

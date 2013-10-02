@@ -45,10 +45,11 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
             builder.begin("New").attribute("class", "org.mortbay.thread.QueuedThreadPool");
             {
                 builder.element("Set", "name", "minThreads", 1);
-                
-                Integer connectionLimit = getConnectionLimit();
-                
-                if (connectionLimit != null) {
+
+                Integer connectionLimit = getThreadPoolLimit();
+
+                if (connectionLimit != null)
+                {
                     builder.element("Set", "name", "maxThreads", connectionLimit);
                 }
             }
@@ -131,7 +132,12 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
                     {
                         builder.element("Set", "name", "port", getPort());
                         builder.element("Set", "name", "maxIdleTime", 30000);
-                        builder.element("Set", "name", "Acceptors", 2);
+
+                        if (getAcceptorLimit() != null)
+                        {
+                            builder.element("Set", "name", "Acceptors", getAcceptorLimit());
+                        }
+
                         builder.element("Set", "name", "statsOn", false);
                     }
                     builder.end();
@@ -155,6 +161,12 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
                     {
                         builder.element("Set", "name", "Port", getSslPort());
                         builder.element("Set", "name", "maxIdleTime", 30000);
+                        
+                        if (getAcceptorLimit() != null)
+                        {
+                            builder.element("Set", "name", "Acceptors", getAcceptorLimit());
+                        }
+
                         builder.element("Set", "name", "handshakeTimeout", 2000);
                         builder.element("Set", "name", "keystore", getKeyStorePath());
                         builder.element("Set", "name", "password", getKeyStorePassword());
@@ -177,12 +189,18 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
+    protected String getDefaultWebContext()
+    {
+        return "net/sourceforge/eclipsejetty/starter/jetty6/webdefault.xml";
+    }
+
+    @Override
     protected void buildExtraOptions(DOMBuilder builder)
     {
         builder.element("Set", "name", "stopAtShutdown", true);
         builder.element("Set", "name", "sendServerVersion", true);
         builder.element("Set", "name", "sendDateHeader", true);
-        builder.element("Set", "name", "gracefulShutdown", 1000);
+        builder.element("Set", "name", "gracefulShutdown", 30000);
     }
 
 }

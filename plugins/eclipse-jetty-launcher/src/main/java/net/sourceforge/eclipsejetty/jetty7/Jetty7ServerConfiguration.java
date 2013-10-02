@@ -40,7 +40,7 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
             builder.begin("New").attribute("class", "org.eclipse.jetty.util.thread.QueuedThreadPool");
             {
                 builder.element("Set", "name", "minThreads", 1);
-                Integer connectionLimit = getConnectionLimit();
+                Integer connectionLimit = getThreadPoolLimit();
 
                 if (connectionLimit != null)
                 {
@@ -167,11 +167,18 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
                 builder.begin("Arg");
                 {
                     builder.begin("New").attribute("class", "org.eclipse.jetty.server.nio.SelectChannelConnector");
+                    //                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.bio.SocketConnector");
                     {
                         builder.element("Set", "name", "port", getPort());
                         builder.element("Set", "name", "maxIdleTime", 30000);
-                        builder.element("Set", "name", "Acceptors", 2);
+
+                        if (getAcceptorLimit() != null)
+                        {
+                            builder.element("Set", "name", "Acceptors", getAcceptorLimit());
+                        }
+
                         builder.element("Set", "name", "statsOn", false);
+
                     }
                     builder.end();
                 }
@@ -190,6 +197,7 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
             {
                 builder.begin("Arg");
                 {
+                    //                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.ssl.SslSocketConnector");
                     builder.begin("New").attribute("class", "org.eclipse.jetty.server.ssl.SslSelectChannelConnector");
                     {
                         builder.begin("Arg");
@@ -199,7 +207,12 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
                         builder.end();
                         builder.element("Set", "name", "Port", getSslPort());
                         builder.element("Set", "name", "maxIdleTime", 30000);
-                        builder.element("Set", "name", "Acceptors", 2);
+
+                        if (getAcceptorLimit() != null)
+                        {
+                            builder.element("Set", "name", "Acceptors", getAcceptorLimit());
+                        }
+
                         builder.element("Set", "name", "AcceptQueueSize", 100);
                     }
                     builder.end();
@@ -217,12 +230,18 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
+    protected String getDefaultWebContext()
+    {
+        return "net/sourceforge/eclipsejetty/starter/jetty7/webdefault.xml";
+    }
+
+    @Override
     protected void buildExtraOptions(DOMBuilder builder)
     {
         builder.element("Set", "name", "stopAtShutdown", true);
         builder.element("Set", "name", "sendServerVersion", true);
         builder.element("Set", "name", "sendDateHeader", true);
-        builder.element("Set", "name", "gracefulShutdown", 1000);
+        builder.element("Set", "name", "gracefulShutdown", 30000);
         builder.element("Set", "name", "dumpAfterStart", false);
         builder.element("Set", "name", "dumpBeforeStop", false);
     }

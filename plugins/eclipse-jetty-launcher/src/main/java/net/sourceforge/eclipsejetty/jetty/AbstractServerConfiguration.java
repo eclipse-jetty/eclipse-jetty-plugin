@@ -11,6 +11,7 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,14 +27,16 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     private boolean jmx = false;
     private Integer port;
     private Integer sslPort;
-    private Integer connectionLimit;
+    private Integer threadPoolLimit;
+    private Integer acceptorLimit;
 
     private String keyStorePath;
     private String keyStorePassword;
     private String keyManagerPassword;
 
-    private String defaultWar;
+    private File defaultWar;
     private String defaultContextPath;
+    private File customWebDefaultsFile;
 
     public AbstractServerConfiguration()
     {
@@ -82,14 +85,24 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         this.sslPort = sslPort;
     }
 
-    public Integer getConnectionLimit()
+    public Integer getThreadPoolLimit()
     {
-        return connectionLimit;
+        return threadPoolLimit;
     }
 
-    public void setConnectionLimit(Integer connectionLimit)
+    public void setThreadPoolLimit(Integer threadPoolLimit)
     {
-        this.connectionLimit = connectionLimit;
+        this.threadPoolLimit = threadPoolLimit;
+    }
+
+    public Integer getAcceptorLimit()
+    {
+        return acceptorLimit;
+    }
+
+    public void setAcceptorLimit(Integer acceptorLimit)
+    {
+        this.acceptorLimit = acceptorLimit;
     }
 
     public String getKeyStorePath()
@@ -122,12 +135,12 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         this.keyManagerPassword = keyManagerPassword;
     }
 
-    public String getDefaultWar()
+    public File getDefaultWar()
     {
         return defaultWar;
     }
 
-    public void setDefaultWar(String defaultWar)
+    public void setDefaultWar(File defaultWar)
     {
         this.defaultWar = defaultWar;
     }
@@ -140,6 +153,16 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     public void setDefaultContextPath(String defaultContextPath)
     {
         this.defaultContextPath = defaultContextPath;
+    }
+
+    public File getCustomWebDefaultsFile()
+    {
+        return customWebDefaultsFile;
+    }
+
+    public void setCustomWebDefaultsFile(File customWebDefaultsFile)
+    {
+        this.customWebDefaultsFile = customWebDefaultsFile;
     }
 
     public Collection<String> getDefaultClasspath()
@@ -223,6 +246,15 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
             {
                 builder.element("Arg", "type", "String", getDefaultWar());
                 builder.element("Arg", "type", "String", getDefaultContextPath());
+
+                if (getCustomWebDefaultsFile() != null)
+                {
+                    builder.element("Set", "name", "defaultsDescriptor", getCustomWebDefaultsFile().getAbsolutePath());
+                }
+                else
+                {
+                    builder.element("Set", "name", "defaultsDescriptor", getDefaultWebContext());
+                }
                 buildJNDI(builder);
                 buildDefaultHandlerSetters(builder);
             }
@@ -232,6 +264,8 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     protected abstract String getDefaultHandlerClass();
+
+    protected abstract String getDefaultWebContext();
 
     protected void buildDefaultHandlerSetters(DOMBuilder builder)
     {

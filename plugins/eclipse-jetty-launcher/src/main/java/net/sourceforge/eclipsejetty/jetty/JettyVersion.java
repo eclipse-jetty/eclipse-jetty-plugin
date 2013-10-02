@@ -13,14 +13,19 @@ package net.sourceforge.eclipsejetty.jetty;
 
 import net.sourceforge.eclipsejetty.jetty.embedded.JettyEmbeddedLibStrategy;
 import net.sourceforge.eclipsejetty.jetty.embedded.JettyEmbeddedServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty.embedded.JettyEmbeddedWebDefaults;
 import net.sourceforge.eclipsejetty.jetty6.Jetty6LibStrategy;
 import net.sourceforge.eclipsejetty.jetty6.Jetty6ServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty6.Jetty6WebDefaults;
 import net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy;
 import net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty7.Jetty7WebDefaults;
 import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
 import net.sourceforge.eclipsejetty.jetty8.Jetty8ServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty8.Jetty8WebDefaults;
 import net.sourceforge.eclipsejetty.jetty9.Jetty9LibStrategy;
 import net.sourceforge.eclipsejetty.jetty9.Jetty9ServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty9.Jetty9WebDefaults;
 
 /**
  * Describes the version of the Jetty
@@ -32,32 +37,35 @@ public enum JettyVersion
 
     JETTY_EMBEDDED("net.sourceforge.eclipsejetty.starter.embedded.JettyEmbeddedLauncherMain",
         "lib/eclipse-jetty-starters-embedded.jar", JettyEmbeddedServerConfiguration.class,
-        new JettyEmbeddedLibStrategy()),
+        new JettyEmbeddedLibStrategy(), JettyEmbeddedWebDefaults.class),
 
     JETTY_6("net.sourceforge.eclipsejetty.starter.jetty6.Jetty6LauncherMain", "lib/eclipse-jetty-starters-jetty6.jar",
-        Jetty6ServerConfiguration.class, new Jetty6LibStrategy()),
+        Jetty6ServerConfiguration.class, new Jetty6LibStrategy(), Jetty6WebDefaults.class),
 
     JETTY_7("net.sourceforge.eclipsejetty.starter.jetty7.Jetty7LauncherMain", "lib/eclipse-jetty-starters-jetty7.jar",
-        Jetty7ServerConfiguration.class, new Jetty7LibStrategy()),
+        Jetty7ServerConfiguration.class, new Jetty7LibStrategy(), Jetty7WebDefaults.class),
 
     JETTY_8("net.sourceforge.eclipsejetty.starter.jetty8.Jetty8LauncherMain", "lib/eclipse-jetty-starters-jetty8.jar",
-        Jetty8ServerConfiguration.class, new Jetty8LibStrategy()),
+        Jetty8ServerConfiguration.class, new Jetty8LibStrategy(), Jetty8WebDefaults.class),
 
     JETTY_9("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-jetty9.jar",
-        Jetty9ServerConfiguration.class, new Jetty9LibStrategy());
+        Jetty9ServerConfiguration.class, new Jetty9LibStrategy(), Jetty9WebDefaults.class);
 
     private final String mainClass;
     private final String jar;
     private final Class<? extends AbstractServerConfiguration> serverConfigurationClass;
     private final IJettyLibStrategy libStrategy;
+    private final Class<? extends AbstractWebDefaults> webDefaultsClass;
 
     private JettyVersion(String mainClass, String jar,
-        Class<? extends AbstractServerConfiguration> serverConfigurationClass, IJettyLibStrategy libStrategy)
+        Class<? extends AbstractServerConfiguration> serverConfigurationClass, IJettyLibStrategy libStrategy,
+        Class<? extends AbstractWebDefaults> webDefaultsClass)
     {
         this.mainClass = mainClass;
         this.jar = jar;
         this.serverConfigurationClass = serverConfigurationClass;
         this.libStrategy = libStrategy;
+        this.webDefaultsClass = webDefaultsClass;
     }
 
     public String getMainClass()
@@ -89,6 +97,22 @@ public enum JettyVersion
     public IJettyLibStrategy getLibStrategy()
     {
         return libStrategy;
+    }
+
+    public AbstractWebDefaults createWebDefaults()
+    {
+        try
+        {
+            return webDefaultsClass.newInstance();
+        }
+        catch (InstantiationException e)
+        {
+            throw new RuntimeException("Failed to instantiate web defaults: " + webDefaultsClass, e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException("Failed to access web defaults: " + webDefaultsClass, e);
+        }
     }
 
 }

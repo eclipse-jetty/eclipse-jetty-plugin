@@ -12,7 +12,6 @@
 package net.sourceforge.eclipsejetty;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.m2e.core.MavenPlugin;
@@ -44,19 +43,14 @@ public class JettyPluginM2EUtils
 
     public static IMavenProjectFacade getMavenProjectFacade(ILaunchConfiguration configuration) throws CoreException
     {
-        String projectName = JettyPluginConstants.getProject(configuration);
+        IProject project = JettyPluginConstants.getProject(configuration);
 
-        if ((projectName != null) && (projectName.length() > 0))
+        if (project == null)
         {
-            IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-
-            if (project != null)
-            {
-                return MavenPlugin.getMavenProjectRegistry().getProject(project);
-            }
+            return null;
         }
 
-        return null;
+        return MavenPlugin.getMavenProjectRegistry().getProject(project);
     }
 
     public static String toPortableString(String groupId, String artifactId, String version, String classifier)

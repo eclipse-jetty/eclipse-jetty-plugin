@@ -77,7 +77,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         tabComposite = new Composite(parent, SWT.NONE);
         tabComposite.setLayout(new GridLayout(1, false));
 
-        Composite mavenGroup = createComposite(tabComposite, SWT.NONE, 3, -1, false, 1, 1);
+        Composite mavenGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 1, 1);
         createLabel(mavenGroup, "Include Maven Dependencies:", 224, 1, 1);
         mavenIncludeCompile = createButton(mavenGroup, SWT.CHECK, "Compile Scope", 224, 1, 1, modifyDialogListener);
         mavenIncludeProvided = createButton(mavenGroup, SWT.CHECK, "Provided Scope", -1, 1, 1, modifyDialogListener);
@@ -89,7 +89,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         mavenIncludeTest = createButton(mavenGroup, SWT.CHECK, "Test Scope", 224, 1, 1, modifyDialogListener);
         mavenIncludeImport = createButton(mavenGroup, SWT.CHECK, "Import Scope", -1, 1, 1, modifyDialogListener);
 
-        Composite otherGroup = createComposite(tabComposite, SWT.NONE, 3, -1, false, 1, 1);
+        Composite otherGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 1, 1);
 
         createLabel(otherGroup, "Include Other Dependencies:", 224, 1, 1);
         mavenIncludeNone = createButton(otherGroup, SWT.CHECK, "Without Scope", 224, 2, 1, modifyDialogListener);
@@ -155,46 +155,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     public void setDefaults(final ILaunchConfigurationWorkingCopy configuration)
     {
-        try
-        {
-            JettyPluginConstants.setScopeCompileExcluded(configuration,
-                JettyPluginConstants.isScopeCompileExcluded(configuration));
-            JettyPluginConstants.setScopeProvidedExcluded(configuration,
-                JettyPluginConstants.isScopeProvidedExcluded(configuration));
-            JettyPluginConstants.setScopeRuntimeExcluded(configuration,
-                JettyPluginConstants.isScopeRuntimeExcluded(configuration));
-            JettyPluginConstants.setScopeSystemExcluded(configuration,
-                JettyPluginConstants.isScopeSystemExcluded(configuration));
-            JettyPluginConstants.setScopeTestExcluded(configuration,
-                JettyPluginConstants.isScopeTestExcluded(configuration));
-            JettyPluginConstants.setScopeImportExcluded(configuration,
-                JettyPluginConstants.isScopeImportExcluded(configuration));
-            JettyPluginConstants.setScopeNoneExcluded(configuration,
-                JettyPluginConstants.isScopeNoneExcluded(configuration));
-            JettyPluginConstants.setShowLauncherInfo(configuration,
-                JettyPluginConstants.isShowLauncherInfo(configuration));
-
-            JettyPluginConstants.setExcludedGenericIds(configuration,
-                JettyPluginConstants.getExcludedGenericIds(configuration));
-            JettyPluginConstants.setIncludedGenericIds(configuration,
-                JettyPluginConstants.getIncludedGenericIds(configuration));
-            JettyPluginConstants.setGlobalGenericIds(configuration,
-                JettyPluginConstants.getGlobalGenericIds(configuration));
-
-            deprecatedSetDefaults(configuration);
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.error("Failed to set defaults in dependency tab", e);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    private void deprecatedSetDefaults(final ILaunchConfigurationWorkingCopy configuration) throws CoreException
-    {
-        JettyPluginConstants.setExcludedLibs(configuration, JettyPluginConstants.getExcludedLibs(configuration));
-        JettyPluginConstants.setIncludedLibs(configuration, JettyPluginConstants.getIncludedLibs(configuration));
-        JettyPluginConstants.setGlobalLibs(configuration, JettyPluginConstants.getGlobalLibs(configuration));
+        // intentionally left blank
     }
 
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)

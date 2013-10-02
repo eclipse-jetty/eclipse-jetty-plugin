@@ -62,7 +62,6 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 /**
@@ -115,9 +114,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             }
         });
 
-        Composite applicationGroup = createComposite(tabComposite, SWT.NONE, 4, -1, false, 2, 1);
+        Composite applicationGroup = createTopComposite(tabComposite, SWT.NONE, 4, -1, false, 2, 1);
 
-        createLabel(applicationGroup, "WebApp Directory:", 128, 1, 1);
+        createLabel(applicationGroup, "WebApp Folder:", 128, 1, 1);
         webAppText = createText(applicationGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
         webAppScanButton = createButton(applicationGroup, SWT.NONE, "Scan...", 128, 1, 1, new SelectionAdapter()
         {
@@ -136,7 +135,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             }
         });
 
-        Composite serverGroup = createComposite(tabComposite, SWT.NONE, 7, -1, false, 2, 1);
+        Composite serverGroup = createTopComposite(tabComposite, SWT.NONE, 7, -1, false, 2, 1);
 
         createLabel(serverGroup, "Context Path:", 128, 1, 1);
         contextText = createText(serverGroup, SWT.BORDER, -1, -1, 6, 1, modifyDialogListener);
@@ -197,8 +196,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         try
         {
-            projectText.setText(JettyPluginConstants.getProject(configuration));
-            webAppText.setText(JettyPluginConstants.getWebAppDir(configuration));
+            projectText.setText(JettyPluginConstants.getProjectName(configuration));
+            webAppText.setText(JettyPluginConstants.getWebAppString(configuration));
             contextText.setText(JettyPluginConstants.getContext(configuration));
             portSpinner.setSelection(JettyPluginConstants.getPort(configuration));
             httpsPortSpinner.setSelection(JettyPluginConstants.getHttpsPort(configuration));
@@ -248,39 +247,34 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         launchConfigName = getLaunchConfigurationDialog().generateName(launchConfigName);
         configuration.rename(launchConfigName); // and rename the config
 
-        try
+        String webAppDir = "src/main/webapp";
+
+        if ((projectName != null) && (projectName.length() > 0))
         {
-            String webAppDir = "src/main/webapp";
-            
-            if ((projectName != null) && (projectName.length() > 0)) {
-                IResource resource = findWebappDir(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName));
-    
-                if (resource != null)
+            IProject project = JettyPluginUtils.getProject(projectName);
+
+            if (project != null)
+            {
+                IPath path = findWebappDir(project);
+
+                if (path != null)
                 {
-                    webAppDir = getWebappText(resource);
+                    webAppDir = JettyPluginUtils.toRelativePath(project, path.toString());
                 }
             }
+        }
 
-            JettyPluginConstants.setWebAppDir(configuration, webAppDir);
-            JettyPluginConstants.setContext(configuration, JettyPluginConstants.getContext(configuration));
-            JettyPluginConstants.setPort(configuration, JettyPluginConstants.getPort(configuration));
-            JettyPluginConstants.setConfigs(configuration, JettyPluginConstants.getConfigs(configuration));
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.error("Failed to set defaults in configuration tab", e);
-        }
+        JettyPluginConstants.setWebAppString(configuration, webAppDir);
     }
 
     public void performApply(ILaunchConfigurationWorkingCopy configuration)
     {
-        JettyPluginConstants.setProject(configuration, projectText.getText().trim());
+        JettyPluginConstants.setProjectName(configuration, projectText.getText().trim());
         JettyPluginConstants.setContext(configuration, contextText.getText().trim());
-        JettyPluginConstants.setWebAppDir(configuration, webAppText.getText().trim());
+        JettyPluginConstants.setWebAppString(configuration, webAppText.getText().trim());
         JettyPluginConstants.setPort(configuration, portSpinner.getSelection());
         JettyPluginConstants.setHttpsPort(configuration, httpsPortSpinner.getSelection());
         JettyPluginConstants.setHttpsEnabled(configuration, httpsEnabledButton.getSelection());
-
         JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
     }
 
@@ -293,11 +287,16 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         httpsPortSpinner.setEnabled(httpsEnabledButton.getSelection());
 
         String projectName = projectText.getText().trim();
-        IProject project = null;
+        IProject project = JettyPluginUtils.getProject(projectName);
+        
+        webAppScanButton.setEnabled(project != null);
+        webAppBrowseButton.setEnabled(project != null);
+        
         if (projectName.length() > 0)
         {
             IWorkspace workspace = ResourcesPlugin.getWorkspace();
             IStatus status = workspace.validateName(projectName, IResource.PROJECT);
+            
             if (status.isOK())
             {
                 project = workspace.getRoot().getProject(projectName);
@@ -370,8 +369,10 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     {
         ILabelProvider labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
         ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), labelProvider);
+
         dialog.setTitle("Project Selection");
         dialog.setMessage("Select a project to constrain your search.");
+
         try
         {
             dialog.setElements(JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()).getJavaProjects());
@@ -383,15 +384,18 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         IJavaProject javaProject = null;
         String projectName = projectText.getText().trim();
+
         if (projectName.length() > 0)
         {
             IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
             javaProject = JavaCore.create(workspaceRoot).getJavaProject(projectName);
         }
+
         if (javaProject != null)
         {
             dialog.setInitialSelections(new Object[]{javaProject});
         }
+
         if (dialog.open() == Window.OK)
         {
             IJavaProject selectedProject = (IJavaProject) dialog.getFirstResult();
@@ -402,90 +406,65 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
     protected void scanWebappDir()
     {
-        IResource resource = findWebappDir(ResourcesPlugin.getWorkspace().getRoot().getProject(projectText.getText()));
+        IProject project = JettyPluginUtils.getProject(projectText.getText());
+        IPath path = findWebappDir(project);
 
-        if (resource == null)
+        if (path == null)
         {
             Display.getCurrent().syncExec(new Runnable()
             {
                 public void run()
                 {
                     MessageDialog.openError(Display.getCurrent().getActiveShell(), "WebApp Directory not found",
-                        "Could not to find the folder \"WEB-INF\" in project " + projectText.getText()
+                        "Could not to find the file \"WEB-INF/web.xml\" in project " + projectText.getText()
                             + ".\n\nPlease locate the WebApp Directory manually.");
                 }
             });
 
+            chooseWebappDir();
+
             return;
         }
 
-        String containerName = getWebappText(resource);
+        String containerName = JettyPluginUtils.toRelativePath(project, path.toString());
 
         webAppText.setText(containerName);
     }
 
-    protected String getWebappText(IResource resource)
+    protected IPath findWebappDir(IProject project)
     {
-        IPath path = resource.getFullPath().removeLastSegments(2);
-
-        path = path.removeFirstSegments(1);
-
-        String containerName = path.makeRelative().toString();
-
-        return containerName;
-    }
-
-    protected IResource findWebappDir(IProject project)
-    {
-        IResource resource = null;
+        IPath path = null;
 
         try
         {
-            resource = JettyPluginUtils.findResource(project, "WEB-INF", "web.xml");
+            IResource resource = JettyPluginUtils.findResource(project, "WEB-INF", "web.xml");
+
+            if (resource != null)
+            {
+                path = resource.getFullPath().removeLastSegments(2);
+            }
         }
         catch (CoreException e)
         {
             JettyPlugin.warning("Failed to scan project", e);
         }
 
-        return resource;
+        return path;
     }
 
     protected void chooseWebappDir()
     {
-        IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectText.getText());
-        ContainerSelectionDialog dialog =
-            new ContainerSelectionDialog(getShell(), project, false,
-                "Select a directory to act as Web Application Root:");
+        String path =
+            chooseWorkspaceDirectory(
+                getShell(),
+                JettyPluginUtils.getProject(projectText.getText()),
+                "WebApp Folder",
+                "Select your web application root folder. That't the one,\nthat contains the WEB-INF directory with the web.xml.",
+                webAppText.getText());
 
-        dialog.setTitle("Folder Selection");
-
-        if (project != null)
+        if (path != null)
         {
-            IPath path = project.getFullPath();
-            dialog.setInitialSelections(new Object[]{path});
-        }
-
-        dialog.showClosedProjects(false);
-        dialog.open();
-
-        Object[] results = dialog.getResult();
-
-        if ((results != null) && (results.length > 0) && (results[0] instanceof IPath))
-        {
-            IPath path = (IPath) results[0];
-
-            String projectSegment = path.segment(0);
-
-            if (!projectSegment.equalsIgnoreCase(projectText.getText()))
-            {
-                projectText.setText(projectSegment);
-            }
-
-            path = path.removeFirstSegments(1);
-
-            String containerName = path.makeRelative().toString();
-            webAppText.setText(containerName);
+            webAppText.setText(path);
         }
     }
 

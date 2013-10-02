@@ -1,5 +1,17 @@
 package net.sourceforge.eclipsejetty.launch;
 
+import java.io.File;
+
+import net.sourceforge.eclipsejetty.JettyPluginUtils;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.variables.IStringVariable;
+import org.eclipse.debug.ui.StringVariableSelectionDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -12,11 +24,18 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ContainerSelectionDialog;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.model.BaseWorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 public class JettyLaunchUI
 {
@@ -56,7 +75,7 @@ public class JettyLaunchUI
         }
 
         final Font italicFont = new Font(composite.getDisplay(), fontData);
-        
+
         label.setFont(italicFont);
 
         label.addDisposeListener(new DisposeListener()
@@ -183,12 +202,34 @@ public class JettyLaunchUI
         return spinner;
     }
 
+    protected static Composite createTopComposite(final Composite composite, int style, int columns,
+        final int widthHint, boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
+    {
+        GridLayout layout = new GridLayout(columns, false);
+
+        layout.marginHeight = 8;
+        layout.marginWidth = 8;
+
+        return createComposite(composite, style, widthHint, grabVerticalSpace, horizontalSpan, verticalSpan, layout);
+    }
+
     protected static Composite createComposite(final Composite composite, int style, int columns, final int widthHint,
         boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
     {
+        GridLayout layout = new GridLayout(columns, false);
+
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+
+        return createComposite(composite, style, widthHint, grabVerticalSpace, horizontalSpan, verticalSpan, layout);
+    }
+
+    private static Composite createComposite(final Composite composite, int style, final int widthHint,
+        boolean grabVerticalSpace, int horizontalSpan, int verticalSpan, GridLayout layout)
+    {
         Composite result = new Composite(composite, style);
 
-        result.setLayout(new GridLayout(columns, false));
+        result.setLayout(layout);
 
         GridData gridData =
             new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
@@ -234,6 +275,132 @@ public class JettyLaunchUI
         }
 
         return table;
+    }
+
+    protected static String chooseWorkspaceFile(IProject project, Shell shell, String title, String message, String path)
+    {
+        path = JettyPluginUtils.resolveVariables(path);
+
+        ElementTreeSelectionDialog dialog =
+            new ElementTreeSelectionDialog(shell, new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
+
+        dialog.setTitle(title);
+        dialog.setMessage(message);
+        dialog.setInput(ResourcesPlugin.getWorkspace().getRoot());
+
+        if ((path != null) && (path.length() > 0))
+        {
+            dialog.setInitialSelection(path);
+        }
+
+        dialog.setAllowMultiple(false);
+
+        dialog.open();
+
+        Object[] results = dialog.getResult();
+
+        if ((results != null) && (results.length > 0) && (results[0] instanceof IFile))
+        {
+            IFile file = (IFile) results[0];
+
+            return JettyPluginUtils.toRelativePath(project, file.getFullPath().toString());
+        }
+
+        return null;
+    }
+
+    public static String chooseWorkspaceDirectory(Shell shell, IProject project, String title, String message, String path)
+    {
+        path = JettyPluginUtils.resolveVariables(path);
+
+        ContainerSelectionDialog dialog = new ContainerSelectionDialog(shell, project, false, message);
+
+        dialog.setTitle(title);
+
+        if (project != null)
+        {
+            dialog.setInitialSelections(new Object[]{path});
+        }
+
+        dialog.showClosedProjects(false);
+        dialog.open();
+
+        Object[] results = dialog.getResult();
+
+        if ((results != null) && (results.length > 0) && (results[0] instanceof IPath))
+        {
+            IPath folder = (IPath) results[0];
+
+            return JettyPluginUtils.toRelativePath(project, folder.toString());
+        }
+
+        return null;
+    }
+
+    protected static String chooseExternalDirectory(Shell shell, String text, String message, String path)
+    {
+        path = JettyPluginUtils.resolveVariables(path);
+
+        DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
+
+        dialog.setText(text);
+        dialog.setMessage(message);
+        dialog.setFilterPath(path);
+
+        return dialog.open();
+    }
+
+    protected static String chooseExternalFile(Shell shell, String path, String text, String... filter)
+    {
+        path = JettyPluginUtils.resolveVariables(path);
+
+        FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+
+        dialog.setText(text);
+
+        if (path != null)
+        {
+            File file = new File(path);
+
+            dialog.setFileName(file.getName());
+            dialog.setFilterPath(file.getParent());
+        }
+
+        dialog.setFilterExtensions(filter);
+
+        return dialog.open();
+    }
+
+    protected static void chooseVariable(Shell parent, Text textComponent)
+    {
+        StringVariableSelectionDialog dialog = new StringVariableSelectionDialog(parent);
+
+        if (Window.OK == dialog.open())
+        {
+            Object[] results = dialog.getResult();
+
+            for (int i = results.length - 1; i >= 0; i -= 1)
+            {
+                String placeholder = "${" + ((IStringVariable) results[i]).getName() + "}";
+                int position = textComponent.getCaretPosition();
+                String text = textComponent.getText();
+
+                if (position <= 0)
+                {
+                    text = placeholder + text;
+                }
+                else if (position >= text.length())
+                {
+                    text = text + placeholder;
+                }
+                else
+                {
+                    text = text.substring(0, position) + placeholder + text.substring(position);
+                }
+
+                textComponent.setText(text);
+            }
+        }
     }
 
 }

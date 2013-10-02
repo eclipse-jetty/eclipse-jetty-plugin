@@ -34,4 +34,11 @@ public class Jetty8ServerConfiguration extends Jetty7ServerConfiguration
             "org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
     }
 
+    @Override
+    protected String getDefaultWebContext()
+    {
+        return "net/sourceforge/eclipsejetty/starter/jetty8/webdefault.xml";
+    }
+
+
 }

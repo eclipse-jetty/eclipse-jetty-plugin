@@ -31,6 +31,7 @@ import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty.AbstractWebDefaults;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 import net.sourceforge.eclipsejetty.util.Dependency;
@@ -495,7 +496,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             }
         }
 
-        final String jettyPath = JettyPluginUtils.resolveVariables(JettyPluginConstants.getPath(configuration));
+        final File jettyPath = JettyPluginConstants.getPath(configuration);
         final JettyVersion jettyVersion = JettyPluginConstants.getVersion(configuration);
         boolean jspSupport = JettyPluginConstants.isJspSupport(configuration);
         boolean jmxSupport = JettyPluginConstants.isJmxSupport(configuration);
@@ -524,7 +525,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                 FileLocator.find(JettyPlugin.getDefault().getBundle(), Path.fromOSString(jettyVersion.getJar()), null))
                 .getFile())));
 
-            for (final File jettyLib : jettyVersion.getLibStrategy().find(new File(jettyPath), jspSupport, jmxSupport,
+            for (final File jettyLib : jettyVersion.getLibStrategy().find(jettyPath, jspSupport, jmxSupport,
                 jndiSupport, ajpSupport))
             {
                 entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(jettyLib.getCanonicalPath())));
@@ -656,7 +657,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         AbstractServerConfiguration serverConfiguration = version.createServerConfiguration();
 
         serverConfiguration.setDefaultContextPath(JettyPluginConstants.getContext(configuration));
-        serverConfiguration.setDefaultWar(JettyPluginConstants.getWebAppDir(configuration));
+        serverConfiguration.setDefaultWar(JettyPluginConstants.getWebAppPath(configuration));
         serverConfiguration.setPort(Integer.valueOf(JettyPluginConstants.getPort(configuration)));
 
         if (JettyPluginConstants.isHttpsEnabled(configuration))
@@ -678,9 +679,42 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         serverConfiguration.setJndi(JettyPluginConstants.isJndiSupport(configuration));
         serverConfiguration.setJmx(JettyPluginConstants.isJmxSupport(configuration));
 
-        if (JettyPluginConstants.isConnectionLimitEnabled(configuration))
+        if (JettyPluginConstants.isThreadPoolLimitEnabled(configuration))
         {
-            serverConfiguration.setConnectionLimit(JettyPluginConstants.getConnectionLimitCount(configuration));
+            serverConfiguration.setThreadPoolLimit(JettyPluginConstants.getThreadPoolLimitCount(configuration));
+        }
+
+        if (JettyPluginConstants.isAcceptorLimitEnabled(configuration))
+        {
+            serverConfiguration.setAcceptorLimit(JettyPluginConstants.getAcceptorLimitCount(configuration));
+        }
+
+        if (JettyPluginConstants.isCustomWebDefaultsEnabled(configuration))
+        {
+            serverConfiguration.setCustomWebDefaultsFile(JettyPluginConstants.getCustomWebDefaultFile(configuration));
+        }
+        else
+        {
+            AbstractWebDefaults webDefaults = version.createWebDefaults();
+            File file;
+
+            try
+            {
+                file =
+                    JettyPluginUtils.getNonRandomTempFile("eclipseJettyPlugin.webDefaults.", configuration.getName()
+                        .trim(), ".xml");
+
+                webDefaults.write(file, formatted);
+
+                file.deleteOnExit();
+            }
+            catch (IOException e)
+            {
+                throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
+                    "Failed to store tmp file with Jetty web defaults"));
+            }
+
+            serverConfiguration.setCustomWebDefaultsFile(file);
         }
 
         serverConfiguration.addDefaultClasspath(classpath);
@@ -689,7 +723,9 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         try
         {
-            file = JettyPluginUtils.getNonRandomTempFile("eclipseJettyPlugin.", configuration.getName().trim(), ".xml");
+            file =
+                JettyPluginUtils.getNonRandomTempFile("eclipseJettyPlugin.config.", configuration.getName().trim(),
+                    ".xml");
 
             serverConfiguration.write(file, formatted);
 

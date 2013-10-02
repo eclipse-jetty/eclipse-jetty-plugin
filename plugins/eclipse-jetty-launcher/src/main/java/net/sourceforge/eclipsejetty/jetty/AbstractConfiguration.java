@@ -11,61 +11,26 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Collection;
 
 import net.sourceforge.eclipsejetty.util.DOMBuilder;
 
-public abstract class AbstractConfiguration
+public abstract class AbstractConfiguration extends AbstractBuilder
 {
-
-    protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     public AbstractConfiguration()
     {
         super();
     }
 
-    public DOMBuilder build(boolean warning)
+    @Override
+    protected void buildBody(DOMBuilder builder)
     {
-        DOMBuilder builder = new DOMBuilder();
-
-        if (warning)
-        {
-            StringBuilder comment = new StringBuilder();
-
-            comment.append(LINE_SEPARATOR);
-            comment.append("This is a temporary file.");
-            comment.append(LINE_SEPARATOR);
-            comment.append("It was created automatically by the Eclipse Jetty Plugin.");
-            comment.append(LINE_SEPARATOR);
-            comment.append("There is no need, nor sense to edit this file!");
-            comment.append(LINE_SEPARATOR);
-
-            builder.comment(comment);
-        }
-
         builder.begin("Configure").attribute("id", getIdToConfigure()).attribute("class", getClassToConfigure());
-        buildContent(builder);
+        {
+            buildContent(builder);
+        }
         builder.end();
-
-        return builder;
-    }
-
-    public void write(File file, boolean formatted) throws IOException
-    {
-        FileOutputStream out = new FileOutputStream(file);
-
-        try
-        {
-            build(formatted).write(out, formatted);
-        }
-        finally
-        {
-            out.close();
-        }
     }
 
     protected abstract String getDocType();

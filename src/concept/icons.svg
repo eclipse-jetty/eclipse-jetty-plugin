@@ -744,9 +744,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8.0000004"
-     inkscape:cx="391.44128"
-     inkscape:cy="730.12581"
+     inkscape:zoom="5.6568545"
+     inkscape:cx="363.79694"
+     inkscape:cy="786.96657"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -1061,6 +1061,156 @@
          id="image3985"
          x="400"
          y="296.36218" />
+    </g>
+    <g
+       inkscape:export-ydpi="45"
+       inkscape:export-xdpi="45"
+       inkscape:export-filename="C:\home\dev\java\w.plugins\eclipse-jetty-code\src\concept\favicon_16.png"
+       id="g3145"
+       transform="translate(0,-64)">
+      <path
+         id="path3147"
+         d="m 210,300.375 c -3.324,0 -6,2.676 -6,6 l 0,20 c 0,3.324 2.676,6 6,6 l 20,0 c 3.324,0 6,-2.676 6,-6 l 0,-20 c 0,-3.324 -2.676,-6 -6,-6 l -20,0 z m 6.6875,3.5 8.21875,0 -1.15625,4.4375 -8.1875,0 1.125,-4.4375 z m -1.34375,5.34375 8.1875,0 -4.09375,16.0625 c -0.91089,3.12507 -1.82984,3.59375 -4.5625,3.59375 l -4.5625,0 -1.8125,-0.0312 0.90625,-3.5625 0.90625,0 c 0.45544,-0.006 0.91955,0.005 1.375,-1.78125 l 3.65625,-14.28125 z m 10.25,0.21875 5.90625,0 -1.375,5.375 -5.90625,0 1.375,-5.375 z m -2.0625,8.71875 5.90625,0 -1.34375,5.34375 -5.9375,0 1.375,-5.34375 z"
+         style="color:#000000;fill:#ffcc00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4661);enable-background:accumulate"
+         clip-path="url(#clipPath4697)"
+         inkscape:connector-curvature="0"
+         transform="translate(60,-4.0128174)" />
+      <path
+         sodipodi:nodetypes="ccccccsccccsccccccccccccc"
+         inkscape:connector-curvature="0"
+         id="path3149"
+         d="m 276.69802,299.86218 -1.13862,4.46438 8.19803,0 1.1386,-4.46438 z m -1.36634,5.35725 -3.64357,14.28601 c -0.45545,1.78576 -0.91089,1.77431 -1.36633,1.78003 l -0.91089,0 -0.91089,3.5715 1.82178,0.005 4.55446,0 c 2.73266,0 3.64356,-0.44643 4.55445,-3.5715 l 4.09902,-16.07176 z m 10.24752,0.22323 -1.36632,5.35725 5.92079,0 1.36633,-5.35725 z m -2.04949,8.70553 -1.36634,5.35725 5.92079,0 1.36634,-5.35725 z"
+         style="fill:#ff0000;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <rect
+         style="opacity:0.5;color:#000000;fill:none;stroke:#000000;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect3151"
+         width="32"
+         height="32"
+         x="264"
+         y="296.36218"
+         rx="6"
+         ry="6"
+         clip-path="url(#clipPath4709)" />
+    </g>
+    <g
+       transform="translate(48,-64)"
+       id="g3153"
+       inkscape:export-filename="C:\home\dev\java\w.plugins\eclipse-jetty-code\src\concept\favicon_32.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <path
+         transform="translate(60,-4.0128174)"
+         inkscape:connector-curvature="0"
+         clip-path="url(#clipPath4697)"
+         style="color:#000000;fill:#ffcc00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4661);enable-background:accumulate"
+         d="m 210,300.375 c -3.324,0 -6,2.676 -6,6 l 0,20 c 0,3.324 2.676,6 6,6 l 20,0 c 3.324,0 6,-2.676 6,-6 l 0,-20 c 0,-3.324 -2.676,-6 -6,-6 l -20,0 z m 6.6875,3.5 8.21875,0 -1.15625,4.4375 -8.1875,0 1.125,-4.4375 z m -1.34375,5.34375 8.1875,0 -4.09375,16.0625 c -0.91089,3.12507 -1.82984,3.59375 -4.5625,3.59375 l -4.5625,0 -1.8125,-0.0312 0.90625,-3.5625 0.90625,0 c 0.45544,-0.006 0.91955,0.005 1.375,-1.78125 l 3.65625,-14.28125 z m 10.25,0.21875 5.90625,0 -1.375,5.375 -5.90625,0 1.375,-5.375 z m -2.0625,8.71875 5.90625,0 -1.34375,5.34375 -5.9375,0 1.375,-5.34375 z"
+         id="path3155" />
+      <path
+         style="fill:#ff0000;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 276.69802,299.86218 -1.13862,4.46438 8.19803,0 1.1386,-4.46438 z m -1.36634,5.35725 -3.64357,14.28601 c -0.45545,1.78576 -0.91089,1.77431 -1.36633,1.78003 l -0.91089,0 -0.91089,3.5715 1.82178,0.005 4.55446,0 c 2.73266,0 3.64356,-0.44643 4.55445,-3.5715 l 4.09902,-16.07176 z m 10.24752,0.22323 -1.36632,5.35725 5.92079,0 1.36633,-5.35725 z m -2.04949,8.70553 -1.36634,5.35725 5.92079,0 1.36634,-5.35725 z"
+         id="path3157"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccccsccccsccccccccccccc" />
+      <rect
+         clip-path="url(#clipPath4709)"
+         ry="6"
+         rx="6"
+         y="296.36218"
+         x="264"
+         height="32"
+         width="32"
+         id="rect3159"
+         style="opacity:0.5;color:#000000;fill:none;stroke:#000000;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+    </g>
+    <g
+       inkscape:export-ydpi="180"
+       inkscape:export-xdpi="180"
+       inkscape:export-filename="C:\home\dev\java\w.plugins\eclipse-jetty-code\src\concept\favicon_64.png"
+       id="g3161"
+       transform="translate(144,-64)">
+      <path
+         id="path3163"
+         d="m 210,300.375 c -3.324,0 -6,2.676 -6,6 l 0,20 c 0,3.324 2.676,6 6,6 l 20,0 c 3.324,0 6,-2.676 6,-6 l 0,-20 c 0,-3.324 -2.676,-6 -6,-6 l -20,0 z m 6.6875,3.5 8.21875,0 -1.15625,4.4375 -8.1875,0 1.125,-4.4375 z m -1.34375,5.34375 8.1875,0 -4.09375,16.0625 c -0.91089,3.12507 -1.82984,3.59375 -4.5625,3.59375 l -4.5625,0 -1.8125,-0.0312 0.90625,-3.5625 0.90625,0 c 0.45544,-0.006 0.91955,0.005 1.375,-1.78125 l 3.65625,-14.28125 z m 10.25,0.21875 5.90625,0 -1.375,5.375 -5.90625,0 1.375,-5.375 z m -2.0625,8.71875 5.90625,0 -1.34375,5.34375 -5.9375,0 1.375,-5.34375 z"
+         style="color:#000000;fill:#ffcc00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4661);enable-background:accumulate"
+         clip-path="url(#clipPath4697)"
+         inkscape:connector-curvature="0"
+         transform="translate(60,-4.0128174)" />
+      <path
+         sodipodi:nodetypes="ccccccsccccsccccccccccccc"
+         inkscape:connector-curvature="0"
+         id="path3165"
+         d="m 276.69802,299.86218 -1.13862,4.46438 8.19803,0 1.1386,-4.46438 z m -1.36634,5.35725 -3.64357,14.28601 c -0.45545,1.78576 -0.91089,1.77431 -1.36633,1.78003 l -0.91089,0 -0.91089,3.5715 1.82178,0.005 4.55446,0 c 2.73266,0 3.64356,-0.44643 4.55445,-3.5715 l 4.09902,-16.07176 z m 10.24752,0.22323 -1.36632,5.35725 5.92079,0 1.36633,-5.35725 z m -2.04949,8.70553 -1.36634,5.35725 5.92079,0 1.36634,-5.35725 z"
+         style="fill:#ff0000;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <rect
+         style="opacity:0.5;color:#000000;fill:none;stroke:#000000;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect3167"
+         width="32"
+         height="32"
+         x="264"
+         y="296.36218"
+         rx="6"
+         ry="6"
+         clip-path="url(#clipPath4709)" />
+    </g>
+    <g
+       transform="translate(192,-64)"
+       id="g3169"
+       inkscape:export-filename="C:\home\dev\java\w.plugins\eclipse-jetty-code\src\concept\favicon_128.png"
+       inkscape:export-xdpi="360"
+       inkscape:export-ydpi="360">
+      <path
+         transform="translate(60,-4.0128174)"
+         inkscape:connector-curvature="0"
+         clip-path="url(#clipPath4697)"
+         style="color:#000000;fill:#ffcc00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4661);enable-background:accumulate"
+         d="m 210,300.375 c -3.324,0 -6,2.676 -6,6 l 0,20 c 0,3.324 2.676,6 6,6 l 20,0 c 3.324,0 6,-2.676 6,-6 l 0,-20 c 0,-3.324 -2.676,-6 -6,-6 l -20,0 z m 6.6875,3.5 8.21875,0 -1.15625,4.4375 -8.1875,0 1.125,-4.4375 z m -1.34375,5.34375 8.1875,0 -4.09375,16.0625 c -0.91089,3.12507 -1.82984,3.59375 -4.5625,3.59375 l -4.5625,0 -1.8125,-0.0312 0.90625,-3.5625 0.90625,0 c 0.45544,-0.006 0.91955,0.005 1.375,-1.78125 l 3.65625,-14.28125 z m 10.25,0.21875 5.90625,0 -1.375,5.375 -5.90625,0 1.375,-5.375 z m -2.0625,8.71875 5.90625,0 -1.34375,5.34375 -5.9375,0 1.375,-5.34375 z"
+         id="path3171" />
+      <path
+         style="fill:#ff0000;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 276.69802,299.86218 -1.13862,4.46438 8.19803,0 1.1386,-4.46438 z m -1.36634,5.35725 -3.64357,14.28601 c -0.45545,1.78576 -0.91089,1.77431 -1.36633,1.78003 l -0.91089,0 -0.91089,3.5715 1.82178,0.005 4.55446,0 c 2.73266,0 3.64356,-0.44643 4.55445,-3.5715 l 4.09902,-16.07176 z m 10.24752,0.22323 -1.36632,5.35725 5.92079,0 1.36633,-5.35725 z m -2.04949,8.70553 -1.36634,5.35725 5.92079,0 1.36634,-5.35725 z"
+         id="path3173"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccccsccccsccccccccccccc" />
+      <rect
+         clip-path="url(#clipPath4709)"
+         ry="6"
+         rx="6"
+         y="296.36218"
+         x="264"
+         height="32"
+         width="32"
+         id="rect3175"
+         style="opacity:0.5;color:#000000;fill:none;stroke:#000000;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+    </g>
+    <g
+       inkscape:export-ydpi="135"
+       inkscape:export-xdpi="135"
+       inkscape:export-filename="C:\home\dev\java\w.plugins\eclipse-jetty-code\src\concept\favicon_48.png"
+       id="g3177"
+       transform="translate(96,-64)">
+      <path
+         id="path3179"
+         d="m 210,300.375 c -3.324,0 -6,2.676 -6,6 l 0,20 c 0,3.324 2.676,6 6,6 l 20,0 c 3.324,0 6,-2.676 6,-6 l 0,-20 c 0,-3.324 -2.676,-6 -6,-6 l -20,0 z m 6.6875,3.5 8.21875,0 -1.15625,4.4375 -8.1875,0 1.125,-4.4375 z m -1.34375,5.34375 8.1875,0 -4.09375,16.0625 c -0.91089,3.12507 -1.82984,3.59375 -4.5625,3.59375 l -4.5625,0 -1.8125,-0.0312 0.90625,-3.5625 0.90625,0 c 0.45544,-0.006 0.91955,0.005 1.375,-1.78125 l 3.65625,-14.28125 z m 10.25,0.21875 5.90625,0 -1.375,5.375 -5.90625,0 1.375,-5.375 z m -2.0625,8.71875 5.90625,0 -1.34375,5.34375 -5.9375,0 1.375,-5.34375 z"
+         style="color:#000000;fill:#ffcc00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter4661);enable-background:accumulate"
+         clip-path="url(#clipPath4697)"
+         inkscape:connector-curvature="0"
+         transform="translate(60,-4.0128174)" />
+      <path
+         sodipodi:nodetypes="ccccccsccccsccccccccccccc"
+         inkscape:connector-curvature="0"
+         id="path3181"
+         d="m 276.69802,299.86218 -1.13862,4.46438 8.19803,0 1.1386,-4.46438 z m -1.36634,5.35725 -3.64357,14.28601 c -0.45545,1.78576 -0.91089,1.77431 -1.36633,1.78003 l -0.91089,0 -0.91089,3.5715 1.82178,0.005 4.55446,0 c 2.73266,0 3.64356,-0.44643 4.55445,-3.5715 l 4.09902,-16.07176 z m 10.24752,0.22323 -1.36632,5.35725 5.92079,0 1.36633,-5.35725 z m -2.04949,8.70553 -1.36634,5.35725 5.92079,0 1.36634,-5.35725 z"
+         style="fill:#ff0000;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <rect
+         style="opacity:0.5;color:#000000;fill:none;stroke:#000000;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect3183"
+         width="32"
+         height="32"
+         x="264"
+         y="296.36218"
+         rx="6"
+         ry="6"
+         clip-path="url(#clipPath4709)" />
     </g>
   </g>
 </svg>

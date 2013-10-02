@@ -15,7 +15,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 public class Jetty7Adapter extends AbstractServerAdapter implements DumpableServerAdapter
@@ -45,6 +44,11 @@ public class Jetty7Adapter extends AbstractServerAdapter implements DumpableServ
         server.stop();
     }
 
+    public boolean isRunning()
+    {
+        return server.isRunning();
+    }
+
     public String dump()
     {
         return server.dump();
@@ -59,7 +63,7 @@ public class Jetty7Adapter extends AbstractServerAdapter implements DumpableServ
         {
             for (Connector connector : connectors)
             {
-                if (!(connector instanceof SslSelectChannelConnector))
+                if (!connector.getClass().getSimpleName().toLowerCase().contains("ssl"))
                 {
                     results.add(connector.getPort());
                 }
@@ -78,7 +82,7 @@ public class Jetty7Adapter extends AbstractServerAdapter implements DumpableServ
         {
             for (Connector connector : connectors)
             {
-                if (connector instanceof SslSelectChannelConnector)
+                if (connector.getClass().getSimpleName().toLowerCase().contains("ssl"))
                 {
                     results.add(connector.getPort());
                 }

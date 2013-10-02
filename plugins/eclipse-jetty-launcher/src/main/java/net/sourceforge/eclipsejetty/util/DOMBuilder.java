@@ -238,6 +238,20 @@ public class DOMBuilder
     }
 
     /**
+     * Adds an empty element with the specified name
+     * 
+     * @param name the name
+     * @return the DOM builder instance
+     */
+    public DOMBuilder element(String name)
+    {
+        begin(name);
+        end();
+
+        return this;
+    }
+
+    /**
      * Adds an element with the specified name that contains the specified text
      * 
      * @param name the name

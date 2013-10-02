@@ -21,8 +21,6 @@ import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -48,67 +46,25 @@ public class MavenDependencyInfoMap
         }
 
         IMavenProjectRegistry mavenProjectRegistry = MavenPlugin.getMavenProjectRegistry();
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        String projectName = JettyPluginConstants.getProject(configuration);
+        IProject project = JettyPluginConstants.getProject(configuration);
 
-        if ((projectName != null) && (projectName.length() > 0))
+        if (project != null)
         {
-            IProject project = workspace.getRoot().getProject(projectName);
+            IProject[] referencedProjects = project.getReferencedProjects();
 
-            if (project != null)
+            if (referencedProjects != null)
             {
-                IProject[] referencedProjects = project.getReferencedProjects();
-
-                if (referencedProjects != null)
+                for (IProject referencedProject : referencedProjects)
                 {
-                    for (IProject referencedProject : referencedProjects)
-                    {
-                        IMavenProjectFacade facade = mavenProjectRegistry.getProject(referencedProject);
+                    IMavenProjectFacade facade = mavenProjectRegistry.getProject(referencedProject);
 
-                        if (facade != null)
-                        {
-                            buildLocations(facade);
-                        }
+                    if (facade != null)
+                    {
+                        buildLocations(facade);
                     }
                 }
-
             }
         }
-
-        //        if (runtimeClasspathEntries != null)
-        //        {
-        //            for (IRuntimeClasspathEntry runtimeClasspathEntry : runtimeClasspathEntries)
-        //            {
-        //                if (runtimeClasspathEntry.getType() == IRuntimeClasspathEntry.PROJECT)
-        //                {
-        //                    IProject project = workspace.getRoot().getProject(runtimeClasspathEntry.getLocation());
-        //
-        //                    if (project == null)
-        //                    {
-        //                        continue;
-        //                    }
-        //
-        //                    if (!project.exists())
-        //                    {
-        //                        continue;
-        //                    }
-        //
-        //                    if (!project.isOpen())
-        //                    {
-        //                        continue;
-        //                    }
-        //
-        //                    IMavenProjectFacade facade = mavenProjectRegistry.getProject(project);
-        //
-        //                    if (facade == null)
-        //                    {
-        //                        continue;
-        //                    }
-        //
-        //                    buildLocations(facade);
-        //                }
-        //            }
-        //        }
 
         IMavenProjectFacade facade = JettyPluginM2EUtils.getMavenProjectFacade(configuration);
 

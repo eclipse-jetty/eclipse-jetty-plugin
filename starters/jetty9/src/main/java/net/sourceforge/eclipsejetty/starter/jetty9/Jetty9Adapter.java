@@ -14,7 +14,6 @@ import org.eclipse.jetty.server.AbstractNetworkConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -50,6 +49,12 @@ public class Jetty9Adapter extends AbstractServerAdapter implements DumpableServ
     }
 
     @Override
+    public boolean isRunning()
+    {
+        return server.isRunning();
+    }
+
+    @Override
     public String dump()
     {
         return server.dump();
@@ -65,7 +70,7 @@ public class Jetty9Adapter extends AbstractServerAdapter implements DumpableServ
         {
             for (Connector connector : connectors)
             {
-                if (!(connector.getDefaultConnectionFactory() instanceof SslConnectionFactory))
+                if (!(connector.getDefaultConnectionFactory().getClass().getSimpleName().toLowerCase().contains("ssl")))
                 {
                     results.add(((AbstractNetworkConnector) connector).getPort());
                 }
@@ -85,7 +90,7 @@ public class Jetty9Adapter extends AbstractServerAdapter implements DumpableServ
         {
             for (Connector connector : connectors)
             {
-                if (connector.getDefaultConnectionFactory() instanceof SslConnectionFactory)
+                if ((connector.getDefaultConnectionFactory().getClass().getSimpleName().toLowerCase().contains("ssl")))
                 {
                     results.add(((AbstractNetworkConnector) connector).getPort());
                 }

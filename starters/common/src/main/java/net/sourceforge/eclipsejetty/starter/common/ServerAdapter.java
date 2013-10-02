@@ -15,6 +15,8 @@ public interface ServerAdapter
 
     void info(PrintStream out);
     
+    boolean isRunning();
+    
     Collection<Integer> getPorts();
 
     Collection<Integer> getSecurePorts();

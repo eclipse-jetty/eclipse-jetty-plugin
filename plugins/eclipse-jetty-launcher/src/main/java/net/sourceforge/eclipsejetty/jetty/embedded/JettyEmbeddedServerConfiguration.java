@@ -21,4 +21,10 @@ public class JettyEmbeddedServerConfiguration extends Jetty8ServerConfiguration
         super();
     }
 
+    @Override
+    protected String getDefaultWebContext()
+    {
+        return "net/sourceforge/eclipsejetty/starter/embedded/webdefault.xml";
+    }
+
 }

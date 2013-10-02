@@ -36,7 +36,7 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
             }
             builder.end();
 
-            Integer connectionLimit = getConnectionLimit();
+            Integer connectionLimit = getThreadPoolLimit();
 
             if (connectionLimit != null)
             {
@@ -325,6 +325,12 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.element("Set", "name", "stopTimeout", 1000);
         builder.element("Set", "name", "dumpAfterStart", false);
         builder.element("Set", "name", "dumpBeforeStop", false);
+    }
+
+    @Override
+    protected String getDefaultWebContext()
+    {
+        return "net/sourceforge/eclipsejetty/starter/jetty9/webdefault.xml";
     }
 
 }
