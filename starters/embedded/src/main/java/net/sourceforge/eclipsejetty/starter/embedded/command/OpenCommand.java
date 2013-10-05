@@ -82,7 +82,7 @@ public class OpenCommand extends AbstractCommand
 
         Iterator<String> pathIterator = adapter.getContextPaths().iterator();
 
-        if (!portIterator.hasNext())
+        if (!pathIterator.hasNext())
         {
             url += "/";
         }
@@ -92,7 +92,7 @@ public class OpenCommand extends AbstractCommand
         }
 
         context.out.println("Opening " + url + "...");
-        
+
         Desktop desktop = Desktop.getDesktop();
 
         desktop.browse(new URI(url));
