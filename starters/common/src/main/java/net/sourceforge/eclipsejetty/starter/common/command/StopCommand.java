@@ -12,7 +12,7 @@ public class StopCommand extends AbstractCommand
 
     public StopCommand(ServerAdapter serverAdapter)
     {
-        super("stop");
+        super("stop", "s");
 
         this.serverAdapter = serverAdapter;
     }

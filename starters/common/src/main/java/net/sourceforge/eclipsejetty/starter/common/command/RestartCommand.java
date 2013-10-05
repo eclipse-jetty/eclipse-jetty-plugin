@@ -11,7 +11,7 @@ public class RestartCommand extends AbstractCommand
 
     public RestartCommand(ServerAdapter adapter)
     {
-        super("restart");
+        super("restart", "r");
 
         this.adapter = adapter;
     }

@@ -10,7 +10,7 @@ public class ExitCommand extends AbstractCommand
 
     public ExitCommand()
     {
-        super("exit");
+        super("exit", "x");
     }
 
     public String getFormat()

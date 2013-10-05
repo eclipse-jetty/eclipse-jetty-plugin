@@ -9,7 +9,7 @@ public class EchoCommand extends AbstractCommand
 
     public EchoCommand()
     {
-        super("echo");
+        super("echo", "e");
     }
 
     public String getFormat()
