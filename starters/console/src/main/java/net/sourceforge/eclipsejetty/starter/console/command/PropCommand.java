@@ -5,15 +5,16 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 import net.sourceforge.eclipsejetty.starter.console.util.WildcardUtils;
 
 public class PropCommand extends AbstractCommand
 {
 
-    public PropCommand(String... names)
+    public PropCommand(ConsoleAdapter consoleAdapter)
     {
-        super("prop", "p");
+        super(consoleAdapter, "prop", "p");
     }
 
     public String getFormat()
@@ -31,16 +32,16 @@ public class PropCommand extends AbstractCommand
         return 530;
     }
 
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
-        String key = context.consumeStringParameter();
+        String key = process.args.consumeString();
 
         if (key == null)
         {
             key = "*";
         }
 
-        String value = context.consumeStringParameter();
+        String value = process.args.consumeString();
 
         if (value == null)
         {
@@ -50,7 +51,7 @@ public class PropCommand extends AbstractCommand
             {
                 if (WildcardUtils.match(String.valueOf(entry.getKey()).toLowerCase(), key.toLowerCase()))
                 {
-                    context.out.printf("%s = %s\n", entry.getKey(), entry.getValue());
+                    process.out.printf("%s = %s\n", entry.getKey(), entry.getValue());
                 }
             }
         }
@@ -58,7 +59,7 @@ public class PropCommand extends AbstractCommand
         {
             System.setProperty(key, value);
 
-            context.out.println("Property set.");
+            process.out.println("Property set.");
         }
 
         return 0;
@@ -67,9 +68,9 @@ public class PropCommand extends AbstractCommand
     @Override
     protected String getHelpDescription()
     {
-        return "Called without parameters, it will display all system properties. "
-            + "If one parameter is specified, it will display the specified property (the "
-            + "key may then contain wildcards). If two parameters are specified, it will "
+        return "Called without arguments, it will display all system properties. "
+            + "If one argument is specified, it will display the specified property (the "
+            + "key may then contain wildcards). If two arguments are specified, it will "
             + "try to set the specified property to the specified value.";
     }
 

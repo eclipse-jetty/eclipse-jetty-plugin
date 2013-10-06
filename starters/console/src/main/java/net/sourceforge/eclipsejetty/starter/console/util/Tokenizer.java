@@ -18,7 +18,7 @@ public class Tokenizer
         this.scanner = scanner;
     }
 
-    public List<String> read() throws IOException
+    public Arguments read() throws IOException
     {
         List<String> tokens = new ArrayList<String>();
 
@@ -31,7 +31,8 @@ public class Tokenizer
                 if (ch == '\n')
                 {
                     scanner.resetOffset();
-                    return tokens;
+                    
+                    return new Arguments(tokens);
                 }
 
                 if (!isWhitespace(ch))
@@ -83,7 +84,8 @@ public class Tokenizer
                             if (ch == '\n')
                             {
                                 tokens.add(builder.toString());
-                                return tokens;
+                                
+                                return new Arguments(tokens);
                             }
                             else if (isWhitespace(ch))
                             {

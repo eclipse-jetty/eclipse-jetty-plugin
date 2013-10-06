@@ -2,7 +2,8 @@
 package net.sourceforge.eclipsejetty.starter.console.command;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 import net.sourceforge.eclipsejetty.starter.console.util.WordWrap;
 
 public class SnackCommand extends AbstractCommand
@@ -37,9 +38,9 @@ public class SnackCommand extends AbstractCommand
 
     private static final String VOCALS = "aeiou";
 
-    public SnackCommand()
+    public SnackCommand(ConsoleAdapter consoleAdapter)
     {
-        super("snack", "give");
+        super(consoleAdapter, "snack", "give");
     }
 
     public String getFormat()
@@ -63,18 +64,18 @@ public class SnackCommand extends AbstractCommand
         return -1;
     }
 
-    public int execute(Context context)
+    public int execute(String processName, Process process)
     {
         StringBuilder builder = new StringBuilder();
 
-        for (String parameter : context.parameters)
+        for (String arg : process.args)
         {
             if (builder.length() > 0)
             {
                 builder.append(" ");
             }
 
-            builder.append(parameter);
+            builder.append(arg);
         }
 
         String snack = builder.toString();
@@ -115,7 +116,7 @@ public class SnackCommand extends AbstractCommand
             answer = replace(answer, "snacks", toPlural(snack));
         }
 
-        context.out.println(new WordWrap().perform(answer.replaceAll(" +", " "), context.lineLength));
+        process.out.println(new WordWrap().perform(answer.replaceAll(" +", " "), consoleAdapter.getLineLength()));
 
         return 0;
     }

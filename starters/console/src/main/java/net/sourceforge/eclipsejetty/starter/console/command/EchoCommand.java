@@ -2,14 +2,15 @@
 package net.sourceforge.eclipsejetty.starter.console.command;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 
 public class EchoCommand extends AbstractCommand
 {
 
-    public EchoCommand()
+    public EchoCommand(ConsoleAdapter consoleAdapter)
     {
-        super("echo", "e");
+        super(consoleAdapter, "echo", "e");
     }
 
     public String getFormat()
@@ -27,21 +28,23 @@ public class EchoCommand extends AbstractCommand
         return 550;
     }
 
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
         StringBuilder builder = new StringBuilder();
-        String parameter;
-        
-        while ((parameter = context.consumeStringParameter()) != null) {
-            if (builder.length() > 0) {
+        String argument;
+
+        while ((argument = process.args.consumeString()) != null)
+        {
+            if (builder.length() > 0)
+            {
                 builder.append(" ");
             }
-            
-            builder.append(parameter);
+
+            builder.append(argument);
         }
-        
-        context.out.println(builder.toString());
-        
+
+        process.out.println(builder.toString());
+
         return 0;
     }
 
@@ -50,5 +53,5 @@ public class EchoCommand extends AbstractCommand
     {
         return "Prints the text. May contain ${..} placeholders.";
     }
-    
+
 }

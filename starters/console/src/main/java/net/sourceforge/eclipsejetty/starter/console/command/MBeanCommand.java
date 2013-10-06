@@ -24,8 +24,9 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
-import net.sourceforge.eclipsejetty.starter.console.ParameterException;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.ArgumentException;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 import net.sourceforge.eclipsejetty.starter.console.util.WildcardUtils;
 import net.sourceforge.eclipsejetty.starter.util.Utils;
 
@@ -34,9 +35,9 @@ public class MBeanCommand extends AbstractCommand
 
     private final MBeanServer server;
 
-    public MBeanCommand()
+    public MBeanCommand(ConsoleAdapter consoleAdapter)
     {
-        super("mbean", "mb");
+        super(consoleAdapter, "mbean", "mb");
 
         server = ManagementFactory.getPlatformMBeanServer();
     }
@@ -52,13 +53,13 @@ public class MBeanCommand extends AbstractCommand
     }
 
     @Override
-    public int help(Context context) throws Exception
+    public int help(Process process) throws Exception
     {
-        String name = context.consumeStringParameter();
+        String name = process.args.consumeString();
 
         if (name == null)
         {
-            return super.help(context);
+            return super.help(process);
         }
 
         boolean hit = false;
@@ -84,14 +85,14 @@ public class MBeanCommand extends AbstractCommand
                     builder.append(" ").append(toParameter(toClass(parameterInfo.getType())));
                 }
 
-                context.out.println(builder);
+                process.out.println(builder);
                 hit = true;
             }
         }
 
         if (!hit)
         {
-            throw new ParameterException(String.format("No bean operation matches %s", name));
+            throw new ArgumentException(String.format("No bean operation matches %s", name));
         }
 
         return 0;
@@ -107,7 +108,7 @@ public class MBeanCommand extends AbstractCommand
             + "attr, a <NAME>[.<ATTR>]           Shows the attributes.\n"
             + "call, c <NAME>.<OPER> {<PARAMS>}  Calls the specified operation.\n"//
             + "help, h, ? <NAME>[.<OPER>]        Show help for the specified MBean.\n\n"
-            + "The <NAME>, <ATTR> and <OPER> parameters may contain wildcards. If the operation or attribute is unambigous ,"
+            + "The <NAME>, <ATTR> and <OPER> arguments may contain wildcards. If the operation or attribute is unambigous ,"
             + "you can omit the command.\n\n"
             + "The command does not support all types of operations (e.g. commands with arrays are not supported). If you "
             + "need to call these operations, use JConsole or VisualVM.";
@@ -118,54 +119,54 @@ public class MBeanCommand extends AbstractCommand
         return 2000;
     }
 
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
-        String command = context.consumeStringParameter();
+        String command = process.args.consumeString();
 
         if ((command == null) || ("list".equalsIgnoreCase(command)) || ("l".equalsIgnoreCase(command)))
         {
-            return list(context);
+            return list(process);
         }
 
         if (("attr".equalsIgnoreCase(command)) || ("a".equalsIgnoreCase(command)))
         {
-            return attr(context);
+            return attr(process);
         }
 
         if (("call".equalsIgnoreCase(command)) || ("c".equalsIgnoreCase(command)))
         {
-            return call(context);
+            return call(process);
         }
 
         if (("help".equalsIgnoreCase(command)) || ("h".equalsIgnoreCase(command)) || ("?".equalsIgnoreCase(command)))
         {
-            return help(context);
+            return help(process);
         }
 
-        return guess(context, command);
+        return guess(process, command);
     }
 
-    protected int list(Context context) throws MalformedObjectNameException
+    protected int list(Process process) throws MalformedObjectNameException
     {
         @SuppressWarnings("unchecked")
         Set<ObjectName> objectNames = server.queryNames(new ObjectName("*.*:*"), null);
 
         for (ObjectName objectName : objectNames)
         {
-            context.out.println(getName(objectName));
+            process.out.println(getName(objectName));
         }
 
         return 0;
     }
 
-    protected int attr(Context context) throws MalformedObjectNameException, IntrospectionException,
+    protected int attr(Process process) throws MalformedObjectNameException, IntrospectionException,
         InstanceNotFoundException, ReflectionException, MBeanException, AttributeNotFoundException
     {
-        String name = context.consumeStringParameter();
+        String name = process.args.consumeString();
 
         if (name == null)
         {
-            throw new ParameterException("<NAME> is missing.");
+            throw new ArgumentException("<NAME> is missing.");
         }
 
         boolean hit = false;
@@ -178,18 +179,18 @@ public class MBeanCommand extends AbstractCommand
             List<MBeanAttributeInfo> attributeInfos = findMBeanAttributeInfos(info, attributePattern);
             hit = attributeInfos.size() > 0;
 
-            attr(context, objectName, attributeInfos);
+            attr(process, objectName, attributeInfos);
         }
 
         if (!hit)
         {
-            throw new ParameterException(String.format("Not matching attribute found: %s %s", name, attributePattern));
+            throw new ArgumentException(String.format("Not matching attribute found: %s %s", name, attributePattern));
         }
 
         return 0;
     }
 
-    private int attr(Context context, ObjectName objectName, List<MBeanAttributeInfo> attributeInfos)
+    private int attr(Process process, ObjectName objectName, List<MBeanAttributeInfo> attributeInfos)
     {
         for (MBeanAttributeInfo attributeInfo : attributeInfos)
         {
@@ -204,44 +205,44 @@ public class MBeanCommand extends AbstractCommand
                 value = String.format("<%s: %s>", e.getClass().getName(), e.getMessage());
             }
 
-            context.out.println(String.format("%s.%s = %s", getName(objectName), attributeInfo.getName(),
+            process.out.println(String.format("%s.%s = %s", getName(objectName), attributeInfo.getName(),
                 toString(value)));
         }
 
         return 0;
     }
 
-    protected int call(Context context) throws MalformedObjectNameException, IntrospectionException,
+    protected int call(Process process) throws MalformedObjectNameException, IntrospectionException,
         InstanceNotFoundException, ReflectionException, InstanceAlreadyExistsException, NotCompliantMBeanException,
         MBeanRegistrationException, MBeanException
     {
-        String name = context.consumeStringParameter();
+        String name = process.args.consumeString();
 
         if (name == null)
         {
-            throw new ParameterException("<NAME> is missing.");
+            throw new ArgumentException("<NAME> is missing.");
         }
 
         ObjectName objectName = findObjectName(getLeft(name));
 
         if (objectName == null)
         {
-            throw new ParameterException("No match for " + name + ".");
+            throw new ArgumentException("No match for " + name + ".");
         }
 
         MBeanInfo info = getMBeanInfo(objectName);
         MBeanOperationInfo operationInfo =
-            findMBeanOperationInfo(info, Utils.ensure(getRight(name), "*"), context.parameterCount());
+            findMBeanOperationInfo(info, Utils.ensure(getRight(name), "*"), process.args.size());
 
         if (operationInfo == null)
         {
-            throw new ParameterException("No match for " + name + " with " + context.parameterCount() + " parameters.");
+            throw new ArgumentException("No match for " + name + " with " + process.args.size() + " arguments.");
         }
 
-        return call(context, objectName, operationInfo);
+        return call(process, objectName, operationInfo);
     }
 
-    protected int call(Context context, ObjectName objectName, MBeanOperationInfo operationInfo)
+    protected int call(Process process, ObjectName objectName, MBeanOperationInfo operationInfo)
         throws ReflectionException, InstanceNotFoundException, MBeanException
     {
         List<Object> params = new ArrayList<Object>();
@@ -252,12 +253,12 @@ public class MBeanCommand extends AbstractCommand
         {
             try
             {
-                params.add(convert(signature[i].getType(), context.consumeStringParameter()));
+                params.add(convert(signature[i].getType(), process.args.consumeString()));
                 sig.add(signature[i].getType());
             }
             catch (Exception e)
             {
-                throw new ParameterException("Invalid parameter #" + (i + 1) + ": " + e.toString());
+                throw new ArgumentException("Invalid argument #" + (i + 1) + ": " + e.toString());
             }
         }
 
@@ -266,47 +267,47 @@ public class MBeanCommand extends AbstractCommand
 
         if ("void".equals(operationInfo.getReturnType()))
         {
-            context.out.println("Invocation successful.");
+            process.out.println("Invocation successful.");
         }
         else
         {
-            context.out.println(toString(result));
+            process.out.println(toString(result));
         }
 
         return -1;
     }
 
-    protected int guess(Context context, String name) throws IntrospectionException, InstanceNotFoundException,
+    protected int guess(Process process, String name) throws IntrospectionException, InstanceNotFoundException,
         ReflectionException, MBeanException, MalformedObjectNameException
     {
         ObjectName objectName = findObjectName(getLeft(name));
 
         if (objectName == null)
         {
-            throw new ParameterException("Unknown command: " + name);
+            throw new ArgumentException("Unknown command: " + name);
         }
 
         MBeanInfo info = getMBeanInfo(objectName);
 
-        if (context.parameterCount() == 0)
+        if (process.args.size() == 0)
         {
             List<MBeanAttributeInfo> attributeInfos = findMBeanAttributeInfos(info, getRight(name));
 
             if (attributeInfos.size() > 0)
             {
-                return attr(context, objectName, attributeInfos);
+                return attr(process, objectName, attributeInfos);
             }
         }
 
         MBeanOperationInfo operationInfo =
-            findMBeanOperationInfo(info, Utils.ensure(getRight(name), "*"), context.parameterCount());
+            findMBeanOperationInfo(info, Utils.ensure(getRight(name), "*"), process.args.size());
 
         if (operationInfo != null)
         {
-            return call(context, objectName, operationInfo);
+            return call(process, objectName, operationInfo);
         }
 
-        throw new ParameterException("Invalid parameter: " + name);
+        throw new ArgumentException("Invalid argument: " + name);
     }
 
     protected MBeanAttributeInfo findMBeanAttributeInfo(MBeanInfo info, String attributeName)
@@ -320,7 +321,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (results.size() > 1)
         {
-            throw new ParameterException("Non-unique match for " + attributeName);
+            throw new ArgumentException("Non-unique match for " + attributeName);
         }
 
         return results.get(0);
@@ -355,7 +356,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (results.size() > 1)
         {
-            throw new ParameterException("Non-unique match for " + operationName);
+            throw new ArgumentException("Non-unique match for " + operationName);
         }
 
         return results.get(0);
@@ -420,7 +421,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (results.size() > 1)
         {
-            throw new ParameterException("Non-unique match for " + name);
+            throw new ArgumentException("Non-unique match for " + name);
         }
 
         return results.get(0);
@@ -461,38 +462,38 @@ public class MBeanCommand extends AbstractCommand
         return name;
     }
 
-    protected static String getLeft(String parameter)
+    protected static String getLeft(String argument)
     {
-        if (parameter == null)
+        if (argument == null)
         {
             return null;
         }
 
-        int index = parameter.lastIndexOf('.');
+        int index = argument.lastIndexOf('.');
 
         if (index < 0)
         {
-            return parameter;
+            return argument;
         }
 
-        return parameter.substring(0, index);
+        return argument.substring(0, index);
     }
 
-    protected static String getRight(String parameter)
+    protected static String getRight(String argument)
     {
-        if (parameter == null)
+        if (argument == null)
         {
             return null;
         }
 
-        int index = parameter.lastIndexOf('.');
+        int index = argument.lastIndexOf('.');
 
         if (index < 0)
         {
             return null;
         }
 
-        return parameter.substring(index + 1);
+        return argument.substring(index + 1);
     }
 
     protected static Class<?> toClass(String name)
@@ -553,7 +554,7 @@ public class MBeanCommand extends AbstractCommand
 
         for (MBeanParameterInfo parameterInfo : signature)
         {
-            if (!isParameterSupported(parameterInfo.getType()))
+            if (!isArgumentSupported(parameterInfo.getType()))
             {
                 return false;
             }
@@ -628,7 +629,7 @@ public class MBeanCommand extends AbstractCommand
         throw new IllegalArgumentException("Unsupported parameter " + toParameter(type));
     }
 
-    protected static boolean isParameterSupported(String typeName)
+    protected static boolean isArgumentSupported(String typeName)
     {
         Class<?> type = toClass(typeName);
 

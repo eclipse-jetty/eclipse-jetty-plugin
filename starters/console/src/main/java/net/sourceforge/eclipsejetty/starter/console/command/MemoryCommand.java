@@ -2,18 +2,18 @@
 package net.sourceforge.eclipsejetty.starter.console.command;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
-import net.sourceforge.eclipsejetty.starter.console.ParameterException;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.ArgumentException;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 import net.sourceforge.eclipsejetty.starter.console.util.MemoryUtils;
 import net.sourceforge.eclipsejetty.starter.util.Utils;
-
 
 public class MemoryCommand extends AbstractCommand
 {
 
-    public MemoryCommand()
+    public MemoryCommand(ConsoleAdapter consoleAdapter)
     {
-        super("memory", "m");
+        super(consoleAdapter, "memory", "m");
     }
 
     public String getFormat()
@@ -26,6 +26,7 @@ public class MemoryCommand extends AbstractCommand
         return "Memory utilities.";
     }
 
+    @Override
     protected String getHelpDescription()
     {
         return "Prints memory information to the console. If invoked with the gc command, it "
@@ -37,39 +38,41 @@ public class MemoryCommand extends AbstractCommand
         return 500;
     }
 
-    public int execute(Context context)
+    public int execute(String processName, Process process)
     {
-        String command = context.consumeStringParameter();
-        
-        long freeMemory = MemoryUtils.printMemoryUsage(context.out);
+        String command = process.args.consumeString();
 
-        if (command == null) {
+        long freeMemory = MemoryUtils.printMemoryUsage(process.out);
+
+        if (command == null)
+        {
             return 0;
         }
-        
-        if ("gc".equalsIgnoreCase(command)) {
-            return gc(context, freeMemory);
+
+        if ("gc".equalsIgnoreCase(command))
+        {
+            return gc(process, freeMemory);
         }
 
-        throw new ParameterException("Invalid command: " + command);
+        throw new ArgumentException("Invalid command: " + command);
     }
 
-    private int gc(Context context, long freeMemory)
+    private int gc(Process process, long freeMemory)
     {
-        context.out.println();
-        context.out.print("Performing GC...");
+        process.out.println();
+        process.out.print("Performing GC...");
 
         long millis = System.nanoTime();
-        
+
         System.gc();
-        
-        context.out.printf(" [%s]\n", Utils.formatSeconds((double)(System.nanoTime() - millis) / 1000000000d));
-        context.out.println();
 
-        long newFreeMemory = MemoryUtils.printMemoryUsage(context.out);
+        process.out.printf(" [%s]\n", Utils.formatSeconds((System.nanoTime() - millis) / 1000000000d));
+        process.out.println();
 
-        context.out.println();
-        context.out.printf("Saved Memory:      %13s\n", Utils.formatBytes(newFreeMemory - freeMemory));
+        long newFreeMemory = MemoryUtils.printMemoryUsage(process.out);
+
+        process.out.println();
+        process.out.printf("Saved Memory:      %13s\n", Utils.formatBytes(newFreeMemory - freeMemory));
 
         return 0;
     }

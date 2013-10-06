@@ -7,12 +7,14 @@ import net.sourceforge.eclipsejetty.starter.console.util.WordWrap;
 public abstract class AbstractCommand implements Command
 {
 
+    protected final ConsoleAdapter consoleAdapter;
     private final String[] names;
 
-    public AbstractCommand(String... names)
+    public AbstractCommand(ConsoleAdapter consoleAdapter, String... names)
     {
         super();
 
+        this.consoleAdapter = consoleAdapter;
         this.names = names;
     }
 
@@ -32,20 +34,20 @@ public abstract class AbstractCommand implements Command
         return true;
     }
 
-    public int help(Context context) throws Exception
+    public int help(Process process) throws Exception
     {
-        context.out.println(new WordWrap().perform("Usage:    " + CommandUtils.getFormatDescriptor(this),
-            context.lineLength));
+        process.out.println(new WordWrap().perform("Usage:    " + CommandUtils.getFormatDescriptor(this),
+            consoleAdapter.getLineLength()));
 
         if (getNames().length > 1)
         {
-            context.out.println("Synonyms: " + CommandUtils.getNameDescriptor(this, false));
+            process.out.println("Synonyms: " + CommandUtils.getNameDescriptor(this, false));
         }
 
-        context.out.println();
+        process.out.println();
 
-        context.out.println(new WordWrap().perform(getHelpDescription(), context.lineLength));
-        context.out.println();
+        process.out.println(new WordWrap().perform(getHelpDescription(), consoleAdapter.getLineLength()));
+        process.out.println();
 
         return 0;
     }

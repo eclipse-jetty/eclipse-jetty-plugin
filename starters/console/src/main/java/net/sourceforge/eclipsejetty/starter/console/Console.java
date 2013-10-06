@@ -13,13 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
+import net.sourceforge.eclipsejetty.starter.console.util.Arguments;
 import net.sourceforge.eclipsejetty.starter.console.util.Scanner;
 import net.sourceforge.eclipsejetty.starter.console.util.Tokenizer;
 import net.sourceforge.eclipsejetty.starter.util.service.GlobalServiceResolver;
 import net.sourceforge.eclipsejetty.starter.util.service.ServiceResolver;
 import net.sourceforge.eclipsejetty.starter.util.service.ServiceUtils;
 
-public class Console implements Runnable
+public class Console implements Runnable, ConsoleAdapter
 {
 
     public static final Console INSTANCE = new Console();
@@ -39,6 +40,8 @@ public class Console implements Runnable
     private Console()
     {
         super();
+
+        GlobalServiceResolver.INSTANCE.register(this);
     }
 
     public void initialize(ServiceResolver resolver)
@@ -140,11 +143,11 @@ public class Console implements Runnable
 
             try
             {
-                List<String> tokens;
+                Arguments args;
 
-                while ((tokens = tokenizer.read()) != null)
+                while ((args = tokenizer.read()) != null)
                 {
-                    execute(tokens);
+                    new Process(this, null, args, System.in, System.out, System.err).execute();
                 }
             }
             finally
@@ -162,68 +165,9 @@ public class Console implements Runnable
         }
     }
 
-    private int execute(List<String> parameters)
+    public int getLineLength()
     {
-        if (parameters == null)
-        {
-            return 0;
-        }
-
-        if (parameters.size() == 0)
-        {
-            return 0;
-        }
-
-        int result = 0;
-
-        String name = parameters.remove(0);
-
-        try
-        {
-            Context context = new Context(this, parameters);
-
-            try
-            {
-                result = execute(context, name);
-            }
-            catch (ParameterException e)
-            {
-                throw e;
-            }
-            catch (Exception e)
-            {
-                System.err.println("An exception occured:");
-
-                e.printStackTrace(context.err);
-
-                result = -1;
-            }
-            finally
-            {
-                context.close();
-            }
-        }
-        catch (ParameterException e)
-        {
-            System.err.println(e.getMessage());
-        }
-
-        return result;
-    }
-
-    private int execute(Context context, String name) throws Exception
-    {
-        Command command = commands.get(name.toLowerCase());
-
-        if (command == null)
-        {
-            context.err.println("Unknown command: " + name);
-            context.err.println("Type \"help\" to get help.");
-
-            return -1;
-        }
-
-        return command.execute(context);
+        return 80;
     }
 
 }

@@ -3,18 +3,19 @@ package net.sourceforge.eclipsejetty.starter.common.command;
 
 import net.sourceforge.eclipsejetty.starter.common.DumpableServerAdapter;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 
 public class DumpCommand extends AbstractCommand
 {
 
-    private final DumpableServerAdapter adapter;
+    private final DumpableServerAdapter serverAdapter;
 
-    public DumpCommand(DumpableServerAdapter adapter)
+    public DumpCommand(ConsoleAdapter consoleAdapter, DumpableServerAdapter serverAdapter)
     {
-        super("dump", "d");
+        super(consoleAdapter, "dump", "d");
 
-        this.adapter = adapter;
+        this.serverAdapter = serverAdapter;
     }
 
     public String getFormat()
@@ -39,9 +40,9 @@ public class DumpCommand extends AbstractCommand
         return 9000;
     }
 
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
-        context.out.println(adapter.dump());
+        process.out.println(serverAdapter.dump());
 
         return 0;
     }

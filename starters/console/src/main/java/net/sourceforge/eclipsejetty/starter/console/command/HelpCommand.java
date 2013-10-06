@@ -5,7 +5,8 @@ import java.util.Collection;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
 import net.sourceforge.eclipsejetty.starter.console.Command;
-import net.sourceforge.eclipsejetty.starter.console.Context;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 import net.sourceforge.eclipsejetty.starter.console.util.CommandUtils;
 import net.sourceforge.eclipsejetty.starter.console.util.WordWrap;
 import net.sourceforge.eclipsejetty.starter.util.Utils;
@@ -13,9 +14,9 @@ import net.sourceforge.eclipsejetty.starter.util.Utils;
 public class HelpCommand extends AbstractCommand
 {
 
-    public HelpCommand()
+    public HelpCommand(ConsoleAdapter consoleAdapter)
     {
-        super("help", "h", "?");
+        super(consoleAdapter, "help", "h", "?");
     }
 
     /**
@@ -23,7 +24,7 @@ public class HelpCommand extends AbstractCommand
      */
     public String getFormat()
     {
-        return "[command {parameters}]";
+        return "[command {args}]";
     }
 
     /**
@@ -54,25 +55,25 @@ public class HelpCommand extends AbstractCommand
     /**
      * {@inheritDoc}
      */
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
-        String command = context.consumeStringParameter();
+        String command = process.args.consumeString();
 
         if (command != null)
         {
-            showDetailHelp(context, command);
+            showDetailHelp(process, command);
         }
         else
         {
-            showHelp(context);
+            showHelp(process);
         }
 
         return 0;
     }
 
-    private void showHelp(Context context)
+    private void showHelp(Process process)
     {
-        Collection<Command> commands = context.console.getCommands();
+        Collection<Command> commands = consoleAdapter.getCommands();
 
         int maxNameLength = 0;
 
@@ -90,35 +91,36 @@ public class HelpCommand extends AbstractCommand
                 continue;
             }
 
-            showHelp(context, command, prefix);
+            showHelp(process, command, prefix);
         }
 
-        context.out.println();
-        context.out.println(new WordWrap().perform("Using > will pipe the output of any command to a file. "
+        process.out.println();
+        process.out.println(new WordWrap().perform("Using > will pipe the output of any command to a file. "
             + "Arguments may contain ${..} placeholds, to access environment and system properties.",
-            context.lineLength));
+            consoleAdapter.getLineLength()));
     }
 
-    private void showHelp(Context context, Command command, String prefix)
+    private void showHelp(Process process, Command command, String prefix)
     {
-        context.out.print(String.format("%-" + prefix.length() + "s", CommandUtils.getNameDescriptor(command, true)));
+        process.out.print(String.format("%-" + prefix.length() + "s", CommandUtils.getNameDescriptor(command, true)));
 
-        context.out.println(Utils.prefixLine(
-            new WordWrap().perform(command.getDescription(), context.lineLength - prefix.length()), prefix, false));
+        process.out.println(Utils.prefixLine(
+            new WordWrap().perform(command.getDescription(), consoleAdapter.getLineLength() - prefix.length()), prefix,
+            false));
     }
 
-    private int showDetailHelp(Context context, String name) throws Exception
+    private int showDetailHelp(Process process, String name) throws Exception
     {
-        Command command = context.console.getCommand(name);
+        Command command = consoleAdapter.getCommand(name);
 
         if (command == null)
         {
-            context.err.println("Unknown command: " + name);
+            process.err.println("Unknown command: " + name);
 
             return -1;
         }
 
-        return command.help(context);
+        return command.help(process);
     }
 
 }

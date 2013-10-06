@@ -7,17 +7,18 @@ import java.util.Comparator;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
-import net.sourceforge.eclipsejetty.starter.console.ParameterException;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.ArgumentException;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 import net.sourceforge.eclipsejetty.starter.console.util.WildcardUtils;
 import net.sourceforge.eclipsejetty.starter.util.Utils;
 
 public class ThreadCommand extends AbstractCommand
 {
 
-    public ThreadCommand()
+    public ThreadCommand(ConsoleAdapter consoleAdapter)
     {
-        super("thread", "t");
+        super(consoleAdapter, "thread", "t");
     }
 
     public String getFormat()
@@ -44,24 +45,24 @@ public class ThreadCommand extends AbstractCommand
         return 520;
     }
 
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
-        if (!context.hasParameters())
+        if (process.args.isEmpty())
         {
-            return list(context);
+            return list(process);
         }
 
         String id;
 
-        while ((id = context.consumeStringParameter()) != null)
+        while ((id = process.args.consumeString()) != null)
         {
-            show(context, id);
+            show(process, id);
         }
-        
+
         return 0;
     }
 
-    private int list(Context context)
+    private int list(Process process)
     {
         List<Thread> threads = getThreads();
 
@@ -76,24 +77,24 @@ public class ThreadCommand extends AbstractCommand
             classLength = Math.max(classLength, thread.getClass().getName().length());
         }
 
-        context.out.printf(" %" + idLength + "s | %-" + nameLength + "s | %-" + classLength + "s \n", "ID", "Name",
+        process.out.printf(" %" + idLength + "s | %-" + nameLength + "s | %-" + classLength + "s \n", "ID", "Name",
             "Class");
-        context.out.println("-" + Utils.repeat("-", idLength) + "-+-" + Utils.repeat("-", nameLength) + "-+-"
+        process.out.println("-" + Utils.repeat("-", idLength) + "-+-" + Utils.repeat("-", nameLength) + "-+-"
             + Utils.repeat("-", classLength) + "-");
 
         for (Thread thread : threads)
         {
-            context.out.printf(" %" + idLength + "d | %-" + nameLength + "s | %-" + classLength + "s \n",
+            process.out.printf(" %" + idLength + "d | %-" + nameLength + "s | %-" + classLength + "s \n",
                 thread.getId(), thread.getName(), thread.getClass().getName());
         }
 
-        context.out.println();
-        context.out.println("Thread count: " + threads.size());
+        process.out.println();
+        process.out.println("Thread count: " + threads.size());
 
         return 0;
     }
 
-    private int show(Context context, String id)
+    private int show(Process process, String id)
     {
         List<Thread> threads = getThreads();
         boolean hit = false;
@@ -102,7 +103,7 @@ public class ThreadCommand extends AbstractCommand
         {
             if (WildcardUtils.match(String.valueOf(thread.getId()), id))
             {
-                show(context, thread);
+                show(process, thread);
 
                 hit = true;
             }
@@ -110,27 +111,27 @@ public class ThreadCommand extends AbstractCommand
 
         if (!hit)
         {
-            throw new ParameterException("Invalid thread ID: " + id);
+            throw new ArgumentException("Invalid thread ID: " + id);
         }
 
         return 0;
     }
 
-    private void show(Context context, Thread thread)
+    private void show(Process process, Thread thread)
     {
         String title = thread.getId() + ".) " + thread.getName() + " (" + thread.getClass() + ")";
 
-        context.out.println(title);
-        context.out.println(Utils.repeat("-", title.length()));
+        process.out.println(title);
+        process.out.println(Utils.repeat("-", title.length()));
 
         StackTraceElement[] stackTraceElements = thread.getStackTrace();
 
         for (StackTraceElement element : stackTraceElements)
         {
-            context.out.println(element);
+            process.out.println(element);
         }
 
-        context.out.println();
+        process.out.println();
     }
 
     private List<Thread> getThreads()

@@ -3,16 +3,17 @@ package net.sourceforge.eclipsejetty.starter.common.command;
 
 import net.sourceforge.eclipsejetty.starter.common.ServerAdapter;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 
 public class StopCommand extends AbstractCommand
 {
 
     private final ServerAdapter serverAdapter;
 
-    public StopCommand(ServerAdapter serverAdapter)
+    public StopCommand(ConsoleAdapter consoleAdapter, ServerAdapter serverAdapter)
     {
-        super("stop", "s");
+        super(consoleAdapter, "stop", "s");
 
         this.serverAdapter = serverAdapter;
     }
@@ -38,9 +39,9 @@ public class StopCommand extends AbstractCommand
         return 10000;
     }
 
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
-        context.out.println("Stopping the server...");
+        process.out.println("Stopping the server...");
 
         serverAdapter.stop();
 

@@ -7,16 +7,17 @@ import java.util.Iterator;
 
 import net.sourceforge.eclipsejetty.starter.common.ServerAdapter;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 
 public class OpenCommand extends AbstractCommand
 {
 
     private final ServerAdapter adapter;
 
-    public OpenCommand(ServerAdapter adapter)
+    public OpenCommand(ConsoleAdapter consoleAdapter, ServerAdapter adapter)
     {
-        super("open", "o");
+        super(consoleAdapter, "open", "o");
 
         this.adapter = adapter;
     }
@@ -68,13 +69,13 @@ public class OpenCommand extends AbstractCommand
     }
 
     @Override
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
         Iterator<Integer> portIterator = adapter.getPorts().iterator();
 
         if (!portIterator.hasNext())
         {
-            context.err.println("No connector provided.");
+            process.err.println("No connector provided.");
             return -1;
         }
 
@@ -91,7 +92,7 @@ public class OpenCommand extends AbstractCommand
             url += pathIterator.next();
         }
 
-        context.out.println("Opening " + url + "...");
+        process.out.println("Opening " + url + "...");
 
         Desktop desktop = Desktop.getDesktop();
 

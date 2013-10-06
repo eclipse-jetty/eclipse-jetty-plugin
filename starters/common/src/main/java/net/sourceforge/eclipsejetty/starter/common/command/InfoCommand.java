@@ -3,18 +3,19 @@ package net.sourceforge.eclipsejetty.starter.common.command;
 
 import net.sourceforge.eclipsejetty.starter.common.ServerAdapter;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 
 public class InfoCommand extends AbstractCommand
 {
 
-    private final ServerAdapter adapter;
+    private final ServerAdapter serverAdapter;
 
-    public InfoCommand(ServerAdapter adapter)
+    public InfoCommand(ConsoleAdapter consoleAdapter, ServerAdapter serverAdapter)
     {
-        super("info", "i");
+        super(consoleAdapter, "info", "i");
 
-        this.adapter = adapter;
+        this.serverAdapter = serverAdapter;
     }
 
     public String getFormat()
@@ -27,6 +28,7 @@ public class InfoCommand extends AbstractCommand
         return "Show the launcher info.";
     }
 
+    @Override
     protected String getHelpDescription()
     {
         return "Show the launcher info.  You can use \"info > file.txt\" to write the info to a file.";
@@ -37,9 +39,9 @@ public class InfoCommand extends AbstractCommand
         return 9010;
     }
 
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
-        adapter.info(context.out);
+        serverAdapter.info(process.out);
 
         return 0;
     }

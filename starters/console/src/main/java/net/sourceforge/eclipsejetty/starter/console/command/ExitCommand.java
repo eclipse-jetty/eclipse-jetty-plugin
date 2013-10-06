@@ -2,15 +2,15 @@
 package net.sourceforge.eclipsejetty.starter.console.command;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
-
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 
 public class ExitCommand extends AbstractCommand
 {
 
-    public ExitCommand()
+    public ExitCommand(ConsoleAdapter consoleAdapter)
     {
-        super("exit", "x");
+        super(consoleAdapter, "exit", "x");
     }
 
     public String getFormat()
@@ -23,6 +23,7 @@ public class ExitCommand extends AbstractCommand
         return "Exits the VM.";
     }
 
+    @Override
     protected String getHelpDescription()
     {
         return "Exists the VM. The server may not have enougth time to shutdown gracefully.";
@@ -33,10 +34,10 @@ public class ExitCommand extends AbstractCommand
         return 10010;
     }
 
-    public int execute(Context context)
+    public int execute(String processName, Process process)
     {
-        context.out.println("Bye.");
-        
+        process.out.println("Bye.");
+
         System.exit(0);
 
         return 0;

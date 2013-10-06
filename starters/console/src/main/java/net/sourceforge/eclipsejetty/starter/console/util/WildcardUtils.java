@@ -1,7 +1,6 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
 package net.sourceforge.eclipsejetty.starter.console.util;
 
-
 public final class WildcardUtils
 {
 

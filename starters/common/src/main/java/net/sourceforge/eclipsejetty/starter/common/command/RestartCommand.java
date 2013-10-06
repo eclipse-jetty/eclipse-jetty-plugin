@@ -2,18 +2,19 @@ package net.sourceforge.eclipsejetty.starter.common.command;
 
 import net.sourceforge.eclipsejetty.starter.common.ServerAdapter;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.Context;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
+import net.sourceforge.eclipsejetty.starter.console.Process;
 
 public class RestartCommand extends AbstractCommand
 {
 
-    private final ServerAdapter adapter;
+    private final ServerAdapter serverAdapter;
 
-    public RestartCommand(ServerAdapter adapter)
+    public RestartCommand(ConsoleAdapter consoleAdapter, ServerAdapter serverAdapter)
     {
-        super("restart", "r");
+        super(consoleAdapter, "restart", "r");
 
-        this.adapter = adapter;
+        this.serverAdapter = serverAdapter;
     }
 
     public String getFormat()
@@ -31,21 +32,21 @@ public class RestartCommand extends AbstractCommand
         return 9990;
     }
 
-    public int execute(Context context) throws Exception
+    public int execute(String processName, Process process) throws Exception
     {
-        context.out.println("Restarting the server...");
+        process.out.println("Restarting the server...");
 
-        if (adapter.isRunning())
+        if (serverAdapter.isRunning())
         {
-            adapter.stop();
+            serverAdapter.stop();
 
-            while (adapter.isRunning())
+            while (serverAdapter.isRunning())
             {
                 Thread.sleep(1000);
             }
         }
 
-        adapter.start();
+        serverAdapter.start();
 
         return 0;
     }
