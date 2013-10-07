@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="net.sourceforge.eclipsejetty.launch.JettyLaunchConfigurationDelegate"
+            delegate="net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationDelegate"
             id="net.sourceforge.eclipsejetty.launchConfigurationType"
             modes="run, debug"
             name="Jetty Webapp"
@@ -16,7 +16,7 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
-            class="net.sourceforge.eclipsejetty.launch.JettyLaunchConfigurationTabGroup"
+            class="net.sourceforge.eclipsejetty.launch.configuration.JettyLaunchConfigurationTabGroup"
             id="JettyWebAppTabGroup"
             type="net.sourceforge.eclipsejetty.launchConfigurationType">
       </launchConfigurationTabGroup>
@@ -34,9 +34,57 @@
    <extension
          point="org.eclipse.jdt.launching.classpathProviders">
       <classpathProvider
-            class="net.sourceforge.eclipsejetty.launch.JettyLaunchConfigurationClassPathProvider"
+            class="net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationClassPathProvider"
             id="net.sourceforge.eclipsejetty.launcher.JettyLaunchClassPathProvider">
       </classpathProvider>
    </extension>
+   
+<extension point="org.eclipse.debug.ui.launchShortcuts">
+    <shortcut
+           class="net.sourceforge.eclipsejetty.launch.shortcut.JettyLaunchShortcut"
+           description="Launches a Jetty on the selected project."
+           icon="icons/jetty.gif"
+           id="net.sourceforge.eclipsejetty.launch.shortcut.JettyLaunchShortcut"
+           label="Run with Jetty"
+           modes="run, debug">
+           
+       <contextualLaunch>
+         <enablement>
+           <with variable="selection">
+             <count value="1"/>
+              <iterate>
+               <and>
+               <!--
+                <adapt type="org.eclipse.jdt.core.IJavaElement">
+                	<test property="org.eclipse.jdt.core.isInJavaProject"/>
+                </adapt>
+                -->
+                <!--
+              	 <or>
+              	   <test property="org.eclipse.jdt.launching.hasMain"/>
+              	   <test property="org.eclipse.jdt.launching.isContainer"/>
+              	   <test property="org.eclipse.jdt.launching.isPackageFragment"/>
+              	   <test property="org.eclipse.jdt.launching.isPackageFragmentRoot"/>
+              	 </or>
+              	 -->
+               </and>
+              </iterate>
+             </with>
+         </enablement>
+ 		</contextualLaunch>
+ 		
+       <configurationType
+              id="net.sourceforge.eclipsejetty.launchConfigurationType">
+       </configurationType>
+       <description
+              description="Run Project with Jetty"
+              mode="run">
+       </description>
+       <description
+              description="Debug Project with Jetty"
+              mode="debug">
+       </description>
+    </shortcut>
+ </extension>
    
 </plugin>

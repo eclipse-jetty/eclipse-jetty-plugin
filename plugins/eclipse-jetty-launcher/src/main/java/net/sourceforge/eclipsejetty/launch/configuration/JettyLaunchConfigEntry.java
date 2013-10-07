@@ -1,4 +1,4 @@
-package net.sourceforge.eclipsejetty.launch;
+package net.sourceforge.eclipsejetty.launch.configuration;
 
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;

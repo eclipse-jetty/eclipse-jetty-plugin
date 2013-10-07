@@ -9,7 +9,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package net.sourceforge.eclipsejetty.launch;
+package net.sourceforge.eclipsejetty.launch.configuration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,15 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
-import net.sourceforge.eclipsejetty.launch.JettyLaunchDependencyEntry.Kind;
-import net.sourceforge.eclipsejetty.launch.JettyLaunchDependencyEntry.Type;
+import net.sourceforge.eclipsejetty.launch.configuration.JettyLaunchDependencyEntry.Kind;
+import net.sourceforge.eclipsejetty.launch.configuration.JettyLaunchDependencyEntry.Type;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
 import net.sourceforge.eclipsejetty.util.Dependency;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Table;
@@ -175,14 +174,14 @@ public class JettyLaunchDependencyEntryList
         return result;
     }
 
-    public boolean update(ILaunchConfiguration configuration, Table table, Collection<Dependency> dependencies,
+    public boolean update(JettyLaunchConfigurationAdapter adapter, Table table, Collection<Dependency> dependencies,
         Collection<Dependency> includedClasspathEntries, Collection<Dependency> globalClasspathEntries,
         boolean updateType) throws CoreException
     {
-        if (configHash != configuration.hashCode())
+        if (configHash != adapter.getConfiguration().hashCode())
         {
             clear(table);
-            configHash = configuration.hashCode();
+            configHash = adapter.getConfiguration().hashCode();
         }
 
         boolean updated = false;
@@ -190,17 +189,17 @@ public class JettyLaunchDependencyEntryList
         List<RegularMatcher> includedLibs = null;
         Set<String> excludedGenericIds = new HashSet<String>();
         Set<String> includedGenericIds = new HashSet<String>();
-        boolean genericIdsSupported = JettyPluginConstants.isGenericIdsSupported(configuration);
+        boolean genericIdsSupported = adapter.isGenericIdsSupported();
 
         if (genericIdsSupported)
         {
-            excludedGenericIds.addAll(JettyPluginConstants.getExcludedGenericIds(configuration));
-            includedGenericIds.addAll(JettyPluginConstants.getIncludedGenericIds(configuration));
+            excludedGenericIds.addAll(adapter.getExcludedGenericIds());
+            includedGenericIds.addAll(adapter.getIncludedGenericIds());
         }
         else
         {
-            excludedLibs = deprecatedGetExcludedLibs(configuration);
-            includedLibs = deprecatedGetIncludedLibs(configuration);
+            excludedLibs = deprecatedGetExcludedLibs(adapter);
+            includedLibs = deprecatedGetIncludedLibs(adapter);
         }
 
         // mark all as obsolete, will be reactivated later
@@ -323,15 +322,17 @@ public class JettyLaunchDependencyEntryList
     }
 
     @SuppressWarnings("deprecation")
-    private List<RegularMatcher> deprecatedGetIncludedLibs(ILaunchConfiguration configuration) throws CoreException
+    private List<RegularMatcher> deprecatedGetIncludedLibs(JettyLaunchConfigurationAdapter adapter)
+        throws CoreException
     {
-        return createRegularMatcherList(JettyPluginConstants.getIncludedLibs(configuration));
+        return createRegularMatcherList(adapter.getIncludedLibs());
     }
 
     @SuppressWarnings("deprecation")
-    private List<RegularMatcher> deprecatedGetExcludedLibs(ILaunchConfiguration configuration) throws CoreException
+    private List<RegularMatcher> deprecatedGetExcludedLibs(JettyLaunchConfigurationAdapter adapter)
+        throws CoreException
     {
-        return createRegularMatcherList(JettyPluginConstants.getExcludedLibs(configuration));
+        return createRegularMatcherList(adapter.getExcludedLibs());
     }
 
     private List<JettyLaunchDependencyEntry> getSortedList()

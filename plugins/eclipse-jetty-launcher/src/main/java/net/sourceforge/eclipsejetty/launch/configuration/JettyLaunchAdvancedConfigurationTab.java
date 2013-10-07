@@ -9,9 +9,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package net.sourceforge.eclipsejetty.launch;
+package net.sourceforge.eclipsejetty.launch.configuration;
 
-import static net.sourceforge.eclipsejetty.launch.JettyLaunchUI.*;
+import static net.sourceforge.eclipsejetty.launch.util.JettyLaunchUI.*;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -20,11 +20,12 @@ import java.util.HashSet;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
-import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
 import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationDelegate;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.resources.IFile;
@@ -225,10 +226,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 @Override
                 public void widgetSelected(final SelectionEvent e)
                 {
+                    JettyLaunchConfigurationAdapter adapter =
+                        JettyLaunchConfigurationAdapter.getInstance(getCurrentLaunchConfiguration());
+
                     String path =
-                        chooseWorkspaceFile(JettyPluginConstants.getProject(getCurrentLaunchConfiguration()),
-                            getShell(), "Resource Selection", "Select a resource as Jetty Context file:",
-                            customWebDefaultsResourceText.getText());
+                        chooseWorkspaceFile(adapter.getProject(), getShell(), "Resource Selection",
+                            "Select a resource as Jetty Context file:", customWebDefaultsResourceText.getText());
 
                     if (path != null)
                     {
@@ -371,28 +374,30 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         try
         {
-            embeddedButton.setSelection(JettyPluginConstants.isEmbedded(configuration));
-            externButton.setSelection(!JettyPluginConstants.isEmbedded(configuration));
-            pathText.setText(JettyPluginConstants.getPathString(configuration));
+            JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
 
-            jspSupportButton.setSelection(JettyPluginConstants.isJspSupport(configuration));
-            jmxSupportButton.setSelection(JettyPluginConstants.isJmxSupport(configuration));
-            jndiSupportButton.setSelection(JettyPluginConstants.isJndiSupport(configuration));
-            ajpSupportButton.setSelection(JettyPluginConstants.isAjpSupport(configuration));
+            embeddedButton.setSelection(adapter.isEmbedded());
+            externButton.setSelection(!adapter.isEmbedded());
+            pathText.setText(adapter.getPathString());
 
-            threadPoolLimitEnabledButton.setSelection(JettyPluginConstants.isThreadPoolLimitEnabled(configuration));
-            threadPoolLimitCountSpinner.setSelection(JettyPluginConstants.getThreadPoolLimitCount(configuration));
-            acceptorLimitEnabledButton.setSelection(JettyPluginConstants.isAcceptorLimitEnabled(configuration));
-            acceptorLimitCountSpinner.setSelection(JettyPluginConstants.getAcceptorLimitCount(configuration));
+            jspSupportButton.setSelection(adapter.isJspSupport());
+            jmxSupportButton.setSelection(adapter.isJmxSupport());
+            jndiSupportButton.setSelection(adapter.isJndiSupport());
+            ajpSupportButton.setSelection(adapter.isAjpSupport());
 
-            customWebDefaultsEnabledButton.setSelection(JettyPluginConstants.isCustomWebDefaultsEnabled(configuration));
-            customWebDefaultsResourceText.setText(JettyPluginConstants.getCustomWebDefaultsResource(configuration));
+            threadPoolLimitEnabledButton.setSelection(adapter.isThreadPoolLimitEnabled());
+            threadPoolLimitCountSpinner.setSelection(adapter.getThreadPoolLimitCount());
+            acceptorLimitEnabledButton.setSelection(adapter.isAcceptorLimitEnabled());
+            acceptorLimitCountSpinner.setSelection(adapter.getAcceptorLimitCount());
+
+            customWebDefaultsEnabledButton.setSelection(adapter.isCustomWebDefaultsEnabled());
+            customWebDefaultsResourceText.setText(adapter.getCustomWebDefaultsResource());
 
             updateTable(configuration, true);
             updateConfigButtonState();
 
-            showLauncherInfoButton.setSelection(JettyPluginConstants.isShowLauncherInfo(configuration));
-            consoleEnabledButton.setSelection(JettyPluginConstants.isConsoleEnabled(configuration));
+            showLauncherInfoButton.setSelection(adapter.isShowLauncherInfo());
+            consoleEnabledButton.setSelection(adapter.isConsoleEnabled());
         }
         catch (final CoreException e)
         {
@@ -407,55 +412,57 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)
     {
-        JettyPluginConstants.updateConfigVersion(configuration);
+        JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
+
+        adapter.updateConfigVersion();
 
         boolean embedded = embeddedButton.getSelection();
 
-        JettyPluginConstants.setEmbedded(configuration, embedded);
+        adapter.setEmbedded(embedded);
 
         String jettyPath = pathText.getText().trim();
 
-        JettyPluginConstants.setPathString(configuration, jettyPath);
+        adapter.setPathString(jettyPath);
 
         try
         {
             JettyVersion jettyVersion =
                 JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(jettyPath));
 
-            JettyPluginConstants.setMainTypeName(configuration, jettyVersion);
-            JettyPluginConstants.setVersion(configuration, jettyVersion);
+            adapter.setMainTypeName(jettyVersion);
+            adapter.setVersion(jettyVersion);
         }
         catch (IllegalArgumentException e)
         {
             // failed to detect
         }
 
-        JettyPluginConstants.setJspSupport(configuration, jspSupportButton.getSelection());
-        JettyPluginConstants.setJmxSupport(configuration, jmxSupportButton.getSelection());
-        JettyPluginConstants.setJndiSupport(configuration, jndiSupportButton.getSelection());
-        JettyPluginConstants.setAjpSupport(configuration, ajpSupportButton.getSelection());
+        adapter.setJspSupport(jspSupportButton.getSelection());
+        adapter.setJmxSupport(jmxSupportButton.getSelection());
+        adapter.setJndiSupport(jndiSupportButton.getSelection());
+        adapter.setAjpSupport(ajpSupportButton.getSelection());
 
-        JettyPluginConstants.setThreadPoolLimitEnabled(configuration, threadPoolLimitEnabledButton.getSelection());
-        JettyPluginConstants.setThreadPoolLimitCount(configuration, threadPoolLimitCountSpinner.getSelection());
-        JettyPluginConstants.setAcceptorLimitEnabled(configuration, acceptorLimitEnabledButton.getSelection());
-        JettyPluginConstants.setAcceptorLimitCount(configuration, acceptorLimitCountSpinner.getSelection());
+        adapter.setThreadPoolLimitEnabled(threadPoolLimitEnabledButton.getSelection());
+        adapter.setThreadPoolLimitCount(threadPoolLimitCountSpinner.getSelection());
+        adapter.setAcceptorLimitEnabled(acceptorLimitEnabledButton.getSelection());
+        adapter.setAcceptorLimitCount(acceptorLimitCountSpinner.getSelection());
 
-        JettyPluginConstants.setShowLauncherInfo(configuration, showLauncherInfoButton.getSelection());
-        JettyPluginConstants.setConsoleEnabled(configuration, consoleEnabledButton.getSelection());
+        adapter.setShowLauncherInfo(showLauncherInfoButton.getSelection());
+        adapter.setConsoleEnabled(consoleEnabledButton.getSelection());
 
-        JettyPluginConstants.setCustomWebDefaultsEnabled(configuration, customWebDefaultsEnabledButton.getSelection());
-        JettyPluginConstants.setCustomWebDefaultsResource(configuration, customWebDefaultsResourceText.getText());
+        adapter.setCustomWebDefaultsEnabled(customWebDefaultsEnabledButton.getSelection());
+        adapter.setCustomWebDefaultsResource(customWebDefaultsResourceText.getText());
 
         try
         {
-            JettyPluginConstants.setConfigs(configuration, configEntryList.getConfigs());
+            adapter.setConfigs(configEntryList.getConfigs());
         }
         catch (CoreException e)
         {
             JettyPlugin.error("Failed to perform apply in advanced configuration tab", e);
         }
 
-        JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
+        adapter.setClasspathProvider(JettyLaunchConfigurationAdapter.CLASSPATH_PROVIDER_JETTY);
 
         updateTable(configuration, false);
         updateConfigButtonState();
@@ -537,8 +544,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
             if (customWebDefaultsPath.length() > 0)
             {
-                File file =
-                    JettyPluginUtils.resolveFile(JettyPluginConstants.getProject(configuration), customWebDefaultsPath);
+                JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
+
+                File file = JettyPluginUtils.resolveFile(adapter.getProject(), customWebDefaultsPath);
 
                 if ((file == null) || (!file.exists()))
                 {
@@ -573,7 +581,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     {
         try
         {
-            List<JettyConfig> contexts = JettyPluginConstants.getConfigs(configuration);
+            JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
+            List<JettyConfig> contexts = adapter.getConfigs();
 
             if (configEntryList.update(configuration, configTable, contexts))
             {
@@ -599,8 +608,11 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     protected String chooseConfig(String path)
     {
-        return chooseWorkspaceFile(JettyPluginConstants.getProject(getCurrentLaunchConfiguration()), getShell(),
-            "Resource Selection", "Select a resource as Jetty Context file:", path);
+        JettyLaunchConfigurationAdapter adapter =
+            JettyLaunchConfigurationAdapter.getInstance(getCurrentLaunchConfiguration());
+
+        return chooseWorkspaceFile(adapter.getProject(), getShell(), "Resource Selection",
+            "Select a resource as Jetty Context file:", path);
     }
 
     protected String chooseConfigFromFileSystem(String path)
@@ -687,16 +699,18 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 case DEFAULT:
                     try
                     {
-                        ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
+                        JettyLaunchConfigurationAdapter adapter =
+                            JettyLaunchConfigurationAdapter.getInstance(getCurrentLaunchConfiguration());
                         ILaunchDelegate[] delegates =
-                            configuration.getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
+                            adapter.getConfiguration().getType()
+                                .getDelegates(new HashSet<String>(Arrays.asList("run")));
 
                         if (delegates.length == 1)
                         {
                             JettyLaunchConfigurationDelegate delegate =
                                 (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
 
-                            File file = delegate.createJettyConfigurationFile(configuration, true);
+                            File file = delegate.createJettyConfigurationFile(adapter, true);
                             descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
                             input = new FileStoreEditorInput(EFS.getLocalFileSystem().fromLocalFile(file));
                         }

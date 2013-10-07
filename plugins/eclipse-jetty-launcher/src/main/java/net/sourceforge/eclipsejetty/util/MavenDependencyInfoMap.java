@@ -16,14 +16,13 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
-import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.ArtifactRef;
@@ -35,8 +34,8 @@ public class MavenDependencyInfoMap
 
     private final Map<String, MavenDependencyInfo> dependencies = new HashMap<String, MavenDependencyInfo>();
 
-    public MavenDependencyInfoMap(ILaunchConfiguration configuration, IRuntimeClasspathEntry... runtimeClasspathEntries)
-        throws CoreException
+    public MavenDependencyInfoMap(JettyLaunchConfigurationAdapter adapter,
+        IRuntimeClasspathEntry... runtimeClasspathEntries) throws CoreException
     {
         super();
 
@@ -46,7 +45,7 @@ public class MavenDependencyInfoMap
         }
 
         IMavenProjectRegistry mavenProjectRegistry = MavenPlugin.getMavenProjectRegistry();
-        IProject project = JettyPluginConstants.getProject(configuration);
+        IProject project = adapter.getProject();
 
         if (project != null)
         {
@@ -66,7 +65,7 @@ public class MavenDependencyInfoMap
             }
         }
 
-        IMavenProjectFacade facade = JettyPluginM2EUtils.getMavenProjectFacade(configuration);
+        IMavenProjectFacade facade = JettyPluginM2EUtils.getMavenProjectFacade(adapter);
 
         if (facade == null)
         {

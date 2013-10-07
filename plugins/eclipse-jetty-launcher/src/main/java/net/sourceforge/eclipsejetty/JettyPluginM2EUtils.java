@@ -11,9 +11,10 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty;
 
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.ArtifactKey;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
@@ -41,9 +42,10 @@ public class JettyPluginM2EUtils
         return true;
     }
 
-    public static IMavenProjectFacade getMavenProjectFacade(ILaunchConfiguration configuration) throws CoreException
+    public static IMavenProjectFacade getMavenProjectFacade(JettyLaunchConfigurationAdapter adapter)
+        throws CoreException
     {
-        IProject project = JettyPluginConstants.getProject(configuration);
+        IProject project = adapter.getProject();
 
         if (project == null)
         {

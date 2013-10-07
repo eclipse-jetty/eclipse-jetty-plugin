@@ -1,4 +1,4 @@
-package net.sourceforge.eclipsejetty.launch;
+package net.sourceforge.eclipsejetty.launch.configuration;
 
 import java.util.ArrayList;
 import java.util.List;

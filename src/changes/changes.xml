@@ -11,6 +11,10 @@
 	<body>
 		<release version="3.7.0">
 			<action dev="thred" type="add">
+				Added Run As... and Debug As... option
+			</action>
+
+			<action dev="thred" type="add">
 				Added web defaults option.
 			</action>
 			

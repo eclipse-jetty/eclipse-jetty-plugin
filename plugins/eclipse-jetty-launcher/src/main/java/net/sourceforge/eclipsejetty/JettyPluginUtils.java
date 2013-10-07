@@ -36,6 +36,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
@@ -634,7 +635,14 @@ public class JettyPluginUtils
             return path;
         }
 
-        return new Path(path).makeRelativeTo(project.getFullPath()).toString();
+        IPath resource = new Path(path);
+
+        if (resource.isAbsolute())
+        {
+            return resource.makeRelativeTo(project.getLocation()).toString();
+        }
+
+        return resource.makeRelativeTo(project.getFullPath()).toString();
     }
 
     public static IProject getProject(String projectName)
@@ -650,7 +658,7 @@ public class JettyPluginUtils
         {
             return null;
         }
-        
+
         return project;
     }
 

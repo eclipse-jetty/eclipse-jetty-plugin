@@ -1,11 +1,10 @@
-package net.sourceforge.eclipsejetty.launch;
+package net.sourceforge.eclipsejetty.launch.util;
 
 import java.io.File;
 
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -40,7 +39,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 public class JettyLaunchUI
 {
 
-    protected static Label createLabel(final Composite composite, final String text, final int widthHint,
+    public static Label createLabel(final Composite composite, final String text, final int widthHint,
         int horizontalSpan, int verticalSpan)
     {
         Label label = new Label(composite, SWT.NONE);
@@ -60,7 +59,7 @@ public class JettyLaunchUI
         return label;
     }
 
-    protected static Label createHint(final Composite composite, final String text, final int widthHint,
+    public static Label createHint(final Composite composite, final String text, final int widthHint,
         int horizontalSpan, int verticalSpan)
     {
         Label label = createLabel(composite, text, widthHint, horizontalSpan, verticalSpan);
@@ -89,19 +88,19 @@ public class JettyLaunchUI
         return label;
     }
 
-    protected static Button createButton(final Composite composite, int style, final String text, final int widthHint,
+    public static Button createButton(final Composite composite, int style, final String text, final int widthHint,
         int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
         return createButton(composite, style, null, text, widthHint, horizontalSpan, verticalSpan, selectionListeners);
     }
 
-    protected static Button createButton(final Composite composite, int style, final Image image, final int widthHint,
+    public static Button createButton(final Composite composite, int style, final Image image, final int widthHint,
         int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
         return createButton(composite, style, image, null, widthHint, horizontalSpan, verticalSpan, selectionListeners);
     }
 
-    protected static Button createButton(final Composite composite, int style, Image image, final String text,
+    public static Button createButton(final Composite composite, int style, Image image, final String text,
         final int widthHint, int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
         Button button = new Button(composite, style);
@@ -138,7 +137,7 @@ public class JettyLaunchUI
         return button;
     }
 
-    protected static Text createText(final Composite composite, int style, final int widthHint, int heightHint,
+    public static Text createText(final Composite composite, int style, final int widthHint, int heightHint,
         int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
     {
         Text text = new Text(composite, style);
@@ -170,7 +169,7 @@ public class JettyLaunchUI
         return text;
     }
 
-    protected static Spinner createSpinner(final Composite composite, int style, final int widthHint, int heightHint,
+    public static Spinner createSpinner(final Composite composite, int style, final int widthHint, int heightHint,
         int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
     {
         Spinner spinner = new Spinner(composite, style);
@@ -202,8 +201,8 @@ public class JettyLaunchUI
         return spinner;
     }
 
-    protected static Composite createTopComposite(final Composite composite, int style, int columns,
-        final int widthHint, boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
+    public static Composite createTopComposite(final Composite composite, int style, int columns, final int widthHint,
+        boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
     {
         GridLayout layout = new GridLayout(columns, false);
 
@@ -213,7 +212,7 @@ public class JettyLaunchUI
         return createComposite(composite, style, widthHint, grabVerticalSpace, horizontalSpan, verticalSpan, layout);
     }
 
-    protected static Composite createComposite(final Composite composite, int style, int columns, final int widthHint,
+    public static Composite createComposite(final Composite composite, int style, int columns, final int widthHint,
         boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
     {
         GridLayout layout = new GridLayout(columns, false);
@@ -245,8 +244,8 @@ public class JettyLaunchUI
         return result;
     }
 
-    protected static Table createTable(Composite composite, int style, int widthHint, int heightHint,
-        int horizontalSpan, int verticalSpan, String... titles)
+    public static Table createTable(Composite composite, int style, int widthHint, int heightHint, int horizontalSpan,
+        int verticalSpan, String... titles)
     {
         Table table = new Table(composite, style);
         table.setLinesVisible(false);
@@ -277,7 +276,7 @@ public class JettyLaunchUI
         return table;
     }
 
-    protected static String chooseWorkspaceFile(IProject project, Shell shell, String title, String message, String path)
+    public static String chooseWorkspaceFile(IProject project, Shell shell, String title, String message, String path)
     {
         path = JettyPluginUtils.resolveVariables(path);
 
@@ -309,7 +308,8 @@ public class JettyLaunchUI
         return null;
     }
 
-    public static String chooseWorkspaceDirectory(Shell shell, IProject project, String title, String message, String path)
+    public static String chooseWorkspaceDirectory(Shell shell, IProject project, String title, String message,
+        String path)
     {
         path = JettyPluginUtils.resolveVariables(path);
 
@@ -337,7 +337,7 @@ public class JettyLaunchUI
         return null;
     }
 
-    protected static String chooseExternalDirectory(Shell shell, String text, String message, String path)
+    public static String chooseExternalDirectory(Shell shell, String text, String message, String path)
     {
         path = JettyPluginUtils.resolveVariables(path);
 
@@ -350,7 +350,7 @@ public class JettyLaunchUI
         return dialog.open();
     }
 
-    protected static String chooseExternalFile(Shell shell, String path, String text, String... filter)
+    public static String chooseExternalFile(Shell shell, String path, String text, String... filter)
     {
         path = JettyPluginUtils.resolveVariables(path);
 
@@ -371,7 +371,7 @@ public class JettyLaunchUI
         return dialog.open();
     }
 
-    protected static void chooseVariable(Shell parent, Text textComponent)
+    public static void chooseVariable(Shell parent, Text textComponent)
     {
         StringVariableSelectionDialog dialog = new StringVariableSelectionDialog(parent);
 

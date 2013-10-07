@@ -9,17 +9,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package net.sourceforge.eclipsejetty.launch;
+package net.sourceforge.eclipsejetty.launch.configuration;
 
-import static net.sourceforge.eclipsejetty.launch.JettyLaunchUI.*;
+import static net.sourceforge.eclipsejetty.launch.util.JettyLaunchUI.*;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
-import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationDelegate;
 import net.sourceforge.eclipsejetty.util.Dependency;
 
 import org.eclipse.core.runtime.CoreException;
@@ -137,15 +138,17 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
         try
         {
-            mavenIncludeCompile.setSelection(!JettyPluginConstants.isScopeCompileExcluded(configuration));
-            mavenIncludeProvided.setSelection(!JettyPluginConstants.isScopeProvidedExcluded(configuration));
-            mavenIncludeRuntime.setSelection(!JettyPluginConstants.isScopeRuntimeExcluded(configuration));
-            mavenIncludeSystem.setSelection(!JettyPluginConstants.isScopeSystemExcluded(configuration));
-            mavenIncludeTest.setSelection(!JettyPluginConstants.isScopeTestExcluded(configuration));
-            mavenIncludeImport.setSelection(!JettyPluginConstants.isScopeImportExcluded(configuration));
-            mavenIncludeNone.setSelection(!JettyPluginConstants.isScopeNoneExcluded(configuration));
+            JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
 
-            updateTable(configuration, true);
+            mavenIncludeCompile.setSelection(!adapter.isScopeCompileExcluded());
+            mavenIncludeProvided.setSelection(!adapter.isScopeProvidedExcluded());
+            mavenIncludeRuntime.setSelection(!adapter.isScopeRuntimeExcluded());
+            mavenIncludeSystem.setSelection(!adapter.isScopeSystemExcluded());
+            mavenIncludeTest.setSelection(!adapter.isScopeTestExcluded());
+            mavenIncludeImport.setSelection(!adapter.isScopeImportExcluded());
+            mavenIncludeNone.setSelection(!adapter.isScopeNoneExcluded());
+
+            updateTable(adapter, true);
         }
         catch (final CoreException e)
         {
@@ -160,31 +163,34 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)
     {
-        JettyPluginConstants.updateConfigVersion(configuration);
+        JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
 
-        JettyPluginConstants.setScopeCompileExcluded(configuration, !mavenIncludeCompile.getSelection());
-        JettyPluginConstants.setScopeProvidedExcluded(configuration, !mavenIncludeProvided.getSelection());
-        JettyPluginConstants.setScopeRuntimeExcluded(configuration, !mavenIncludeRuntime.getSelection());
-        JettyPluginConstants.setScopeSystemExcluded(configuration, !mavenIncludeSystem.getSelection());
-        JettyPluginConstants.setScopeTestExcluded(configuration, !mavenIncludeTest.getSelection());
-        JettyPluginConstants.setScopeImportExcluded(configuration, !mavenIncludeImport.getSelection());
-        JettyPluginConstants.setScopeNoneExcluded(configuration, !mavenIncludeNone.getSelection());
+        adapter.updateConfigVersion();
 
-        JettyPluginConstants.setExcludedGenericIds(configuration, dependencyEntryList.createExcludedGenericIds());
-        JettyPluginConstants.setIncludedGenericIds(configuration, dependencyEntryList.createIncludedGenericIds());
-        JettyPluginConstants.setGlobalGenericIds(configuration, dependencyEntryList.createGlobalGenericIds());
+        adapter.setScopeCompileExcluded(!mavenIncludeCompile.getSelection());
+        adapter.setScopeProvidedExcluded(!mavenIncludeProvided.getSelection());
+        adapter.setScopeRuntimeExcluded(!mavenIncludeRuntime.getSelection());
+        adapter.setScopeSystemExcluded(!mavenIncludeSystem.getSelection());
+        adapter.setScopeTestExcluded(!mavenIncludeTest.getSelection());
+        adapter.setScopeImportExcluded(!mavenIncludeImport.getSelection());
+        adapter.setScopeNoneExcluded(!mavenIncludeNone.getSelection());
 
-        deprecatedPerformApply(configuration);
+        adapter.setExcludedGenericIds(dependencyEntryList.createExcludedGenericIds());
+        adapter.setIncludedGenericIds(dependencyEntryList.createIncludedGenericIds());
+        adapter.setGlobalGenericIds(dependencyEntryList.createGlobalGenericIds());
 
-        updateTable(configuration, false);
+        deprecatedPerformApply(adapter);
+
+        updateTable(adapter, false);
     }
 
     @SuppressWarnings("deprecation")
-    private void deprecatedPerformApply(final ILaunchConfigurationWorkingCopy configuration)
+    private void deprecatedPerformApply(JettyLaunchConfigurationAdapter adapter)
     {
-        JettyPluginConstants.setExcludedLibs(configuration, dependencyEntryList.createExcludedLibs());
-        JettyPluginConstants.setIncludedLibs(configuration, dependencyEntryList.createIncludedLibs());
-        JettyPluginConstants.setGlobalLibs(configuration, dependencyEntryList.createGlobalLibs());
+
+        adapter.setExcludedLibs(dependencyEntryList.createExcludedLibs());
+        adapter.setIncludedLibs(dependencyEntryList.createIncludedLibs());
+        adapter.setGlobalLibs(dependencyEntryList.createGlobalLibs());
     }
 
     @Override
@@ -201,7 +207,9 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         {
             try
             {
-                scopeable = JettyPluginM2EUtils.getMavenProjectFacade(configuration) != null;
+                scopeable =
+                    JettyPluginM2EUtils.getMavenProjectFacade(JettyLaunchConfigurationAdapter
+                        .getInstance(configuration)) != null;
             }
             catch (CoreException e)
             {
@@ -231,25 +239,25 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         return true;
     }
 
-    private void updateTable(final ILaunchConfiguration configuration, boolean updateType)
+    private void updateTable(JettyLaunchConfigurationAdapter adapter, boolean updateType)
     {
         try
         {
             ILaunchDelegate[] delegates =
-                configuration.getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
+                adapter.getConfiguration().getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
 
             if (delegates.length == 1)
             {
                 JettyLaunchConfigurationDelegate delegate =
                     (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
 
-                Collection<Dependency> originalClasspathEntries = delegate.getOriginalClasspathEntries(configuration);
+                Collection<Dependency> originalClasspathEntries = delegate.getOriginalClasspathEntries(adapter);
                 Collection<Dependency> webappClasspathEntries =
-                    delegate.getWebappClasspathEntries(configuration, originalClasspathEntries);
+                    delegate.getWebappClasspathEntries(adapter, originalClasspathEntries);
                 Collection<Dependency> globalWebappClasspathEntries =
-                    delegate.getGlobalWebappClasspathEntries(configuration, webappClasspathEntries);
+                    delegate.getGlobalWebappClasspathEntries(adapter, webappClasspathEntries);
 
-                if (dependencyEntryList.update(configuration, dependencyTable, originalClasspathEntries,
+                if (dependencyEntryList.update(adapter, dependencyTable, originalClasspathEntries,
                     webappClasspathEntries, globalWebappClasspathEntries, updateType))
                 {
                     if (!dependencyTableFormatted)

@@ -9,16 +9,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package net.sourceforge.eclipsejetty.launch;
+package net.sourceforge.eclipsejetty.launch.configuration;
 
-import static net.sourceforge.eclipsejetty.launch.JettyLaunchUI.*;
+import static net.sourceforge.eclipsejetty.launch.util.JettyLaunchUI.*;
 import static org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants.*;
 
 import java.text.MessageFormat;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
-import net.sourceforge.eclipsejetty.JettyPluginConstants;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -196,12 +197,14 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         try
         {
-            projectText.setText(JettyPluginConstants.getProjectName(configuration));
-            webAppText.setText(JettyPluginConstants.getWebAppString(configuration));
-            contextText.setText(JettyPluginConstants.getContext(configuration));
-            portSpinner.setSelection(JettyPluginConstants.getPort(configuration));
-            httpsPortSpinner.setSelection(JettyPluginConstants.getHttpsPort(configuration));
-            httpsEnabledButton.setSelection(JettyPluginConstants.isHttpsEnabled(configuration));
+            JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
+
+            projectText.setText(adapter.getProjectName());
+            webAppText.setText(adapter.getWebAppString());
+            contextText.setText(adapter.getContext());
+            portSpinner.setSelection(adapter.getPort());
+            httpsPortSpinner.setSelection(adapter.getHttpsPort());
+            httpsEnabledButton.setSelection(adapter.isHttpsEnabled());
         }
         catch (CoreException e)
         {
@@ -212,6 +215,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
     {
         IJavaElement javaElement = getContext();
+
         if (javaElement != null)
         {
             initializeJavaProject(javaElement, configuration);
@@ -221,9 +225,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             configuration.setAttribute(ATTR_PROJECT_NAME, "");
         }
 
-        JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
-
-        // get the name for this launch configuration
         String projectName = "";
 
         try
@@ -235,47 +236,72 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             // ignore
         }
 
-        String launchConfigName = projectName;
+        JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
 
-        if ((launchConfigName == null) || (launchConfigName.length() == 0))
+        try
         {
-            // if no project name was found, base on a default name
-            launchConfigName = "Jetty Webapp";
+            adapter.initialize(JettyPluginUtils.getProject(projectName), null);
         }
+        catch (CoreException e)
+        {
+            JettyPlugin.error("Failed to initialize project", e);
+        }
+
+        //        // get the name for this launch configuration
+        //        String projectName = "";
+        //
+        //        try
+        //        {
+        //            projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
+        //        }
+        //        catch (CoreException e)
+        //        {
+        //            // ignore
+        //        }
+        //
+        //        String launchConfigName = projectName;
+        //
+        //        if ((launchConfigName == null) || (launchConfigName.length() == 0))
+        //        {
+        //            // if no project name was found, base on a default name
+        //            launchConfigName = "Jetty Webapp";
+        //        }
 
         // generate an unique name (e.g. myproject(2))
-        launchConfigName = getLaunchConfigurationDialog().generateName(launchConfigName);
-        configuration.rename(launchConfigName); // and rename the config
+        //        launchConfigName = getLaunchConfigurationDialog().generateName(launchConfigName);
+        //        configuration.rename(launchConfigName); // and rename the config
 
-        String webAppDir = "src/main/webapp";
-
-        if ((projectName != null) && (projectName.length() > 0))
-        {
-            IProject project = JettyPluginUtils.getProject(projectName);
-
-            if (project != null)
-            {
-                IPath path = findWebappDir(project);
-
-                if (path != null)
-                {
-                    webAppDir = JettyPluginUtils.toRelativePath(project, path.toString());
-                }
-            }
-        }
-
-        JettyPluginConstants.setWebAppString(configuration, webAppDir);
+        //        String webAppDir = "src/main/webapp";
+        //
+        //        if ((projectName != null) && (projectName.length() > 0))
+        //        {
+        //            IProject project = JettyPluginUtils.getProject(projectName);
+        //
+        //            if (project != null)
+        //            {
+        //                IPath path = JettyLaunchUtils.findWebappDir(project);
+        //
+        //                if (path != null)
+        //                {
+        //                    webAppDir = JettyPluginUtils.toRelativePath(project, path.toString());
+        //                }
+        //            }
+        //        }
+        //
+        //        JettyPluginConstants.setWebAppString(configuration, webAppDir);
     }
 
     public void performApply(ILaunchConfigurationWorkingCopy configuration)
     {
-        JettyPluginConstants.setProjectName(configuration, projectText.getText().trim());
-        JettyPluginConstants.setContext(configuration, contextText.getText().trim());
-        JettyPluginConstants.setWebAppString(configuration, webAppText.getText().trim());
-        JettyPluginConstants.setPort(configuration, portSpinner.getSelection());
-        JettyPluginConstants.setHttpsPort(configuration, httpsPortSpinner.getSelection());
-        JettyPluginConstants.setHttpsEnabled(configuration, httpsEnabledButton.getSelection());
-        JettyPluginConstants.setClasspathProvider(configuration, JettyPluginConstants.CLASSPATH_PROVIDER_JETTY);
+        JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
+
+        adapter.setProjectName(projectText.getText().trim());
+        adapter.setContext(contextText.getText().trim());
+        adapter.setWebAppString(webAppText.getText().trim());
+        adapter.setPort(portSpinner.getSelection());
+        adapter.setHttpsPort(httpsPortSpinner.getSelection());
+        adapter.setHttpsEnabled(httpsEnabledButton.getSelection());
+        adapter.setClasspathProvider(JettyLaunchConfigurationAdapter.CLASSPATH_PROVIDER_JETTY);
     }
 
     @Override
@@ -288,15 +314,15 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         String projectName = projectText.getText().trim();
         IProject project = JettyPluginUtils.getProject(projectName);
-        
+
         webAppScanButton.setEnabled(project != null);
         webAppBrowseButton.setEnabled(project != null);
-        
+
         if (projectName.length() > 0)
         {
             IWorkspace workspace = ResourcesPlugin.getWorkspace();
             IStatus status = workspace.validateName(projectName, IResource.PROJECT);
-            
+
             if (status.isOK())
             {
                 project = workspace.getRoot().getProject(projectName);
@@ -407,7 +433,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     protected void scanWebappDir()
     {
         IProject project = JettyPluginUtils.getProject(projectText.getText());
-        IPath path = findWebappDir(project);
+        IPath path = JettyLaunchUtils.findWebappDir(project);
 
         if (path == null)
         {
@@ -429,27 +455,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         String containerName = JettyPluginUtils.toRelativePath(project, path.toString());
 
         webAppText.setText(containerName);
-    }
-
-    protected IPath findWebappDir(IProject project)
-    {
-        IPath path = null;
-
-        try
-        {
-            IResource resource = JettyPluginUtils.findResource(project, "WEB-INF", "web.xml");
-
-            if (resource != null)
-            {
-                path = resource.getFullPath().removeLastSegments(2);
-            }
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.warning("Failed to scan project", e);
-        }
-
-        return path;
     }
 
     protected void chooseWebappDir()

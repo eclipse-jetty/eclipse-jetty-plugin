@@ -9,38 +9,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package net.sourceforge.eclipsejetty.launch;
+package net.sourceforge.eclipsejetty.launch.configuration;
 
-import org.eclipse.jdt.core.IClasspathAttribute;
+import org.eclipse.jdt.debug.ui.launchConfigurations.JavaLaunchTab;
 
 /**
- * Eclipse classpath attrubite for Jetty library
+ * UI
  * 
+ * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
-public class JettyClasspathAttribute implements IClasspathAttribute
+public abstract class AbstractJettyLaunchConfigurationTab extends JavaLaunchTab
 {
 
-    public static final String NAME = "jetty";
-    public static final String VALUE = "true";
+    // intentionally left blank
 
-    public JettyClasspathAttribute()
-    {
-    }
-
-    public String getName()
-    {
-        return NAME;
-    }
-
-    public String getValue()
-    {
-        return VALUE;
-    }
-
-    @Override
-    public String toString()
-    {
-        return NAME + "=" + VALUE;
-    }
 }
