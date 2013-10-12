@@ -14,7 +14,6 @@ package net.sourceforge.eclipsejetty.launch.configuration;
 import static net.sourceforge.eclipsejetty.launch.util.JettyLaunchUI.*;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -126,38 +125,46 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jettyGroup.setText("Jetty:");
 
         embeddedButton =
-            createButton(jettyGroup, SWT.RADIO, "Use Jetty provided by launcher plugin (Jetty 8.x)", -1, 4, 1,
+            createButton(jettyGroup, SWT.RADIO, "Use Jetty provided by launcher plugin (Jetty 8.x)",
+                "The Eclipse Jetty Plugin comes with a tested default Jetty. Use it!", -1, 4, 1, modifyDialogListener);
+        externButton =
+            createButton(jettyGroup, SWT.RADIO, "Use Jetty at path:",
+                "Specify a path containing a default Jetty installation.", 128, 1, 1, modifyDialogListener);
+        pathText =
+            createText(jettyGroup, SWT.BORDER, "The path to your Jetty installation folder.", -1, -1, 3, 1,
                 modifyDialogListener);
-        externButton = createButton(jettyGroup, SWT.RADIO, "Use Jetty at path:", 128, 1, 1, modifyDialogListener);
-        pathText = createText(jettyGroup, SWT.BORDER, -1, -1, 3, 1, modifyDialogListener);
 
-        createLabel(jettyGroup, "", -1, 2, 1);
-        pathVariablesButton = createButton(jettyGroup, SWT.NONE, "Variables...", 96, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                chooseVariable(getShell(), pathText);
-            }
-        });
-        pathBrowseButton = createButton(jettyGroup, SWT.NONE, "External...", 96, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(final SelectionEvent e)
-            {
-                String path =
-                    chooseExternalDirectory(
-                        getShell(),
-                        "Select Jetty Home Directory",
-                        "Choose the installation directory of your Jetty. Currenty, the versions 6 to 9 are supported.",
-                        pathText.getText());
-
-                if (path != null)
+        createLabel(jettyGroup, JettyPluginUtils.BLANK, -1, 2, 1);
+        pathVariablesButton =
+            createButton(jettyGroup, SWT.NONE, "Variables...", "Add variables to the path.", 96, 1, 1,
+                new SelectionAdapter()
                 {
-                    pathText.setText(path);
-                }
-            }
-        });
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        chooseVariable(getShell(), pathText);
+                    }
+                });
+        pathBrowseButton =
+            createButton(jettyGroup, SWT.NONE, "External...", "Search for a Jetty installation in your file system.",
+                96, 1, 1, new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(final SelectionEvent e)
+                    {
+                        String path =
+                            chooseExternalDirectory(
+                                getShell(),
+                                "Select Jetty Home Directory",
+                                "Choose the installation directory of your Jetty. Currenty, the versions 6 to 9 are supported.",
+                                pathText.getText());
+
+                        if (path != null)
+                        {
+                            pathText.setText(path);
+                        }
+                    }
+                });
 
         final Group jettyFeatureGroup = new Group(tabComposite, SWT.NONE);
         jettyFeatureGroup.setLayout(new GridLayout(1, false));
@@ -165,11 +172,14 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jettyFeatureGroup.setText("Jetty Features:");
 
         jspSupportButton =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JSP Support", -1, 1, 1, modifyDialogListener);
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JSP Support", "Enable support and compilation of JSPs.",
+                -1, 1, 1, modifyDialogListener);
         jndiSupportButton =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JNDI Support", -1, 1, 1, modifyDialogListener);
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JNDI Support",
+                "Enable JNDI support. You will need to specify a context file, too.", -1, 1, 1, modifyDialogListener);
         jmxSupportButton =
-            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JMX Support", -1, 1, 1, modifyDialogListener);
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable JMX Support",
+                "Add JMX beans and enable JMX support for the JVM.", -1, 1, 1, modifyDialogListener);
 
         final Group pluginFeatureGroup = new Group(tabComposite, SWT.NONE);
         pluginFeatureGroup.setLayout(new GridLayout(1, false));
@@ -177,9 +187,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         pluginFeatureGroup.setText("Plugin Features:");
 
         showLauncherInfoButton =
-            createButton(pluginFeatureGroup, SWT.CHECK, "Enable Jetty Launch Info", 224, 1, 1, modifyDialogListener);
+            createButton(pluginFeatureGroup, SWT.CHECK, "Enable Jetty Launch Info",
+                "Show the most important configuration options and the classpath before starting Jetty.", 224, 1, 1,
+                modifyDialogListener);
         consoleEnabledButton =
-            createButton(pluginFeatureGroup, SWT.CHECK, "Enable Jetty Plugin Console", 224, 1, 1, modifyDialogListener);
+            createButton(pluginFeatureGroup, SWT.CHECK, "Enable Jetty Plugin Console",
+                "Enable the powerful console. Type \"help\" in your Eclipse console.", 224, 1, 1, modifyDialogListener);
 
         final Group configGroup = new Group(tabComposite, SWT.NONE);
         configGroup.setLayout(new GridLayout(2, false));
@@ -187,26 +200,39 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         configGroup.setText("Jetty Configuration:");
 
         threadPoolLimitEnabledButton =
-            createButton(configGroup, SWT.CHECK, "Limit Size of Thread Pool:", 224, 1, 1, modifyDialogListener);
-        threadPoolLimitCountSpinner = createSpinner(configGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+            createButton(configGroup, SWT.CHECK, "Limit Size of Thread Pool:",
+                "Limit the size of Jetty's thread pool. Be aware that this includes waiting connections.", 224, 1, 1,
+                modifyDialogListener);
+        threadPoolLimitCountSpinner =
+            createSpinner(configGroup, SWT.BORDER,
+                "The size of Jetty's thread pool. Be aware that this includes waiting connections.", 32, -1, 1, 1,
+                modifyDialogListener);
         threadPoolLimitCountSpinner.setMinimum(8);
         threadPoolLimitCountSpinner.setMaximum(128);
         threadPoolLimitCountSpinner.setIncrement(1);
         threadPoolLimitCountSpinner.setPageIncrement(8);
 
         acceptorLimitEnabledButton =
-            createButton(configGroup, SWT.CHECK, "Limit Number of Acceptors:", 224, 1, 1, modifyDialogListener);
-        acceptorLimitCountSpinner = createSpinner(configGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+            createButton(configGroup, SWT.CHECK, "Limit Number of Acceptors:",
+                "Limit the number of Jetty's acceptors, that simultaniously handle requests.", 224, 1, 1,
+                modifyDialogListener);
+        acceptorLimitCountSpinner =
+            createSpinner(configGroup, SWT.BORDER,
+                "The number of Jetty's acceptors, that simultaniously handle requests.", 32, -1, 1, 1,
+                modifyDialogListener);
         acceptorLimitCountSpinner.setMinimum(2);
         acceptorLimitCountSpinner.setMaximum(64);
         acceptorLimitCountSpinner.setIncrement(1);
         acceptorLimitCountSpinner.setPageIncrement(8);
 
         ajpSupportButton =
-            createButton(configGroup, SWT.CHECK, "Enable AJP Connector on Port:", 224, 1, 1, modifyDialogListener);
+            createButton(configGroup, SWT.CHECK, "Enable AJP Connector on Port:",
+                "Enable an AJP connector on the specified port for your HTTP server.", 224, 1, 1, modifyDialogListener);
         // TODO enable when implemented
         ajpSupportButton.setEnabled(false);
-        ajpPortSpinner = createSpinner(configGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+        ajpPortSpinner =
+            createSpinner(configGroup, SWT.BORDER, "The port for the AJP connector.", 32, -1, 1, 1,
+                modifyDialogListener);
         ajpPortSpinner.setMinimum(0);
         ajpPortSpinner.setMaximum(65535);
         ajpPortSpinner.setIncrement(1);
@@ -215,55 +241,63 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         ajpPortSpinner.setEnabled(false);
 
         customWebDefaultsEnabledButton =
-            createButton(configGroup, SWT.CHECK, "Custom Web Defaults XML:", 224, 1, 1, modifyDialogListener);
-        customWebDefaultsResourceText = createText(configGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
+            createButton(configGroup, SWT.CHECK, "Custom Web Defaults XML:",
+                "Define a web.xml that is executed before the web.xml of the web application.", 224, 1, 1,
+                modifyDialogListener);
+        customWebDefaultsResourceText =
+            createText(configGroup, SWT.BORDER,
+                "The path to an web.xml that is executed before the web.xml of the web application.", -1, -1, 1, 1,
+                modifyDialogListener);
 
         Composite customWebDefaultsButtons = createComposite(configGroup, SWT.NONE, 4, -1, false, 2, 1);
-        createLabel(customWebDefaultsButtons, "", -1, 1, 1);
+        createLabel(customWebDefaultsButtons, JettyPluginUtils.BLANK, -1, 1, 1);
         customWebDefaultsWorkspaceButton =
-            createButton(customWebDefaultsButtons, SWT.NONE, "Workspace...", 96, 1, 1, new SelectionAdapter()
-            {
-                @Override
-                public void widgetSelected(final SelectionEvent e)
+            createButton(customWebDefaultsButtons, SWT.NONE, "Workspace...",
+                "Search the workspace for a custom web defaults XML file.", 96, 1, 1, new SelectionAdapter()
                 {
-                    JettyLaunchConfigurationAdapter adapter =
-                        JettyLaunchConfigurationAdapter.getInstance(getCurrentLaunchConfiguration());
-
-                    String path =
-                        chooseWorkspaceFile(adapter.getProject(), getShell(), "Resource Selection",
-                            "Select a resource as Jetty Context file:", customWebDefaultsResourceText.getText());
-
-                    if (path != null)
+                    @Override
+                    public void widgetSelected(final SelectionEvent e)
                     {
-                        customWebDefaultsResourceText.setText(path);
+                        JettyLaunchConfigurationAdapter adapter =
+                            JettyLaunchConfigurationAdapter.getInstance(getCurrentLaunchConfiguration());
+
+                        String path =
+                            chooseWorkspaceFile(adapter.getProject(), getShell(), "Resource Selection",
+                                "Select a resource as Jetty Context file:", customWebDefaultsResourceText.getText());
+
+                        if (path != null)
+                        {
+                            customWebDefaultsResourceText.setText(path);
+                        }
                     }
-                }
-            });
+                });
         customWebDefaultsFileSystemButton =
-            createButton(customWebDefaultsButtons, SWT.NONE, "File System...", 96, 1, 1, new SelectionAdapter()
-            {
-                @Override
-                public void widgetSelected(final SelectionEvent e)
+            createButton(customWebDefaultsButtons, SWT.NONE, "File System...",
+                "Search the file system for a custom web defaults XML file.", 96, 1, 1, new SelectionAdapter()
                 {
-                    String path =
-                        chooseExternalFile(getShell(), customWebDefaultsResourceText.getText(),
-                            "Select Custom Web Defaults XML", "*.xml", "*.*");
-
-                    if (path != null)
+                    @Override
+                    public void widgetSelected(final SelectionEvent e)
                     {
-                        customWebDefaultsResourceText.setText(path);
+                        String path =
+                            chooseExternalFile(getShell(), customWebDefaultsResourceText.getText(),
+                                "Select Custom Web Defaults XML", "*.xml", "*.*");
+
+                        if (path != null)
+                        {
+                            customWebDefaultsResourceText.setText(path);
+                        }
                     }
-                }
-            });
+                });
         customWebDefaultsVariablesButton =
-            createButton(customWebDefaultsButtons, SWT.NONE, "Variables...", 96, 1, 1, new SelectionAdapter()
-            {
-                @Override
-                public void widgetSelected(SelectionEvent e)
+            createButton(customWebDefaultsButtons, SWT.NONE, "Variables...",
+                "Add variables to the path of the custom web defaults XML file.", 96, 1, 1, new SelectionAdapter()
                 {
-                    chooseVariable(getShell(), customWebDefaultsResourceText);
-                }
-            });
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        chooseVariable(getShell(), customWebDefaultsResourceText);
+                    }
+                });
 
         Group contextGroup = new Group(tabComposite, SWT.NONE);
         contextGroup.setLayout(new GridLayout(6, false));
@@ -283,69 +317,81 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         });
 
-        moveUpConfigButton = createButton(contextGroup, SWT.NONE, "Up", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                moveUpConfig();
-            }
-        });
-        moveDownConfigButton = createButton(contextGroup, SWT.NONE, "Down", 128, 1, 2, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                moveDownConfig();
-            }
-        });
+        moveUpConfigButton =
+            createButton(contextGroup, SWT.NONE, "Up", "Move the selected configuration up.", 128, 1, 1,
+                new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        moveUpConfig();
+                    }
+                });
+        moveDownConfigButton =
+            createButton(contextGroup, SWT.NONE, "Down", "Move the selected configuration down.", 128, 1, 2,
+                new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        moveDownConfig();
+                    }
+                });
 
-        openConfigButton = createButton(contextGroup, SWT.NONE, "Open...", 128, 1, 1, new SelectionAdapter()
-        {
+        openConfigButton =
+            createButton(contextGroup, SWT.NONE, "Open...", "Open the selected configuration in an editor.", 128, 1, 1,
+                new SelectionAdapter()
+                {
 
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                openConfig();
-            }
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        openConfig();
+                    }
 
-        });
+                });
 
-        createLabel(contextGroup, "", -1, 1, 1);
-        createButton(contextGroup, SWT.NONE, "Add...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
+        createLabel(contextGroup, JettyPluginUtils.BLANK, -1, 1, 1);
+        createButton(contextGroup, SWT.NONE, "Add...", "Add a Jetty configuration XML file from the workspace.", 128,
+            1, 1, new SelectionAdapter()
             {
-                addConig();
-            }
-        });
-        createButton(contextGroup, SWT.NONE, "Add External...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                    addConig();
+                }
+            });
+        createButton(contextGroup, SWT.NONE, "Add External...",
+            "Add a Jetty configuration XML file from the file system.", 128, 1, 1, new SelectionAdapter()
             {
-                addExternalConfig();
-            }
-        });
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                    addExternalConfig();
+                }
+            });
 
-        editConfigButton = createButton(contextGroup, SWT.NONE, "Edit...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                editConfig();
-            }
-        });
+        editConfigButton =
+            createButton(contextGroup, SWT.NONE, "Edit...", "Edit the path of the Jetty configuration XML file.", 128,
+                1, 1, new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        editConfig();
+                    }
+                });
 
-        removeConfigButton = createButton(contextGroup, SWT.NONE, "Remove", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                removeConfig();
-            }
-        });
+        removeConfigButton =
+            createButton(contextGroup, SWT.NONE, "Remove", "Remove the Jetty configuration XML file.", 128, 1, 1,
+                new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        removeConfig();
+                    }
+                });
 
         setControl(tabComposite);
     }
@@ -523,7 +569,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 File f = new File(jettyPath);
                 if (!f.exists() || !f.isDirectory())
                 {
-                    setErrorMessage(MessageFormat.format("The path {0} is not a valid directory.", jettyPath));
+                    setErrorMessage(String.format("The path %s is not a valid directory.", jettyPath));
                     return false;
                 }
             }
@@ -539,7 +585,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             }
             catch (final IllegalArgumentException e)
             {
-                setErrorMessage("Failed to find and detect Jetty version at path \"" + jettyPath + "\"");
+                setErrorMessage(String.format("Failed to find and detect Jetty version at path \"%s\"", jettyPath));
                 return false;
             }
         }
@@ -575,7 +621,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         {
             if ((context.isActive()) && (!context.isValid(ResourcesPlugin.getWorkspace())))
             {
-                setErrorMessage(MessageFormat.format("The Jetty context file {0} does not exist.", context.getPath()));
+                setErrorMessage(String.format("The Jetty context file %s does not exist.", context.getPath()));
             }
         }
 

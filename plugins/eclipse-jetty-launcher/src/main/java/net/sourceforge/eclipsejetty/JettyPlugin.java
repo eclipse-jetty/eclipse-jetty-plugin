@@ -128,7 +128,7 @@ public class JettyPlugin extends AbstractUIPlugin
         }
         else
         {
-            error("Resource " + url + " was not found");
+            error(String.format("Resource %s not found", url));
         }
     }
 

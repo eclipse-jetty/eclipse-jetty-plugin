@@ -102,7 +102,7 @@ public class HelpCommand extends AbstractCommand
 
     private void showHelp(Process process, Command command, String prefix)
     {
-        process.out.print(String.format("%-" + prefix.length() + "s", CommandUtils.getNameDescriptor(command, true)));
+        process.out.printf("%-" + prefix.length() + "s", CommandUtils.getNameDescriptor(command, true));
 
         process.out.println(Utils.prefixLine(
             new WordWrap().perform(command.getDescription(), consoleAdapter.getLineLength() - prefix.length()), prefix,
@@ -115,7 +115,7 @@ public class HelpCommand extends AbstractCommand
 
         if (command == null)
         {
-            process.err.println("Unknown command: " + name);
+            process.err.printf("Unknown command: %s\n", name);
 
             return -1;
         }

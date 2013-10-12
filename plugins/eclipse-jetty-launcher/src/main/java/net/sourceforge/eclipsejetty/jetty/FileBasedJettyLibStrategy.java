@@ -52,8 +52,8 @@ public abstract class FileBasedJettyLibStrategy extends DependencyBasedJettyLibS
 
         if (dependencies.size() > 0)
         {
-            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
-                "Failed to resolve Jetty dependencies: " + dependencies));
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, String.format(
+                "Failed to resolve Jetty dependencies: %s", dependencies)));
         }
     }
 

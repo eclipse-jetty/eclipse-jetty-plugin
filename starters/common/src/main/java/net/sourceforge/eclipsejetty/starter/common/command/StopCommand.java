@@ -5,6 +5,7 @@ import net.sourceforge.eclipsejetty.starter.common.ServerAdapter;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
 import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.Process;
+import net.sourceforge.eclipsejetty.starter.util.Utils;
 
 public class StopCommand extends AbstractCommand
 {
@@ -20,7 +21,7 @@ public class StopCommand extends AbstractCommand
 
     public String getFormat()
     {
-        return "";
+        return Utils.BLANK;
     }
 
     public String getDescription()

@@ -13,9 +13,6 @@ package net.sourceforge.eclipsejetty.launch.configuration;
 
 import static net.sourceforge.eclipsejetty.launch.util.JettyLaunchUI.*;
 import static org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants.*;
-
-import java.text.MessageFormat;
-
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
@@ -105,55 +102,72 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         projectGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         projectGroup.setText("Project:");
 
-        projectText = createText(projectGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
-        createButton(projectGroup, SWT.NONE, "Browse...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
+        projectText =
+            createText(projectGroup, SWT.BORDER,
+                "The project that contains the web application and all necessary dependencies.", -1, -1, 1, 1,
+                modifyDialogListener);
+        createButton(projectGroup, SWT.NONE, "Browse...",
+            "Select the project from the list of projects in the workspace.", 128, 1, 1, new SelectionAdapter()
             {
-                chooseJavaProject();
-            }
-        });
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                    chooseJavaProject();
+                }
+            });
 
         Composite applicationGroup = createTopComposite(tabComposite, SWT.NONE, 4, -1, false, 2, 1);
 
         createLabel(applicationGroup, "WebApp Folder:", 128, 1, 1);
-        webAppText = createText(applicationGroup, SWT.BORDER, -1, -1, 1, 1, modifyDialogListener);
-        webAppScanButton = createButton(applicationGroup, SWT.NONE, "Scan...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                scanWebappDir();
-            }
-        });
-        webAppBrowseButton = createButton(applicationGroup, SWT.NONE, "Browse...", 128, 1, 1, new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                chooseWebappDir();
-            }
-        });
+        webAppText =
+            createText(applicationGroup, SWT.BORDER, "The path the web applcation folder.", -1, -1, 1, 1,
+                modifyDialogListener);
+        webAppScanButton =
+            createButton(applicationGroup, SWT.NONE, "Scan...",
+                "Automatically scan the project for the WEB-INF/web.xml file.", 128, 1, 1, new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        scanWebappDir();
+                    }
+                });
+        webAppBrowseButton =
+            createButton(applicationGroup, SWT.NONE, "Browse...", "Search the project for the web application folder.",
+                128, 1, 1, new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        chooseWebappDir();
+                    }
+                });
 
         Composite serverGroup = createTopComposite(tabComposite, SWT.NONE, 7, -1, false, 2, 1);
 
         createLabel(serverGroup, "Context Path:", 128, 1, 1);
-        contextText = createText(serverGroup, SWT.BORDER, -1, -1, 6, 1, modifyDialogListener);
+        contextText =
+            createText(serverGroup, SWT.BORDER, "The base path of the URL to your application.", -1, -1, 6, 1,
+                modifyDialogListener);
 
         createLabel(serverGroup, "HTTP / HTTPs Port:", 128, 1, 1);
-        portSpinner = createSpinner(serverGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+        portSpinner =
+            createSpinner(serverGroup, SWT.BORDER, "The port for HTTP connector.", 32, -1, 1, 1, modifyDialogListener);
         portSpinner.setMinimum(0);
         portSpinner.setMaximum(65535);
         portSpinner.setIncrement(1);
         portSpinner.setPageIncrement(1000);
         createLabel(serverGroup, "/", 16, 1, 1).setAlignment(SWT.CENTER);
-        httpsPortSpinner = createSpinner(serverGroup, SWT.BORDER, 32, -1, 1, 1, modifyDialogListener);
+        httpsPortSpinner =
+            createSpinner(serverGroup, SWT.BORDER, "The port for the HTTPs connector.", 32, -1, 1, 1,
+                modifyDialogListener);
         httpsPortSpinner.setMinimum(0);
         httpsPortSpinner.setMaximum(65535);
         httpsPortSpinner.setIncrement(1);
         httpsPortSpinner.setPageIncrement(1000);
-        httpsEnabledButton = createButton(serverGroup, SWT.CHECK, "Enable HTTPs", -1, 3, 1, modifyDialogListener);
+        httpsEnabledButton =
+            createButton(serverGroup, SWT.CHECK, "Enable HTTPs", "Enable HTTPs support on the specified port.", -1, 3,
+                1, modifyDialogListener);
 
         Composite helpGroup = new Composite(tabComposite, SWT.NONE);
         helpGroup.setLayout(new GridLayout(1, false));
@@ -222,14 +236,15 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
         else
         {
-            configuration.setAttribute(ATTR_PROJECT_NAME, "");
+            configuration.setAttribute(ATTR_PROJECT_NAME, JettyPluginUtils.BLANK);
         }
 
-        String projectName = "";
+        String projectName = JettyPluginUtils.BLANK;
 
         try
         {
-            projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
+            projectName =
+                configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, JettyPluginUtils.BLANK);
         }
         catch (CoreException e)
         {
@@ -246,49 +261,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         {
             JettyPlugin.error("Failed to initialize project", e);
         }
-
-        //        // get the name for this launch configuration
-        //        String projectName = "";
-        //
-        //        try
-        //        {
-        //            projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
-        //        }
-        //        catch (CoreException e)
-        //        {
-        //            // ignore
-        //        }
-        //
-        //        String launchConfigName = projectName;
-        //
-        //        if ((launchConfigName == null) || (launchConfigName.length() == 0))
-        //        {
-        //            // if no project name was found, base on a default name
-        //            launchConfigName = "Jetty Webapp";
-        //        }
-
-        // generate an unique name (e.g. myproject(2))
-        //        launchConfigName = getLaunchConfigurationDialog().generateName(launchConfigName);
-        //        configuration.rename(launchConfigName); // and rename the config
-
-        //        String webAppDir = "src/main/webapp";
-        //
-        //        if ((projectName != null) && (projectName.length() > 0))
-        //        {
-        //            IProject project = JettyPluginUtils.getProject(projectName);
-        //
-        //            if (project != null)
-        //            {
-        //                IPath path = JettyLaunchUtils.findWebappDir(project);
-        //
-        //                if (path != null)
-        //                {
-        //                    webAppDir = JettyPluginUtils.toRelativePath(project, path.toString());
-        //                }
-        //            }
-        //        }
-        //
-        //        JettyPluginConstants.setWebAppString(configuration, webAppDir);
     }
 
     public void performApply(ILaunchConfigurationWorkingCopy configuration)
@@ -335,14 +307,14 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
                 project = workspace.getRoot().getProject(projectName);
                 if (!project.exists())
                 {
-                    setErrorMessage(MessageFormat.format("Project {0} does not exist", projectName));
+                    setErrorMessage(String.format("Project %s does not exist", projectName));
                     webAppBrowseButton.setEnabled(false);
                     webAppScanButton.setEnabled(false);
                     return false;
                 }
                 if (!project.isOpen())
                 {
-                    setErrorMessage(MessageFormat.format("Project {0} is closed", projectName));
+                    setErrorMessage(String.format("Project %s is closed", projectName));
                     webAppBrowseButton.setEnabled(false);
                     webAppScanButton.setEnabled(false);
                     return false;
@@ -350,7 +322,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             }
             else
             {
-                setErrorMessage(MessageFormat.format("Illegal project name: {0}", status.getMessage()));
+                setErrorMessage(String.format("Illegal project name: %s", status.getMessage()));
                 webAppBrowseButton.setEnabled(false);
                 webAppScanButton.setEnabled(false);
                 return false;
@@ -374,8 +346,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
             if (!folder.exists())
             {
-                setErrorMessage(MessageFormat.format("Folder {0} does not exist in project {1}", directory,
-                    project.getName()));
+                setErrorMessage(String.format("Folder %s does not exist in project {1}", directory, project.getName()));
                 return false;
             }
             file = project.getFile(new Path(directory + "/WEB-INF/web.xml"));
@@ -387,9 +358,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         if (!file.exists())
         {
-            setErrorMessage(MessageFormat
-                .format("Directoy {0} does not contain WEB-INF/web.xml; it is not a valid web application directory",
-                    directory));
+            setErrorMessage(String.format(
+                "Directoy %s does not contain WEB-INF/web.xml; it is not a valid web application directory", directory));
             return false;
         }
 
@@ -448,9 +418,13 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             {
                 public void run()
                 {
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(), "WebApp Directory not found",
-                        "Could not to find the file \"WEB-INF/web.xml\" in project " + projectText.getText()
-                            + ".\n\nPlease locate the WebApp Directory manually.");
+                    MessageDialog.openError(
+                        Display.getCurrent().getActiveShell(),
+                        "WebApp Directory not found",
+                        String
+                            .format(
+                                "Could not to find the file \"WEB-INF/web.xml\" in project %s.\n\nPlease locate the WebApp Directory manually.",
+                                projectText.getText()));
                 }
             });
 

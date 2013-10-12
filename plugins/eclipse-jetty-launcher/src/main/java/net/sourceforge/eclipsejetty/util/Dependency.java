@@ -96,7 +96,7 @@ public class Dependency
     @Override
     public String toString()
     {
-        return "Dependency(" + genericId + ", " + location + ")";
+        return String.format("Dependency(%s, %s)", genericId, location);
     }
 
 }

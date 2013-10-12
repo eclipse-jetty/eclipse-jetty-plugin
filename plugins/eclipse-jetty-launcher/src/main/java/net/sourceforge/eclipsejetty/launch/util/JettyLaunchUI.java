@@ -88,20 +88,23 @@ public class JettyLaunchUI
         return label;
     }
 
-    public static Button createButton(final Composite composite, int style, final String text, final int widthHint,
-        int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
+    public static Button createButton(final Composite composite, int style, final String text, String toolTip,
+        final int widthHint, int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
-        return createButton(composite, style, null, text, widthHint, horizontalSpan, verticalSpan, selectionListeners);
+        return createButton(composite, style, null, text, toolTip, widthHint, horizontalSpan, verticalSpan,
+            selectionListeners);
     }
 
-    public static Button createButton(final Composite composite, int style, final Image image, final int widthHint,
-        int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
+    public static Button createButton(final Composite composite, int style, final Image image, String toolTip,
+        final int widthHint, int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
-        return createButton(composite, style, image, null, widthHint, horizontalSpan, verticalSpan, selectionListeners);
+        return createButton(composite, style, image, null, toolTip, widthHint, horizontalSpan, verticalSpan,
+            selectionListeners);
     }
 
     public static Button createButton(final Composite composite, int style, Image image, final String text,
-        final int widthHint, int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
+        String toolTip, final int widthHint, int horizontalSpan, int verticalSpan,
+        SelectionListener... selectionListeners)
     {
         Button button = new Button(composite, style);
 
@@ -121,6 +124,11 @@ public class JettyLaunchUI
             button.setText(text);
         }
 
+        if (toolTip != null)
+        {
+            button.setToolTipText(toolTip);
+        }
+
         if (image != null)
         {
             button.setImage(image);
@@ -137,14 +145,19 @@ public class JettyLaunchUI
         return button;
     }
 
-    public static Text createText(final Composite composite, int style, final int widthHint, int heightHint,
-        int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
+    public static Text createText(final Composite composite, int style, String toolTip, final int widthHint,
+        int heightHint, int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
     {
         Text text = new Text(composite, style);
 
         GridData gridData =
             new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
                 widthHint < 0, false, horizontalSpan, verticalSpan);
+
+        if (toolTip != null)
+        {
+            text.setToolTipText(toolTip);
+        }
 
         if (widthHint >= 0)
         {
@@ -169,14 +182,19 @@ public class JettyLaunchUI
         return text;
     }
 
-    public static Spinner createSpinner(final Composite composite, int style, final int widthHint, int heightHint,
-        int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
+    public static Spinner createSpinner(final Composite composite, int style, String toolTip, final int widthHint,
+        int heightHint, int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
     {
         Spinner spinner = new Spinner(composite, style);
 
         GridData gridData =
             new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
                 widthHint < 0, false, horizontalSpan, verticalSpan);
+
+        if (toolTip != null)
+        {
+            spinner.setToolTipText(toolTip);
+        }
 
         if (widthHint >= 0)
         {

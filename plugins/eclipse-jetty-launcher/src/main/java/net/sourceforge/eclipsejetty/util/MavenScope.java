@@ -11,10 +11,12 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.util;
 
+import net.sourceforge.eclipsejetty.JettyPluginUtils;
+
 public enum MavenScope
 {
 
-    NONE(""),
+    NONE(JettyPluginUtils.BLANK),
     COMPILE("compile"),
     PROVIDED("provided"),
     RUNTIME("runtime"),
@@ -55,6 +57,6 @@ public enum MavenScope
             }
         }
 
-        throw new IllegalArgumentException("Unknown scope: " + key);
+        throw new IllegalArgumentException(String.format("Unknown scope: %s", key));
     }
 }

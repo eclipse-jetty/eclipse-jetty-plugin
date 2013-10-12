@@ -64,8 +64,8 @@ public class ServiceUtils
 
             if (constructors.length > 1)
             {
-                throw new IllegalArgumentException("Failed to instantiate " + contribution
-                    + ". There must be exactly one constructor");
+                throw new IllegalArgumentException(String.format(
+                    "Failed to instantiate %s. There must be exactly one constructor", contribution));
             }
 
             Constructor<?> constructor = constructors[0];
@@ -81,27 +81,29 @@ public class ServiceUtils
         }
         catch (SecurityException e)
         {
-            throw new IllegalArgumentException("Failed to access " + contribution + " for security reasons", e);
+            throw new IllegalArgumentException(String.format("Failed to access %s for security reasons", contribution),
+                e);
         }
         catch (IllegalArgumentException e)
         {
-            throw new IllegalArgumentException("Failed to instantiate " + contribution, e);
+            throw new IllegalArgumentException(String.format("Failed to instantiate %s", contribution), e);
         }
         catch (InstantiationException e)
         {
-            throw new IllegalArgumentException("Failed to instantiate " + contribution, e);
+            throw new IllegalArgumentException(String.format("Failed to instantiate %s", contribution), e);
         }
         catch (IllegalAccessException e)
         {
-            throw new IllegalArgumentException("Failed to access " + contribution, e);
+            throw new IllegalArgumentException(String.format("Failed to access %s", contribution), e);
         }
         catch (InvocationTargetException e)
         {
-            throw new IllegalArgumentException("Failed to instantiate " + contribution, e);
+            throw new IllegalArgumentException(String.format("Failed to instantiate %s", contribution), e);
         }
         catch (ClassNotFoundException e)
         {
-            throw new IllegalArgumentException("Failed to instantiate " + contribution + ". Class not found", e);
+            throw new IllegalArgumentException(
+                String.format("Failed to instantiate %s. Class not found", contribution), e);
         }
     }
 

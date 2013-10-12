@@ -15,10 +15,11 @@ public abstract class AbstractServerAdapter implements ServerAdapter
 
     public void info(PrintStream out)
     {
-        out.println("         Version: " + getVersionDescription());
-        out.println("         Context: " + getContextPathDescription());
-        out.println("            Port: " + getPortDescription());
-        out.println("       Classpath: " + getClassPathDescription().replaceAll("\\n", "\n                  "));
+        out.println(String.format("         Version: %s", getVersionDescription()));
+        out.println(String.format("         Context: %s", getContextPathDescription()));
+        out.println(String.format("            Port: %s", getPortDescription()));
+        out.println(String.format("       Classpath: %s",
+            getClassPathDescription().replaceAll("\\n", "\n                  ")));
     }
 
     protected abstract String getVersionDescription();
@@ -45,7 +46,7 @@ public abstract class AbstractServerAdapter implements ServerAdapter
     {
         StringBuilder builder = new StringBuilder();
         Collection<Integer> ports = new LinkedHashSet<Integer>();
-        
+
         ports.addAll(getPorts());
         ports.addAll(getSecurePorts());
 

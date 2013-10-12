@@ -1,6 +1,8 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
 package net.sourceforge.eclipsejetty.starter.console.util;
 
+import net.sourceforge.eclipsejetty.starter.util.Utils;
+
 /**
  * Provides word wrap functionality.
  * 
@@ -11,7 +13,7 @@ public final class WordWrap
 {
     private static final String DEFAULT_UNCUTABLE = "\"\'!$%()[]{}?.,:;";
 
-    private String cutable = "";
+    private String cutable = Utils.BLANK;
     private String uncutable = DEFAULT_UNCUTABLE;
     private int tabWidth = 8;
     private String lineSeparator = System.getProperty("line.separator");
@@ -114,7 +116,7 @@ public final class WordWrap
         boolean isCutable = false;
         boolean wasCutable = false;
         boolean readingIndent = true;
-        String indent = "";
+        String indent = Utils.BLANK;
 
         while (position < text.length())
         {
@@ -132,7 +134,7 @@ public final class WordWrap
                 isCutable = false;
                 wasCutable = false;
                 readingIndent = true;
-                indent = "";
+                indent = Utils.BLANK;
             }
             else if (ch == '\r')
             {
@@ -146,7 +148,7 @@ public final class WordWrap
                 isCutable = false;
                 wasCutable = false;
                 readingIndent = true;
-                indent = "";
+                indent = Utils.BLANK;
 
                 if (((position + 1) < text.length()) && (text.charAt(position + 1) == '\n'))
                 {

@@ -114,9 +114,13 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
             {
                 public void run()
                 {
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(), "WebApp Directory not found",
-                        "Could not to find the file \"WEB-INF/web.xml\" in project " + project.getName()
-                            + ".\n\nPlease locate the WebApp Directory manually.");
+                    MessageDialog.openError(
+                        Display.getCurrent().getActiveShell(),
+                        "WebApp Directory not found",
+                        String
+                            .format(
+                                "Could not to find the file \"WEB-INF/web.xml\" in project %s.\n\nPlease locate the WebApp Directory manually.",
+                                project.getName()));
                 }
             });
 
@@ -243,12 +247,12 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
                 return ((IJavaElement) element).getResource();
             }
 
-            JettyPlugin.warning("Unsupported launch selection first element: " + element.getClass());
+            JettyPlugin.warning(String.format("Unsupported launch selection first element: %s", element.getClass()));
 
             return null;
         }
 
-        JettyPlugin.warning("Unsupported launch selection: " + selection.getClass());
+        JettyPlugin.warning(String.format("Unsupported launch selection: %s", selection.getClass()));
 
         return null;
     }

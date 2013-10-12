@@ -2,8 +2,8 @@
 package net.sourceforge.eclipsejetty.starter.console.command;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.ArgumentException;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.Process;
 import net.sourceforge.eclipsejetty.starter.console.util.MemoryUtils;
 import net.sourceforge.eclipsejetty.starter.util.Utils;
@@ -54,7 +54,7 @@ public class MemoryCommand extends AbstractCommand
             return gc(process, freeMemory);
         }
 
-        throw new ArgumentException("Invalid command: " + command);
+        throw new ArgumentException(String.format("Invalid command: %s", command));
     }
 
     private int gc(Process process, long freeMemory)

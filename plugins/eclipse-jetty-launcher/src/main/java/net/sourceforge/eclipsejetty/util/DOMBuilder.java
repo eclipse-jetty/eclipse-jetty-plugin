@@ -146,7 +146,8 @@ public class DOMBuilder
     public DOMBuilder setStylesheet(String link)
     {
         ProcessingInstruction pi =
-            document.createProcessingInstruction("xml-stylesheet", "type=\"text/xml\" href=\"" + link + "\"");
+            document
+                .createProcessingInstruction("xml-stylesheet", String.format("type=\"text/xml\" href=\"%s\"", link));
 
         document.insertBefore(pi, document.getFirstChild());
 
@@ -368,7 +369,7 @@ public class DOMBuilder
         }
         catch (TransformerConfigurationException e)
         {
-            throw new IOException("Failed to create transformer: " + e);
+            throw new IOException(String.format("Failed to create transformer: %s", e));
         }
 
         transformer.setParameter("encoding", "UTF-8");
@@ -385,7 +386,7 @@ public class DOMBuilder
         }
         catch (TransformerException e)
         {
-            throw new IOException("Failed to transform node: " + e);
+            throw new IOException(String.format("Failed to transform node: %s", e));
         }
     }
 

@@ -127,7 +127,7 @@ public class Arguments implements Iterable<String>
 
         if (indexOf >= args.size())
         {
-            throw new ArgumentException("Invalid argument: " + key + ". Value is missing.");
+            throw new ArgumentException(String.format("Invalid argument: %s. Value is missing.", key));
         }
 
         return Utils.resolvePlaceholders(args.remove(indexOf));
@@ -174,7 +174,7 @@ public class Arguments implements Iterable<String>
         }
         catch (NumberFormatException e)
         {
-            throw new ArgumentException("Invalid number: " + value);
+            throw new ArgumentException(String.format("Invalid number: %s", value));
         }
     }
 

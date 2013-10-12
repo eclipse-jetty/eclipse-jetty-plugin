@@ -3,6 +3,7 @@ package net.sourceforge.eclipsejetty.starter.console.command;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
 import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.Process;
+import net.sourceforge.eclipsejetty.starter.util.Utils;
 
 public class AmpersandCommand extends AbstractCommand
 {
@@ -14,7 +15,7 @@ public class AmpersandCommand extends AbstractCommand
 
     public String getFormat()
     {
-        return "";
+        return Utils.BLANK;
     }
 
     public String getDescription()
@@ -42,7 +43,7 @@ public class AmpersandCommand extends AbstractCommand
                 }
                 finally
                 {
-                    process.out.println("Finished [" + Thread.currentThread().getId() + "]: " + result);
+                    process.out.printf("Finished [%s]: %s\n", Thread.currentThread().getId(), result);
                 }
             }
 
@@ -50,7 +51,7 @@ public class AmpersandCommand extends AbstractCommand
 
         thread.start();
 
-        process.out.println("Started [" + thread.getId() + "]");
+        process.out.printf("Started [%s]\n", thread.getId());
 
         return 0;
     }

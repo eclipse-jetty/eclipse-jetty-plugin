@@ -48,6 +48,8 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 public class JettyPluginUtils
 {
 
+    public static final String BLANK = "";
+    
     /**
      * A collator set to primary strength, which means 'a', 'A' and '&auml;' is the same
      */
@@ -225,7 +227,8 @@ public class JettyPluginUtils
                 }
                 catch (final PatternSyntaxException e)
                 {
-                    throw new IllegalArgumentException("Invalid pattern: " + entry + " (" + e.getMessage() + ")", e);
+                    throw new IllegalArgumentException(
+                        String.format("Invalid pattern: %s (%s)", entry, e.getMessage()), e);
                 }
             }
         }
@@ -427,7 +430,7 @@ public class JettyPluginUtils
 
         if (index < 0)
         {
-            return "";
+            return JettyPluginUtils.BLANK;
         }
 
         return location.substring(0, index);

@@ -9,6 +9,7 @@ import net.sourceforge.eclipsejetty.starter.common.ServerAdapter;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
 import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.Process;
+import net.sourceforge.eclipsejetty.starter.util.Utils;
 
 public class OpenCommand extends AbstractCommand
 {
@@ -47,7 +48,7 @@ public class OpenCommand extends AbstractCommand
     @Override
     public String getFormat()
     {
-        return "";
+        return Utils.BLANK;
     }
 
     @Override
@@ -92,7 +93,7 @@ public class OpenCommand extends AbstractCommand
             url += pathIterator.next();
         }
 
-        process.out.println("Opening " + url + "...");
+        process.out.println(String.format("Opening %s...", url));
 
         Desktop desktop = Desktop.getDesktop();
 

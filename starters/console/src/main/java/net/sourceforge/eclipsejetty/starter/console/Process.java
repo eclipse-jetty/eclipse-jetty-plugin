@@ -120,7 +120,7 @@ public class Process
 
         if (command == null)
         {
-            process.err.println("Unknown command: " + processName);
+            process.err.printf("Unknown command: %s\n", processName);
             process.err.println("Type \"help\" to get help.");
 
             return -1;

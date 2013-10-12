@@ -36,12 +36,12 @@ public abstract class AbstractCommand implements Command
 
     public int help(Process process) throws Exception
     {
-        process.out.println(new WordWrap().perform("Usage:    " + CommandUtils.getFormatDescriptor(this),
-            consoleAdapter.getLineLength()));
+        process.out.println(new WordWrap().perform(
+            String.format("Usage:    %s", CommandUtils.getFormatDescriptor(this)), consoleAdapter.getLineLength()));
 
         if (getNames().length > 1)
         {
-            process.out.println("Synonyms: " + CommandUtils.getNameDescriptor(this, false));
+            process.out.printf("Synonyms: %s\n", CommandUtils.getNameDescriptor(this, false));
         }
 
         process.out.println();

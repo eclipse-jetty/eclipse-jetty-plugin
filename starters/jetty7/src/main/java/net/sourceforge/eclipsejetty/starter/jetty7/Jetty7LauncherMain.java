@@ -72,7 +72,7 @@ public class Jetty7LauncherMain extends AbstractJettyLauncherMain
             return;
         }
 
-        throw new IllegalArgumentException("Failed to run configuration for " + type
-            + ". No matching object found in server.");
+        throw new IllegalArgumentException(String.format(
+            "Failed to run configuration for %s. No matching object found in server.", type));
     }
 }

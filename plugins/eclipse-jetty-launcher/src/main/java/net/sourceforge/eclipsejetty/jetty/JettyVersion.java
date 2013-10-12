@@ -86,11 +86,13 @@ public enum JettyVersion
         }
         catch (InstantiationException e)
         {
-            throw new RuntimeException("Failed to instantiate server configration: " + serverConfigurationClass, e);
+            throw new RuntimeException(String.format("Failed to instantiate server configration: %s",
+                serverConfigurationClass), e);
         }
         catch (IllegalAccessException e)
         {
-            throw new RuntimeException("Failed to access server configration: " + serverConfigurationClass, e);
+            throw new RuntimeException(String.format("Failed to access server configration: %s",
+                serverConfigurationClass), e);
         }
     }
 
@@ -107,11 +109,11 @@ public enum JettyVersion
         }
         catch (InstantiationException e)
         {
-            throw new RuntimeException("Failed to instantiate web defaults: " + webDefaultsClass, e);
+            throw new RuntimeException(String.format("Failed to instantiate web defaults: %s", webDefaultsClass), e);
         }
         catch (IllegalAccessException e)
         {
-            throw new RuntimeException("Failed to access web defaults: " + webDefaultsClass, e);
+            throw new RuntimeException(String.format("Failed to access web defaults: %s", webDefaultsClass), e);
         }
     }
 

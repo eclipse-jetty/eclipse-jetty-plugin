@@ -4,6 +4,7 @@ package net.sourceforge.eclipsejetty.starter.console.command;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
 import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.Process;
+import net.sourceforge.eclipsejetty.starter.util.Utils;
 
 public class ExitCommand extends AbstractCommand
 {
@@ -15,7 +16,7 @@ public class ExitCommand extends AbstractCommand
 
     public String getFormat()
     {
-        return "";
+        return Utils.BLANK;
     }
 
     public String getDescription()

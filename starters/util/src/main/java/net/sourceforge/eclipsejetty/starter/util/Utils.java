@@ -8,6 +8,8 @@ import java.io.IOException;
 public class Utils
 {
 
+    public static final String BLANK = "";
+    
     public static interface PlaceholderResolver {
         String resolve(String key);
     }
@@ -43,7 +45,7 @@ public class Utils
     {
         if (value == null)
         {
-            return "";
+            return Utils.BLANK;
         }
 
         String replacement = "\n" + prefix;

@@ -41,7 +41,7 @@ public class PipeCommand extends AbstractCommand
 
         if (file != null)
         {
-            process.out.println("Redirecting output to " + file.getAbsolutePath());
+            process.out.printf("Redirecting output to %s\n", file.getAbsolutePath());
 
             out = new PrintStream(new FileOutputStream(file, append));
         }

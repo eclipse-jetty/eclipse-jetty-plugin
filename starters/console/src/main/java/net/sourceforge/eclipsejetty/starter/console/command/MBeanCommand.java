@@ -24,8 +24,8 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.ArgumentException;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.Process;
 import net.sourceforge.eclipsejetty.starter.console.util.WildcardUtils;
 import net.sourceforge.eclipsejetty.starter.util.Utils;
@@ -227,7 +227,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (objectName == null)
         {
-            throw new ArgumentException("No match for " + name + ".");
+            throw new ArgumentException(String.format("No match for %s.", name));
         }
 
         MBeanInfo info = getMBeanInfo(objectName);
@@ -236,7 +236,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (operationInfo == null)
         {
-            throw new ArgumentException("No match for " + name + " with " + process.args.size() + " arguments.");
+            throw new ArgumentException(String.format("No match for %s with %s arguments.", name, process.args.size()));
         }
 
         return call(process, objectName, operationInfo);
@@ -258,7 +258,7 @@ public class MBeanCommand extends AbstractCommand
             }
             catch (Exception e)
             {
-                throw new ArgumentException("Invalid argument #" + (i + 1) + ": " + e.toString());
+                throw new ArgumentException(String.format("Invalid argument #%d: %s", (i + 1), e.toString()));
             }
         }
 
@@ -284,7 +284,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (objectName == null)
         {
-            throw new ArgumentException("Unknown command: " + name);
+            throw new ArgumentException(String.format("Unknown command: %s", name));
         }
 
         MBeanInfo info = getMBeanInfo(objectName);
@@ -307,7 +307,7 @@ public class MBeanCommand extends AbstractCommand
             return call(process, objectName, operationInfo);
         }
 
-        throw new ArgumentException("Invalid argument: " + name);
+        throw new ArgumentException(String.format("Invalid argument: %s", name));
     }
 
     protected MBeanAttributeInfo findMBeanAttributeInfo(MBeanInfo info, String attributeName)
@@ -321,7 +321,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (results.size() > 1)
         {
-            throw new ArgumentException("Non-unique match for " + attributeName);
+            throw new ArgumentException(String.format("Non-unique match for %s", attributeName));
         }
 
         return results.get(0);
@@ -356,7 +356,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (results.size() > 1)
         {
-            throw new ArgumentException("Non-unique match for " + operationName);
+            throw new ArgumentException(String.format("Non-unique match for %s", operationName));
         }
 
         return results.get(0);
@@ -421,7 +421,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (results.size() > 1)
         {
-            throw new ArgumentException("Non-unique match for " + name);
+            throw new ArgumentException(String.format("Non-unique match for %s", name));
         }
 
         return results.get(0);
@@ -574,7 +574,7 @@ public class MBeanCommand extends AbstractCommand
 
         if (type == null)
         {
-            throw new IllegalArgumentException("Unsupported parameter " + toParameter(null));
+            throw new IllegalArgumentException(String.format("Unsupported parameter %s", toParameter(null)));
         }
 
         if ((type.isAssignableFrom(Boolean.class)) || (type == Boolean.TYPE))
@@ -616,7 +616,7 @@ public class MBeanCommand extends AbstractCommand
         {
             if (value.length() != 1)
             {
-                throw new IllegalArgumentException("Invalid character: " + value);
+                throw new IllegalArgumentException(String.format("Invalid character: %s", value));
             }
             return new Character(value.charAt(0));
         }
@@ -626,7 +626,7 @@ public class MBeanCommand extends AbstractCommand
             return value;
         }
 
-        throw new IllegalArgumentException("Unsupported parameter " + toParameter(type));
+        throw new IllegalArgumentException(String.format("Unsupported parameter %s", toParameter(type)));
     }
 
     protected static boolean isArgumentSupported(String typeName)

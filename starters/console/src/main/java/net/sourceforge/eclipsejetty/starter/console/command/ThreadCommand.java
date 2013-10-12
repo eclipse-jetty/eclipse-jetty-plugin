@@ -7,8 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
-import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.ArgumentException;
+import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
 import net.sourceforge.eclipsejetty.starter.console.Process;
 import net.sourceforge.eclipsejetty.starter.console.util.WildcardUtils;
 import net.sourceforge.eclipsejetty.starter.util.Utils;
@@ -89,7 +89,7 @@ public class ThreadCommand extends AbstractCommand
         }
 
         process.out.println();
-        process.out.println("Thread count: " + threads.size());
+        process.out.printf("Thread count: %s\n", threads.size());
 
         return 0;
     }
@@ -111,7 +111,7 @@ public class ThreadCommand extends AbstractCommand
 
         if (!hit)
         {
-            throw new ArgumentException("Invalid thread ID: " + id);
+            throw new ArgumentException(String.format("Invalid thread ID: %s", id));
         }
 
         return 0;

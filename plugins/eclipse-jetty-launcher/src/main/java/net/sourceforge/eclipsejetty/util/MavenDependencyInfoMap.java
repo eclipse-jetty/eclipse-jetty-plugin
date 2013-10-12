@@ -126,8 +126,8 @@ public class MavenDependencyInfoMap
             {
                 if (!JettyPluginUtils.equals(suspectedMavenDependency.getScope(), mavenDependency.getScope()))
                 {
-                    JettyPlugin.info("Fixed scope for dependency " + location + ": changed "
-                        + suspectedMavenDependency.getScope() + " to " + mavenDependency.getScope());
+                    JettyPlugin.info(String.format("Fixed scope for dependency %s: changed %s to %s", location,
+                        suspectedMavenDependency.getScope(), mavenDependency.getScope()));
                 }
 
                 return mavenDependency;

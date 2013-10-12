@@ -168,16 +168,17 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         File defaultFile = createJettyConfigurationFile(adapter, false);
         String vmArguments = super.getVMArguments(configuration);
 
-        vmArguments += " -D" + CONFIGURATION_KEY + "=" + getConfigurationParameter(configuration, defaultFile);
+        vmArguments +=
+            String.format(" -D%s=%s", CONFIGURATION_KEY, getConfigurationParameter(configuration, defaultFile));
 
         if (!adapter.isShowLauncherInfo())
         {
-            vmArguments += " -D" + HIDE_LAUNCH_INFO_KEY;
+            vmArguments += String.format(" -D%s", HIDE_LAUNCH_INFO_KEY);
         }
 
         if (!adapter.isConsoleEnabled())
         {
-            vmArguments += " -D" + DISABLE_CONSOLE_KEY;
+            vmArguments += String.format(" -D%s", DISABLE_CONSOLE_KEY);
         }
 
         if (adapter.isJmxSupport())

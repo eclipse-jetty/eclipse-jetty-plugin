@@ -50,7 +50,7 @@ public abstract class AbstractJettyLauncherMain
 
         if (configurationFileDef == null)
         {
-            throw new IOException("-D" + CONFIGURATION_KEY + " missing");
+            throw new IOException(String.format("-D%s missing", CONFIGURATION_KEY));
         }
 
         File[] configurationFiles = getConfigurationFiles(configurationFileDef);
@@ -82,11 +82,11 @@ public abstract class AbstractJettyLauncherMain
                 Class.forName("net.sourceforge.eclipsejetty.starter.console.Console");
 
                 GlobalServiceResolver serviceResolver = GlobalServiceResolver.INSTANCE;
-                
+
                 serviceResolver.register(adapter);
 
                 Console console = Console.INSTANCE;
-                
+
                 console.initialize(serviceResolver);
                 console.start();
             }
@@ -110,7 +110,7 @@ public abstract class AbstractJettyLauncherMain
 
             if (showInfo)
             {
-                out.println(String.format("%18s%s", (i == 0) ? "Configuration: " : "",
+                out.println(String.format("%18s%s", (i == 0) ? "Configuration: " : Utils.BLANK,
                     configurationFile.getAbsolutePath()));
             }
 
@@ -148,7 +148,7 @@ public abstract class AbstractJettyLauncherMain
 
             if (!file.canRead())
             {
-                throw new IOException("Cannot read configuration file: " + file);
+                throw new IOException(String.format("Cannot read configuration file: %s", file));
             }
         }
 
@@ -177,18 +177,18 @@ public abstract class AbstractJettyLauncherMain
         }
         catch (SAXException e)
         {
-            throw new IOException("Failed to parse " + file);
+            throw new IOException(String.format("Failed to parse %s", file));
         }
         catch (IOException e)
         {
-            throw new IOException("Failed to read " + file);
+            throw new IOException(String.format("Failed to read %s", file));
         }
 
         NodeList nodeList = document.getElementsByTagName("Configure");
 
         if (nodeList.getLength() < 1)
         {
-            throw new IOException("Failed to find <Configure> element in " + file);
+            throw new IOException(String.format("Failed to find <Configure> element in %s", file));
         }
 
         Node node = nodeList.item(0);
@@ -196,14 +196,14 @@ public abstract class AbstractJettyLauncherMain
 
         if (attributes == null)
         {
-            throw new IOException("Failed to class argument in <Configure> element in " + file);
+            throw new IOException(String.format("Failed to class argument in <Configure> element in %s", file));
         }
 
         Node item = attributes.getNamedItem("class");
 
         if (item == null)
         {
-            throw new IOException("Failed to class argument in <Configure> element in " + file);
+            throw new IOException(String.format("Failed to class argument in <Configure> element in %s", file));
         }
 
         String value = item.getNodeValue().trim();
@@ -214,7 +214,7 @@ public abstract class AbstractJettyLauncherMain
         }
         catch (ClassNotFoundException e)
         {
-            throw new IOException("Unknown class " + value + " in <Configure> element in " + file);
+            throw new IOException(String.format("Unknown class %s in <Configure> element in %s", value, file));
         }
     }
 
@@ -229,11 +229,11 @@ public abstract class AbstractJettyLauncherMain
         long totalMemory = runtime.totalMemory();
         long freeMemory = runtime.freeMemory();
 
-        String duration = "Jetty startup finished in " + Utils.formatSeconds(seconds) + ".";
-        String console = (consoleEnabled) ? "Console available: type \"help\"." : "";
+        String duration = String.format("Jetty startup finished in %s.", Utils.formatSeconds(seconds));
+        String console = (consoleEnabled) ? "Console available: type \"help\"." : Utils.BLANK;
         String memory =
-            "Used memory: " + Utils.formatBytes(totalMemory - freeMemory) + " of " + Utils.formatBytes(totalMemory)
-                + " (" + Utils.formatBytes(maxMemory) + " maximum)";
+            String.format("Used memory: %s of %s (%s maximum)", Utils.formatBytes(totalMemory - freeMemory),
+                Utils.formatBytes(totalMemory), Utils.formatBytes(maxMemory));
 
         String line = Utils.repeat("-", Math.max(duration.length(), Math.max(memory.length(), console.length())));
 
