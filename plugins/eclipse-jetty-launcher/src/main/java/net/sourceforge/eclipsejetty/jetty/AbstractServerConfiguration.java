@@ -251,10 +251,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
                 {
                     builder.element("Set", "name", "defaultsDescriptor", getCustomWebDefaultsFile().getAbsolutePath());
                 }
-                else
-                {
-                    builder.element("Set", "name", "defaultsDescriptor", getDefaultWebContext());
-                }
+
                 buildJNDI(builder);
                 buildDefaultHandlerSetters(builder);
             }
@@ -264,8 +261,6 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     protected abstract String getDefaultHandlerClass();
-
-    protected abstract String getDefaultWebContext();
 
     protected void buildDefaultHandlerSetters(DOMBuilder builder)
     {

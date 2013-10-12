@@ -681,6 +681,10 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         else
         {
             AbstractWebDefaults webDefaults = version.createWebDefaults();
+
+            webDefaults.setServerCacheEnabled(adapter.isServerCacheEnabled());
+            webDefaults.setClientCacheEnabled(adapter.isClientCacheEnabled());
+
             File file;
 
             try

@@ -57,6 +57,8 @@ public class JettyLaunchConfigurationAdapter
     private static final String ATTR_THREAD_POOL_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".threadPool.limit.count";
     private static final String ATTR_ACCEPTOR_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".acceptor.limit.enabled";
     private static final String ATTR_ACCEPTOR_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".acceptor.limit.count";
+    private static final String ATTR_SERVER_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.server.enabled";
+    private static final String ATTR_CLIENT_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.client.enabled";
     private static final String ATTR_CUSTOM_WEB_DEFAULTS_ENABLED = JettyPlugin.PLUGIN_ID + ".customWebDefaults.enabled";
     private static final String ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE = JettyPlugin.PLUGIN_ID
         + ".customWebDefaults.resource";
@@ -245,6 +247,9 @@ public class JettyLaunchConfigurationAdapter
         setThreadPoolLimitCount(getThreadPoolLimitCount());
         setAcceptorLimitEnabled(isAcceptorLimitEnabled());
         setAcceptorLimitCount(getAcceptorLimitCount());
+
+        setServerCacheEnabled(isServerCacheEnabled());
+        setClientCacheEnabled(isClientCacheEnabled());
 
         setShowLauncherInfo(isShowLauncherInfo());
         setConsoleEnabled(isConsoleEnabled());
@@ -805,6 +810,50 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
+     * Returns true, if Jetty's server cache is enabled.
+     * 
+     * @return true, if Jetty's server cache is enabled
+     * @throws CoreException on occasion
+     */
+    public boolean isServerCacheEnabled() throws CoreException
+    {
+        return getAttribute(true, ATTR_SERVER_CACHE_ENABLED, true);
+    }
+
+    /**
+     * Set to true, if Jetty's server cache is enabled.
+     * 
+     * @param enabled true, if Jetty's server cache is enabled
+     * @throws CoreException on occasion
+     */
+    public void setServerCacheEnabled(boolean enabled) throws CoreException
+    {
+        setAttribute(true, ATTR_SERVER_CACHE_ENABLED, enabled);
+    }
+
+    /**
+     * Returns true, if the cache pragma no cache should not be sent.
+     * 
+     * @return true, if the cache pragma no cache should not be sent
+     * @throws CoreException on occasion
+     */
+    public boolean isClientCacheEnabled() throws CoreException
+    {
+        return getAttribute(true, ATTR_CLIENT_CACHE_ENABLED, true);
+    }
+
+    /**
+     * Set to true, if the cache pragma no cache should not be sent.
+     * 
+     * @param enabled true, if the cache pragma no cache should not be sent
+     * @throws CoreException on occasion
+     */
+    public void setClientCacheEnabled(boolean enabled) throws CoreException
+    {
+        setAttribute(true, ATTR_CLIENT_CACHE_ENABLED, enabled);
+    }
+
+    /**
      * Returns true, if a custom default web.xml should be used.
      * 
      * @return true, if a custom default web.xml should be used
@@ -1075,7 +1124,8 @@ public class JettyLaunchConfigurationAdapter
      */
     public Collection<String> getExcludedGenericIds() throws CoreException
     {
-        return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_EXCLUDED_GENERIC_IDS, JettyPluginUtils.BLANK));
+        return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_EXCLUDED_GENERIC_IDS,
+            JettyPluginUtils.BLANK));
     }
 
     /**
@@ -1097,7 +1147,8 @@ public class JettyLaunchConfigurationAdapter
      */
     public Collection<String> getIncludedGenericIds() throws CoreException
     {
-        return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_INCLUDED_GENERIC_IDS, JettyPluginUtils.BLANK));
+        return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_INCLUDED_GENERIC_IDS,
+            JettyPluginUtils.BLANK));
     }
 
     /**
@@ -1139,7 +1190,8 @@ public class JettyLaunchConfigurationAdapter
      */
     public Collection<String> getGlobalGenericIds() throws CoreException
     {
-        return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_GLOBAL_GENERIC_IDS, JettyPluginUtils.BLANK));
+        return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_GLOBAL_GENERIC_IDS,
+            JettyPluginUtils.BLANK));
     }
 
     /**

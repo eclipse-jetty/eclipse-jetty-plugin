@@ -88,11 +88,15 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Spinner threadPoolLimitCountSpinner;
     private Button acceptorLimitEnabledButton;
     private Spinner acceptorLimitCountSpinner;
+    
     private Button customWebDefaultsEnabledButton;
     private Text customWebDefaultsResourceText;
     private Button customWebDefaultsWorkspaceButton;
     private Button customWebDefaultsFileSystemButton;
     private Button customWebDefaultsVariablesButton;
+    
+    private Button serverCacheDisabledButton;
+    private Button clientCacheDisabledButton;
 
     private Table configTable;
     private boolean configTableFormatted = false;
@@ -299,6 +303,14 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                     }
                 });
 
+        serverCacheDisabledButton =
+            createButton(configGroup, SWT.CHECK, "Disable Server Cache",
+                "Disables Jetty's server cache for static resources.", 224, 2, 1, modifyDialogListener);
+
+        clientCacheDisabledButton =
+            createButton(configGroup, SWT.CHECK, "Disable Client Cache",
+                "If disabled, Jetty sends a \"Cache-Control: max-age=0\" for each servlet request.", 224, 2, 1, modifyDialogListener);
+
         Group contextGroup = new Group(tabComposite, SWT.NONE);
         contextGroup.setLayout(new GridLayout(6, false));
         contextGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -439,6 +451,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             customWebDefaultsEnabledButton.setSelection(adapter.isCustomWebDefaultsEnabled());
             customWebDefaultsResourceText.setText(adapter.getCustomWebDefaultsResource());
 
+            serverCacheDisabledButton.setSelection(!adapter.isServerCacheEnabled());
+            clientCacheDisabledButton.setSelection(!adapter.isClientCacheEnabled());
+
             updateTable(configuration, true);
             updateConfigButtonState();
 
@@ -501,6 +516,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             adapter.setCustomWebDefaultsEnabled(customWebDefaultsEnabledButton.getSelection());
             adapter.setCustomWebDefaultsResource(customWebDefaultsResourceText.getText());
 
+            adapter.setServerCacheEnabled(!serverCacheDisabledButton.getSelection());
+            adapter.setClientCacheEnabled(!clientCacheDisabledButton.getSelection());
+            
             try
             {
                 adapter.setConfigs(configEntryList.getConfigs());
@@ -559,6 +577,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         customWebDefaultsVariablesButton.setEnabled(customWebDefaultsEnabled);
         customWebDefaultsFileSystemButton.setEnabled(customWebDefaultsEnabled);
         customWebDefaultsWorkspaceButton.setEnabled(customWebDefaultsEnabled);
+        serverCacheDisabledButton.setEnabled(!customWebDefaultsEnabled);
+        clientCacheDisabledButton.setEnabled(!customWebDefaultsEnabled);
 
         if (!embedded)
         {

@@ -25,6 +25,8 @@ import net.sourceforge.eclipsejetty.util.DOMBuilder;
 public class Jetty6ServerConfiguration extends AbstractServerConfiguration
 {
 
+    private static final int GRACEFUL_SHUTDOWN_MILLIS = 1000;
+
     public Jetty6ServerConfiguration()
     {
         super();
@@ -189,18 +191,12 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     }
 
     @Override
-    protected String getDefaultWebContext()
-    {
-        return "net/sourceforge/eclipsejetty/starter/jetty6/webdefault.xml";
-    }
-
-    @Override
     protected void buildExtraOptions(DOMBuilder builder)
     {
         builder.element("Set", "name", "stopAtShutdown", true);
         builder.element("Set", "name", "sendServerVersion", true);
         builder.element("Set", "name", "sendDateHeader", true);
-        builder.element("Set", "name", "gracefulShutdown", 30000);
+        builder.element("Set", "name", "gracefulShutdown", GRACEFUL_SHUTDOWN_MILLIS);
     }
 
 }

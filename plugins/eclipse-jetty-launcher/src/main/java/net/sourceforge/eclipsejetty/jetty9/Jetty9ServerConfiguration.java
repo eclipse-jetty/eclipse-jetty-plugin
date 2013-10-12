@@ -327,10 +327,4 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.element("Set", "name", "dumpBeforeStop", false);
     }
 
-    @Override
-    protected String getDefaultWebContext()
-    {
-        return "net/sourceforge/eclipsejetty/starter/jetty9/webdefault.xml";
-    }
-
 }
