@@ -16,13 +16,15 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
- * Constants for the Jetty plugin.
+ * Constants for the Jetty plugin and an adapter for the configuration.
  * 
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
@@ -86,11 +88,23 @@ public class JettyLaunchConfigurationAdapter
     private static final String ATTR_SHOW_LAUNCHER_INFO = JettyPlugin.PLUGIN_ID + ".launcher.info";
     private static final String ATTR_CONSOLE_ENABLED = JettyPlugin.PLUGIN_ID + ".console.enabled";
 
+    /**
+     * Creates an readable configuration adapter.
+     * 
+     * @param configuration the configuration, must not be null
+     * @return the adapter
+     */
     public static JettyLaunchConfigurationAdapter getInstance(ILaunchConfiguration configuration)
     {
         return new JettyLaunchConfigurationAdapter(configuration);
     }
 
+    /**
+     * Creates an read and writable configuration adapter.
+     * 
+     * @param configuration the configuration, must not be null
+     * @return the adapter
+     */
     public static JettyLaunchConfigurationAdapter getInstance(ILaunchConfigurationWorkingCopy configuration)
     {
         return new JettyLaunchConfigurationAdapter(configuration);
@@ -98,23 +112,53 @@ public class JettyLaunchConfigurationAdapter
 
     private final ILaunchConfiguration configuration;
 
-    public JettyLaunchConfigurationAdapter(ILaunchConfiguration configuration)
+    /**
+     * Creates the adapter.
+     * 
+     * @param configuration the configuration
+     */
+    protected JettyLaunchConfigurationAdapter(ILaunchConfiguration configuration)
     {
         super();
 
         this.configuration = configuration;
     }
 
+    /**
+     * Returns the readable configuration.
+     * 
+     * @return the configuration
+     */
     public ILaunchConfiguration getConfiguration()
     {
         return configuration;
     }
 
-    public ILaunchConfigurationWorkingCopy getConfigurationWorkingCopy()
+    /**
+     * Returns the read and writable configuration.
+     * 
+     * @return the configuration
+     * @throws CoreException if configuration is only readable
+     */
+    public ILaunchConfigurationWorkingCopy getConfigurationWorkingCopy() throws CoreException
     {
-        return (ILaunchConfigurationWorkingCopy) configuration;
+        try
+        {
+            return (ILaunchConfigurationWorkingCopy) configuration;
+        }
+        catch (ClassCastException e)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Configuration only readable"));
+        }
     }
 
+    /**
+     * Initializes a new launch configuration.
+     * 
+     * @param project the project, must not be null
+     * @param webAppPath the web application path, must not be null
+     * @throws CoreException on occasion
+     */
     public void initialize(IProject project, File webAppPath) throws CoreException
     {
         ILaunchConfigurationWorkingCopy configuration = getConfigurationWorkingCopy();
@@ -232,20 +276,30 @@ public class JettyLaunchConfigurationAdapter
         setGlobalLibs(getGlobalLibs());
     }
 
+    /**
+     * Returns the configuration version to distinguish between versions of the plugin.
+     * 
+     * @return the configuration version
+     * @throws CoreException on occasion
+     */
     public int getConfigVersion() throws CoreException
     {
         return getAttribute(false, ATTR_CONFIG_VERSION, 0);
     }
 
-    public void updateConfigVersion()
+    /**
+     * Updates the configuration version to the one supported by the plugin.
+     * 
+     * @throws CoreException on occasion
+     */
+    public void updateConfigVersion() throws CoreException
     {
         setAttribute(false, ATTR_CONFIG_VERSION, CONFIG_VERSION);
     }
 
     /**
-     * Returns the name of the selected eclipse project, that should be launched
+     * Returns the name of the selected eclipse project, that should be launched.
      * 
-     * @param configuration the configuration
      * @return the project
      * @throws CoreException on occasion
      */
@@ -255,16 +309,21 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
-     * Sets the name of the selected eclipse project, that should be launched
+     * Sets the name of the selected eclipse project, that should be launched.
      * 
-     * @param configuration the configuration
      * @param project the project
+     * @throws CoreException on occasion
      */
-    public void setProjectName(String project)
+    public void setProjectName(String project) throws CoreException
     {
         setAttribute(false, IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project);
     }
 
+    /**
+     * Returns the project as defined by the project name.
+     * 
+     * @return the project, null if unable to locate
+     */
     public IProject getProject()
     {
         try
@@ -278,9 +337,8 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
-     * Returns the context path (path part of the URL) of the application
+     * Returns the context path (path part of the URL) of the application.
      * 
-     * @param configuration the configuration
      * @return the context path
      * @throws CoreException on occasion
      */
@@ -290,21 +348,20 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
-     * Sets the context path (path part of the URL) of the application
+     * Sets the context path (path part of the URL) of the application.
      * 
-     * @param configuration the configuration
      * @param context the context
+     * @throws CoreException on occasion
      */
-    public void setContext(String context)
+    public void setContext(String context) throws CoreException
     {
         setAttribute(false, ATTR_CONTEXT, context);
     }
 
     /**
-     * Returns the location of the webapp directory in the workspace
+     * Returns the location of the web application directory in the workspace.
      * 
-     * @param configuration the configuration
-     * @return the location of the webapp directory
+     * @return the location of the web application directory
      * @throws CoreException on occasion
      */
     public String getWebAppString() throws CoreException
@@ -313,16 +370,21 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
-     * Sets the location of the webapp directory in the workspace
+     * Sets the location of the web application directory in the workspace.
      * 
-     * @param configuration the configuration
-     * @param webappdir the location of the webapp directory
+     * @param webappdir the location of the web application directory
+     * @throws CoreException on occasion
      */
-    public void setWebAppString(String webappdir)
+    public void setWebAppString(String webappdir) throws CoreException
     {
         setAttribute(false, ATTR_WEBAPPDIR, webappdir);
     }
 
+    /**
+     * Tries to determine the web application path from the web application directory.
+     * 
+     * @return the path, null if unable to determine
+     */
     public File getWebAppPath()
     {
         try
@@ -336,9 +398,8 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
-     * Returns the (HTTP) port
+     * Returns the (HTTP) port.
      * 
-     * @param configuration the configuration
      * @return the port
      * @throws CoreException on occasion
      */
@@ -355,20 +416,19 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
-     * Sets the (HTTP) port
+     * Sets the (HTTP) port.
      * 
-     * @param configuration the configuration
      * @param port the port
+     * @throws CoreException on occasion
      */
-    public void setPort(int port)
+    public void setPort(int port) throws CoreException
     {
         setAttribute(true, ATTR_PORT, String.valueOf(port)); // string for backward compatibility
     }
 
     /**
-     * Returns the (HTTPs) port
+     * Returns the (HTTPs) port.
      * 
-     * @param configuration the configuration
      * @return the port
      * @throws CoreException on occasion
      */
@@ -385,36 +445,65 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
-     * Sets the (HTTPs) port
+     * Sets the (HTTPs) port.
      * 
-     * @param configuration the configuration
      * @param httpsPort the port
+     * @throws CoreException on occasion
      */
-    public void setHttpsPort(int httpsPort)
+    public void setHttpsPort(int httpsPort) throws CoreException
     {
         setAttribute(true, ATTR_HTTPS_PORT, String.valueOf(httpsPort)); // string for backward compatibility
     }
 
+    /**
+     * Returns true if HTTPs is enabled.
+     * 
+     * @return true if enabled
+     * @throws CoreException on occasion
+     */
     public boolean isHttpsEnabled() throws CoreException
     {
         return getAttribute(true, ATTR_HTTPS_ENABLED, false);
     }
 
-    public void setHttpsEnabled(boolean httpsEnabled)
+    /**
+     * Set to true, if the HTTPs is enabled.
+     * 
+     * @param httpsEnabled true if enabled
+     * @throws CoreException on occasion
+     */
+    public void setHttpsEnabled(boolean httpsEnabled) throws CoreException
     {
         setAttribute(true, ATTR_HTTPS_ENABLED, httpsEnabled);
     }
 
+    /**
+     * Returns the path to an optionally available Jetty.
+     * 
+     * @return the path
+     * @throws CoreException on occasion
+     */
     public String getPathString() throws CoreException
     {
         return getAttribute(true, ATTR_JETTY_PATH, "");
     }
 
-    public void setPathString(String path)
+    /**
+     * Sets the path to an optionally available Jetty.
+     * 
+     * @param path the path
+     * @throws CoreException on occasion
+     */
+    public void setPathString(String path) throws CoreException
     {
         setAttribute(true, ATTR_JETTY_PATH, path);
     }
 
+    /**
+     * Tries to determine the path to an optionally available Jetty.
+     * 
+     * @return the path, null if unable to determine
+     */
     public File getPath()
     {
         try
@@ -427,30 +516,53 @@ public class JettyLaunchConfigurationAdapter
         }
     }
 
+    /**
+     * Returns true, if the embedded Jetty should be used.
+     * 
+     * @return true, if the embedded Jetty should be used.
+     * @throws CoreException on occasion
+     */
     public boolean isEmbedded() throws CoreException
     {
         return getAttribute(true, ATTR_JETTY_EMBEDDED, true);
     }
 
-    public void setEmbedded(boolean extern)
+    /**
+     * Set to true, if the embedded Jetty should be used.
+     * 
+     * @param embedded true, if the embedded Jetty should be used
+     * @throws CoreException on occasion
+     */
+    public void setEmbedded(boolean embedded) throws CoreException
     {
-        setAttribute(true, ATTR_JETTY_EMBEDDED, extern);
+        setAttribute(true, ATTR_JETTY_EMBEDDED, embedded);
     }
 
+    /**
+     * Returns the version of the Jetty.
+     * 
+     * @return the version of the Jetty
+     * @throws CoreException on occasion
+     */
     public JettyVersion getVersion() throws CoreException
     {
         return JettyVersion.valueOf(getAttribute(true, ATTR_JETTY_VERSION, JettyVersion.JETTY_EMBEDDED.name()));
     }
 
-    public void setVersion(JettyVersion jettyVersion)
+    /**
+     * Sets the version of the Jetty.
+     * 
+     * @param jettyVersion the version
+     * @throws CoreException on occasion
+     */
+    public void setVersion(JettyVersion jettyVersion) throws CoreException
     {
         setAttribute(true, ATTR_JETTY_VERSION, jettyVersion.name());
     }
 
     /**
-     * Returns the configuration context holders
+     * Returns the configuration context holders.
      * 
-     * @param configuration the configuration
      * @return a list of {@link JettyConfig}s
      * @throws CoreException on occasion
      */
@@ -485,6 +597,12 @@ public class JettyLaunchConfigurationAdapter
         return results;
     }
 
+    /**
+     * Sets the configuration context holders.
+     * 
+     * @param entries the entries
+     * @throws CoreException on occasion
+     */
     public void setConfigs(List<JettyConfig> entries) throws CoreException
     {
         int index = 0;
@@ -510,106 +628,231 @@ public class JettyLaunchConfigurationAdapter
         }
     }
 
+    /**
+     * Returns true, if JSPs should be supported.
+     * 
+     * @return true, if JSPs should be supported
+     * @throws CoreException on occasion
+     */
     public boolean isJspSupport() throws CoreException
     {
         return !"false".equals(getAttribute(true, ATTR_JSP_ENABLED, "true")); // string for backward compatibility
     }
 
-    public void setJspSupport(boolean jspSupport)
+    /**
+     * Set to true, if JSPs should be supported.
+     * 
+     * @param jspSupport true, if JSPs should be supported
+     * @throws CoreException on occasion
+     */
+    public void setJspSupport(boolean jspSupport) throws CoreException
     {
         setAttribute(true, ATTR_JSP_ENABLED, String.valueOf(jspSupport)); // string for backward compatibility
     }
 
+    /**
+     * Returns true, if JMX should be supported.
+     * 
+     * @return true, if JMX should be supported
+     * @throws CoreException on occasion
+     */
     public boolean isJmxSupport() throws CoreException
     {
         return "true".equals(getAttribute(true, ATTR_JMX_ENABLED, "false")); // string for backward compatibility
     }
 
-    public void setJmxSupport(boolean jmxSupport)
+    /**
+     * Set to true, if JMX should be supported.
+     * 
+     * @param jmxSupport true, if JMX should be supported
+     * @throws CoreException on occasion
+     */
+    public void setJmxSupport(boolean jmxSupport) throws CoreException
     {
         setAttribute(true, ATTR_JMX_ENABLED, String.valueOf(jmxSupport)); // string for backward compatibility
     }
 
+    /**
+     * Returns true, if JNDI should be supported.
+     * 
+     * @return true, if JNDI should be supported
+     * @throws CoreException on occasion
+     */
     public boolean isJndiSupport() throws CoreException
     {
         return "true".equals(getAttribute(true, ATTR_JNDI_ENABLED, "false")); // string for backward compatibility
     }
 
-    public void setJndiSupport(boolean jndiSupport)
+    /**
+     * Set to true, if JNDI should be supported.
+     * 
+     * @param jndiSupport true, if JNDI should be supported
+     * @throws CoreException on occasion
+     */
+    public void setJndiSupport(boolean jndiSupport) throws CoreException
     {
         setAttribute(true, ATTR_JNDI_ENABLED, String.valueOf(jndiSupport)); // string for backward compatibility
     }
 
+    /**
+     * Returns true, if an AJP connector should be supported.
+     * 
+     * @return true, if an AJP connector should be supported
+     * @throws CoreException on occasion
+     */
     public boolean isAjpSupport() throws CoreException
     {
         return "true".equals(getAttribute(true, ATTR_AJP_ENABLED, "false")); // string for backward compatibility
     }
 
-    public void setAjpSupport(boolean ajpSupport)
+    /**
+     * Set to true, if an AJP connector should be supported.
+     * 
+     * @param ajpSupport true, if an AJP connector should be supported.
+     * @throws CoreException on occasion
+     */
+    public void setAjpSupport(boolean ajpSupport) throws CoreException
     {
         setAttribute(true, ATTR_AJP_ENABLED, String.valueOf(ajpSupport)); // string for backward compatibility
     }
 
+    /**
+     * Returns true, if the size of Jetty's thread pool is limited.
+     * 
+     * @return true, if the size of Jetty's thread pool is limited
+     * @throws CoreException on occasion
+     */
     public boolean isThreadPoolLimitEnabled() throws CoreException
     {
         return getAttribute(true, ATTR_THREAD_POOL_LIMIT_ENABLED, false);
     }
 
-    public void setThreadPoolLimitEnabled(boolean value)
+    /**
+     * Set to true, if the size of Jetty's thread pool is limited.
+     * 
+     * @param value true, if the size of Jetty's thread pool is limited
+     * @throws CoreException on occasion
+     */
+    public void setThreadPoolLimitEnabled(boolean value) throws CoreException
     {
         setAttribute(true, ATTR_THREAD_POOL_LIMIT_ENABLED, value);
     }
 
+    /**
+     * Returns the maximum size of Jetty's thead pool.
+     * 
+     * @return the maximum size of Jetty's thead pool
+     * @throws CoreException on occasion
+     */
     public int getThreadPoolLimitCount() throws CoreException
     {
         return getAttribute(true, ATTR_THREAD_POOL_LIMIT_COUNT, 16);
     }
 
-    public void setThreadPoolLimitCount(int value)
+    /**
+     * Sets the maximum size of Jetty's thead pool
+     * 
+     * @param value the maximum size of Jetty's thead pool
+     * @throws CoreException on occasion
+     */
+    public void setThreadPoolLimitCount(int value) throws CoreException
     {
         setAttribute(true, ATTR_THREAD_POOL_LIMIT_COUNT, value);
     }
 
+    /**
+     * Returns true, if the number of Jetty's acceptors is limited.
+     * 
+     * @return true, if the number of Jetty's acceptors is limited
+     * @throws CoreException on occasion
+     */
     public boolean isAcceptorLimitEnabled() throws CoreException
     {
         return getAttribute(true, ATTR_ACCEPTOR_LIMIT_ENABLED, false);
     }
 
-    public void setAcceptorLimitEnabled(boolean value)
+    /**
+     * Set to true, if the number of Jetty's acceptors is limited
+     * 
+     * @param value true, if the number of Jetty's acceptors is limited
+     * @throws CoreException on occasion
+     */
+    public void setAcceptorLimitEnabled(boolean value) throws CoreException
     {
         setAttribute(true, ATTR_ACCEPTOR_LIMIT_ENABLED, value);
     }
 
+    /**
+     * Returns the maximum number of acceptors Jetty should use.
+     * 
+     * @return the maximum number of acceptors Jetty should use
+     * @throws CoreException on occasion
+     */
     public int getAcceptorLimitCount() throws CoreException
     {
         return getAttribute(true, ATTR_ACCEPTOR_LIMIT_COUNT, 8);
     }
 
-    public void setAcceptorLimitCount(int value)
+    /**
+     * Sets the the maximum number of acceptors Jetty should use.
+     * 
+     * @param value the maximum number of acceptors Jetty should use
+     * @throws CoreException on occasion
+     */
+    public void setAcceptorLimitCount(int value) throws CoreException
     {
         setAttribute(true, ATTR_ACCEPTOR_LIMIT_COUNT, value);
     }
 
+    /**
+     * Returns true, if a custom default web.xml should be used.
+     * 
+     * @return true, if a custom default web.xml should be used
+     * @throws CoreException on occasion
+     */
     public boolean isCustomWebDefaultsEnabled() throws CoreException
     {
         return getAttribute(false, ATTR_CUSTOM_WEB_DEFAULTS_ENABLED, false);
     }
 
-    public void setCustomWebDefaultsEnabled(boolean value)
+    /**
+     * Set to true, if a custom default web.xml should be used
+     * 
+     * @param value true, if a custom default web.xml should be used
+     * @throws CoreException on occasion
+     */
+    public void setCustomWebDefaultsEnabled(boolean value) throws CoreException
     {
         setAttribute(false, ATTR_CUSTOM_WEB_DEFAULTS_ENABLED, value);
     }
 
+    /**
+     * Returns the custom default web.xml.
+     * 
+     * @return the custom default web.xml
+     * @throws CoreException on occasion
+     */
     public String getCustomWebDefaultsResource() throws CoreException
     {
         return getAttribute(false, ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE, "");
     }
 
-    public void setCustomWebDefaultsResource(String value)
+    /**
+     * Sets the custom default web.xml
+     * 
+     * @param value the custom default web.xml
+     * @throws CoreException on occasion
+     */
+    public void setCustomWebDefaultsResource(String value) throws CoreException
     {
         setAttribute(false, ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE, value);
     }
 
+    /**
+     * Tries to determine the custom web.xml file from the resource.
+     * 
+     * @return the custom web.xml file, null if not found or not enabled
+     */
     public File getCustomWebDefaultFile()
     {
         try
@@ -629,66 +872,144 @@ public class JettyLaunchConfigurationAdapter
         return null;
     }
 
+    /**
+     * Returns true, if Maven dependencies with the compile scope should be excluded.
+     * 
+     * @return true, if Maven dependencies with the compile scope should be excluded
+     * @throws CoreException on occasion
+     */
     public boolean isScopeCompileExcluded() throws CoreException
     {
         return getAttribute(false, ATTR_EXCLUDE_SCOPE_COMPILE, false);
     }
 
-    public void setScopeCompileExcluded(boolean value)
+    /**
+     * Set to true, if Maven dependencies with the compile scope should be excluded.
+     * 
+     * @param value true, if Maven dependencies with the compile scope should be excluded
+     * @throws CoreException on occasion
+     */
+    public void setScopeCompileExcluded(boolean value) throws CoreException
     {
         setAttribute(false, ATTR_EXCLUDE_SCOPE_COMPILE, value);
     }
 
+    /**
+     * Returns true, if Maven dependencies with the provided scope should be excluded.
+     * 
+     * @return true, if Maven dependencies with the provided scope should be excluded
+     * @throws CoreException on occasion
+     */
     public boolean isScopeProvidedExcluded() throws CoreException
     {
         return getAttribute(false, ATTR_EXCLUDE_SCOPE_PROVIDED, true);
     }
 
-    public void setScopeProvidedExcluded(boolean value)
+    /**
+     * Set to true, if Maven dependencies with the provided scope should be excluded.
+     * 
+     * @param value true, if Maven dependencies with the provided scope should be excluded
+     * @throws CoreException on occasion
+     */
+    public void setScopeProvidedExcluded(boolean value) throws CoreException
     {
         setAttribute(false, ATTR_EXCLUDE_SCOPE_PROVIDED, value);
     }
 
+    /**
+     * Returns true, if Maven dependencies with the runtime scope should be excluded.
+     * 
+     * @return true, if Maven dependencies with the runtime scope should be excluded
+     * @throws CoreException on occasion
+     */
     public boolean isScopeRuntimeExcluded() throws CoreException
     {
         return getAttribute(false, ATTR_EXCLUDE_SCOPE_RUNTIME, false);
     }
 
-    public void setScopeRuntimeExcluded(boolean value)
+    /**
+     * Set to true, if Maven dependencies with the runtime scope should be excluded.
+     * 
+     * @param value true, if Maven dependencies with the runtime scope should be excluded
+     * @throws CoreException on occasion
+     */
+    public void setScopeRuntimeExcluded(boolean value) throws CoreException
     {
         setAttribute(false, ATTR_EXCLUDE_SCOPE_RUNTIME, value);
     }
 
+    /**
+     * Returns true, if Maven dependencies with the test scope should be excluded.
+     * 
+     * @return true, if Maven dependencies with the test scope should be excluded
+     * @throws CoreException on occasion
+     */
     public boolean isScopeTestExcluded() throws CoreException
     {
         return getAttribute(false, ATTR_EXCLUDE_SCOPE_TEST, true);
     }
 
-    public void setScopeTestExcluded(boolean value)
+    /**
+     * Set to true, if Maven dependencies with the test scope should be excluded.
+     * 
+     * @param value true, if Maven dependencies with the test scope should be excluded
+     * @throws CoreException on occasion
+     */
+    public void setScopeTestExcluded(boolean value) throws CoreException
     {
         setAttribute(false, ATTR_EXCLUDE_SCOPE_TEST, value);
     }
 
+    /**
+     * Returns true, if Maven dependencies with the system scope should be excluded.
+     * 
+     * @return true, if Maven dependencies with the system scope should be excluded
+     * @throws CoreException on occasion
+     */
     public boolean isScopeSystemExcluded() throws CoreException
     {
         return getAttribute(false, ATTR_EXCLUDE_SCOPE_SYSTEM, true);
     }
 
-    public void setScopeSystemExcluded(boolean value)
+    /**
+     * Set to true, if Maven dependencies with the system scope should be excluded.
+     * 
+     * @param value true, if Maven dependencies with the system scope should be excluded
+     * @throws CoreException on occasion
+     */
+    public void setScopeSystemExcluded(boolean value) throws CoreException
     {
         setAttribute(false, ATTR_EXCLUDE_SCOPE_SYSTEM, value);
     }
 
+    /**
+     * Returns true, if Maven dependencies with the import scope should be excluded.
+     * 
+     * @return true, if Maven dependencies with the import scope should be excluded
+     * @throws CoreException on occasion
+     */
     public boolean isScopeImportExcluded() throws CoreException
     {
         return getAttribute(false, ATTR_EXCLUDE_SCOPE_IMPORT, true);
     }
 
-    public void setScopeImportExcluded(boolean value)
+    /**
+     * Set to true, if Maven dependencies with the import scope should be excluded.
+     * 
+     * @param value true, if Maven dependencies with the import scope should be excluded
+     * @throws CoreException on occasion
+     */
+    public void setScopeImportExcluded(boolean value) throws CoreException
     {
         setAttribute(false, ATTR_EXCLUDE_SCOPE_IMPORT, value);
     }
 
+    /**
+     * Returns true, if dependencies unknown to Maven should be excluded.
+     * 
+     * @return true, if dependencies unknown to Maven should be excluded
+     * @throws CoreException on occasion
+     */
     public boolean isScopeNoneExcluded() throws CoreException
     {
         if (!hasAttribute(ATTR_EXCLUDE_SCOPE_NONE))
@@ -699,7 +1020,13 @@ public class JettyLaunchConfigurationAdapter
         return getAttribute(false, ATTR_EXCLUDE_SCOPE_NONE, false);
     }
 
-    public void setScopeNoneExcluded(boolean value)
+    /**
+     * Set to true, if dependencies unknown to Maven should be excluded.
+     * 
+     * @param value true, if dependencies unknown to Maven should be excluded
+     * @throws CoreException on occasion
+     */
+    public void setScopeNoneExcluded(boolean value) throws CoreException
     {
         setAttribute(false, ATTR_EXCLUDE_SCOPE_NONE, value);
     }
@@ -717,7 +1044,7 @@ public class JettyLaunchConfigurationAdapter
      * @deprecated Replaced by mechanism using generic ids
      */
     @Deprecated
-    public void setExcludedLibs(String excludedLibs)
+    public void setExcludedLibs(String excludedLibs) throws CoreException
     {
         setAttribute(false, ATTR_EXCLUDED_LIBS, excludedLibs);
     }
@@ -735,27 +1062,51 @@ public class JettyLaunchConfigurationAdapter
      * @deprecated Replaced by mechanism using generic ids
      */
     @Deprecated
-    public void setIncludedLibs(String includedLibs)
+    public void setIncludedLibs(String includedLibs) throws CoreException
     {
         setAttribute(false, ATTR_INCLUDED_LIBS, includedLibs);
     }
 
+    /**
+     * Returns all generic ids of dependencies, that should be explicitly excluded.
+     * 
+     * @return all generic ids of dependencies, that should be explicitly excluded
+     * @throws CoreException on occasion
+     */
     public Collection<String> getExcludedGenericIds() throws CoreException
     {
         return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_EXCLUDED_GENERIC_IDS, ""));
     }
 
-    public void setExcludedGenericIds(Collection<String> excludedGenericIds)
+    /**
+     * Sets all generic ids of dependencies, that should be explicitly excluded.
+     * 
+     * @param excludedGenericIds all generic ids of dependencies, that should be explicitly excluded
+     * @throws CoreException on occasion
+     */
+    public void setExcludedGenericIds(Collection<String> excludedGenericIds) throws CoreException
     {
         setAttribute(false, ATTR_EXCLUDED_GENERIC_IDS, JettyPluginUtils.toCommaSeparatedString(excludedGenericIds));
     }
 
+    /**
+     * Returns all generic ids of dependencies, that should be explicitly included.
+     * 
+     * @return all generic ids of dependencies, that should be explicitly included
+     * @throws CoreException on occasion
+     */
     public Collection<String> getIncludedGenericIds() throws CoreException
     {
         return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_INCLUDED_GENERIC_IDS, ""));
     }
 
-    public void setIncludedGenericIds(Collection<String> includedGenericIds)
+    /**
+     * Sets all generic ids of dependencies, that should be explicitly included.
+     * 
+     * @param includedGenericIds all generic ids of dependencies, that should be explicitly included
+     * @throws CoreException on occasion
+     */
+    public void setIncludedGenericIds(Collection<String> includedGenericIds) throws CoreException
     {
         setAttribute(false, ATTR_INCLUDED_GENERIC_IDS, JettyPluginUtils.toCommaSeparatedString(includedGenericIds));
     }
@@ -773,61 +1124,134 @@ public class JettyLaunchConfigurationAdapter
      * @deprecated Replaced by mechanism using generic ids
      */
     @Deprecated
-    public void setGlobalLibs(String globalLibs)
+    public void setGlobalLibs(String globalLibs) throws CoreException
     {
         setAttribute(false, ATTR_GLOBAL_LIBS, globalLibs);
     }
 
+    /**
+     * Returns all generic ids of dependencies, that should be part of the Jetty classpath, rather than the web
+     * application classpath.
+     * 
+     * @return all generic ids of dependencies, that should be part of the Jetty classpath, rather than the web
+     *         application classpath
+     * @throws CoreException on occasion
+     */
     public Collection<String> getGlobalGenericIds() throws CoreException
     {
         return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_GLOBAL_GENERIC_IDS, ""));
     }
 
-    public void setGlobalGenericIds(Collection<String> globalGenericIds)
+    /**
+     * Sets all generic ids of dependencies, that should be part of the Jetty classpath, rather than the web application
+     * classpath.
+     * 
+     * @param globalGenericIds all generic ids of dependencies, that should be part of the Jetty classpath, rather than
+     *            the web application classpath
+     * @throws CoreException on occasion
+     */
+    public void setGlobalGenericIds(Collection<String> globalGenericIds) throws CoreException
     {
         setAttribute(false, ATTR_GLOBAL_GENERIC_IDS, JettyPluginUtils.toCommaSeparatedString(globalGenericIds));
     }
 
+    /**
+     * Returns true, if the launch should display it's launch info.
+     * 
+     * @return true, if the launch should display it's launch info
+     * @throws CoreException on occasion
+     */
     public boolean isShowLauncherInfo() throws CoreException
     {
         return getAttribute(true, ATTR_SHOW_LAUNCHER_INFO, true);
     }
 
-    public void setShowLauncherInfo(boolean value)
+    /**
+     * Set to true, if the launch should display it's launch info
+     * 
+     * @param value true, if the launch should display it's launch info
+     * @throws CoreException on occasion
+     */
+    public void setShowLauncherInfo(boolean value) throws CoreException
     {
         setAttribute(true, ATTR_SHOW_LAUNCHER_INFO, value);
     }
 
+    /**
+     * Returns true, if the console of the launcher is available.
+     * 
+     * @return true, if the console of the launcher is available
+     * @throws CoreException on occasion
+     */
     public boolean isConsoleEnabled() throws CoreException
     {
         return getAttribute(true, ATTR_CONSOLE_ENABLED, true);
     }
 
-    public void setConsoleEnabled(boolean value)
+    /**
+     * Set to true, if the console of the launcher is available
+     * 
+     * @param value true, if the console of the launcher is available
+     * @throws CoreException on occasion
+     */
+    public void setConsoleEnabled(boolean value) throws CoreException
     {
         setAttribute(true, ATTR_CONSOLE_ENABLED, value);
     }
 
-    public void setClasspathProvider(String classpathProvider)
+    /**
+     * Sets the default classpath provider for the Jetty plugin
+     * 
+     * @param classpathProvider the classpath provider
+     * @throws CoreException on occasion
+     */
+    public void setClasspathProvider(String classpathProvider) throws CoreException
     {
         setAttribute(false, IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, classpathProvider);
     }
 
+    /**
+     * Returns the main type name of the Jetty plugin.
+     * 
+     * @return the main type name of the Jetty plugin
+     * @throws CoreException on occasion
+     */
     public String getMainTypeName() throws CoreException
     {
         return getAttribute(false, IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "");
     }
 
-    public void setMainTypeName(JettyVersion jettyVersion)
+    /**
+     * Sets the main type name of the Jetty plugin.
+     * 
+     * @param jettyVersion the version
+     * @throws CoreException on occasion
+     */
+    public void setMainTypeName(JettyVersion jettyVersion) throws CoreException
     {
         setAttribute(false, IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, jettyVersion.getMainClass());
     }
 
+    /**
+     * Returns true if the generic id mechanis is available.
+     * 
+     * @return true if the generic id mechanis is available
+     * @throws CoreException on occasion
+     */
     public boolean isGenericIdsSupported() throws CoreException
     {
         return getConfigVersion() >= 1;
     }
 
+    /**
+     * Returns the specified attribute.
+     * 
+     * @param globalFallback true to fallback to the global definition
+     * @param name the name of the attribute
+     * @param defaultValue the default value
+     * @return the value of the attribute, the default one if not found.
+     * @throws CoreException on occasion
+     */
     protected boolean getAttribute(boolean globalFallback, String name, boolean defaultValue) throws CoreException
     {
         return configuration.getAttribute(
@@ -836,6 +1260,15 @@ public class JettyLaunchConfigurationAdapter
                 .getBoolean(name, defaultValue) : defaultValue);
     }
 
+    /**
+     * Returns the specified attribute.
+     * 
+     * @param globalFallback true to fallback to the global definition
+     * @param name the name of the attribute
+     * @param defaultValue the default value
+     * @return the value of the attribute, the default one if not found.
+     * @throws CoreException on occasion
+     */
     protected int getAttribute(boolean globalFallback, String name, int defaultValue) throws CoreException
     {
         return configuration.getAttribute(name,
@@ -843,6 +1276,15 @@ public class JettyLaunchConfigurationAdapter
                 : defaultValue);
     }
 
+    /**
+     * Returns the specified attribute.
+     * 
+     * @param globalFallback true to fallback to the global definition
+     * @param name the name of the attribute
+     * @param defaultValue the default value
+     * @return the value of the attribute, the default one if not found.
+     * @throws CoreException on occasion
+     */
     protected String getAttribute(boolean globalFallback, String name, String defaultValue) throws CoreException
     {
         return configuration.getAttribute(name,
@@ -850,6 +1292,13 @@ public class JettyLaunchConfigurationAdapter
                 : defaultValue);
     }
 
+    /**
+     * Returns true if the specified attribute exists in the configuration.
+     * 
+     * @param name the name of the attribute
+     * @return true if exists
+     * @throws CoreException on occasion
+     */
     protected boolean hasAttribute(String name) throws CoreException
     {
         try
@@ -870,7 +1319,15 @@ public class JettyLaunchConfigurationAdapter
         return configuration.getAttributes().containsKey(name);
     }
 
-    protected void setAttribute(boolean globalFallback, String name, boolean value)
+    /**
+     * Sets the specified attribute.
+     * 
+     * @param globalFallback true if the value should be written to the global configuration, too
+     * @param name the name of the attribute
+     * @param value the value
+     * @throws CoreException on occasion
+     */
+    protected void setAttribute(boolean globalFallback, String name, boolean value) throws CoreException
     {
         getConfigurationWorkingCopy().setAttribute(name, value);
 
@@ -891,7 +1348,15 @@ public class JettyLaunchConfigurationAdapter
         }
     }
 
-    protected void setAttribute(boolean globalFallback, String name, int value)
+    /**
+     * Sets the specified attribute.
+     * 
+     * @param globalFallback true if the value should be written to the global configuration, too
+     * @param name the name of the attribute
+     * @param value the value
+     * @throws CoreException on occasion
+     */
+    protected void setAttribute(boolean globalFallback, String name, int value) throws CoreException
     {
         getConfigurationWorkingCopy().setAttribute(name, value);
 
@@ -912,7 +1377,15 @@ public class JettyLaunchConfigurationAdapter
         }
     }
 
-    protected void setAttribute(boolean globalFallback, String name, String value)
+    /**
+     * Sets the specified attribute.
+     * 
+     * @param globalFallback true if the value should be written to the global configuration, too
+     * @param name the name of the attribute
+     * @param value the value
+     * @throws CoreException on occasion
+     */
+    protected void setAttribute(boolean globalFallback, String name, String value) throws CoreException
     {
         getConfigurationWorkingCopy().setAttribute(name, value);
 

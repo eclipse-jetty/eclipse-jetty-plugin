@@ -414,58 +414,65 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     {
         JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
 
-        adapter.updateConfigVersion();
-
-        boolean embedded = embeddedButton.getSelection();
-
-        adapter.setEmbedded(embedded);
-
-        String jettyPath = pathText.getText().trim();
-
-        adapter.setPathString(jettyPath);
-
         try
         {
-            JettyVersion jettyVersion =
-                JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(jettyPath));
+            adapter.updateConfigVersion();
 
-            adapter.setMainTypeName(jettyVersion);
-            adapter.setVersion(jettyVersion);
-        }
-        catch (IllegalArgumentException e)
-        {
-            // failed to detect
-        }
+            boolean embedded = embeddedButton.getSelection();
 
-        adapter.setJspSupport(jspSupportButton.getSelection());
-        adapter.setJmxSupport(jmxSupportButton.getSelection());
-        adapter.setJndiSupport(jndiSupportButton.getSelection());
-        adapter.setAjpSupport(ajpSupportButton.getSelection());
+            adapter.setEmbedded(embedded);
 
-        adapter.setThreadPoolLimitEnabled(threadPoolLimitEnabledButton.getSelection());
-        adapter.setThreadPoolLimitCount(threadPoolLimitCountSpinner.getSelection());
-        adapter.setAcceptorLimitEnabled(acceptorLimitEnabledButton.getSelection());
-        adapter.setAcceptorLimitCount(acceptorLimitCountSpinner.getSelection());
+            String jettyPath = pathText.getText().trim();
 
-        adapter.setShowLauncherInfo(showLauncherInfoButton.getSelection());
-        adapter.setConsoleEnabled(consoleEnabledButton.getSelection());
+            adapter.setPathString(jettyPath);
 
-        adapter.setCustomWebDefaultsEnabled(customWebDefaultsEnabledButton.getSelection());
-        adapter.setCustomWebDefaultsResource(customWebDefaultsResourceText.getText());
+            try
+            {
+                JettyVersion jettyVersion =
+                    JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(jettyPath));
 
-        try
-        {
-            adapter.setConfigs(configEntryList.getConfigs());
+                adapter.setMainTypeName(jettyVersion);
+                adapter.setVersion(jettyVersion);
+            }
+            catch (IllegalArgumentException e)
+            {
+                // failed to detect
+            }
+
+            adapter.setJspSupport(jspSupportButton.getSelection());
+            adapter.setJmxSupport(jmxSupportButton.getSelection());
+            adapter.setJndiSupport(jndiSupportButton.getSelection());
+            adapter.setAjpSupport(ajpSupportButton.getSelection());
+
+            adapter.setThreadPoolLimitEnabled(threadPoolLimitEnabledButton.getSelection());
+            adapter.setThreadPoolLimitCount(threadPoolLimitCountSpinner.getSelection());
+            adapter.setAcceptorLimitEnabled(acceptorLimitEnabledButton.getSelection());
+            adapter.setAcceptorLimitCount(acceptorLimitCountSpinner.getSelection());
+
+            adapter.setShowLauncherInfo(showLauncherInfoButton.getSelection());
+            adapter.setConsoleEnabled(consoleEnabledButton.getSelection());
+
+            adapter.setCustomWebDefaultsEnabled(customWebDefaultsEnabledButton.getSelection());
+            adapter.setCustomWebDefaultsResource(customWebDefaultsResourceText.getText());
+
+            try
+            {
+                adapter.setConfigs(configEntryList.getConfigs());
+            }
+            catch (CoreException e)
+            {
+                JettyPlugin.error("Failed to perform apply in advanced configuration tab", e);
+            }
+
+            adapter.setClasspathProvider(JettyLaunchConfigurationAdapter.CLASSPATH_PROVIDER_JETTY);
+
+            updateTable(configuration, false);
+            updateConfigButtonState();
         }
         catch (CoreException e)
         {
-            JettyPlugin.error("Failed to perform apply in advanced configuration tab", e);
+            JettyPlugin.error("Failed to update configuration", e);
         }
-
-        adapter.setClasspathProvider(JettyLaunchConfigurationAdapter.CLASSPATH_PROVIDER_JETTY);
-
-        updateTable(configuration, false);
-        updateConfigButtonState();
     }
 
     @Override

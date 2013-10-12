@@ -295,13 +295,20 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     {
         JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
 
-        adapter.setProjectName(projectText.getText().trim());
-        adapter.setContext(contextText.getText().trim());
-        adapter.setWebAppString(webAppText.getText().trim());
-        adapter.setPort(portSpinner.getSelection());
-        adapter.setHttpsPort(httpsPortSpinner.getSelection());
-        adapter.setHttpsEnabled(httpsEnabledButton.getSelection());
-        adapter.setClasspathProvider(JettyLaunchConfigurationAdapter.CLASSPATH_PROVIDER_JETTY);
+        try
+        {
+            adapter.setProjectName(projectText.getText().trim());
+            adapter.setContext(contextText.getText().trim());
+            adapter.setWebAppString(webAppText.getText().trim());
+            adapter.setPort(portSpinner.getSelection());
+            adapter.setHttpsPort(httpsPortSpinner.getSelection());
+            adapter.setHttpsEnabled(httpsEnabledButton.getSelection());
+            adapter.setClasspathProvider(JettyLaunchConfigurationAdapter.CLASSPATH_PROVIDER_JETTY);
+        }
+        catch (CoreException e)
+        {
+            JettyPlugin.error("Failed to update configuration", e);
+        }
     }
 
     @Override

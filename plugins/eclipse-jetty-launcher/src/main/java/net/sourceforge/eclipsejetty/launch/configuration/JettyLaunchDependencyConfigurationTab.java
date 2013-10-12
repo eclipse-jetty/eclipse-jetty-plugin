@@ -165,27 +165,34 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
     {
         JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
 
-        adapter.updateConfigVersion();
+        try
+        {
+            adapter.updateConfigVersion();
 
-        adapter.setScopeCompileExcluded(!mavenIncludeCompile.getSelection());
-        adapter.setScopeProvidedExcluded(!mavenIncludeProvided.getSelection());
-        adapter.setScopeRuntimeExcluded(!mavenIncludeRuntime.getSelection());
-        adapter.setScopeSystemExcluded(!mavenIncludeSystem.getSelection());
-        adapter.setScopeTestExcluded(!mavenIncludeTest.getSelection());
-        adapter.setScopeImportExcluded(!mavenIncludeImport.getSelection());
-        adapter.setScopeNoneExcluded(!mavenIncludeNone.getSelection());
+            adapter.setScopeCompileExcluded(!mavenIncludeCompile.getSelection());
+            adapter.setScopeProvidedExcluded(!mavenIncludeProvided.getSelection());
+            adapter.setScopeRuntimeExcluded(!mavenIncludeRuntime.getSelection());
+            adapter.setScopeSystemExcluded(!mavenIncludeSystem.getSelection());
+            adapter.setScopeTestExcluded(!mavenIncludeTest.getSelection());
+            adapter.setScopeImportExcluded(!mavenIncludeImport.getSelection());
+            adapter.setScopeNoneExcluded(!mavenIncludeNone.getSelection());
 
-        adapter.setExcludedGenericIds(dependencyEntryList.createExcludedGenericIds());
-        adapter.setIncludedGenericIds(dependencyEntryList.createIncludedGenericIds());
-        adapter.setGlobalGenericIds(dependencyEntryList.createGlobalGenericIds());
+            adapter.setExcludedGenericIds(dependencyEntryList.createExcludedGenericIds());
+            adapter.setIncludedGenericIds(dependencyEntryList.createIncludedGenericIds());
+            adapter.setGlobalGenericIds(dependencyEntryList.createGlobalGenericIds());
 
-        deprecatedPerformApply(adapter);
+            deprecatedPerformApply(adapter);
 
-        updateTable(adapter, false);
+            updateTable(adapter, false);
+        }
+        catch (CoreException e)
+        {
+            JettyPlugin.error("Failed to update configuration", e);
+        }
     }
 
     @SuppressWarnings("deprecation")
-    private void deprecatedPerformApply(JettyLaunchConfigurationAdapter adapter)
+    private void deprecatedPerformApply(JettyLaunchConfigurationAdapter adapter) throws CoreException
     {
 
         adapter.setExcludedLibs(dependencyEntryList.createExcludedLibs());

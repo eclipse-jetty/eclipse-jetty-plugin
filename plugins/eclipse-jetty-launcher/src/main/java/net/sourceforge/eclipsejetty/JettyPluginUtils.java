@@ -29,11 +29,9 @@ import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 import net.sourceforge.eclipsejetty.util.Dependency;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -454,46 +452,6 @@ public class JettyPluginUtils
     public static String fixFilename(String filename)
     {
         return filename.replaceAll("[\\W]", "_");
-    }
-
-    public static IResource findResource(IContainer container, String folder, String name) throws CoreException
-    {
-        if (!container.exists())
-        {
-            return null;
-        }
-
-        for (IResource resource : container.members())
-        {
-            if (name.equalsIgnoreCase(resource.getName()))
-            {
-                if (folder == null)
-                {
-                    return resource;
-                }
-
-                IContainer parent = resource.getParent();
-
-                if ((parent != null) && (folder.equalsIgnoreCase(parent.getName())))
-                {
-                    return resource;
-                }
-            }
-
-            if (resource.getType() != IResource.FOLDER)
-            {
-                continue;
-            }
-
-            IResource result = findResource((IFolder) resource, folder, name);
-
-            if (result != null)
-            {
-                return result;
-            }
-        }
-
-        return null;
     }
 
     /**
