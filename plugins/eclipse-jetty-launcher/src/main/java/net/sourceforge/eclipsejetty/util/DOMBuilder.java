@@ -59,7 +59,7 @@ public class DOMBuilder
         }
         catch (ParserConfigurationException e)
         {
-            throw new IllegalStateException("Could not configure parser", e);
+            throw new IllegalStateException("Could not configure parser", e); //$NON-NLS-1$
         }
     }
 
@@ -121,7 +121,7 @@ public class DOMBuilder
         }
         catch (ParserConfigurationException e)
         {
-            throw new IllegalArgumentException("Failed to configure parser", e);
+            throw new IllegalArgumentException("Failed to configure parser", e); //$NON-NLS-1$
         }
 
         return builder.newDocument();
@@ -147,7 +147,7 @@ public class DOMBuilder
     {
         ProcessingInstruction pi =
             document
-                .createProcessingInstruction("xml-stylesheet", String.format("type=\"text/xml\" href=\"%s\"", link));
+                .createProcessingInstruction("xml-stylesheet", String.format("type=\"text/xml\" href=\"%s\"", link)); //$NON-NLS-1$ //$NON-NLS-2$
 
         document.insertBefore(pi, document.getFirstChild());
 
@@ -338,11 +338,11 @@ public class DOMBuilder
                 out.close();
             }
 
-            return out.toString("UTF-8");
+            return out.toString("UTF-8"); //$NON-NLS-1$
         }
         catch (IOException e)
         {
-            throw new IllegalArgumentException("Could not write transformer result");
+            throw new IllegalArgumentException("Could not write transformer result"); //$NON-NLS-1$
         }
     }
 
@@ -359,7 +359,7 @@ public class DOMBuilder
 
         if (formatted)
         {
-            factory.setAttribute("indent-number", 4);
+            factory.setAttribute("indent-number", 4); //$NON-NLS-1$
         }
 
         Transformer transformer;
@@ -369,15 +369,15 @@ public class DOMBuilder
         }
         catch (TransformerConfigurationException e)
         {
-            throw new IOException(String.format("Failed to create transformer: %s", e));
+            throw new IOException(String.format("Failed to create transformer: %s", e)); //$NON-NLS-1$
         }
 
-        transformer.setParameter("encoding", "UTF-8");
+        transformer.setParameter("encoding", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
 
         if (formatted)
         {
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         try
@@ -386,7 +386,7 @@ public class DOMBuilder
         }
         catch (TransformerException e)
         {
-            throw new IOException(String.format("Failed to transform node: %s", e));
+            throw new IOException(String.format("Failed to transform node: %s", e)); //$NON-NLS-1$
         }
     }
 

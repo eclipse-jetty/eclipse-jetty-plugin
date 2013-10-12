@@ -15,9 +15,8 @@ public class Jetty9WebDefaults extends Jetty7WebDefaults
     protected void appendInitParams(DOMBuilder builder)
     {
         super.appendInitParams(builder);
-        
+
         appendInitParam(builder, "etags", true);
     }
-    
-    
+
 }

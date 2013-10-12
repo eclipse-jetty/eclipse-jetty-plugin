@@ -11,5 +11,4 @@ public class Jetty8WebDefaults extends Jetty7WebDefaults
         // TODO Auto-generated constructor stub
     }
 
-    
 }

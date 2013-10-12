@@ -54,7 +54,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "all";
+                return "all"; //$NON-NLS-1$
             }
 
         };
@@ -97,7 +97,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "and" + Arrays.toString(matchers);
+                return "and" + Arrays.toString(matchers); //$NON-NLS-1$
             }
 
         };
@@ -141,7 +141,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "or" + Arrays.toString(matchers);
+                return "or" + Arrays.toString(matchers); //$NON-NLS-1$
             }
 
         };
@@ -170,7 +170,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "not[" + matcher + "]";
+                return "not[" + matcher + "]"; //$NON-NLS-1$ //$NON-NLS-2$
             }
 
         };
@@ -227,16 +227,16 @@ public abstract class DependencyMatcher
                 switch (classpathProperty)
                 {
                     case IRuntimeClasspathEntry.BOOTSTRAP_CLASSES:
-                        return "bootstrapClasses";
+                        return "bootstrapClasses"; //$NON-NLS-1$
 
                     case IRuntimeClasspathEntry.STANDARD_CLASSES:
-                        return "standardClasses";
+                        return "standardClasses"; //$NON-NLS-1$
 
                     case IRuntimeClasspathEntry.USER_CLASSES:
-                        return "userClasses";
+                        return "userClasses"; //$NON-NLS-1$
 
                     default:
-                        return "withClasspathProperty " + classpathProperty;
+                        return "withClasspathProperty " + classpathProperty; //$NON-NLS-1$
                 }
             }
 
@@ -303,22 +303,22 @@ public abstract class DependencyMatcher
                 switch (type)
                 {
                     case IRuntimeClasspathEntry.ARCHIVE:
-                        return "of type archive";
+                        return "of type archive"; //$NON-NLS-1$
 
                     case IRuntimeClasspathEntry.CONTAINER:
-                        return "of type container";
+                        return "of type container"; //$NON-NLS-1$
 
                     case IRuntimeClasspathEntry.OTHER:
-                        return "of type other";
+                        return "of type other"; //$NON-NLS-1$
 
                     case IRuntimeClasspathEntry.PROJECT:
-                        return "of type project";
+                        return "of type project"; //$NON-NLS-1$
 
                     case IRuntimeClasspathEntry.VARIABLE:
-                        return "of type variable";
+                        return "of type variable"; //$NON-NLS-1$
 
                     default:
-                        return "of type " + type;
+                        return "of type " + type; //$NON-NLS-1$
                 }
             }
 
@@ -359,7 +359,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "with scope " + scope;
+                return "with scope " + scope; //$NON-NLS-1$
             }
 
         };
@@ -398,7 +398,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "notIn" + excludedEntriesSet;
+                return "notIn" + excludedEntriesSet; //$NON-NLS-1$
             }
 
         };
@@ -458,7 +458,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "included" + includedLibs;
+                return "included" + includedLibs; //$NON-NLS-1$
             }
 
         };
@@ -517,7 +517,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "notExcluded" + excludedLibs;
+                return "notExcluded" + excludedLibs; //$NON-NLS-1$
             }
 
         };
@@ -544,7 +544,7 @@ public abstract class DependencyMatcher
                 while (iterator.hasNext())
                 {
                     Dependency entry = iterator.next();
-                    
+
                     if (includedGenericIds.contains(entry.getGenericId()))
                     {
                         continue;
@@ -559,7 +559,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "included" + includedGenericIds;
+                return "included" + includedGenericIds; //$NON-NLS-1$
             }
 
         };
@@ -586,7 +586,7 @@ public abstract class DependencyMatcher
                 while (iterator.hasNext())
                 {
                     Dependency entry = iterator.next();
-                    
+
                     if (!excludedGenericIds.contains(entry.getGenericId()))
                     {
                         continue;
@@ -601,7 +601,7 @@ public abstract class DependencyMatcher
             @Override
             public String toString()
             {
-                return "notExcluded" + excludedGenericIds;
+                return "notExcluded" + excludedGenericIds; //$NON-NLS-1$
             }
 
         };

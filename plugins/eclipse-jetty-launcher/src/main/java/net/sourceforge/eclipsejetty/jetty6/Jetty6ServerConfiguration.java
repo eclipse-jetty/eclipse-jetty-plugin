@@ -163,7 +163,7 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
                     {
                         builder.element("Set", "name", "Port", getSslPort());
                         builder.element("Set", "name", "maxIdleTime", 30000);
-                        
+
                         if (getAcceptorLimit() != null)
                         {
                             builder.element("Set", "name", "Acceptors", getAcceptorLimit());

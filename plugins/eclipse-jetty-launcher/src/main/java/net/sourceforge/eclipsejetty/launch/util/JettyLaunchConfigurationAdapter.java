@@ -8,6 +8,7 @@ import java.util.List;
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
 import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
@@ -32,63 +33,63 @@ import org.osgi.service.prefs.BackingStoreException;
 public class JettyLaunchConfigurationAdapter
 {
 
-    public static final String LAUNCH_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".launchConfigurationType";
-    public static final String CLASSPATH_PROVIDER_JETTY = JettyPlugin.PLUGIN_ID + ".JettyLaunchClassPathProvider";
+    public static final String LAUNCH_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".launchConfigurationType"; //$NON-NLS-1$
+    public static final String CLASSPATH_PROVIDER_JETTY = JettyPlugin.PLUGIN_ID + ".JettyLaunchClassPathProvider"; //$NON-NLS-1$
 
     private static final int CONFIG_VERSION = 1;
 
-    private static final String ATTR_CONFIG_VERSION = JettyPlugin.PLUGIN_ID + ".configVersion";
-    private static final String ATTR_CONTEXT = JettyPlugin.PLUGIN_ID + ".context";
-    private static final String ATTR_WEBAPPDIR = JettyPlugin.PLUGIN_ID + ".webappdir";
-    private static final String ATTR_PORT = JettyPlugin.PLUGIN_ID + ".port";
-    private static final String ATTR_HTTPS_PORT = JettyPlugin.PLUGIN_ID + ".httpsPort";
-    private static final String ATTR_HTTPS_ENABLED = JettyPlugin.PLUGIN_ID + ".httpsEnabled";
-    private static final String ATTR_JETTY_PATH = JettyPlugin.PLUGIN_ID + ".jetty.path";
-    private static final String ATTR_JETTY_EMBEDDED = JettyPlugin.PLUGIN_ID + ".jetty.embedded";
-    private static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version";
-    private static final String ATTR_JETTY_CONFIG_PATH = JettyPlugin.PLUGIN_ID + ".jetty.config.path.";
-    private static final String ATTR_JETTY_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".jetty.config.type.";
-    private static final String ATTR_JETTY_CONFIG_ACTIVE = JettyPlugin.PLUGIN_ID + ".jetty.config.active.";
-    private static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled";
-    private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled";
-    private static final String ATTR_JNDI_ENABLED = JettyPlugin.PLUGIN_ID + ".jndi.enabled";
-    private static final String ATTR_AJP_ENABLED = JettyPlugin.PLUGIN_ID + ".ajp.enabled";
-    private static final String ATTR_THREAD_POOL_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".threadPool.limit.enabled";
-    private static final String ATTR_THREAD_POOL_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".threadPool.limit.count";
-    private static final String ATTR_ACCEPTOR_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".acceptor.limit.enabled";
-    private static final String ATTR_ACCEPTOR_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".acceptor.limit.count";
-    private static final String ATTR_SERVER_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.server.enabled";
-    private static final String ATTR_CLIENT_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.client.enabled";
-    private static final String ATTR_CUSTOM_WEB_DEFAULTS_ENABLED = JettyPlugin.PLUGIN_ID + ".customWebDefaults.enabled";
+    private static final String ATTR_CONFIG_VERSION = JettyPlugin.PLUGIN_ID + ".configVersion"; //$NON-NLS-1$
+    private static final String ATTR_CONTEXT = JettyPlugin.PLUGIN_ID + ".context"; //$NON-NLS-1$
+    private static final String ATTR_WEBAPPDIR = JettyPlugin.PLUGIN_ID + ".webappdir"; //$NON-NLS-1$
+    private static final String ATTR_PORT = JettyPlugin.PLUGIN_ID + ".port"; //$NON-NLS-1$
+    private static final String ATTR_HTTPS_PORT = JettyPlugin.PLUGIN_ID + ".httpsPort"; //$NON-NLS-1$
+    private static final String ATTR_HTTPS_ENABLED = JettyPlugin.PLUGIN_ID + ".httpsEnabled"; //$NON-NLS-1$
+    private static final String ATTR_JETTY_PATH = JettyPlugin.PLUGIN_ID + ".jetty.path"; //$NON-NLS-1$
+    private static final String ATTR_JETTY_EMBEDDED = JettyPlugin.PLUGIN_ID + ".jetty.embedded"; //$NON-NLS-1$
+    private static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version"; //$NON-NLS-1$
+    private static final String ATTR_JETTY_CONFIG_PATH = JettyPlugin.PLUGIN_ID + ".jetty.config.path."; //$NON-NLS-1$
+    private static final String ATTR_JETTY_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".jetty.config.type."; //$NON-NLS-1$
+    private static final String ATTR_JETTY_CONFIG_ACTIVE = JettyPlugin.PLUGIN_ID + ".jetty.config.active."; //$NON-NLS-1$
+    private static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled"; //$NON-NLS-1$
+    private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled"; //$NON-NLS-1$
+    private static final String ATTR_JNDI_ENABLED = JettyPlugin.PLUGIN_ID + ".jndi.enabled"; //$NON-NLS-1$
+    private static final String ATTR_AJP_ENABLED = JettyPlugin.PLUGIN_ID + ".ajp.enabled"; //$NON-NLS-1$
+    private static final String ATTR_THREAD_POOL_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".threadPool.limit.enabled"; //$NON-NLS-1$
+    private static final String ATTR_THREAD_POOL_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".threadPool.limit.count"; //$NON-NLS-1$
+    private static final String ATTR_ACCEPTOR_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".acceptor.limit.enabled"; //$NON-NLS-1$
+    private static final String ATTR_ACCEPTOR_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".acceptor.limit.count"; //$NON-NLS-1$
+    private static final String ATTR_SERVER_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.server.enabled"; //$NON-NLS-1$
+    private static final String ATTR_CLIENT_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.client.enabled"; //$NON-NLS-1$
+    private static final String ATTR_CUSTOM_WEB_DEFAULTS_ENABLED = JettyPlugin.PLUGIN_ID + ".customWebDefaults.enabled"; //$NON-NLS-1$
     private static final String ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE = JettyPlugin.PLUGIN_ID
-        + ".customWebDefaults.resource";
-    private static final String ATTR_EXCLUDE_SCOPE_COMPILE = JettyPlugin.PLUGIN_ID + ".scope.compile.exclude";
-    private static final String ATTR_EXCLUDE_SCOPE_PROVIDED = JettyPlugin.PLUGIN_ID + ".scope.provided.exclude";
-    private static final String ATTR_EXCLUDE_SCOPE_RUNTIME = JettyPlugin.PLUGIN_ID + ".scope.runtime.exclude";
-    private static final String ATTR_EXCLUDE_SCOPE_TEST = JettyPlugin.PLUGIN_ID + ".scope.test.exclude";
-    private static final String ATTR_EXCLUDE_SCOPE_SYSTEM = JettyPlugin.PLUGIN_ID + ".scope.system.exclude";
-    private static final String ATTR_EXCLUDE_SCOPE_IMPORT = JettyPlugin.PLUGIN_ID + ".scope.import.exclude";
-    private static final String ATTR_EXCLUDE_SCOPE_NONE = JettyPlugin.PLUGIN_ID + ".scope.none.exclude";
+        + ".customWebDefaults.resource"; //$NON-NLS-1$
+    private static final String ATTR_EXCLUDE_SCOPE_COMPILE = JettyPlugin.PLUGIN_ID + ".scope.compile.exclude"; //$NON-NLS-1$
+    private static final String ATTR_EXCLUDE_SCOPE_PROVIDED = JettyPlugin.PLUGIN_ID + ".scope.provided.exclude"; //$NON-NLS-1$
+    private static final String ATTR_EXCLUDE_SCOPE_RUNTIME = JettyPlugin.PLUGIN_ID + ".scope.runtime.exclude"; //$NON-NLS-1$
+    private static final String ATTR_EXCLUDE_SCOPE_TEST = JettyPlugin.PLUGIN_ID + ".scope.test.exclude"; //$NON-NLS-1$
+    private static final String ATTR_EXCLUDE_SCOPE_SYSTEM = JettyPlugin.PLUGIN_ID + ".scope.system.exclude"; //$NON-NLS-1$
+    private static final String ATTR_EXCLUDE_SCOPE_IMPORT = JettyPlugin.PLUGIN_ID + ".scope.import.exclude"; //$NON-NLS-1$
+    private static final String ATTR_EXCLUDE_SCOPE_NONE = JettyPlugin.PLUGIN_ID + ".scope.none.exclude"; //$NON-NLS-1$
     /**
      * @deprecated Replaced by mechanism using generic ids
      */
     @Deprecated
-    private static final String ATTR_EXCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.excludeLibs";
+    private static final String ATTR_EXCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.excludeLibs"; //$NON-NLS-1$
     /**
      * @deprecated Replaced by mechanism using generic ids
      */
     @Deprecated
-    private static final String ATTR_INCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.includeLibs";
-    private static final String ATTR_EXCLUDED_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.excludeGenericIds";
-    private static final String ATTR_INCLUDED_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.includeGenericIds";
+    private static final String ATTR_INCLUDED_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.includeLibs"; //$NON-NLS-1$
+    private static final String ATTR_EXCLUDED_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.excludeGenericIds"; //$NON-NLS-1$
+    private static final String ATTR_INCLUDED_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.includeGenericIds"; //$NON-NLS-1$
     /**
      * @deprecated Replaced by mechanism using generic ids
      */
     @Deprecated
-    private static final String ATTR_GLOBAL_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.globalLibs";
-    private static final String ATTR_GLOBAL_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.globalGenericIds";
-    private static final String ATTR_SHOW_LAUNCHER_INFO = JettyPlugin.PLUGIN_ID + ".launcher.info";
-    private static final String ATTR_CONSOLE_ENABLED = JettyPlugin.PLUGIN_ID + ".console.enabled";
+    private static final String ATTR_GLOBAL_LIBS = JettyPlugin.PLUGIN_ID + ".launcher.globalLibs"; //$NON-NLS-1$
+    private static final String ATTR_GLOBAL_GENERIC_IDS = JettyPlugin.PLUGIN_ID + ".launcher.globalGenericIds"; //$NON-NLS-1$
+    private static final String ATTR_SHOW_LAUNCHER_INFO = JettyPlugin.PLUGIN_ID + ".launcher.info"; //$NON-NLS-1$
+    private static final String ATTR_CONSOLE_ENABLED = JettyPlugin.PLUGIN_ID + ".console.enabled"; //$NON-NLS-1$
 
     /**
      * Creates an readable configuration adapter.
@@ -150,7 +151,8 @@ public class JettyLaunchConfigurationAdapter
         }
         catch (ClassCastException e)
         {
-            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, "Configuration only readable"));
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
+                Messages.adapter_configurationOnlyReadable));
         }
     }
 
@@ -174,7 +176,7 @@ public class JettyLaunchConfigurationAdapter
 
         if ((launchConfigName == null) || (launchConfigName.length() == 0))
         {
-            launchConfigName = "Jetty Webapp";
+            launchConfigName = Messages.adapter_defaultConfigName;
         }
 
         launchConfigName = JettyLaunchUtils.generateLaunchConfigurationName(launchConfigName);
@@ -210,7 +212,7 @@ public class JettyLaunchConfigurationAdapter
         }
         else
         {
-            setWebAppString("src/main/webapp");
+            setWebAppString("src/main/webapp"); //$NON-NLS-1$
         }
 
         setPort(getPort());
@@ -349,7 +351,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public String getContext() throws CoreException
     {
-        return getAttribute(false, ATTR_CONTEXT, "/");
+        return getAttribute(false, ATTR_CONTEXT, "/"); //$NON-NLS-1$
     }
 
     /**
@@ -371,7 +373,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public String getWebAppString() throws CoreException
     {
-        return getAttribute(false, ATTR_WEBAPPDIR, "src/main/webapp");
+        return getAttribute(false, ATTR_WEBAPPDIR, "src/main/webapp"); //$NON-NLS-1$
     }
 
     /**
@@ -412,7 +414,7 @@ public class JettyLaunchConfigurationAdapter
     {
         try
         {
-            return Integer.parseInt(getAttribute(true, ATTR_PORT, "8080")); // string for backward compatibility
+            return Integer.parseInt(getAttribute(true, ATTR_PORT, "8080")); // string for backward compatibility //$NON-NLS-1$
         }
         catch (NumberFormatException e)
         {
@@ -441,7 +443,7 @@ public class JettyLaunchConfigurationAdapter
     {
         try
         {
-            return Integer.parseInt(getAttribute(true, ATTR_HTTPS_PORT, "8443")); // string for backward compatibility
+            return Integer.parseInt(getAttribute(true, ATTR_HTTPS_PORT, "8443")); // string for backward compatibility //$NON-NLS-1$
         }
         catch (NumberFormatException e)
         {
@@ -641,7 +643,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public boolean isJspSupport() throws CoreException
     {
-        return !"false".equals(getAttribute(true, ATTR_JSP_ENABLED, "true")); // string for backward compatibility
+        return !"false".equals(getAttribute(true, ATTR_JSP_ENABLED, "true")); // string for backward compatibility //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -663,7 +665,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public boolean isJmxSupport() throws CoreException
     {
-        return "true".equals(getAttribute(true, ATTR_JMX_ENABLED, "false")); // string for backward compatibility
+        return "true".equals(getAttribute(true, ATTR_JMX_ENABLED, "false")); // string for backward compatibility //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -685,7 +687,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public boolean isJndiSupport() throws CoreException
     {
-        return "true".equals(getAttribute(true, ATTR_JNDI_ENABLED, "false")); // string for backward compatibility
+        return "true".equals(getAttribute(true, ATTR_JNDI_ENABLED, "false")); // string for backward compatibility //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -707,7 +709,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public boolean isAjpSupport() throws CoreException
     {
-        return "true".equals(getAttribute(true, ATTR_AJP_ENABLED, "false")); // string for backward compatibility
+        return "true".equals(getAttribute(true, ATTR_AJP_ENABLED, "false")); // string for backward compatibility //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -1086,7 +1088,7 @@ public class JettyLaunchConfigurationAdapter
     @Deprecated
     public String getExcludedLibs() throws CoreException
     {
-        return getAttribute(false, ATTR_EXCLUDED_LIBS, ".*servlet-api.*");
+        return getAttribute(false, ATTR_EXCLUDED_LIBS, ".*servlet-api.*"); //$NON-NLS-1$
     }
 
     /**
@@ -1355,17 +1357,17 @@ public class JettyLaunchConfigurationAdapter
     {
         try
         {
-            configuration.getClass().getMethod("hasAttribute", String.class);
+            configuration.getClass().getMethod("hasAttribute", String.class); //$NON-NLS-1$
 
             return configuration.hasAttribute(name);
         }
         catch (SecurityException e)
         {
-            JettyPlugin.error("No hasAttribute (< Eclipse 3.4)", e);
+            JettyPlugin.error(Messages.adapter_noHasAttribute, e);
         }
         catch (NoSuchMethodException e)
         {
-            JettyPlugin.warning("No DefaultScope.INSTANCE (< Eclipse 3.4)", e);
+            JettyPlugin.warning(Messages.adapter_noDefaultScope, e);
         }
 
         return configuration.getAttributes().containsKey(name);

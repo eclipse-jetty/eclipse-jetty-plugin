@@ -18,6 +18,7 @@ import java.util.Set;
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
 
 import org.eclipse.core.resources.IProject;
@@ -84,10 +85,10 @@ public class MavenDependencyInfoMap
 
     private void buildLocations(IMavenProjectFacade facade)
     {
-        addLocations(facade, "output", MavenScope.COMPILE, facade.getOutputLocation());
-        addLocations(facade, "resource", MavenScope.RUNTIME, facade.getResourceLocations());
-        addLocations(facade, "test-output", MavenScope.TEST, facade.getTestOutputLocation());
-        addLocations(facade, "test-resource", MavenScope.TEST, facade.getTestResourceLocations());
+        addLocations(facade, "output", MavenScope.COMPILE, facade.getOutputLocation()); //$NON-NLS-1$
+        addLocations(facade, "resource", MavenScope.RUNTIME, facade.getResourceLocations()); //$NON-NLS-1$
+        addLocations(facade, "test-output", MavenScope.TEST, facade.getTestOutputLocation()); //$NON-NLS-1$
+        addLocations(facade, "test-resource", MavenScope.TEST, facade.getTestResourceLocations()); //$NON-NLS-1$
     }
 
     private void addLocations(IMavenProjectFacade facade, String variant, MavenScope scope, IPath... paths)
@@ -126,7 +127,7 @@ public class MavenDependencyInfoMap
             {
                 if (!JettyPluginUtils.equals(suspectedMavenDependency.getScope(), mavenDependency.getScope()))
                 {
-                    JettyPlugin.info(String.format("Fixed scope for dependency %s: changed %s to %s", location,
+                    JettyPlugin.info(String.format(Messages.dependencyMap_fixedScope, location,
                         suspectedMavenDependency.getScope(), mavenDependency.getScope()));
                 }
 

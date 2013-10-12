@@ -20,6 +20,7 @@ import java.util.HashSet;
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginM2EUtils;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationDelegate;
 import net.sourceforge.eclipsejetty.util.Dependency;
@@ -80,45 +81,46 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         tabComposite.setLayout(new GridLayout(1, false));
 
         Composite mavenGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 1, 1);
-        createLabel(mavenGroup, "Include Maven Dependencies:", 224, 1, 1);
+        createLabel(mavenGroup, Messages.depConfigTab_mavenGroupTitle, 224, 1, 1);
         mavenIncludeCompile =
-            createButton(mavenGroup, SWT.CHECK, "Compile Scope",
-                "Include all dependencies with the compile scope, by default.", 224, 1, 1, modifyDialogListener);
+            createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeCompileButton,
+                Messages.depConfigTab_mavenIncludeCompileButtonTip, 224, 1, 1, modifyDialogListener);
         mavenIncludeProvided =
-            createButton(mavenGroup, SWT.CHECK, "Provided Scope",
-                "Include all dependencies with the provided scope, by default.", -1, 1, 1, modifyDialogListener);
+            createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeProvidedButton,
+                Messages.depConfigTab_mavenIncludeProvidedButtonTip, -1, 1, 1, modifyDialogListener);
 
         m2eLabel = createLabel(mavenGroup, JettyPluginUtils.BLANK, 224, 1, 2);
         mavenIncludeRuntime =
-            createButton(mavenGroup, SWT.CHECK, "Runtime Scope",
-                "Include all dependencies with the runtime scope, by default.", 224, 1, 1, modifyDialogListener);
+            createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeRuntimeButton,
+                Messages.depConfigTab_mavenIncludeRuntimeButtonTip, 224, 1, 1, modifyDialogListener);
         mavenIncludeSystem =
-            createButton(mavenGroup, SWT.CHECK, "System Scope",
-                "Include all dependencies with the system scope, by default.", -1, 1, 1, modifyDialogListener);
+            createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeSystemButton,
+                Messages.depConfigTab_mavenIncludeSystemButtonTip, -1, 1, 1, modifyDialogListener);
 
         mavenIncludeTest =
-            createButton(mavenGroup, SWT.CHECK, "Test Scope",
-                "Include all dependencies with the test scope, by default.", 224, 1, 1, modifyDialogListener);
+            createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeTestButton,
+                Messages.depConfigTab_mavenIncludeTestButtonTip, 224, 1, 1, modifyDialogListener);
         mavenIncludeImport =
-            createButton(mavenGroup, SWT.CHECK, "Import Scope",
-                "Include all dependencies with the mystical and uncommon import scope, by default.", -1, 1, 1,
-                modifyDialogListener);
+            createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeImportButton,
+                Messages.depConfigTab_mavenIncludeImportButtonTip, -1, 1, 1, modifyDialogListener);
 
         Composite otherGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 1, 1);
 
-        createLabel(otherGroup, "Include Other Dependencies:", 224, 1, 1);
+        createLabel(otherGroup, Messages.depConfigTab_otherGroupTitle, 224, 1, 1);
         mavenIncludeNone =
-            createButton(otherGroup, SWT.CHECK, "Without Scope",
-                "Include all dependencies that lack a scope definition, by default.", 224, 2, 1, modifyDialogListener);
+            createButton(otherGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeNoneButton,
+                Messages.depConfigTab_mavenIncludeNoneButtonTip, 224, 2, 1, modifyDialogListener);
 
         Composite tableGroup = createComposite(tabComposite, SWT.NONE, 3, -1, true, 1, 1);
 
         dependencyTable =
-            createTable(tableGroup, SWT.BORDER | SWT.HIDE_SELECTION, -1, 200, 3, 1, "Include", "Name", "Global",
-                "Scope", "Path");
+            createTable(tableGroup, SWT.BORDER | SWT.HIDE_SELECTION, -1, 200, 3, 1,
+                Messages.depConfigTab_dependencyTableInclude, Messages.depConfigTab_dependencyTableName,
+                Messages.depConfigTab_dependencyTableGlobal, Messages.depConfigTab_dependencyTableScope,
+                Messages.depConfigTab_dependencyTablePath);
 
-        createButton(tableGroup, SWT.NONE, "Reset Dependency Overrides",
-            "Resets all include/exclude overrides and all global overrides.", 196, 3, 1, new SelectionAdapter()
+        createButton(tableGroup, SWT.NONE, Messages.depConfigTab_dependencyTableResetButton,
+            Messages.depConfigTab_dependencyTableResetButtonTip, 196, 3, 1, new SelectionAdapter()
             {
                 @Override
                 public void widgetSelected(SelectionEvent e)
@@ -133,7 +135,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     public String getName()
     {
-        return "Dependencies";
+        return Messages.depConfigTab_title;
     }
 
     @Override
@@ -145,7 +147,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
     @Override
     public String getMessage()
     {
-        return "Configure dependencies of Jetty.";
+        return Messages.depConfigTab_message;
     }
 
     @Override
@@ -169,7 +171,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         }
         catch (final CoreException e)
         {
-            JettyPlugin.error("Failed to initialize dependency tab", e);
+            JettyPlugin.error(Messages.depConfigTab_initializeFailed, e);
         }
     }
 
@@ -204,7 +206,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         }
         catch (CoreException e)
         {
-            JettyPlugin.error("Failed to update configuration", e);
+            JettyPlugin.error(Messages.depConfigTab_performApplyFailed, e);
         }
     }
 
@@ -242,12 +244,12 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
             if (!scopeable)
             {
-                m2eLabel.setText("(no m2e nature, no scope info)");
+                m2eLabel.setText(Messages.depConfigTab_noM2ENature);
             }
         }
         else
         {
-            m2eLabel.setText("(m2e not available, no scope info)");
+            m2eLabel.setText(Messages.depConfigTab_m2eNotAvailable);
         }
 
         mavenIncludeCompile.setEnabled(scopeable);
@@ -268,7 +270,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         try
         {
             ILaunchDelegate[] delegates =
-                adapter.getConfiguration().getType().getDelegates(new HashSet<String>(Arrays.asList("run")));
+                adapter.getConfiguration().getType().getDelegates(new HashSet<String>(Arrays.asList("run"))); //$NON-NLS-1$
 
             if (delegates.length == 1)
             {
@@ -301,7 +303,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         }
         catch (CoreException e)
         {
-            JettyPlugin.error("Failed to update table in advanced configuration tab", e);
+            JettyPlugin.error(Messages.depConfigTab_dependencyTableUpdateFailed, e);
         }
     }
 

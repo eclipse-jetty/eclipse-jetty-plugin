@@ -1,6 +1,7 @@
 package net.sourceforge.eclipsejetty.launch.util;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
+import net.sourceforge.eclipsejetty.Messages;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -67,7 +68,7 @@ public class JettyLaunchUtils
         }
         catch (CoreException e)
         {
-            JettyPlugin.warning("Failed to scan project", e);
+            JettyPlugin.warning(Messages.utils_scanFailed, e);
         }
 
         return path;
@@ -90,10 +91,10 @@ public class JettyLaunchUtils
 
         if (resource instanceof IContainer)
         {
-            return findResource((IContainer) resource, "WEB-INF", "web.xml");
+            return findResource((IContainer) resource, "WEB-INF", "web.xml"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
-        return findResource(resource.getParent(), "WEB-INF", "web.xml");
+        return findResource(resource.getParent(), "WEB-INF", "web.xml"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**

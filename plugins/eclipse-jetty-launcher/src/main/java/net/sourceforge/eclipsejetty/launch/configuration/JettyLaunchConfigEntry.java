@@ -1,6 +1,7 @@
 package net.sourceforge.eclipsejetty.launch.configuration;
 
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
 import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 
@@ -127,7 +128,7 @@ public class JettyLaunchConfigEntry
                 button.setEnabled(false);
                 color = item.getDisplay().getSystemColor(SWT.COLOR_BLACK);
 
-                item.setText(1, "Eclipse Jetty Launcher Context");
+                item.setText(1, Messages.configEntry_default);
                 item.setForeground(1, color);
                 break;
 

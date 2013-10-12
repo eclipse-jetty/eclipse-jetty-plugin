@@ -70,7 +70,7 @@ public class JettyLaunchDependencyEntryList
             {
                 if (result.length() > 0)
                 {
-                    result.append(", ");
+                    result.append(", "); //$NON-NLS-1$
                 }
 
                 result.append(entry.createMatcher());
@@ -95,7 +95,7 @@ public class JettyLaunchDependencyEntryList
             {
                 if (result.length() > 0)
                 {
-                    result.append(", ");
+                    result.append(", "); //$NON-NLS-1$
                 }
 
                 result.append(entry.createMatcher());
@@ -149,7 +149,7 @@ public class JettyLaunchDependencyEntryList
             {
                 if (result.length() > 0)
                 {
-                    result.append(", ");
+                    result.append(", "); //$NON-NLS-1$
                 }
 
                 result.append(entry.createMatcher());

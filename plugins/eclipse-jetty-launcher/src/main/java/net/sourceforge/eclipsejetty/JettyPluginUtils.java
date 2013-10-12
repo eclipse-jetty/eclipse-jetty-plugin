@@ -49,7 +49,7 @@ public class JettyPluginUtils
 {
 
     public static final String BLANK = "";
-    
+
     /**
      * A collator set to primary strength, which means 'a', 'A' and '&auml;' is the same
      */

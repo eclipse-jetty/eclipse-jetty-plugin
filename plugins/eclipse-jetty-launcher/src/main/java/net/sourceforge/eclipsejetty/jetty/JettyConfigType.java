@@ -4,9 +4,9 @@ public enum JettyConfigType
 {
 
     DEFAULT,
-    
+
     PATH,
-    
+
     WORKSPACE
-    
+
 }

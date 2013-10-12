@@ -12,17 +12,18 @@
 package net.sourceforge.eclipsejetty.util;
 
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.Messages;
 
 public enum MavenScope
 {
 
     NONE(JettyPluginUtils.BLANK),
-    COMPILE("compile"),
-    PROVIDED("provided"),
-    RUNTIME("runtime"),
-    TEST("test"),
-    SYSTEM("system"),
-    IMPORT("import");
+    COMPILE("compile"), //$NON-NLS-1$
+    PROVIDED("provided"), //$NON-NLS-1$
+    RUNTIME("runtime"), //$NON-NLS-1$
+    TEST("test"), //$NON-NLS-1$
+    SYSTEM("system"), //$NON-NLS-1$
+    IMPORT("import"); //$NON-NLS-1$
 
     private final String key;
 
@@ -57,6 +58,6 @@ public enum MavenScope
             }
         }
 
-        throw new IllegalArgumentException(String.format("Unknown scope: %s", key));
+        throw new IllegalArgumentException(String.format(Messages.mavenScope_unknown, key));
     }
 }

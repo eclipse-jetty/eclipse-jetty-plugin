@@ -57,23 +57,23 @@ public class MavenDependencyInfo
 
         for (IClasspathAttribute extraAttribute : extraAttributes)
         {
-            if ("maven.groupId".equals(extraAttribute.getName()))
+            if ("maven.groupId".equals(extraAttribute.getName())) //$NON-NLS-1$
             {
                 groupId = extraAttribute.getValue();
             }
-            else if ("maven.artifactId".equals(extraAttribute.getName()))
+            else if ("maven.artifactId".equals(extraAttribute.getName())) //$NON-NLS-1$
             {
                 artifactId = extraAttribute.getValue();
             }
-            else if ("maven.version".equals(extraAttribute.getName()))
+            else if ("maven.version".equals(extraAttribute.getName())) //$NON-NLS-1$
             {
                 version = extraAttribute.getValue();
             }
-            else if ("maven.classifier".equals(extraAttribute.getName()))
+            else if ("maven.classifier".equals(extraAttribute.getName())) //$NON-NLS-1$
             {
                 classifier = extraAttribute.getValue();
             }
-            else if ("maven.scope".equals(extraAttribute.getName()))
+            else if ("maven.scope".equals(extraAttribute.getName())) //$NON-NLS-1$
             {
                 scope = MavenScope.to(extraAttribute.getValue());
             }

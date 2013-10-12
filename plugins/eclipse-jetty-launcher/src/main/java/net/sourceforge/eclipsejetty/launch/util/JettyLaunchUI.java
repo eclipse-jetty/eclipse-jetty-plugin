@@ -399,7 +399,7 @@ public class JettyLaunchUI
 
             for (int i = results.length - 1; i >= 0; i -= 1)
             {
-                String placeholder = "${" + ((IStringVariable) results[i]).getName() + "}";
+                String placeholder = "${" + ((IStringVariable) results[i]).getName() + "}"; //$NON-NLS-1$ //$NON-NLS-2$
                 int position = textComponent.getCaretPosition();
                 String text = textComponent.getText();
 

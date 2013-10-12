@@ -57,5 +57,5 @@ public class Jetty6WebDefaults extends AbstractWebDefaults
     {
         return 1000;
     }
-    
+
 }

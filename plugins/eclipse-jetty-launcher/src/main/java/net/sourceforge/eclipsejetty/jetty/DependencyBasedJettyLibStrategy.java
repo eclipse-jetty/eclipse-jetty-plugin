@@ -30,8 +30,7 @@ public abstract class DependencyBasedJettyLibStrategy implements IJettyLibStrate
      * @see net.sourceforge.eclipsejetty.jetty.IJettyLibStrategy#find(java.io.File, boolean)
      */
     public Collection<File> find(File path, boolean jspSupport, boolean jmxSupport, boolean jndiSupport,
-        boolean ajpSupport)
-        throws CoreException
+        boolean ajpSupport) throws CoreException
     {
         Collection<String> dependencies = new LinkedHashSet<String>();
 

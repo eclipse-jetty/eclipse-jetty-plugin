@@ -370,7 +370,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         // TODO this method whole can be heavily enhanced - e.g. it does not look at the path. If you exclude one test-classes entry, all are excluded
         // meanwhile this one-liner should do it
 
-        return ".*/" + name.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1");
+        return ".*/" + name.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public int compareTo(JettyLaunchDependencyEntry entry)

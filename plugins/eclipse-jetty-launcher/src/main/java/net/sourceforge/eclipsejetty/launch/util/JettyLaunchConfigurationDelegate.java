@@ -29,6 +29,7 @@ import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty.AbstractWebDefaults;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
@@ -59,9 +60,9 @@ import org.eclipse.jdt.launching.JavaRuntime;
  */
 public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 {
-    public static final String CONFIGURATION_KEY = "jetty.launcher.configuration";
-    public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo";
-    public static final String DISABLE_CONSOLE_KEY = "jetty.launcher.disableConsole";
+    public static final String CONFIGURATION_KEY = "jetty.launcher.configuration"; //$NON-NLS-1$
+    public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo"; //$NON-NLS-1$
+    public static final String DISABLE_CONSOLE_KEY = "jetty.launcher.disableConsole"; //$NON-NLS-1$
 
     private static final long DEFAULT_LIFESPAN = 5 * 1000; // 10 seconds
 
@@ -169,21 +170,21 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         String vmArguments = super.getVMArguments(configuration);
 
         vmArguments +=
-            String.format(" -D%s=%s", CONFIGURATION_KEY, getConfigurationParameter(configuration, defaultFile));
+            String.format(" -D%s=%s", CONFIGURATION_KEY, getConfigurationParameter(configuration, defaultFile)); //$NON-NLS-1$
 
         if (!adapter.isShowLauncherInfo())
         {
-            vmArguments += String.format(" -D%s", HIDE_LAUNCH_INFO_KEY);
+            vmArguments += String.format(" -D%s", HIDE_LAUNCH_INFO_KEY); //$NON-NLS-1$
         }
 
         if (!adapter.isConsoleEnabled())
         {
-            vmArguments += String.format(" -D%s", DISABLE_CONSOLE_KEY);
+            vmArguments += String.format(" -D%s", DISABLE_CONSOLE_KEY); //$NON-NLS-1$
         }
 
         if (adapter.isJmxSupport())
         {
-            vmArguments += " -Dcom.sun.management.jmxremote";
+            vmArguments += " -Dcom.sun.management.jmxremote"; //$NON-NLS-1$
         }
 
         return vmArguments;
@@ -228,7 +229,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     @Override
     public String[] getClasspath(ILaunchConfiguration configuration) throws CoreException
     {
-        String[] result = (String[]) getCached("Classpath", configuration);
+        String[] result = (String[]) getCached("Classpath", configuration); //$NON-NLS-1$
 
         if (result != null)
         {
@@ -243,7 +244,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                 getGlobalWebappClasspathEntries(adapter,
                     getWebappClasspathEntries(adapter, getOriginalClasspathEntries(adapter)))));
 
-        putCached("Classpath", configuration, result);
+        putCached("Classpath", configuration, result); //$NON-NLS-1$
 
         return result;
     }
@@ -252,7 +253,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         throws CoreException
     {
         @SuppressWarnings("unchecked")
-        Collection<Dependency> result = (Collection<Dependency>) getCached("OriginalClasspathEntries", adapter);
+        Collection<Dependency> result = (Collection<Dependency>) getCached("OriginalClasspathEntries", adapter); //$NON-NLS-1$
 
         if (result != null)
         {
@@ -273,14 +274,14 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         result = Collections.unmodifiableCollection(userClasses().match(scopedClasspathEntries));
 
-        putCached("OriginalClasspathEntries", adapter, result);
+        putCached("OriginalClasspathEntries", adapter, result); //$NON-NLS-1$
 
         return result;
     }
 
     public String[] getOriginalClasspath(JettyLaunchConfigurationAdapter adapter) throws CoreException
     {
-        String[] result = (String[]) getCached("OriginalClasspath", adapter);
+        String[] result = (String[]) getCached("OriginalClasspath", adapter); //$NON-NLS-1$
 
         if (result != null)
         {
@@ -289,7 +290,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         result = JettyPluginUtils.toLocationArrayFromScoped(getOriginalClasspathEntries(adapter));
 
-        putCached("OriginalClasspath", adapter, result);
+        putCached("OriginalClasspath", adapter, result); //$NON-NLS-1$
 
         return result;
     }
@@ -298,7 +299,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         Collection<Dependency> originalEntries) throws CoreException
     {
         @SuppressWarnings("unchecked")
-        Collection<Dependency> result = (Collection<Dependency>) getCached("WebappClasspathEntries", adapter);
+        Collection<Dependency> result = (Collection<Dependency>) getCached("WebappClasspathEntries", adapter); //$NON-NLS-1$
 
         if (result != null)
         {
@@ -309,7 +310,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             Collections.unmodifiableCollection(and(createWebappClasspathMatcher(adapter)).match(
                 new LinkedHashSet<Dependency>(originalEntries)));
 
-        putCached("WebappClasspathEntries", adapter, result);
+        putCached("WebappClasspathEntries", adapter, result); //$NON-NLS-1$
 
         return result;
     }
@@ -317,7 +318,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public String[] getWebappClasspath(JettyLaunchConfigurationAdapter adapter, Collection<Dependency> originalEntries)
         throws CoreException
     {
-        String[] result = (String[]) getCached("WebappClasspath", adapter);
+        String[] result = (String[]) getCached("WebappClasspath", adapter); //$NON-NLS-1$
 
         if (result != null)
         {
@@ -326,7 +327,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         result = JettyPluginUtils.toLocationArrayFromScoped(getWebappClasspathEntries(adapter, originalEntries));
 
-        putCached("WebappClasspath", adapter, result);
+        putCached("WebappClasspath", adapter, result); //$NON-NLS-1$
 
         return result;
     }
@@ -335,7 +336,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         Collection<Dependency> webappEntries) throws CoreException
     {
         @SuppressWarnings("unchecked")
-        Collection<Dependency> result = (Collection<Dependency>) getCached("LocalWebappClasspathEntries", adapter);
+        Collection<Dependency> result = (Collection<Dependency>) getCached("LocalWebappClasspathEntries", adapter); //$NON-NLS-1$
 
         if (result != null)
         {
@@ -363,7 +364,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                 Collections.unmodifiableCollection(deprecatedGetLocalWebappClasspathEntries(adapter, webappEntries));
         }
 
-        putCached("LocalWebappClasspathEntries", adapter, result);
+        putCached("LocalWebappClasspathEntries", adapter, result); //$NON-NLS-1$
 
         return result;
     }
@@ -386,7 +387,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public String[] getLocalWebappClasspath(JettyLaunchConfigurationAdapter adapter,
         Collection<Dependency> webappEntries) throws CoreException
     {
-        String[] result = (String[]) getCached("LocalWebappClasspath", adapter);
+        String[] result = (String[]) getCached("LocalWebappClasspath", adapter); //$NON-NLS-1$
 
         if (result != null)
         {
@@ -395,7 +396,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         result = JettyPluginUtils.toLocationArrayFromScoped(getLocalWebappClasspathEntries(adapter, webappEntries));
 
-        putCached("LocalWebappClasspath", adapter, result);
+        putCached("LocalWebappClasspath", adapter, result); //$NON-NLS-1$
 
         return result;
     }
@@ -404,7 +405,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         Collection<Dependency> webappEntries) throws CoreException
     {
         @SuppressWarnings("unchecked")
-        Collection<Dependency> result = (Collection<Dependency>) getCached("GlobalWebappClasspathEntries", adapter);
+        Collection<Dependency> result = (Collection<Dependency>) getCached("GlobalWebappClasspathEntries", adapter); //$NON-NLS-1$
 
         if (result != null)
         {
@@ -432,7 +433,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                 Collections.unmodifiableCollection(deprecatedGetGlobalWebappClasspathEntries(adapter, webappEntries));
         }
 
-        putCached("GlobalWebappClasspathEntries", adapter, result);
+        putCached("GlobalWebappClasspathEntries", adapter, result); //$NON-NLS-1$
 
         return result;
     }
@@ -455,7 +456,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     public String[] getGlobalWebappClasspath(JettyLaunchConfigurationAdapter adapter,
         Collection<Dependency> webappEntries) throws CoreException
     {
-        String[] result = (String[]) getCached("GlobalWebappClasspath", adapter);
+        String[] result = (String[]) getCached("GlobalWebappClasspath", adapter); //$NON-NLS-1$
 
         if (result != null)
         {
@@ -464,7 +465,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         result = JettyPluginUtils.toLocationArrayFromScoped(getGlobalWebappClasspathEntries(adapter, webappEntries));
 
-        putCached("GlobalWebappClasspath", adapter, result);
+        putCached("GlobalWebappClasspath", adapter, result); //$NON-NLS-1$
 
         return result;
     }
@@ -494,17 +495,17 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         {
             entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
                 FileLocator.find(JettyPlugin.getDefault().getBundle(),
-                    Path.fromOSString("lib/eclipse-jetty-starters-common.jar"), null)).getFile())));
+                    Path.fromOSString("lib/eclipse-jetty-starters-common.jar"), null)).getFile()))); //$NON-NLS-1$
 
             entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
                 FileLocator.find(JettyPlugin.getDefault().getBundle(),
-                    Path.fromOSString("lib/eclipse-jetty-starters-util.jar"), null)).getFile())));
+                    Path.fromOSString("lib/eclipse-jetty-starters-util.jar"), null)).getFile()))); //$NON-NLS-1$
 
             if (consoleEnabled)
             {
                 entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
                     FileLocator.find(JettyPlugin.getDefault().getBundle(),
-                        Path.fromOSString("lib/eclipse-jetty-starters-console.jar"), null)).getFile())));
+                        Path.fromOSString("lib/eclipse-jetty-starters-console.jar"), null)).getFile()))); //$NON-NLS-1$
             }
 
             entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
@@ -519,7 +520,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         }
         catch (final IOException e)
         {
-            JettyPlugin.error("Failed to detect jetty classpath", e);
+            JettyPlugin.error("Failed to detect jetty classpath", e); //$NON-NLS-1$
         }
 
         return entries.toArray(new IRuntimeClasspathEntry[entries.size()]);
@@ -657,8 +658,8 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             }
 
             serverConfiguration.setKeyStorePath(defaultKeystoreFile.getAbsolutePath());
-            serverConfiguration.setKeyStorePassword("correct horse battery staple");
-            serverConfiguration.setKeyManagerPassword("correct horse battery staple");
+            serverConfiguration.setKeyStorePassword("correct horse battery staple"); //$NON-NLS-1$
+            serverConfiguration.setKeyManagerPassword("correct horse battery staple"); //$NON-NLS-1$
         }
 
         serverConfiguration.setJndi(adapter.isJndiSupport());
@@ -690,8 +691,8 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             try
             {
                 file =
-                    JettyPluginUtils.getNonRandomTempFile("eclipseJettyPlugin.webDefaults.", adapter.getConfiguration()
-                        .getName().trim(), ".xml");
+                    JettyPluginUtils.getNonRandomTempFile("eclipseJettyPlugin.webDefaults.", adapter.getConfiguration() //$NON-NLS-1$
+                        .getName().trim(), ".xml"); //$NON-NLS-1$
 
                 webDefaults.write(file, formatted);
 
@@ -700,7 +701,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             catch (IOException e)
             {
                 throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
-                    "Failed to store tmp file with Jetty web defaults"));
+                    Messages.delegate_webDefaultsFailed));
             }
 
             serverConfiguration.setCustomWebDefaultsFile(file);
@@ -712,9 +713,8 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
 
         try
         {
-            file =
-                JettyPluginUtils.getNonRandomTempFile("eclipseJettyPlugin.config.", adapter.getConfiguration()
-                    .getName().trim(), ".xml");
+            file = JettyPluginUtils.getNonRandomTempFile("eclipseJettyPlugin.config.", adapter.getConfiguration() //$NON-NLS-1$
+                .getName().trim(), ".xml"); //$NON-NLS-1$
 
             serverConfiguration.write(file, formatted);
 
@@ -723,7 +723,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         catch (IOException e)
         {
             throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
-                "Failed to store tmp file with Jetty launch configuration"));
+                Messages.delegate_launchConfigurationFailed));
         }
 
         return file;
@@ -733,9 +733,9 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     {
         try
         {
-            defaultKeystoreFile = File.createTempFile("eclipseJettyPlugin.", ".keystore");
+            defaultKeystoreFile = File.createTempFile("eclipseJettyPlugin.", ".keystore"); //$NON-NLS-1$ //$NON-NLS-2$
 
-            InputStream in = getClass().getResourceAsStream("eclipseJettyPlugin.keystore");
+            InputStream in = getClass().getResourceAsStream("eclipseJettyPlugin.keystore"); //$NON-NLS-1$
 
             try
             {
@@ -761,8 +761,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         }
         catch (IOException e)
         {
-            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
-                "Failed to store tmp file with keystore"));
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID, Messages.delegate_keystoreFailed));
         }
         return defaultKeystoreFile;
     }

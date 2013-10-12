@@ -31,7 +31,7 @@ public class JettyLaunchConfigEntryList
 
         entry.updateItem(table, listener, entries.size() - 1, false);
     }
-    
+
     public JettyLaunchConfigEntry get(int index)
     {
         return entries.get(index);

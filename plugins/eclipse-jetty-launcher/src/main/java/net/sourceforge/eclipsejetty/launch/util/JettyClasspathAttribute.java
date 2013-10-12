@@ -21,8 +21,8 @@ import org.eclipse.jdt.core.IClasspathAttribute;
 public class JettyClasspathAttribute implements IClasspathAttribute
 {
 
-    public static final String NAME = "jetty";
-    public static final String VALUE = "true";
+    public static final String NAME = "jetty"; //$NON-NLS-1$
+    public static final String VALUE = "true"; //$NON-NLS-1$
 
     public JettyClasspathAttribute()
     {
@@ -41,6 +41,6 @@ public class JettyClasspathAttribute implements IClasspathAttribute
     @Override
     public String toString()
     {
-        return NAME + "=" + VALUE;
+        return NAME + "=" + VALUE; //$NON-NLS-1$
     }
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchUtils;
 
@@ -39,7 +40,7 @@ import org.eclipse.ui.part.FileEditorInput;
 public class JettyLaunchShortcut implements ILaunchShortcut2
 {
 
-    private static final String LAUNCH_CONFIGURATION_TYPE = "net.sourceforge.eclipsejetty.launchConfigurationType";
+    private static final String LAUNCH_CONFIGURATION_TYPE = "net.sourceforge.eclipsejetty.launchConfigurationType"; //$NON-NLS-1$
 
     /**
      * {@inheritDoc}
@@ -114,23 +115,16 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
             {
                 public void run()
                 {
-                    MessageDialog.openError(
-                        Display.getCurrent().getActiveShell(),
-                        "WebApp Directory not found",
-                        String
-                            .format(
-                                "Could not to find the file \"WEB-INF/web.xml\" in project %s.\n\nPlease locate the WebApp Directory manually.",
-                                project.getName()));
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                        Messages.shortcut_webAppDirNotFoundTitle,
+                        String.format(Messages.shortcut_webAppDirNotFoundMessage, project.getName()));
                 }
             });
 
             String path =
-                chooseWorkspaceDirectory(
-                    Display.getCurrent().getActiveShell(),
-                    JettyPluginUtils.getProject(project.getName()),
-                    "WebApp Folder",
-                    "Select your web application root folder. That't the one,\nthat contains the WEB-INF directory with the web.xml.",
-                    null);
+                chooseWorkspaceDirectory(Display.getCurrent().getActiveShell(),
+                    JettyPluginUtils.getProject(project.getName()), Messages.shortcut_webAppSelectTitle,
+                    Messages.shortcut_webAppSelectMessage, null);
 
             if (path == null)
             {
@@ -148,7 +142,7 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
 
         if (webAppPath == null)
         {
-            JettyPlugin.warning("Could not find WebApp path");
+            JettyPlugin.warning(Messages.shortcut_webAppNotFound);
             return;
         }
 
@@ -247,12 +241,12 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
                 return ((IJavaElement) element).getResource();
             }
 
-            JettyPlugin.warning(String.format("Unsupported launch selection first element: %s", element.getClass()));
+            JettyPlugin.warning(String.format(Messages.shortcut_unsupportedLaunchSelectionElement, element.getClass()));
 
             return null;
         }
 
-        JettyPlugin.warning(String.format("Unsupported launch selection: %s", selection.getClass()));
+        JettyPlugin.warning(String.format(Messages.shortcut_unsupportedLaunchSelection, selection.getClass()));
 
         return null;
     }
@@ -270,14 +264,14 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
 
         if (fileEditorInput == null)
         {
-            JettyPlugin.warning("Cannot determine editor input");
+            JettyPlugin.warning(Messages.shortcut_invalidEditorInput);
 
             return null;
         }
 
         if (fileEditorInput.getFile() == null)
         {
-            JettyPlugin.warning("Cannot determine file of editor input");
+            JettyPlugin.warning(Messages.shortcut_invalidEditorInputFile);
 
             return null;
         }
@@ -420,7 +414,7 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
         }
         catch (CoreException e)
         {
-            JettyPlugin.error("Failed to create and launch configuration", e);
+            JettyPlugin.error(Messages.shortcut_createFailed, e);
         }
 
         return null;
