@@ -1,4 +1,14 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.starter.embedded;
 
 import java.io.File;
@@ -21,11 +31,22 @@ import org.eclipse.jetty.xml.XmlConfiguration;
 public class JettyEmbeddedLauncherMain extends AbstractJettyLauncherMain
 {
 
+    /**
+     * Calls the {@link #launch(String[])} method
+     * 
+     * @param args the arguments
+     * @throws Exception on occasion
+     */
     public static void main(String[] args) throws Exception
     {
         new JettyEmbeddedLauncherMain().launch(args);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain#printLogo(java.io.PrintStream)
+     */
     @Override
     protected void printLogo(PrintStream out)
     {
@@ -36,12 +57,23 @@ public class JettyEmbeddedLauncherMain extends AbstractJettyLauncherMain
         out.println("           /_/                              /___/");
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain#createAdapter(java.io.File[], boolean)
+     */
     @Override
     protected ServerAdapter createAdapter(File[] configurationFiles, boolean showInfo) throws Exception
     {
         return new JettyEmbeddedAdapter(new Server());
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain#configure(java.io.FileInputStream,
+     *      java.lang.Class, net.sourceforge.eclipsejetty.starter.common.ServerAdapter)
+     */
     @Override
     protected void configure(FileInputStream in, Class<?> type, ServerAdapter adapter) throws Exception
     {

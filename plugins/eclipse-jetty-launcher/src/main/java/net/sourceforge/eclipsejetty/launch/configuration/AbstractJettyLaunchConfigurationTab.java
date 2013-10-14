@@ -14,7 +14,7 @@ package net.sourceforge.eclipsejetty.launch.configuration;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaLaunchTab;
 
 /**
- * UI
+ * Basic UI class for the launcher.
  * 
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel

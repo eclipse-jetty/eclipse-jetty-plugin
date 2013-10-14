@@ -30,11 +30,23 @@ import org.eclipse.m2e.core.embedder.ArtifactRef;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.IMavenProjectRegistry;
 
+/**
+ * A map holding all {@link MavenDependencyInfo}s
+ * 
+ * @author Manfred Hantschel
+ */
 public class MavenDependencyInfoMap
 {
 
     private final Map<String, MavenDependencyInfo> dependencies = new HashMap<String, MavenDependencyInfo>();
 
+    /**
+     * Creates the infos from the classpath
+     * 
+     * @param adapter the configuration adapter
+     * @param runtimeClasspathEntries the classpath entries
+     * @throws CoreException on occasion
+     */
     public MavenDependencyInfoMap(JettyLaunchConfigurationAdapter adapter,
         IRuntimeClasspathEntry... runtimeClasspathEntries) throws CoreException
     {
@@ -113,6 +125,12 @@ public class MavenDependencyInfoMap
         dependencies.put(portableString, MavenDependencyInfo.create(artifactRef));
     }
 
+    /**
+     * Returns the info for the specified classpath entry
+     * 
+     * @param runtimeClasspathEntry the entry
+     * @return the info, null if not found
+     */
     public MavenDependencyInfo resolve(IRuntimeClasspathEntry runtimeClasspathEntry)
     {
         MavenDependencyInfo suspectedMavenDependency = MavenDependencyInfo.create(runtimeClasspathEntry);

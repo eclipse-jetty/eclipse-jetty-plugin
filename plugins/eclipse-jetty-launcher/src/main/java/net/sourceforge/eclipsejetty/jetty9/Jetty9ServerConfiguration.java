@@ -25,6 +25,11 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildThreadPool(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildThreadPool(DOMBuilder builder)
     {
@@ -59,6 +64,11 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.end();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildHttpConfig(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildHttpConfig(DOMBuilder builder)
     {
@@ -77,6 +87,11 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.end();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildHttpsConfig(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildHttpsConfig(DOMBuilder builder)
     {
@@ -132,6 +147,11 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildHttpConnector(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildHttpConnector(DOMBuilder builder)
     {
@@ -189,6 +209,11 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildHttpsConnector(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildHttpsConnector(DOMBuilder builder)
     {
@@ -268,6 +293,11 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty8.Jetty8ServerConfiguration#getJNDIItems()
+     */
     @Override
     protected List<String> getJNDIItems()
     {
@@ -278,6 +308,11 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
             "org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildJMX(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildJMX(DOMBuilder builder)
     {
@@ -318,6 +353,11 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildExtraOptions(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildExtraOptions(DOMBuilder builder)
     {

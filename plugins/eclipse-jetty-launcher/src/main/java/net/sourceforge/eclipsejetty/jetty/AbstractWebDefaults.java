@@ -1,7 +1,23 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.jetty;
 
 import net.sourceforge.eclipsejetty.util.DOMBuilder;
 
+/**
+ * An abstract builder for the web defaults file.
+ * 
+ * @author Manfred Hantschel
+ */
 public abstract class AbstractWebDefaults extends AbstractBuilder
 {
 
@@ -13,26 +29,51 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         super();
     }
 
+    /**
+     * Returns true if the server cache should be enabled.
+     * 
+     * @return true if the server cache should be enabled
+     */
     public boolean isServerCacheEnabled()
     {
         return serverCacheEnabled;
     }
 
+    /**
+     * Set to true if the server cache should be enabled.
+     * 
+     * @param serverCacheEnabled true if the server cache should be enabled
+     */
     public void setServerCacheEnabled(boolean serverCacheEnabled)
     {
         this.serverCacheEnabled = serverCacheEnabled;
     }
 
+    /**
+     * Returns true if the client cache should be enabled.
+     * 
+     * @return true if the client cache should be enabled
+     */
     public boolean isClientCacheEnabled()
     {
         return clientCacheEnabled;
     }
 
+    /**
+     * Set to true if the client cache should be enabled.
+     * 
+     * @param clientCacheEnabled true if the client cache should be enabled
+     */
     public void setClientCacheEnabled(boolean clientCacheEnabled)
     {
         this.clientCacheEnabled = clientCacheEnabled;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractBuilder#buildBody(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildBody(DOMBuilder builder)
     {
@@ -49,6 +90,11 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Builds the main content part.
+     * 
+     * @param builder the builder
+     */
     protected void buildContent(DOMBuilder builder)
     {
         buildContextParams(builder);
@@ -57,19 +103,36 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         buildDefaultServletMapping(builder);
         buildJSPServlet(builder);
         buildJSPServletMapping(builder);
-        buildSessioConfig(builder);
+        buildSessionConfig(builder);
         buildWelcomeFileList(builder);
         buildLocaleEncodingMappingList(builder);
         buildSecurityConstraints(builder);
     }
 
+    /**
+     * Builds the context parameters
+     * 
+     * @param builder the builder
+     */
     protected void buildContextParams(DOMBuilder builder)
     {
         appendContextParams(builder);
     }
 
+    /**
+     * Append default context parameters.
+     * 
+     * @param builder the builder
+     */
     protected abstract void appendContextParams(DOMBuilder builder);
 
+    /**
+     * Append one context parameter.
+     * 
+     * @param builder the builder
+     * @param name the name of the parameter
+     * @param value the value of the parameter
+     */
     protected void appendContextParam(DOMBuilder builder, String name, Object value)
     {
         builder.begin("context-param");
@@ -80,13 +143,29 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Build the listeners.
+     * 
+     * @param builder the builder
+     */
     protected void buildListeners(DOMBuilder builder)
     {
         appendListeners(builder);
     }
 
+    /**
+     * Append the default set of listeners.
+     * 
+     * @param builder the builder
+     */
     protected abstract void appendListeners(DOMBuilder builder);
 
+    /**
+     * Append one listener.
+     * 
+     * @param builder the builder
+     * @param listenerClass the listener class
+     */
     protected void appendListener(DOMBuilder builder, String listenerClass)
     {
         builder.begin("listener");
@@ -96,6 +175,11 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Build the default servlet.
+     * 
+     * @param builder the builder
+     */
     private void buildDefaultServlet(DOMBuilder builder)
     {
         builder.begin("servlet");
@@ -110,6 +194,11 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Add init parameters for the default servlet.
+     * 
+     * @param builder the builder
+     */
     protected void appendInitParams(DOMBuilder builder)
     {
         appendInitParam(builder, "acceptRanges", true);
@@ -128,14 +217,36 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         }
     }
 
+    /**
+     * Returns the max cache size, needed if server cache is enabled.
+     * 
+     * @return the max cache size
+     */
     protected abstract int getMaxCacheSize();
 
+    /**
+     * Returns the max cached file size, needed if server cache is enabled.
+     * 
+     * @return the max cached file size
+     */
     protected abstract int getMaxCachedFileSize();
 
+    /**
+     * Returns the number of max cached files, needed if server cache is enabled.
+     * 
+     * @return the max cached file size
+     */
     protected abstract int getMaxCachedFiles();
 
     protected abstract String getDefaultServletClass();
 
+    /**
+     * Append one init parameter
+     * 
+     * @param builder the builder
+     * @param name the name of the parameter
+     * @param value the value of the parameter
+     */
     protected void appendInitParam(DOMBuilder builder, String name, Object value)
     {
         builder.begin("init-param");
@@ -146,6 +257,11 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Build the default servlet mapping.
+     * 
+     * @param builder the builder
+     */
     protected void buildDefaultServletMapping(DOMBuilder builder)
     {
         builder.begin("servlet-mapping");
@@ -156,11 +272,22 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Append the URL pattern.
+     * 
+     * @param builder the builder
+     * @param urlPattern the pattern
+     */
     protected void appendURLPattern(DOMBuilder builder, String urlPattern)
     {
         builder.element("url-pattern", urlPattern);
     }
 
+    /**
+     * Build the JSP servlet section.
+     * 
+     * @param builder the builder
+     */
     protected void buildJSPServlet(DOMBuilder builder)
     {
         builder.begin("servlet").attribute("id", "jsp");
@@ -177,6 +304,11 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Build the JSP servlet mapping.
+     * 
+     * @param builder the builder
+     */
     protected void buildJSPServletMapping(DOMBuilder builder)
     {
         builder.begin("servlet-mapping");
@@ -194,7 +326,12 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
-    protected void buildSessioConfig(DOMBuilder builder)
+    /**
+     * Build the session config section.
+     * 
+     * @param builder the builder
+     */
+    protected void buildSessionConfig(DOMBuilder builder)
     {
         builder.begin("session-config");
         {
@@ -203,6 +340,11 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Build the welcome file list.
+     * 
+     * @param builder the builder
+     */
     protected void buildWelcomeFileList(DOMBuilder builder)
     {
         builder.begin("welcome-file-list");
@@ -214,11 +356,22 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Add one welcome file.
+     * 
+     * @param builder the builder
+     * @param welcomeFile the welcome file
+     */
     protected void appendWelcomeFile(DOMBuilder builder, String welcomeFile)
     {
         builder.element("welcome-file", welcomeFile);
     }
 
+    /**
+     * Build the locale encoding mapping list.
+     * 
+     * @param builder the builder
+     */
     protected void buildLocaleEncodingMappingList(DOMBuilder builder)
     {
         builder.begin("locale-encoding-mapping-list");
@@ -266,6 +419,13 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Append one locale encoding mapping.
+     * 
+     * @param builder the builder
+     * @param locale the locale
+     * @param encoding the encoding
+     */
     protected void appendLocaleEncodingMapping(DOMBuilder builder, String locale, String encoding)
     {
         builder.begin("locale-encoding-mapping");
@@ -276,6 +436,11 @@ public abstract class AbstractWebDefaults extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Build the security constraints.
+     * 
+     * @param builder the builder
+     */
     protected void buildSecurityConstraints(DOMBuilder builder)
     {
         builder.begin("security-constraint");

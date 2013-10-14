@@ -64,8 +64,9 @@ public class JettyPlugin extends AbstractUIPlugin
         super();
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * {@inheritDoc}
+     * 
      * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
      */
     @Override
@@ -75,8 +76,9 @@ public class JettyPlugin extends AbstractUIPlugin
         plugin = this;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * {@inheritDoc}
+     * 
      * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
      */
     @Override
@@ -96,6 +98,11 @@ public class JettyPlugin extends AbstractUIPlugin
         return plugin;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#initializeImageRegistry(org.eclipse.jface.resource.ImageRegistry)
+     */
     @Override
     protected void initializeImageRegistry(final ImageRegistry reg)
     {

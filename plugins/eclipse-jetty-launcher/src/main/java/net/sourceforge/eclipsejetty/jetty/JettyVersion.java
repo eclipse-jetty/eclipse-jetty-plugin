@@ -35,30 +35,45 @@ import net.sourceforge.eclipsejetty.jetty9.Jetty9WebDefaults;
 public enum JettyVersion
 {
 
+    /**
+     * The embedded Jetty of the Jetty Plugin.
+     */
     JETTY_EMBEDDED("net.sourceforge.eclipsejetty.starter.embedded.JettyEmbeddedLauncherMain",
         "lib/eclipse-jetty-starters-embedded.jar", JettyEmbeddedServerConfiguration.class,
         new JettyEmbeddedLibStrategy(), JettyEmbeddedWebDefaults.class),
 
+    /**
+     * A Jetty 6 at a specified path
+     */
     JETTY_6("net.sourceforge.eclipsejetty.starter.jetty6.Jetty6LauncherMain", "lib/eclipse-jetty-starters-jetty6.jar",
         Jetty6ServerConfiguration.class, new Jetty6LibStrategy(), Jetty6WebDefaults.class),
 
+    /**
+     * A Jetty 7 at a specified path
+     */
     JETTY_7("net.sourceforge.eclipsejetty.starter.jetty7.Jetty7LauncherMain", "lib/eclipse-jetty-starters-jetty7.jar",
         Jetty7ServerConfiguration.class, new Jetty7LibStrategy(), Jetty7WebDefaults.class),
 
+    /**
+     * A Jetty 8 at a specified path
+     */
     JETTY_8("net.sourceforge.eclipsejetty.starter.jetty8.Jetty8LauncherMain", "lib/eclipse-jetty-starters-jetty8.jar",
         Jetty8ServerConfiguration.class, new Jetty8LibStrategy(), Jetty8WebDefaults.class),
 
+    /**
+     * A Jetty 9 at a specified path
+     */
     JETTY_9("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-jetty9.jar",
         Jetty9ServerConfiguration.class, new Jetty9LibStrategy(), Jetty9WebDefaults.class);
 
     private final String mainClass;
     private final String jar;
     private final Class<? extends AbstractServerConfiguration> serverConfigurationClass;
-    private final IJettyLibStrategy libStrategy;
+    private final JettyLibStrategy libStrategy;
     private final Class<? extends AbstractWebDefaults> webDefaultsClass;
 
     private JettyVersion(String mainClass, String jar,
-        Class<? extends AbstractServerConfiguration> serverConfigurationClass, IJettyLibStrategy libStrategy,
+        Class<? extends AbstractServerConfiguration> serverConfigurationClass, JettyLibStrategy libStrategy,
         Class<? extends AbstractWebDefaults> webDefaultsClass)
     {
         this.mainClass = mainClass;
@@ -68,16 +83,31 @@ public enum JettyVersion
         this.webDefaultsClass = webDefaultsClass;
     }
 
+    /**
+     * Returns the main class, as defined by the Jetty Plugin's Jetty starters.
+     * 
+     * @return the main class
+     */
     public String getMainClass()
     {
         return mainClass;
     }
 
+    /**
+     * Returns the path to the needed jar file, that contains the Jetty Plugin's Jetty starter.
+     * 
+     * @return the path to the start jar
+     */
     public String getJar()
     {
         return jar;
     }
 
+    /**
+     * Returns the instance of the needed server configuration class.
+     * 
+     * @return the instance of the needed server configuration class
+     */
     public AbstractServerConfiguration createServerConfiguration()
     {
         try
@@ -96,11 +126,21 @@ public enum JettyVersion
         }
     }
 
-    public IJettyLibStrategy getLibStrategy()
+    /**
+     * Returns the instance of the needed lib strategy.
+     * 
+     * @return the instance of the needed lib strategy
+     */
+    public JettyLibStrategy getLibStrategy()
     {
         return libStrategy;
     }
 
+    /**
+     * Returns the instance of the needed web defaults builder.
+     * 
+     * @return the instance of the needed web defaults builder
+     */
     public AbstractWebDefaults createWebDefaults()
     {
         try

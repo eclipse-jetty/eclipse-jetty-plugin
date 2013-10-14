@@ -105,6 +105,11 @@ public class JettyLaunchDependencyEntryList
         return result.toString();
     }
 
+    /**
+     * Creates a collection of excluded generic ids for storing in the configuration
+     * 
+     * @return a collection of excluded generic ids
+     */
     public Collection<String> createExcludedGenericIds()
     {
         Collection<String> result = new HashSet<String>();
@@ -120,6 +125,11 @@ public class JettyLaunchDependencyEntryList
         return result;
     }
 
+    /**
+     * Creates a collection of included generic ids for storing in the configuration
+     * 
+     * @return a collection of included generic ids
+     */
     public Collection<String> createIncludedGenericIds()
     {
         Collection<String> result = new HashSet<String>();
@@ -159,6 +169,11 @@ public class JettyLaunchDependencyEntryList
         return result.toString();
     }
 
+    /**
+     * Creates a collection of global generic ids for storing in the configuration
+     * 
+     * @return a collection of global generic ids
+     */
     public Collection<String> createGlobalGenericIds()
     {
         Collection<String> result = new HashSet<String>();
@@ -174,6 +189,18 @@ public class JettyLaunchDependencyEntryList
         return result;
     }
 
+    /**
+     * Updates/fills the table if necessary
+     * 
+     * @param adapter the configuration adapter
+     * @param table the table
+     * @param dependencies the list of dependencies
+     * @param includedClasspathEntries all included classpath entries (by default)
+     * @param globalClasspathEntries all classpath entries marked as being global
+     * @param updateType true to update the type of the entry
+     * @return true if updated
+     * @throws CoreException on occasion
+     */
     public boolean update(JettyLaunchConfigurationAdapter adapter, Table table, Collection<Dependency> dependencies,
         Collection<Dependency> includedClasspathEntries, Collection<Dependency> globalClasspathEntries,
         boolean updateType) throws CoreException
@@ -335,6 +362,11 @@ public class JettyLaunchDependencyEntryList
         return createRegularMatcherList(adapter.getExcludedLibs());
     }
 
+    /**
+     * Returns all entries (sorted)
+     * 
+     * @return all entries
+     */
     private List<JettyLaunchDependencyEntry> getSortedList()
     {
         List<JettyLaunchDependencyEntry> list = new ArrayList<JettyLaunchDependencyEntry>(entries.values());
@@ -381,6 +413,11 @@ public class JettyLaunchDependencyEntryList
         return false;
     }
 
+    /**
+     * Set all entries as being obsolete and should get deleted on the next update
+     * 
+     * @param obsolete
+     */
     private void setObsolete(boolean obsolete)
     {
         for (JettyLaunchDependencyEntry entry : entries.values())
@@ -389,6 +426,9 @@ public class JettyLaunchDependencyEntryList
         }
     }
 
+    /**
+     * Resets all include/exclude definitions of all entries
+     */
     public void reset()
     {
         for (JettyLaunchDependencyEntry entry : entries.values())
@@ -397,6 +437,11 @@ public class JettyLaunchDependencyEntryList
         }
     }
 
+    /**
+     * Clears the table
+     * 
+     * @param table the table
+     */
     public void clear(Table table)
     {
         for (JettyLaunchDependencyEntry entry : entries.values())

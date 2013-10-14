@@ -32,7 +32,9 @@ import org.eclipse.core.runtime.Status;
 public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
 {
 
-    /* (non-Javadoc)
+    /**
+     * {@inheritDoc}
+     * 
      * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addServerDependencies(java.util.Collection)
      */
     @Override
@@ -51,7 +53,9 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("jetty-util");
     }
 
-    /* (non-Javadoc)
+    /**
+     * {@inheritDoc}
+     * 
      * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJSPDependencies(java.util.Collection)
      */
     @Override
@@ -70,6 +74,8 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
 
     /**
      * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJMXDependencies(java.util.Collection)
      */
     @Override
     protected void addJMXDependencies(Collection<String> dependencies)
@@ -81,6 +87,8 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
 
     /**
      * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJNDIDependencies(java.util.Collection)
      */
     @Override
     protected void addJNDIDependencies(Collection<String> dependencies)
@@ -99,6 +107,8 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
 
     /**
      * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addAJPDependencies(java.util.Collection)
      */
     @Override
     protected void addAJPDependencies(Collection<String> dependencies)
@@ -108,8 +118,11 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("jetty-ajp");
     }
 
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#resolveDependencies(java.util.Collection, java.io.File, java.util.Collection)
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#resolveDependencies(java.util.Collection,
+     *      java.io.File, java.util.Collection)
      */
     @Override
     protected void resolveDependencies(Collection<File> results, File path, Collection<String> dependencies)

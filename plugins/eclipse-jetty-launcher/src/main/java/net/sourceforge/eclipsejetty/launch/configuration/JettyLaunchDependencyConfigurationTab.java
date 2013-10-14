@@ -73,6 +73,9 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
     }
 
     /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
      * @wbp.parser.entryPoint
      */
     public void createControl(final Composite parent)
@@ -89,7 +92,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
             createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeProvidedButton,
                 Messages.depConfigTab_mavenIncludeProvidedButtonTip, -1, 1, 1, modifyDialogListener);
 
-        m2eLabel = createLabel(mavenGroup, JettyPluginUtils.BLANK, 224, 1, 2);
+        m2eLabel = createLabel(mavenGroup, JettyPluginUtils.EMPTY, 224, 1, 2);
         mavenIncludeRuntime =
             createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeRuntimeButton,
                 Messages.depConfigTab_mavenIncludeRuntimeButtonTip, 224, 1, 1, modifyDialogListener);
@@ -133,23 +136,43 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         setControl(tabComposite);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
+     */
     public String getName()
     {
         return Messages.depConfigTab_title;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getImage()
+     */
     @Override
     public Image getImage()
     {
         return JettyPlugin.getJettyDependencyIcon();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getMessage()
+     */
     @Override
     public String getMessage()
     {
         return Messages.depConfigTab_message;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.jdt.debug.ui.launchConfigurations.JavaLaunchTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
+     */
     @Override
     public void initializeFrom(final ILaunchConfiguration configuration)
     {
@@ -175,11 +198,21 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
+     */
     public void setDefaults(final ILaunchConfigurationWorkingCopy configuration)
     {
         // intentionally left blank
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
+     */
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)
     {
         JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
@@ -219,6 +252,11 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         adapter.setGlobalLibs(dependencyEntryList.createGlobalLibs());
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
+     */
     @Override
     public boolean isValid(final ILaunchConfiguration configuration)
     {
@@ -227,7 +265,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
         boolean scopeable = false;
 
-        m2eLabel.setText(JettyPluginUtils.BLANK);
+        m2eLabel.setText(JettyPluginUtils.EMPTY);
 
         if (JettyPluginM2EUtils.isM2EAvailable())
         {
@@ -265,6 +303,12 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         return true;
     }
 
+    /**
+     * Updates the dependency table
+     * 
+     * @param adapter the configuration adapter
+     * @param updateType true to update the types of the entries
+     */
     private void updateTable(JettyLaunchConfigurationAdapter adapter, boolean updateType)
     {
         try
@@ -309,17 +353,32 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     public final class ModifyDialogListener implements ModifyListener, SelectionListener
     {
+        /**
+         * {@inheritDoc}
+         * 
+         * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
+         */
         @SuppressWarnings("synthetic-access")
         public void modifyText(final ModifyEvent e)
         {
             updateLaunchConfigurationDialog();
         }
 
+        /**
+         * {@inheritDoc}
+         * 
+         * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
+         */
         public void widgetDefaultSelected(final SelectionEvent arg0)
         {
             // intentionally left blank
         }
 
+        /**
+         * {@inheritDoc}
+         * 
+         * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+         */
         @SuppressWarnings("synthetic-access")
         public void widgetSelected(final SelectionEvent arg0)
         {

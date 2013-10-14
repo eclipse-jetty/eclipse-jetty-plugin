@@ -34,6 +34,12 @@ public class JettyLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTabGroup#createTabs(org.eclipse.debug.ui.ILaunchConfigurationDialog,
+     *      java.lang.String)
+     */
     public void createTabs(final ILaunchConfigurationDialog dialog, final String mode)
     {
         final ILaunchConfigurationTab[] tabs =

@@ -1,4 +1,14 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.starter.console.util;
 
 import net.sourceforge.eclipsejetty.starter.util.Utils;
@@ -13,7 +23,7 @@ public final class WordWrap
 {
     private static final String DEFAULT_UNCUTABLE = "\"\'!$%()[]{}?.,:;";
 
-    private String cutable = Utils.BLANK;
+    private String cutable = Utils.EMPTY;
     private String uncutable = DEFAULT_UNCUTABLE;
     private int tabWidth = 8;
     private String lineSeparator = System.getProperty("line.separator");
@@ -116,7 +126,7 @@ public final class WordWrap
         boolean isCutable = false;
         boolean wasCutable = false;
         boolean readingIndent = true;
-        String indent = Utils.BLANK;
+        String indent = Utils.EMPTY;
 
         while (position < text.length())
         {
@@ -134,7 +144,7 @@ public final class WordWrap
                 isCutable = false;
                 wasCutable = false;
                 readingIndent = true;
-                indent = Utils.BLANK;
+                indent = Utils.EMPTY;
             }
             else if (ch == '\r')
             {
@@ -148,7 +158,7 @@ public final class WordWrap
                 isCutable = false;
                 wasCutable = false;
                 readingIndent = true;
-                indent = Utils.BLANK;
+                indent = Utils.EMPTY;
 
                 if (((position + 1) < text.length()) && (text.charAt(position + 1) == '\n'))
                 {

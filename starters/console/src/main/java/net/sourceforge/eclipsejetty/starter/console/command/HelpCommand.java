@@ -1,4 +1,14 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.starter.console.command;
 
 import java.util.Collection;
@@ -11,6 +21,11 @@ import net.sourceforge.eclipsejetty.starter.console.util.CommandUtils;
 import net.sourceforge.eclipsejetty.starter.console.util.WordWrap;
 import net.sourceforge.eclipsejetty.starter.util.Utils;
 
+/**
+ * Prints help.
+ * 
+ * @author Manfred Hantschel
+ */
 public class HelpCommand extends AbstractCommand
 {
 
@@ -21,6 +36,8 @@ public class HelpCommand extends AbstractCommand
 
     /**
      * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.starter.console.Command#getFormat()
      */
     public String getFormat()
     {
@@ -29,12 +46,19 @@ public class HelpCommand extends AbstractCommand
 
     /**
      * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.starter.console.Command#getDescription()
      */
     public String getDescription()
     {
         return "Shows a list of commands and provides help for each command.";
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.starter.console.AbstractCommand#getHelpDescription()
+     */
     @Override
     protected String getHelpDescription()
     {
@@ -46,6 +70,8 @@ public class HelpCommand extends AbstractCommand
 
     /**
      * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.starter.console.Command#getOrdinal()
      */
     public int getOrdinal()
     {
@@ -54,8 +80,11 @@ public class HelpCommand extends AbstractCommand
 
     /**
      * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.starter.console.Command#execute(java.lang.String,
+     *      net.sourceforge.eclipsejetty.starter.console.Process)
      */
-    public int execute(String processName, Process process) throws Exception
+    public int execute(String commandName, Process process) throws Exception
     {
         String command = process.args.consumeString();
 

@@ -48,7 +48,7 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 public class JettyPluginUtils
 {
 
-    public static final String BLANK = "";
+    public static final String EMPTY = "";
 
     /**
      * A collator set to primary strength, which means 'a', 'A' and '&auml;' is the same
@@ -430,7 +430,7 @@ public class JettyPluginUtils
 
         if (index < 0)
         {
-            return JettyPluginUtils.BLANK;
+            return JettyPluginUtils.EMPTY;
         }
 
         return location.substring(0, index);

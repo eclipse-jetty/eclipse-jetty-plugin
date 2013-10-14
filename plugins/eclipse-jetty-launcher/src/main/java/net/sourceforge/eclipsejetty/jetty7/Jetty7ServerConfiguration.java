@@ -27,6 +27,11 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getDocType()
+     */
     @Override
     protected String getDocType()
     {
@@ -34,6 +39,11 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildThreadPool(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildThreadPool(DOMBuilder builder)
     {
@@ -55,12 +65,22 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
         builder.end();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConfig(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildHttpConfig(DOMBuilder builder)
     {
         // nothing to do
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConfig(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildHttpsConfig(DOMBuilder builder)
     {
@@ -79,6 +99,11 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#getJNDIItems()
+     */
     @Override
     protected List<String> getJNDIItems()
     {
@@ -89,6 +114,11 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
             "org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.webapp.TagLibConfiguration");
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildJMX(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildJMX(DOMBuilder builder)
     {
@@ -153,12 +183,22 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getClassToConfigure()
+     */
     @Override
     protected String getClassToConfigure()
     {
         return "org.eclipse.jetty.server.Server";
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConnector(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildHttpConnector(DOMBuilder builder)
     {
@@ -190,6 +230,11 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConnector(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildHttpsConnector(DOMBuilder builder)
     {
@@ -225,12 +270,22 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#getDefaultHandlerClass()
+     */
     @Override
     protected String getDefaultHandlerClass()
     {
         return "org.eclipse.jetty.webapp.WebAppContext";
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildExtraOptions(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildExtraOptions(DOMBuilder builder)
     {

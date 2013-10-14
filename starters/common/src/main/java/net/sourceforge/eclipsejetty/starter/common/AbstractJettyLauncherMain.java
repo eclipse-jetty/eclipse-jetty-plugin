@@ -1,4 +1,14 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.starter.common;
 
 import java.io.File;
@@ -35,6 +45,13 @@ public abstract class AbstractJettyLauncherMain
     public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo";
     public static final String DISABLE_CONSOLE_KEY = "jetty.launcher.disableConsole";
 
+    /**
+     * Launches the server. This method has to be called by the main method of the implementations for the various Jetty
+     * version.
+     * 
+     * @param args the arguments
+     * @throws Exception on occasion
+     */
     protected void launch(String[] args) throws Exception
     {
         long millis = System.currentTimeMillis();
@@ -73,6 +90,12 @@ public abstract class AbstractJettyLauncherMain
         }
     }
 
+    /**
+     * Initializes the console, if enabled.
+     * 
+     * @param consoleEnabled true if enabled
+     * @param adapter the server adapter
+     */
     private void initConsole(boolean consoleEnabled, ServerAdapter adapter)
     {
         if (consoleEnabled)
@@ -110,7 +133,7 @@ public abstract class AbstractJettyLauncherMain
 
             if (showInfo)
             {
-                out.println(String.format("%18s%s", (i == 0) ? "Configuration: " : Utils.BLANK,
+                out.println(String.format("%18s%s", (i == 0) ? "Configuration: " : Utils.EMPTY,
                     configurationFile.getAbsolutePath()));
             }
 
@@ -230,7 +253,7 @@ public abstract class AbstractJettyLauncherMain
         long freeMemory = runtime.freeMemory();
 
         String duration = String.format("Jetty startup finished in %s.", Utils.formatSeconds(seconds));
-        String console = (consoleEnabled) ? "Console available: type \"help\"." : Utils.BLANK;
+        String console = (consoleEnabled) ? "Console available: type \"help\"." : Utils.EMPTY;
         String memory =
             String.format("Used memory: %s of %s (%s maximum)", Utils.formatBytes(totalMemory - freeMemory),
                 Utils.formatBytes(totalMemory), Utils.formatBytes(maxMemory));

@@ -1,3 +1,14 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.launch.util;
 
 import java.io.File;
@@ -166,7 +177,7 @@ public class JettyLaunchConfigurationAdapter
     public void initialize(IProject project, File webAppPath) throws CoreException
     {
         ILaunchConfigurationWorkingCopy configuration = getConfigurationWorkingCopy();
-        String projectName = (project != null) ? project.getName() : JettyPluginUtils.BLANK;
+        String projectName = (project != null) ? project.getName() : JettyPluginUtils.EMPTY;
 
         setProjectName(projectName);
         setClasspathProvider(CLASSPATH_PROVIDER_JETTY);
@@ -312,7 +323,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public String getProjectName() throws CoreException
     {
-        return getAttribute(false, IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, JettyPluginUtils.BLANK);
+        return getAttribute(false, IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, JettyPluginUtils.EMPTY);
     }
 
     /**
@@ -492,7 +503,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public String getPathString() throws CoreException
     {
-        return getAttribute(true, ATTR_JETTY_PATH, JettyPluginUtils.BLANK);
+        return getAttribute(true, ATTR_JETTY_PATH, JettyPluginUtils.EMPTY);
     }
 
     /**
@@ -598,7 +609,7 @@ public class JettyLaunchConfigurationAdapter
 
         if (results.size() == 0)
         {
-            results.add(new JettyConfig(JettyPluginUtils.BLANK, JettyConfigType.DEFAULT, true));
+            results.add(new JettyConfig(JettyPluginUtils.EMPTY, JettyConfigType.DEFAULT, true));
         }
 
         return results;
@@ -885,7 +896,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public String getCustomWebDefaultsResource() throws CoreException
     {
-        return getAttribute(false, ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE, JettyPluginUtils.BLANK);
+        return getAttribute(false, ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE, JettyPluginUtils.EMPTY);
     }
 
     /**
@@ -1106,7 +1117,7 @@ public class JettyLaunchConfigurationAdapter
     @Deprecated
     public String getIncludedLibs() throws CoreException
     {
-        return getAttribute(false, ATTR_INCLUDED_LIBS, JettyPluginUtils.BLANK);
+        return getAttribute(false, ATTR_INCLUDED_LIBS, JettyPluginUtils.EMPTY);
     }
 
     /**
@@ -1127,7 +1138,7 @@ public class JettyLaunchConfigurationAdapter
     public Collection<String> getExcludedGenericIds() throws CoreException
     {
         return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_EXCLUDED_GENERIC_IDS,
-            JettyPluginUtils.BLANK));
+            JettyPluginUtils.EMPTY));
     }
 
     /**
@@ -1150,7 +1161,7 @@ public class JettyLaunchConfigurationAdapter
     public Collection<String> getIncludedGenericIds() throws CoreException
     {
         return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_INCLUDED_GENERIC_IDS,
-            JettyPluginUtils.BLANK));
+            JettyPluginUtils.EMPTY));
     }
 
     /**
@@ -1170,7 +1181,7 @@ public class JettyLaunchConfigurationAdapter
     @Deprecated
     public String getGlobalLibs() throws CoreException
     {
-        return getAttribute(false, ATTR_GLOBAL_LIBS, JettyPluginUtils.BLANK);
+        return getAttribute(false, ATTR_GLOBAL_LIBS, JettyPluginUtils.EMPTY);
     }
 
     /**
@@ -1193,7 +1204,7 @@ public class JettyLaunchConfigurationAdapter
     public Collection<String> getGlobalGenericIds() throws CoreException
     {
         return JettyPluginUtils.fromCommaSeparatedString(getAttribute(false, ATTR_GLOBAL_GENERIC_IDS,
-            JettyPluginUtils.BLANK));
+            JettyPluginUtils.EMPTY));
     }
 
     /**
@@ -1272,7 +1283,7 @@ public class JettyLaunchConfigurationAdapter
      */
     public String getMainTypeName() throws CoreException
     {
-        return getAttribute(false, IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, JettyPluginUtils.BLANK);
+        return getAttribute(false, IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, JettyPluginUtils.EMPTY);
     }
 
     /**

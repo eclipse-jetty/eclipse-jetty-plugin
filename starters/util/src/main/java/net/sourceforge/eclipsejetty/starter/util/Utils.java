@@ -1,16 +1,32 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.starter.util;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Common utils for Jetty starters.
+ * 
+ * @author Manfred Hantschel
+ */
 public class Utils
 {
 
-    public static final String BLANK = "";
-    
-    public static interface PlaceholderResolver {
+    public static final String EMPTY = "";
+
+    public static interface PlaceholderResolver
+    {
         String resolve(String key);
     }
 
@@ -24,11 +40,25 @@ public class Utils
      */
     public static final String ENTITY_POSTFIX = "}";
 
+    /**
+     * Returns the default value if the value is null
+     * 
+     * @param value the value
+     * @param defaultValue the default value
+     * @return the value, of the default value if value is null
+     */
     public static <TYPE> TYPE ensure(TYPE value, TYPE defaultValue)
     {
         return (value != null) ? value : defaultValue;
     }
 
+    /**
+     * Repeats the string until the maximum length is reached
+     * 
+     * @param s the string
+     * @param maxLength the maximum length
+     * @return a string with the maxLength
+     */
     public static String repeat(String s, int maxLength)
     {
         StringBuilder result = new StringBuilder();
@@ -41,11 +71,19 @@ public class Utils
         return result.substring(0, maxLength);
     }
 
+    /**
+     * Prefixes each line with the specified prefix.
+     * 
+     * @param value the text
+     * @param prefix the prefix
+     * @param includeFirstLine true, to add the prefix at the beginning of the text
+     * @return the text
+     */
     public static String prefixLine(final String value, final String prefix, final boolean includeFirstLine)
     {
         if (value == null)
         {
-            return Utils.BLANK;
+            return Utils.EMPTY;
         }
 
         String replacement = "\n" + prefix;
@@ -54,6 +92,12 @@ public class Utils
         return (includeFirstLine) ? prefix + result : result;
     }
 
+    /**
+     * Formats seconds in human readable form.
+     * 
+     * @param seconds the seconds
+     * @return the formatted seconds
+     */
     public static String formatSeconds(double seconds)
     {
         StringBuilder result = new StringBuilder();
@@ -81,6 +125,12 @@ public class Utils
         return result.toString();
     }
 
+    /**
+     * Formats bytes in human readable form.
+     * 
+     * @param bytes the number of bytes
+     * @return the formatted bytes
+     */
     public static String formatBytes(long bytes)
     {
         if (Long.MAX_VALUE == bytes)
@@ -137,6 +187,13 @@ public class Utils
         return result;
     }
 
+    /**
+     * Writes the content to a file
+     * 
+     * @param file the file
+     * @param content the content
+     * @throws IOException on occasion
+     */
     public static void write(File file, String content) throws IOException
     {
         FileWriter writer = new FileWriter(file);
@@ -157,17 +214,22 @@ public class Utils
      * @param value the value
      * @return the value with resolved placehodlers
      */
-    public static String resolvePlaceholders(String value) {
-        return resolvePlaceholders(value, new PlaceholderResolver() {
+    public static String resolvePlaceholders(String value)
+    {
+        return resolvePlaceholders(value, new PlaceholderResolver()
+        {
 
-            public String resolve(String key) {
+            public String resolve(String key)
+            {
                 String value = System.getProperty(key);
 
-                if (value == null) {
+                if (value == null)
+                {
                     value = System.getenv(key);
                 }
 
-                if (value == null) {
+                if (value == null)
+                {
                     value = ENTITY_PREFIX + key + ENTITY_POSTFIX;
                 }
 
@@ -183,48 +245,59 @@ public class Utils
      * @param resolver the resolver
      * @return the value with resolved placehodlers
      */
-    public static String resolvePlaceholders(String value, PlaceholderResolver resolver) {
-        if (value == null) {
+    public static String resolvePlaceholders(String value, PlaceholderResolver resolver)
+    {
+        if (value == null)
+        {
             return null;
         }
 
         int beginIndex = value.indexOf(ENTITY_PREFIX);
 
-        if (beginIndex < 0) {
+        if (beginIndex < 0)
+        {
             return value;
         }
 
         int endIndex = value.indexOf(ENTITY_POSTFIX, beginIndex);
 
-        if (endIndex < 0) {
+        if (endIndex < 0)
+        {
             return value;
         }
 
         StringBuilder result = new StringBuilder();
         int currentIndex = 0;
 
-        while (currentIndex < value.length()) {
-            if ((beginIndex - currentIndex) > 0) {
+        while (currentIndex < value.length())
+        {
+            if ((beginIndex - currentIndex) > 0)
+            {
                 result.append(value.substring(currentIndex, beginIndex));
             }
 
             String key = value.substring(beginIndex + ENTITY_PREFIX.length(), endIndex);
             String resolvedValue = resolver.resolve(key);
 
-            if (resolvedValue == null) {
+            if (resolvedValue == null)
+            {
                 result.append(ENTITY_PREFIX + key + ENTITY_POSTFIX);
             }
-            else {
+            else
+            {
                 result.append(resolvedValue);
             }
 
             currentIndex = endIndex + 1;
 
-            if (currentIndex < value.length()) {
+            if (currentIndex < value.length())
+            {
                 beginIndex = value.indexOf(ENTITY_PREFIX, currentIndex);
 
-                if (beginIndex < 0) {
-                    if (currentIndex < value.length()) {
+                if (beginIndex < 0)
+                {
+                    if (currentIndex < value.length())
+                    {
                         result.append(value.substring(currentIndex));
                     }
 
@@ -233,8 +306,10 @@ public class Utils
 
                 endIndex = value.indexOf(ENTITY_POSTFIX, beginIndex);
 
-                if (endIndex < 0) {
-                    if (currentIndex < value.length()) {
+                if (endIndex < 0)
+                {
+                    if (currentIndex < value.length())
+                    {
                         result.append(value.substring(currentIndex));
                     }
 

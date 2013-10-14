@@ -1,4 +1,14 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.starter.util.service;
 
 import java.io.BufferedReader;
@@ -14,9 +24,21 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 
+/**
+ * Common service utilities
+ * 
+ * @author Manfred Hantschel
+ */
 public class ServiceUtils
 {
 
+    /**
+     * Reads the services form the services file at META-INF/services/<type>
+     * 
+     * @param type the type
+     * @return a collection of strings from the file
+     * @throws IOException on occasion
+     */
     public static Collection<String> getContributions(Class<?> type) throws IOException
     {
         Collection<String> results = new LinkedHashSet<String>();
@@ -41,6 +63,15 @@ public class ServiceUtils
         return results;
     }
 
+    /**
+     * Reads the services form the services file at META-INF/services/<type>. Instantiate the classes. Resolves
+     * constructor parameters from the specified {@link ServiceResolver}.
+     * 
+     * @param type the type
+     * @param resolver the resolver
+     * @return the instantiates classes
+     * @throws IOException on occasion
+     */
     public static Collection<Object> instantiateContributions(Class<?> type, ServiceResolver resolver)
         throws IOException
     {

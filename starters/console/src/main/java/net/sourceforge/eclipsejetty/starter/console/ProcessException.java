@@ -9,17 +9,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package net.sourceforge.eclipsejetty.jetty8;
+package net.sourceforge.eclipsejetty.starter.console;
 
-import net.sourceforge.eclipsejetty.jetty7.Jetty7WebDefaults;
-
-public class Jetty8WebDefaults extends Jetty7WebDefaults
+/**
+ * Root {@link RuntimeException} for processes and commands.
+ * 
+ * @author Manfred Hantschel
+ */
+public class ProcessException extends RuntimeException
 {
 
-    public Jetty8WebDefaults()
+    private static final long serialVersionUID = 4671208137366239322L;
+
+    public ProcessException(String message, Throwable cause)
     {
-        super();
-        // TODO Auto-generated constructor stub
+        super(message, cause);
+    }
+
+    public ProcessException(String message)
+    {
+        super(message);
     }
 
 }

@@ -1,3 +1,14 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package net.sourceforge.eclipsejetty.launch.util;
 
 import java.io.File;
@@ -39,6 +50,16 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 public class JettyLaunchUI
 {
 
+    /**
+     * Creates a label
+     * 
+     * @param composite the composite
+     * @param text the text of the label
+     * @param widthHint the width, <0 to fill up the space
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @return the label
+     */
     public static Label createLabel(final Composite composite, final String text, final int widthHint,
         int horizontalSpan, int verticalSpan)
     {
@@ -59,6 +80,16 @@ public class JettyLaunchUI
         return label;
     }
 
+    /**
+     * Creates an hint.
+     * 
+     * @param composite the composite
+     * @param text the text of the hint
+     * @param widthHint the width, <0 to fill up the space
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @return the label
+     */
     public static Label createHint(final Composite composite, final String text, final int widthHint,
         int horizontalSpan, int verticalSpan)
     {
@@ -88,6 +119,19 @@ public class JettyLaunchUI
         return label;
     }
 
+    /**
+     * Create a button.
+     * 
+     * @param composite the composite
+     * @param style the style
+     * @param text the text of the button
+     * @param toolTip the tool tip of the button
+     * @param widthHint the width, <0 to fill up the space
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @param selectionListeners listeners to be notified on action
+     * @return the button
+     */
     public static Button createButton(final Composite composite, int style, final String text, String toolTip,
         final int widthHint, int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
@@ -95,6 +139,19 @@ public class JettyLaunchUI
             selectionListeners);
     }
 
+    /**
+     * Create a button.
+     * 
+     * @param composite the composite
+     * @param style the style
+     * @param image the image
+     * @param toolTip the tool tip of the button
+     * @param widthHint the width, <0 to fill up the space
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @param selectionListeners listeners to be notified on action
+     * @return the button
+     */
     public static Button createButton(final Composite composite, int style, final Image image, String toolTip,
         final int widthHint, int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
@@ -102,6 +159,20 @@ public class JettyLaunchUI
             selectionListeners);
     }
 
+    /**
+     * Create a button.
+     * 
+     * @param composite the composite
+     * @param style the style
+     * @param image the image
+     * @param text the text of the button
+     * @param toolTip the tool tip of the button
+     * @param widthHint the width, <0 to fill up the space
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @param selectionListeners listeners to be notified on action
+     * @return the button
+     */
     public static Button createButton(final Composite composite, int style, Image image, final String text,
         String toolTip, final int widthHint, int horizontalSpan, int verticalSpan,
         SelectionListener... selectionListeners)
@@ -145,6 +216,19 @@ public class JettyLaunchUI
         return button;
     }
 
+    /**
+     * Creates a text component
+     * 
+     * @param composite the composite
+     * @param style the style
+     * @param toolTip the tool tip
+     * @param widthHint the width, <0 to fill up the space
+     * @param heightHint the height, <0 to ignore
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @param selectionListeners listeners to be notified on action
+     * @return the component
+     */
     public static Text createText(final Composite composite, int style, String toolTip, final int widthHint,
         int heightHint, int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
     {
@@ -182,6 +266,19 @@ public class JettyLaunchUI
         return text;
     }
 
+    /**
+     * Creates a spinner
+     * 
+     * @param composite the composite
+     * @param style the style
+     * @param toolTip the tool tip
+     * @param widthHint the width, <0 to fill up the space
+     * @param heightHint the height, <0 to ignore
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @param selectionListeners listeners to be notified on action
+     * @return the component
+     */
     public static Spinner createSpinner(final Composite composite, int style, String toolTip, final int widthHint,
         int heightHint, int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
     {
@@ -219,6 +316,18 @@ public class JettyLaunchUI
         return spinner;
     }
 
+    /**
+     * Creates a composite without label and without border (slight margin)
+     * 
+     * @param composite the composite
+     * @param style the type
+     * @param columns the number of columns
+     * @param widthHint the width, <0 to fill up the space
+     * @param grabVerticalSpace true to grab all vertical space
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @return the composite
+     */
     public static Composite createTopComposite(final Composite composite, int style, int columns, final int widthHint,
         boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
     {
@@ -230,6 +339,18 @@ public class JettyLaunchUI
         return createComposite(composite, style, widthHint, grabVerticalSpace, horizontalSpan, verticalSpan, layout);
     }
 
+    /**
+     * Create a composite, usually used for button bars (no margin)
+     * 
+     * @param composite the composite
+     * @param style the type
+     * @param columns the number of columns
+     * @param widthHint the width, <0 to fill up the space
+     * @param grabVerticalSpace true to grab all vertical space
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @return the composite
+     */
     public static Composite createComposite(final Composite composite, int style, int columns, final int widthHint,
         boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
     {
@@ -241,6 +362,18 @@ public class JettyLaunchUI
         return createComposite(composite, style, widthHint, grabVerticalSpace, horizontalSpan, verticalSpan, layout);
     }
 
+    /**
+     * Create a composite, using the specified layout
+     * 
+     * @param composite the composite
+     * @param style the type
+     * @param widthHint the width, <0 to fill up the space
+     * @param grabVerticalSpace true to grab all vertical space
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @param layout the layout
+     * @return the composite
+     */
     private static Composite createComposite(final Composite composite, int style, final int widthHint,
         boolean grabVerticalSpace, int horizontalSpan, int verticalSpan, GridLayout layout)
     {
@@ -262,6 +395,18 @@ public class JettyLaunchUI
         return result;
     }
 
+    /**
+     * Creates a table
+     * 
+     * @param composite the composite
+     * @param style the type
+     * @param widthHint the width, <0 to fill up the space
+     * @param heightHint the minimum height, <0 to ignore
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @param titles the column titles
+     * @return the table
+     */
     public static Table createTable(Composite composite, int style, int widthHint, int heightHint, int horizontalSpan,
         int verticalSpan, String... titles)
     {
@@ -294,7 +439,17 @@ public class JettyLaunchUI
         return table;
     }
 
-    public static String chooseWorkspaceFile(IProject project, Shell shell, String title, String message, String path)
+    /**
+     * Shows a dialog to select a file from the workspace
+     * 
+     * @param shell the shell
+     * @param project the project
+     * @param title the title
+     * @param message the message
+     * @param path the initial path
+     * @return the result, null if canceled
+     */
+    public static String chooseWorkspaceFile(Shell shell, IProject project, String title, String message, String path)
     {
         path = JettyPluginUtils.resolveVariables(path);
 
@@ -326,6 +481,16 @@ public class JettyLaunchUI
         return null;
     }
 
+    /**
+     * Shows a dialog to select a folder from the workspace
+     * 
+     * @param project the project
+     * @param shell the shell
+     * @param title the title
+     * @param message the message
+     * @param path the initial path
+     * @return the result, null if canceled
+     */
     public static String chooseWorkspaceDirectory(Shell shell, IProject project, String title, String message,
         String path)
     {
@@ -355,6 +520,15 @@ public class JettyLaunchUI
         return null;
     }
 
+    /**
+     * Shows a dialog to select a folder from the file system
+     * 
+     * @param shell the shell
+     * @param text the title
+     * @param message the message
+     * @param path the inital path
+     * @return the folder, null if canceled
+     */
     public static String chooseExternalDirectory(Shell shell, String text, String message, String path)
     {
         path = JettyPluginUtils.resolveVariables(path);
@@ -368,6 +542,15 @@ public class JettyLaunchUI
         return dialog.open();
     }
 
+    /**
+     * Shows a dialog to select a file from the file system
+     * 
+     * @param shell the shell
+     * @param path the initial path
+     * @param text the title
+     * @param filter an array of filter options
+     * @return the selected file, null if canceled
+     */
     public static String chooseExternalFile(Shell shell, String path, String text, String... filter)
     {
         path = JettyPluginUtils.resolveVariables(path);
@@ -389,9 +572,15 @@ public class JettyLaunchUI
         return dialog.open();
     }
 
-    public static void chooseVariable(Shell parent, Text textComponent)
+    /**
+     * Shows a dialog to select or define a variable
+     * 
+     * @param shell the shell
+     * @param textComponent the text component to be filled
+     */
+    public static void chooseVariable(Shell shell, Text textComponent)
     {
-        StringVariableSelectionDialog dialog = new StringVariableSelectionDialog(parent);
+        StringVariableSelectionDialog dialog = new StringVariableSelectionDialog(shell);
 
         if (Window.OK == dialog.open())
         {

@@ -28,16 +28,31 @@ public class JettyClasspathAttribute implements IClasspathAttribute
     {
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.jdt.core.IClasspathAttribute#getName()
+     */
     public String getName()
     {
         return NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.jdt.core.IClasspathAttribute#getValue()
+     */
     public String getValue()
     {
         return VALUE;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {

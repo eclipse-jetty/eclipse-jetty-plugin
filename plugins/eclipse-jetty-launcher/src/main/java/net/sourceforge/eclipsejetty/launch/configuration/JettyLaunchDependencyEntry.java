@@ -93,11 +93,21 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         this.type = type;
     }
 
+    /**
+     * Returns true if the entry should always be included
+     * 
+     * @return true if the entry should always be included
+     */
     public boolean isIncluded()
     {
         return included;
     }
 
+    /**
+     * Set to true if the entry should always be included. Sets the {@link #needsUpdate} flag, if the value has changed.
+     * 
+     * @param included true if the entry should always be included
+     */
     public void setIncluded(boolean included)
     {
         if (this.included != included)
@@ -107,11 +117,22 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         }
     }
 
+    /**
+     * Returns true if the entry should be included by default
+     * 
+     * @return true if the entry should be included by default
+     */
     public boolean isDefaultIncluded()
     {
         return defaultIncluded;
     }
 
+    /**
+     * Set to true if the entry should be included by default. Sets the {@link #needsUpdate} flag, if the value has
+     * changed.
+     * 
+     * @param defaultIncluded true if the entry should be included by default
+     */
     public void setDefaultIncluded(boolean defaultIncluded)
     {
         if (this.defaultIncluded != defaultIncluded)
@@ -121,26 +142,51 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         }
     }
 
+    /**
+     * Returns the generic id of the entry
+     * 
+     * @return the generic id
+     */
     public String getGenericId()
     {
         return genericId;
     }
 
+    /**
+     * Returns the path to the dependency described by the entry
+     * 
+     * @return the path
+     */
     public String getPath()
     {
         return path;
     }
 
+    /**
+     * Returns the name of the entry
+     * 
+     * @return the name
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * Returns the type of the entry
+     * 
+     * @return the type
+     */
     public Type getType()
     {
         return type;
     }
 
+    /**
+     * Sets the type of the entry. Sets the {@link #needsUpdate} flag if the value had changed.
+     * 
+     * @param type the type of the entry
+     */
     public void setType(Type type)
     {
         if (this.type != type)
@@ -150,21 +196,41 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         }
     }
 
+    /**
+     * Returns true if the entry is obsolete and will be deleted with the next update.
+     * 
+     * @return true if the value is obsolete
+     */
     public boolean isObsolete()
     {
         return obsolete;
     }
 
+    /**
+     * Set to true if the entry is obsolete and should be deleted with the next update
+     * 
+     * @param obsolete true if the value is obsolete
+     */
     public void setObsolete(boolean obsolete)
     {
         this.obsolete = obsolete;
     }
 
+    /**
+     * Returns true if the entry is marked as being global
+     * 
+     * @return true if the entry is marked as being global
+     */
     public boolean isGlobal()
     {
         return global;
     }
 
+    /**
+     * Set to true to mark the entry as being global. Sets the {@link #needsUpdate} flag if the value had changed.
+     * 
+     * @param global true to mark the entry as being global
+     */
     public void setGlobal(boolean global)
     {
         if (this.global != global)
@@ -174,11 +240,21 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         }
     }
 
+    /**
+     * Returns the scope of the entry
+     * 
+     * @return the scope
+     */
     public String getScope()
     {
         return scope;
     }
 
+    /**
+     * Sets the scope of the entry. Sets the {@link #needsUpdate} flag if the value had changed.
+     * 
+     * @param scope the scope
+     */
     public void setScope(String scope)
     {
         if (!JettyPluginUtils.equals(this.scope, scope))
@@ -188,11 +264,23 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         }
     }
 
+    /**
+     * Returns the item (but does not create it)
+     * 
+     * @return the item
+     */
     public TableItem getItem()
     {
         return item;
     }
 
+    /**
+     * Creates an table item
+     * 
+     * @param table the table
+     * @param listener the listener called on changes
+     * @param index the index
+     */
     public void createItem(Table table, SelectionListener listener, int index)
     {
         final TableItem item = new TableItem(table, SWT.NONE, index);
@@ -263,6 +351,11 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         setItem(item);
     }
 
+    /**
+     * Filles the specified item with the date of this entry.
+     * 
+     * @param item the item
+     */
     private void fillItem(TableItem item)
     {
         switch (type)
@@ -311,6 +404,14 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         needsUpdate = false;
     }
 
+    /**
+     * Updates the item, if necessary. Creates it, if necessary. Deletes it, if necessary. Reindexes it, if necessary.
+     * 
+     * @param table the table
+     * @param listener the listener, that gets notified on changes
+     * @param index the index
+     * @return true if updated
+     */
     public boolean updateItem(Table table, SelectionListener listener, int index)
     {
         if (item == null)
@@ -335,6 +436,11 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         return false;
     }
 
+    /**
+     * Deletes the item
+     * 
+     * @param table the table
+     */
     public void deleteItem(Table table)
     {
         if (item != null)
@@ -356,6 +462,11 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         }
     }
 
+    /**
+     * Sets the item
+     * 
+     * @param item the item
+     */
     public void setItem(TableItem item)
     {
         this.item = item;
@@ -373,6 +484,11 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         return ".*/" + name.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
     public int compareTo(JettyLaunchDependencyEntry entry)
     {
         int result = JettyPluginUtils.dictionaryCompare(name, entry.name);

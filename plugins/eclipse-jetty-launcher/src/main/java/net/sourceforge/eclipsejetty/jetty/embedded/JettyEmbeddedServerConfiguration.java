@@ -13,6 +13,11 @@ package net.sourceforge.eclipsejetty.jetty.embedded;
 
 import net.sourceforge.eclipsejetty.jetty8.Jetty8ServerConfiguration;
 
+/**
+ * Server configuration for the embedded server.
+ * 
+ * @author Manfred Hantschel
+ */
 public class JettyEmbeddedServerConfiguration extends Jetty8ServerConfiguration
 {
 

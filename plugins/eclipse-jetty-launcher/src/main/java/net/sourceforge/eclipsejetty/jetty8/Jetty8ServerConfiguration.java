@@ -24,6 +24,10 @@ public class Jetty8ServerConfiguration extends Jetty7ServerConfiguration
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#getJNDIItems()
+     */
     @Override
     protected List<String> getJNDIItems()
     {

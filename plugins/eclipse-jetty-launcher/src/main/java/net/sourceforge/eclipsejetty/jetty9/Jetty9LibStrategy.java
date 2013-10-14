@@ -24,6 +24,11 @@ import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
 public class Jetty9LibStrategy extends Jetty8LibStrategy
 {
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy#addJMXDependencies(java.util.Collection)
+     */
     @Override
     protected void addJMXDependencies(Collection<String> dependencies)
     {
@@ -32,6 +37,8 @@ public class Jetty9LibStrategy extends Jetty8LibStrategy
 
     /**
      * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy#addJNDIDependencies(java.util.Collection)
      */
     @Override
     protected void addJNDIDependencies(Collection<String> dependencies)

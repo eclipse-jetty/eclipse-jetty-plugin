@@ -22,16 +22,18 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 /**
- * Abstract implementation of the {@link IJettyLibStrategy} for external Jetties. Assumes that the libraries are in the
+ * Abstract implementation of the {@link JettyLibStrategy} for external Jetties. Assumes that the libraries are in the
  * lib folder
  * 
  * @author Manfred Hantschel
  */
 public abstract class FileBasedJettyLibStrategy extends DependencyBasedJettyLibStrategy
 {
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#resolveDependencies(java.util.Collection, java.util.Collection)
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#resolveDependencies(java.util.Collection,
+     *      java.io.File, java.util.Collection)
      */
     @Override
     protected void resolveDependencies(Collection<File> results, File path, Collection<String> dependencies)
@@ -57,6 +59,14 @@ public abstract class FileBasedJettyLibStrategy extends DependencyBasedJettyLibS
         }
     }
 
+    /**
+     * Runs through all files of the given path and searches for the specified dependencies.
+     * 
+     * @param results the results
+     * @param path the part
+     * @param dependencies a list or regular expressions for the dependencies
+     * @param resolvedDependencies the resolved dependencies.
+     */
     protected void crawlDependencies(Collection<File> results, File path, Collection<String> dependencies,
         Collection<String> resolvedDependencies)
     {
@@ -76,11 +86,27 @@ public abstract class FileBasedJettyLibStrategy extends DependencyBasedJettyLibS
         }
     }
 
+    /**
+     * Returns true if the path should be searched.
+     * 
+     * @param path the path
+     * @param dependencies the dependencies
+     * @return true if the path should be searched
+     */
     protected boolean isPathIncluded(File path, Collection<String> dependencies)
     {
         return true;
     }
 
+    /**
+     * Returns true if the specified file is included in the dependencies, and adds it to the resolved dependencies, if
+     * so.
+     * 
+     * @param file the file
+     * @param dependencies the dependencies
+     * @param resolvedDependencies the resolved dependencies
+     * @return true if included
+     */
     protected boolean isFileIncluded(File file, Collection<String> dependencies, Collection<String> resolvedDependencies)
     {
         String path = file.getPath().replace('\\', '/');

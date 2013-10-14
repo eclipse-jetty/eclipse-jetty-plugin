@@ -15,9 +15,22 @@ import net.sourceforge.eclipsejetty.JettyPluginUtils;
 
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 
+/**
+ * A dependency of the project, stuffed with information from Maven. The dependency contains an generic id, that is
+ * either generated from the Maven info, or from the filename.
+ * 
+ * @author Manfred Hantschel
+ */
 public class Dependency
 {
 
+    /**
+     * Creates an dependency
+     * 
+     * @param mavenDependencyInfoMap the maven dependency infos, null if m2e is missing
+     * @param runtimeClasspathEntry the original classpath entry
+     * @return the dependency
+     */
     public static Dependency create(MavenDependencyInfoMap mavenDependencyInfoMap,
         IRuntimeClasspathEntry runtimeClasspathEntry)
     {
@@ -42,7 +55,7 @@ public class Dependency
     private final IRuntimeClasspathEntry runtimeClasspathEntry;
     private final MavenDependencyInfo mavenDependencyInfo;
 
-    public Dependency(String genericId, String location, IRuntimeClasspathEntry runtimeClasspathEntry,
+    private Dependency(String genericId, String location, IRuntimeClasspathEntry runtimeClasspathEntry,
         MavenDependencyInfo mavenDependencyInfo)
     {
         super();
@@ -53,26 +66,52 @@ public class Dependency
         this.mavenDependencyInfo = mavenDependencyInfo;
     }
 
+    /**
+     * Returns the generic id
+     * 
+     * @return the generic id
+     */
     public String getGenericId()
     {
         return genericId;
     }
 
+    /**
+     * Return the location
+     * 
+     * @return the location
+     */
     public String getLocation()
     {
         return location;
     }
 
+    /**
+     * Returns the original classpath entry
+     * 
+     * @return the original classpath entry
+     */
     public IRuntimeClasspathEntry getRuntimeClasspathEntry()
     {
         return runtimeClasspathEntry;
     }
 
+    /**
+     * Returns the Maven dependency info if available
+     * 
+     * @return the Maven dependency info, may be null
+     */
     public MavenDependencyInfo getMavenDependencyInfo()
     {
         return mavenDependencyInfo;
     }
 
+    /**
+     * Returns true if there is a Maven dependency info, that defines the dependency as being a dependency to another
+     * project.
+     * 
+     * @return true if project dependent
+     */
     public boolean isProjectDependent()
     {
         if (mavenDependencyInfo != null)
@@ -83,6 +122,11 @@ public class Dependency
         return false;
     }
 
+    /**
+     * Returns the Maven scope if available, {@link MavenScope#NONE} otherwise.
+     * 
+     * @return the Maven scope
+     */
     public MavenScope getScope()
     {
         if (mavenDependencyInfo != null)
@@ -93,6 +137,11 @@ public class Dependency
         return MavenScope.NONE;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {

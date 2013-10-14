@@ -18,16 +18,18 @@ import java.util.LinkedHashSet;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Abstract implementation of the {@link IJettyLibStrategy} using dependencies. In the first pass, all dependencies are
+ * Abstract implementation of the {@link JettyLibStrategy} using dependencies. In the first pass, all dependencies are
  * gathered, in the second pass, the dependencies are resolved.
  * 
  * @author Manfred Hantschel
  */
-public abstract class DependencyBasedJettyLibStrategy implements IJettyLibStrategy
+public abstract class DependencyBasedJettyLibStrategy implements JettyLibStrategy
 {
 
-    /* (non-Javadoc)
-     * @see net.sourceforge.eclipsejetty.jetty.IJettyLibStrategy#find(java.io.File, boolean)
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.JettyLibStrategy#find(java.io.File, boolean, boolean, boolean, boolean)
      */
     public Collection<File> find(File path, boolean jspSupport, boolean jmxSupport, boolean jndiSupport,
         boolean ajpSupport) throws CoreException
@@ -91,6 +93,11 @@ public abstract class DependencyBasedJettyLibStrategy implements IJettyLibStrate
      */
     protected abstract void addJSPDependencies(Collection<String> dependencies);
 
+    /**
+     * Add all dependencies for AJP
+     * 
+     * @param dependencies the dependencies to be filled
+     */
     protected abstract void addAJPDependencies(Collection<String> dependencies);
 
     /**

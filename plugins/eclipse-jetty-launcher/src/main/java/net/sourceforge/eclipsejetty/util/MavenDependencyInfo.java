@@ -20,25 +20,45 @@ import org.eclipse.m2e.core.embedder.ArtifactRef;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 
 /**
- * Holds the artifact name and scope of a dependency.
+ * Holds the artifact name and scope of a dependency. Can be used as hash key.
  * 
- * @author thred
+ * @author Manfred Hantschel
  */
 public class MavenDependencyInfo
 {
 
+    /**
+     * Creates the info from the {@link ArtifactRef} of the m2e plugin
+     * 
+     * @param artifactRef the artifact ref
+     * @return the info
+     */
     public static MavenDependencyInfo create(ArtifactRef artifactRef)
     {
         return new MavenDependencyInfo(artifactRef.getGroupId(), artifactRef.getArtifactId(), artifactRef.getVersion(),
             artifactRef.getClassifier(), null, false, MavenScope.to(artifactRef.getScope()));
     }
 
+    /**
+     * Creates the info from the {@link IMavenProjectFacade}
+     * 
+     * @param facade the facade
+     * @param variant the variant (output, resource, test-output, test-resource)
+     * @param scope the Maven scope
+     * @return the info
+     */
     public static MavenDependencyInfo create(IMavenProjectFacade facade, String variant, MavenScope scope)
     {
         return new MavenDependencyInfo(facade.getArtifactKey().getGroupId(), facade.getArtifactKey().getArtifactId(),
             facade.getArtifactKey().getVersion(), facade.getArtifactKey().getClassifier(), variant, true, scope);
     }
 
+    /**
+     * Creates the info from the classpath entry
+     * 
+     * @param runtimeClasspathEntry the classpath entry
+     * @return the info
+     */
     public static MavenDependencyInfo create(IRuntimeClasspathEntry runtimeClasspathEntry)
     {
         IClasspathEntry classpathEntry = runtimeClasspathEntry.getClasspathEntry();
@@ -96,12 +116,7 @@ public class MavenDependencyInfo
     private boolean projectDependent;
     private MavenScope scope;
 
-    public MavenDependencyInfo(String groupId, String artifactId, String version, String classifier)
-    {
-        this(groupId, artifactId, version, classifier, null);
-    }
-
-    public MavenDependencyInfo(String groupId, String artifactId, String version, String classifier, String variant)
+    private MavenDependencyInfo(String groupId, String artifactId, String version, String classifier, String variant)
     {
         super();
 
@@ -112,7 +127,7 @@ public class MavenDependencyInfo
         this.variant = variant;
     }
 
-    public MavenDependencyInfo(String groupId, String artifactId, String version, String classifier, String variant,
+    private MavenDependencyInfo(String groupId, String artifactId, String version, String classifier, String variant,
         boolean projectDependent, MavenScope scope)
     {
         this(groupId, artifactId, version, classifier, variant);
@@ -121,56 +136,111 @@ public class MavenDependencyInfo
         setScope(scope);
     }
 
+    /**
+     * Returns the Maven group
+     * 
+     * @return the Maven group
+     */
     public String getGroupId()
     {
         return groupId;
     }
 
+    /**
+     * Returns the Maven artifact
+     * 
+     * @return the Maven artifact
+     */
     public String getArtifactId()
     {
         return artifactId;
     }
 
+    /**
+     * Returns the Maven version
+     * 
+     * @return the Maven version
+     */
     public String getVersion()
     {
         return version;
     }
 
+    /**
+     * Returns the Maven classifier
+     * 
+     * @return the Maven classifier
+     */
     public String getClassifier()
     {
         return classifier;
     }
 
+    /**
+     * Returns the variant (output, resource, test-output, test-resource)
+     * 
+     * @return the variant
+     */
     public String getVariant()
     {
         return variant;
     }
 
+    /**
+     * Returns true if the dependency points to another Maven project
+     * 
+     * @return true if the dependency points to another Maven project
+     */
     public boolean isProjectDependent()
     {
         return projectDependent;
     }
 
+    /**
+     * Set to true if the dependency points to another Maven project
+     * 
+     * @param projectDependent true if the dependency points to another Maven project
+     */
     public void setProjectDependent(boolean projectDependent)
     {
         this.projectDependent = projectDependent;
     }
 
+    /**
+     * Returns the Maven scope
+     * 
+     * @return the Maven scope
+     */
     public MavenScope getScope()
     {
         return scope;
     }
 
+    /**
+     * Sets the Maven scope
+     * 
+     * @param scope the Maven scope
+     */
     public void setScope(MavenScope scope)
     {
         this.scope = scope;
     }
 
+    /**
+     * Creates the Maven portable string (the one with the colons, and here, plus the varaint)
+     * 
+     * @return the Maven portable string
+     */
     public String toPortableString()
     {
         return JettyPluginM2EUtils.toPortableString(groupId, artifactId, version, classifier, variant);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode()
     {
@@ -186,6 +256,11 @@ public class MavenDependencyInfo
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj)
     {
@@ -269,6 +344,11 @@ public class MavenDependencyInfo
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {

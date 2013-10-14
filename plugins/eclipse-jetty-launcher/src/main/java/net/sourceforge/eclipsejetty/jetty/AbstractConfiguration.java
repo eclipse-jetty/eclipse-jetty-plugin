@@ -15,6 +15,11 @@ import java.util.Collection;
 
 import net.sourceforge.eclipsejetty.util.DOMBuilder;
 
+/**
+ * Abstract base class for building Jetty configurations
+ * 
+ * @author Manfred Hantschel
+ */
 public abstract class AbstractConfiguration extends AbstractBuilder
 {
 
@@ -23,6 +28,11 @@ public abstract class AbstractConfiguration extends AbstractBuilder
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractBuilder#buildBody(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     */
     @Override
     protected void buildBody(DOMBuilder builder)
     {
@@ -33,19 +43,51 @@ public abstract class AbstractConfiguration extends AbstractBuilder
         builder.end();
     }
 
+    /**
+     * Returns the doc type
+     * 
+     * @return the doc type
+     */
     protected abstract String getDocType();
 
+    /**
+     * Returns the server id to be configured
+     * 
+     * @return the server id
+     */
     protected abstract String getIdToConfigure();
 
+    /**
+     * Returns the server class to be configured
+     * 
+     * @return the server class
+     */
     protected abstract String getClassToConfigure();
 
+    /**
+     * Builds the main content
+     * 
+     * @param builder the builder
+     */
     protected abstract void buildContent(DOMBuilder builder);
 
+    /**
+     * Creates a semicolon separated list of values.
+     * 
+     * @param values the values
+     * @return the list
+     */
     protected String link(Collection<String> values)
     {
         return link(values.toArray(new String[values.size()]));
     }
 
+    /**
+     * Creates a semicolon separated list of values.
+     * 
+     * @param values the values
+     * @return the list
+     */
     protected String link(String... values)
     {
         StringBuilder result = new StringBuilder();

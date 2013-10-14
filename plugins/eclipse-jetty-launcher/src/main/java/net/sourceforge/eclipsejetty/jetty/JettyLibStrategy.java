@@ -21,9 +21,20 @@ import org.eclipse.core.runtime.CoreException;
  * 
  * @author Manfred Hantschel
  */
-public interface IJettyLibStrategy
+public interface JettyLibStrategy
 {
 
+    /**
+     * Returns a list of files, that should be loaded for the specified Jetty.
+     * 
+     * @param jettyPath the path to the installation directory
+     * @param jspSupport true if JSP support is needed
+     * @param jmxSupport true if JMX support is needed
+     * @param jndiSupport true if JNDI support is needed
+     * @param ajpSupport true if AJP support is needed
+     * @return a collection of files
+     * @throws CoreException on occasion
+     */
     Collection<File> find(File jettyPath, boolean jspSupport, boolean jmxSupport, boolean jndiSupport,
         boolean ajpSupport) throws CoreException;
 

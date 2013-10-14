@@ -28,6 +28,11 @@ import org.eclipse.m2e.core.project.IMavenProjectFacade;
 public class JettyPluginM2EUtils
 {
 
+    /**
+     * Returns true if the m2e plugin is available.
+     * 
+     * @return true if the m2e plugin is available
+     */
     public static boolean isM2EAvailable()
     {
         try
@@ -42,6 +47,13 @@ public class JettyPluginM2EUtils
         return true;
     }
 
+    /**
+     * Returns the {@link IMavenProjectFacade} for the specified project
+     * 
+     * @param adapter the configuration adapter
+     * @return the {@link IMavenProjectFacade} if available, null otherwise
+     * @throws CoreException on occasion
+     */
     public static IMavenProjectFacade getMavenProjectFacade(JettyLaunchConfigurationAdapter adapter)
         throws CoreException
     {
@@ -55,11 +67,30 @@ public class JettyPluginM2EUtils
         return MavenPlugin.getMavenProjectRegistry().getProject(project);
     }
 
+    /**
+     * Returns the Maven portable string
+     * 
+     * @param groupId the group
+     * @param artifactId the artifact
+     * @param version the version
+     * @param classifier the classifier
+     * @return the portable string
+     */
     public static String toPortableString(String groupId, String artifactId, String version, String classifier)
     {
         return toPortableString(groupId, artifactId, version, classifier, null);
     }
 
+    /**
+     * Returns the Maven portable string with the varaint
+     * 
+     * @param groupId the group
+     * @param artifactId the artifact
+     * @param version the version
+     * @param classifier the classifier
+     * @param variant the variant (output, resource, test-output, test-resource)
+     * @return the portable string
+     */
     public static String toPortableString(String groupId, String artifactId, String version, String classifier,
         String variant)
     {
@@ -101,6 +132,12 @@ public class JettyPluginM2EUtils
         return builder.toString();
     }
 
+    /**
+     * Returns the suspected Maven path for the artifact
+     * 
+     * @param artifactKey the artifact key
+     * @return the path
+     */
     public static String toPath(ArtifactKey artifactKey)
     {
         StringBuilder builder = new StringBuilder();

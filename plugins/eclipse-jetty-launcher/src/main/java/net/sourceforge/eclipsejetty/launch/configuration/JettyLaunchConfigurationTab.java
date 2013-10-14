@@ -88,6 +88,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     }
 
     /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
      * @wbp.parser.entryPoint
      */
     public void createControl(Composite parent)
@@ -187,23 +190,43 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         setControl(tabComposite);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
+     */
     public String getName()
     {
         return Messages.configTab_name;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getImage()
+     */
     @Override
     public Image getImage()
     {
         return JettyPlugin.getJettyIcon();
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getMessage()
+     */
     @Override
     public String getMessage()
     {
         return Messages.configTab_message;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.jdt.debug.ui.launchConfigurations.JavaLaunchTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
+     */
     @Override
     public void initializeFrom(ILaunchConfiguration configuration)
     {
@@ -226,6 +249,11 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
+     */
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration)
     {
         IJavaElement javaElement = getContext();
@@ -236,15 +264,15 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
         else
         {
-            configuration.setAttribute(ATTR_PROJECT_NAME, JettyPluginUtils.BLANK);
+            configuration.setAttribute(ATTR_PROJECT_NAME, JettyPluginUtils.EMPTY);
         }
 
-        String projectName = JettyPluginUtils.BLANK;
+        String projectName = JettyPluginUtils.EMPTY;
 
         try
         {
             projectName =
-                configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, JettyPluginUtils.BLANK);
+                configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, JettyPluginUtils.EMPTY);
         }
         catch (CoreException e)
         {
@@ -263,6 +291,11 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
+     */
     public void performApply(ILaunchConfigurationWorkingCopy configuration)
     {
         JettyLaunchConfigurationAdapter adapter = JettyLaunchConfigurationAdapter.getInstance(configuration);
@@ -283,6 +316,11 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
+     */
     @Override
     public boolean isValid(ILaunchConfiguration config)
     {
@@ -367,6 +405,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         return true;
     }
 
+    /**
+     * Selects a Java project
+     */
     protected void chooseJavaProject()
     {
         ILabelProvider labelProvider = new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT);
@@ -406,6 +447,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         }
     }
 
+    /**
+     * Searches the project for the webApp directory. Shows an error and a selection dialog if not found.
+     */
     protected void scanWebappDir()
     {
         IProject project = JettyPluginUtils.getProject(projectText.getText());
@@ -433,6 +477,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         webAppText.setText(containerName);
     }
 
+    /**
+     * Shows a dialog for selecting the webApp directory.
+     */
     protected void chooseWebappDir()
     {
         String path =
@@ -447,17 +494,32 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
     public class ModifyDialogListener implements ModifyListener, SelectionListener
     {
+        /**
+         * {@inheritDoc}
+         * 
+         * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
+         */
         @SuppressWarnings("synthetic-access")
         public void modifyText(ModifyEvent e)
         {
             updateLaunchConfigurationDialog();
         }
 
+        /**
+         * {@inheritDoc}
+         * 
+         * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
+         */
         public void widgetDefaultSelected(SelectionEvent arg0)
         {
             // intentionally left blank
         }
 
+        /**
+         * {@inheritDoc}
+         * 
+         * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+         */
         @SuppressWarnings("synthetic-access")
         public void widgetSelected(SelectionEvent arg0)
         {
