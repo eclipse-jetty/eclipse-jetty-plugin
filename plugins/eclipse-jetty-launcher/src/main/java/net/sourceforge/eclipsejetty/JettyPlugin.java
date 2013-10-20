@@ -34,14 +34,16 @@ public class JettyPlugin extends AbstractUIPlugin
     // The plug-in ID
     public static final String PLUGIN_ID = "net.sourceforge.eclipsejetty.launcher";
 
-    private static final String JETTY_PLUGIN_LOGO = PLUGIN_ID + ".jettyPluginLogo";
-    private static final String JETTY_ICON = PLUGIN_ID + ".jettyIcon";
-    private static final String JETTY_ADVANCED_ICON = PLUGIN_ID + ".jettyAdvancedIcon";
-    private static final String JETTY_DEPENDENCY_ICON = PLUGIN_ID + ".jettyDependencyIcon";
-    private static final String ADD_CONTEXT_ICON = PLUGIN_ID + ".addContext";
-    private static final String REMOVE_CONTEXT_ICON = PLUGIN_ID + ".removeContext";
-    private static final String MOVE_UP_CONTEXT_ICON = PLUGIN_ID + ".moveUpContext";
-    private static final String MOVE_DOWN_CONTEXT_ICON = PLUGIN_ID + ".moveDownContext";
+    public static final String JETTY_PLUGIN_LOGO = PLUGIN_ID + ".jettyPluginLogo";
+    public static final String JETTY_PLUGIN_ADVANCED_LOGO = PLUGIN_ID + ".jettyPluginAdvancedLogo";
+    public static final String JETTY_PLUGIN_DEPENDENCY_LOGO = PLUGIN_ID + ".jettyPluginDependencyLogo";
+    public static final String JETTY_ICON = PLUGIN_ID + ".jettyIcon";
+    public static final String JETTY_ADVANCED_ICON = PLUGIN_ID + ".jettyAdvancedIcon";
+    public static final String JETTY_DEPENDENCY_ICON = PLUGIN_ID + ".jettyDependencyIcon";
+    public static final String ADD_CONTEXT_ICON = PLUGIN_ID + ".addContext";
+    public static final String REMOVE_CONTEXT_ICON = PLUGIN_ID + ".removeContext";
+    public static final String MOVE_UP_CONTEXT_ICON = PLUGIN_ID + ".moveUpContext";
+    public static final String MOVE_DOWN_CONTEXT_ICON = PLUGIN_ID + ".moveDownContext";
 
     public static final String DEPENDENCY_OTHER = PLUGIN_ID + ".dependencyOther";
     public static final String DEPENDENCY_JAR = PLUGIN_ID + ".dependencyJar";
@@ -107,6 +109,8 @@ public class JettyPlugin extends AbstractUIPlugin
     protected void initializeImageRegistry(final ImageRegistry reg)
     {
         initializeImageRegistry(reg, JETTY_PLUGIN_LOGO, "/icons/jetty-plugin-logo.png");
+        initializeImageRegistry(reg, JETTY_PLUGIN_ADVANCED_LOGO, "/icons/jetty-plugin-advanced-logo.png");
+        initializeImageRegistry(reg, JETTY_PLUGIN_DEPENDENCY_LOGO, "/icons/jetty-plugin-dependency-logo.png");
 
         initializeImageRegistry(reg, JETTY_ICON, "/icons/jetty.png");
         initializeImageRegistry(reg, JETTY_ADVANCED_ICON, "/icons/jetty-advanced.png");
@@ -146,42 +150,42 @@ public class JettyPlugin extends AbstractUIPlugin
 
     public static Image getJettyPluginLogo()
     {
-        return plugin.getImageRegistry().get(JETTY_PLUGIN_LOGO);
+        return getIcon(JETTY_PLUGIN_LOGO);
     }
 
     public static Image getJettyIcon()
     {
-        return plugin.getImageRegistry().get(JETTY_ICON);
+        return getIcon(JETTY_ICON);
     }
 
     public static Image getJettyAdvancedIcon()
     {
-        return plugin.getImageRegistry().get(JETTY_ADVANCED_ICON);
+        return getIcon(JETTY_ADVANCED_ICON);
     }
 
     public static Image getJettyDependencyIcon()
     {
-        return plugin.getImageRegistry().get(JETTY_DEPENDENCY_ICON);
+        return getIcon(JETTY_DEPENDENCY_ICON);
     }
 
     public static Image getAddContextIcon()
     {
-        return plugin.getImageRegistry().get(ADD_CONTEXT_ICON);
+        return getIcon(ADD_CONTEXT_ICON);
     }
 
     public static Image getRemoveContextIcon()
     {
-        return plugin.getImageRegistry().get(REMOVE_CONTEXT_ICON);
+        return getIcon(REMOVE_CONTEXT_ICON);
     }
 
     public static Image getMoveUpContextIcon()
     {
-        return plugin.getImageRegistry().get(MOVE_UP_CONTEXT_ICON);
+        return getIcon(MOVE_UP_CONTEXT_ICON);
     }
 
     public static Image getMoveDownContextIcon()
     {
-        return plugin.getImageRegistry().get(MOVE_DOWN_CONTEXT_ICON);
+        return getIcon(MOVE_DOWN_CONTEXT_ICON);
     }
 
     public static void log(int severety, String message, Throwable e)

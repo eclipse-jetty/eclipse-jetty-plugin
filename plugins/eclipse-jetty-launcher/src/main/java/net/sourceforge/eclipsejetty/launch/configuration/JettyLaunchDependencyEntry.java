@@ -13,6 +13,7 @@ package net.sourceforge.eclipsejetty.launch.configuration;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.util.WildcardUtils;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -79,6 +80,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
     private String scope;
     private boolean needsUpdate;
     private TableItem item;
+    private int itemIndex = -1;
     private Button includeButton;
     private Button globalButton;
 
@@ -284,6 +286,9 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
     public void createItem(Table table, SelectionListener listener, int index)
     {
         final TableItem item = new TableItem(table, SWT.NONE, index);
+
+        itemIndex = index;
+
         TableEditor includeEditor = new TableEditor(table);
 
         includeButton = new Button(table, SWT.CHECK);
@@ -420,7 +425,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
             return true;
         }
 
-        if (table.indexOf(item) != index)
+        if (itemIndex != index)
         {
             deleteItem(table);
             createItem(table, listener, index);
@@ -499,6 +504,37 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         }
 
         return JettyPluginUtils.dictionaryCompare(path, entry.path);
+    }
+
+    /**
+     * Returns true if the filter pattern matches one of the fields
+     * 
+     * @param filterPattern the filter pattern
+     * @return true on a match
+     */
+    public boolean matches(String filterPattern)
+    {
+        if (filterPattern == null)
+        {
+            return true;
+        }
+
+        if (filterPattern.length() == 0)
+        {
+            return true;
+        }
+
+        if (WildcardUtils.match(name, filterPattern))
+        {
+            return true;
+        }
+
+        if (WildcardUtils.match(path, filterPattern))
+        {
+            return true;
+        }
+
+        return false;
     }
 
 }

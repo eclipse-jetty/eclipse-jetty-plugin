@@ -44,9 +44,12 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -72,7 +75,6 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private final ModifyDialogListener modifyDialogListener;
     private final JettyLaunchConfigEntryList configEntryList;
 
-    private Composite tabComposite;
     private Button embeddedButton;
     private Button externButton;
     private Text pathText;
@@ -124,26 +126,40 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
      */
     public void createControl(final Composite parent)
     {
-        tabComposite = new Composite(parent, SWT.NONE);
-        tabComposite.setLayout(new GridLayout(2, true));
+        Composite tabComposite = createTabComposite(parent, 2, true);
 
-        final Group jettyGroup = new Group(tabComposite, SWT.NONE);
-        jettyGroup.setLayout(new GridLayout(4, false));
-        jettyGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        jettyGroup.setText(Messages.advConfigTab_jettyGroupTitle);
+        createJettyGroup(tabComposite);
+        createJettyFeatureGroup(tabComposite);
+        createPluginFeatureGroup(tabComposite);
+        createConfigGroup(tabComposite);
+        createContextGroup(tabComposite);
+        createHelpGroup(tabComposite);
+        
+        setControl(tabComposite);
+    }
+
+    private void createJettyGroup(Composite tabComposite)
+    {
+        Composite composite = createComposite(tabComposite, SWT.NONE, 2, -1, false, 2, 1);
+        
+        final Composite jettyGroup = createGroup(composite, Messages.advConfigTab_jettyGroupTitle, 2, -1, false, 1, 1);
 
         embeddedButton =
             createButton(jettyGroup, SWT.RADIO, Messages.advConfigTab_embeddedButton,
-                Messages.advConfigTab_embeddedButtonTip, -1, 4, 1, modifyDialogListener);
+                Messages.advConfigTab_embeddedButtonTip, -1, 2, 1, modifyDialogListener);
+
+        
         externButton =
             createButton(jettyGroup, SWT.RADIO, Messages.advConfigTab_externButton,
                 Messages.advConfigTab_externButtonTip, 128, 1, 1, modifyDialogListener);
         pathText =
-            createText(jettyGroup, SWT.BORDER, Messages.advConfigTab_pathTextTip, -1, -1, 3, 1, modifyDialogListener);
+            createText(jettyGroup, SWT.BORDER, Messages.advConfigTab_pathTextTip, -1, -1, 1, 1, modifyDialogListener);
 
-        createLabel(jettyGroup, JettyPluginUtils.EMPTY, -1, 2, 1);
+        Composite buttonComposite = createComposite(jettyGroup, SWT.NONE, 3, -1, false, 2, 1);
+        
+        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, 1, 1);
         pathVariablesButton =
-            createButton(jettyGroup, SWT.NONE, Messages.advConfigTab_pathVariablesButton,
+            createButton(buttonComposite, SWT.NONE, Messages.advConfigTab_pathVariablesButton,
                 Messages.advConfigTab_pathVariablesButtonTip, 96, 1, 1, new SelectionAdapter()
                 {
                     @Override
@@ -153,7 +169,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                     }
                 });
         pathBrowseButton =
-            createButton(jettyGroup, SWT.NONE, Messages.advConfigTab_externalButton,
+            createButton(buttonComposite, SWT.NONE, Messages.advConfigTab_externalButton,
                 Messages.advConfigTab_externalButtonTip, 96, 1, 1, new SelectionAdapter()
                 {
                     @Override
@@ -169,7 +185,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                         }
                     }
                 });
+        
+        createImage(composite, JettyPlugin.getIcon(JettyPlugin.JETTY_PLUGIN_ADVANCED_LOGO), 96, SWT.CENTER, SWT.TOP, 1, 3);
+    }
 
+    private void createJettyFeatureGroup(Composite tabComposite)
+    {
         final Group jettyFeatureGroup = new Group(tabComposite, SWT.NONE);
         jettyFeatureGroup.setLayout(new GridLayout(1, false));
         jettyFeatureGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -184,7 +205,10 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jmxSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, Messages.advConfigTab_jmxSupportButton,
                 Messages.advConfigTab_jmxSupportButtonTip, -1, 1, 1, modifyDialogListener);
+    }
 
+    private void createPluginFeatureGroup(Composite tabComposite)
+    {
         final Group pluginFeatureGroup = new Group(tabComposite, SWT.NONE);
         pluginFeatureGroup.setLayout(new GridLayout(1, false));
         pluginFeatureGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -196,11 +220,11 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         consoleEnabledButton =
             createButton(pluginFeatureGroup, SWT.CHECK, Messages.advConfigTab_consoleEnabledButton,
                 Messages.advConfigTab_consoleEnabledButtonTip, 224, 1, 1, modifyDialogListener);
+    }
 
-        final Group configGroup = new Group(tabComposite, SWT.NONE);
-        configGroup.setLayout(new GridLayout(2, false));
-        configGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        configGroup.setText(Messages.advConfigTab_jettyConfigurationGroupTitle);
+    private void createConfigGroup(Composite tabComposite)
+    {
+        final Composite configGroup = createGroup(tabComposite, Messages.advConfigTab_jettyConfigurationGroupTitle, 3, -1, false, 2, 1);
 
         threadPoolLimitEnabledButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_threadPoolLimitEnabledButton,
@@ -212,6 +236,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         threadPoolLimitCountSpinner.setMaximum(128);
         threadPoolLimitCountSpinner.setIncrement(1);
         threadPoolLimitCountSpinner.setPageIncrement(8);
+        createLabel(configGroup, "threads", -1, 1, 1);
 
         acceptorLimitEnabledButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_acceptorLimitEnabledButton,
@@ -223,6 +248,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         acceptorLimitCountSpinner.setMaximum(64);
         acceptorLimitCountSpinner.setIncrement(1);
         acceptorLimitCountSpinner.setPageIncrement(8);
+        createLabel(configGroup, "acceptors", -1, 1, 1);
 
         ajpSupportButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_ajpSupportButton,
@@ -230,7 +256,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         // TODO enable when implemented
         ajpSupportButton.setEnabled(false);
         ajpPortSpinner =
-            createSpinner(configGroup, SWT.BORDER, Messages.advConfigTab_ajpPortSpinnerTip, 32, -1, 1, 1,
+            createSpinner(configGroup, SWT.BORDER, Messages.advConfigTab_ajpPortSpinnerTip, 32, -1, 2, 1,
                 modifyDialogListener);
         ajpPortSpinner.setMinimum(0);
         ajpPortSpinner.setMaximum(65535);
@@ -243,10 +269,10 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_customWebDefaultsEnabledButton,
                 Messages.advConfigTab_customWebDefaultsEnabledButtonTip, 224, 1, 1, modifyDialogListener);
         customWebDefaultsResourceText =
-            createText(configGroup, SWT.BORDER, Messages.advConfigTab_customWebDefaultsResourceTextTip, -1, -1, 1, 1,
+            createText(configGroup, SWT.BORDER, Messages.advConfigTab_customWebDefaultsResourceTextTip, -1, -1, 2, 1,
                 modifyDialogListener);
 
-        Composite customWebDefaultsButtons = createComposite(configGroup, SWT.NONE, 4, -1, false, 2, 1);
+        Composite customWebDefaultsButtons = createComposite(configGroup, SWT.NONE, 4, -1, false, 3, 1);
         createLabel(customWebDefaultsButtons, JettyPluginUtils.EMPTY, -1, 1, 1);
         customWebDefaultsWorkspaceButton =
             createButton(customWebDefaultsButtons, SWT.NONE, Messages.advConfigTab_customWebDefaultsWorkspaceButton,
@@ -300,19 +326,19 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         serverCacheDisabledButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_serverCacheDisabledButton,
-                Messages.advConfigTab_serverCacheDisabledButtonTip, 224, 2, 1, modifyDialogListener);
+                Messages.advConfigTab_serverCacheDisabledButtonTip, 224, 3, 1, modifyDialogListener);
 
         clientCacheDisabledButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_clientCacheDisabledButton,
-                Messages.advConfigTab_clientCacheDisabledButtonTip, 224, 2, 1, modifyDialogListener);
+                Messages.advConfigTab_clientCacheDisabledButtonTip, 224, 3, 1, modifyDialogListener);
+    }
 
-        Group contextGroup = new Group(tabComposite, SWT.NONE);
-        contextGroup.setLayout(new GridLayout(6, false));
-        contextGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        contextGroup.setText(Messages.advConfigTab_contextGroupTitle);
+    private void createContextGroup(Composite tabComposite)
+    {
+        Group contextGroup = createGroup(tabComposite, Messages.advConfigTab_contextGroupTitle, 6, -1, true, 2, 1);
 
         configTable =
-            createTable(contextGroup, SWT.BORDER | SWT.FULL_SELECTION, -1, 64, 5, 3,
+            createTable(contextGroup, SWT.BORDER | SWT.FULL_SELECTION, 320, 64, 5, 3,
                 Messages.advConfigTab_contextTableInclude, Messages.advConfigTab_contextTableFile);
         configTable.addSelectionListener(new SelectionAdapter()
         {
@@ -400,8 +426,21 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                         removeConfig();
                     }
                 });
+    }
 
-        setControl(tabComposite);
+    private void createHelpGroup(Composite tabComposite)
+    {
+        Composite helpGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 2, 1);
+
+        createLabel(helpGroup, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createImage(helpGroup, JettyPlugin.getJettyIcon(), 16, SWT.CENTER, SWT.BOTTOM, 1, 1);
+        createLink(helpGroup, SWT.NONE, "Confused? Get help on the <a>Eclipse Jetty Plugin homepage</a>.", 1, 1, new Listener()
+        {
+            public void handleEvent(Event event)
+            {
+                Program.launch("http://eclipse-jetty.sourceforge.net/"); //$NON-NLS-1$
+            }
+        });
     }
 
     /**

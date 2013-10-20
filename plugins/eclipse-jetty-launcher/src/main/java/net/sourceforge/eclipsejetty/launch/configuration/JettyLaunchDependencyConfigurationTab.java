@@ -30,17 +30,23 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * UI
@@ -53,8 +59,6 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
     private final JettyLaunchDependencyEntryList dependencyEntryList;
     private final ModifyDialogListener modifyDialogListener;
 
-    private Composite tabComposite;
-
     private Label m2eLabel;
     private Button mavenIncludeCompile;
     private Button mavenIncludeProvided;
@@ -63,8 +67,10 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
     private Button mavenIncludeSystem;
     private Button mavenIncludeImport;
     private Button mavenIncludeNone;
+    private Text dependencyFilterText;
     private Table dependencyTable;
     private boolean dependencyTableFormatted = false;
+    private String defaultFilterText;
 
     public JettyLaunchDependencyConfigurationTab()
     {
@@ -80,10 +86,19 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
      */
     public void createControl(final Composite parent)
     {
-        tabComposite = new Composite(parent, SWT.NONE);
-        tabComposite.setLayout(new GridLayout(1, false));
+        Composite tabComposite = createTabComposite(parent, 2, false);
 
+        createMavenGroup(tabComposite);
+        createOtherGroup(tabComposite);
+        createTableGroup(tabComposite);
+
+        setControl(tabComposite);
+    }
+
+    private void createMavenGroup(Composite tabComposite)
+    {
         Composite mavenGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 1, 1);
+
         createLabel(mavenGroup, Messages.depConfigTab_mavenGroupTitle, 224, 1, 1);
         mavenIncludeCompile =
             createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeCompileButton,
@@ -107,23 +122,100 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
             createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeImportButton,
                 Messages.depConfigTab_mavenIncludeImportButtonTip, -1, 1, 1, modifyDialogListener);
 
-        Composite otherGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 1, 1);
+        createImage(tabComposite, JettyPlugin.getIcon(JettyPlugin.JETTY_PLUGIN_DEPENDENCY_LOGO), 96, SWT.CENTER,
+            SWT.TOP, 1, 1);
+    }
+
+    private void createOtherGroup(Composite tabComposite)
+    {
+        Composite otherGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 2, 1);
 
         createLabel(otherGroup, Messages.depConfigTab_otherGroupTitle, 224, 1, 1);
         mavenIncludeNone =
             createButton(otherGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeNoneButton,
                 Messages.depConfigTab_mavenIncludeNoneButtonTip, 224, 2, 1, modifyDialogListener);
+    }
 
-        Composite tableGroup = createComposite(tabComposite, SWT.NONE, 3, -1, true, 1, 1);
+    private void createTableGroup(Composite tabComposite)
+    {
+        Composite tableGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, true, 2, 1);
+
+        defaultFilterText = "type filter text";
+
+        dependencyFilterText =
+            createText(tableGroup, SWT.BORDER, "Filters the entries in the dependency table.", -1, -1, 3, 1,
+                new ModifyListener()
+                {
+                    public void modifyText(ModifyEvent e)
+                    {
+                        final ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
+
+                        if (configuration != null)
+                        {
+                            updateTable(JettyLaunchConfigurationAdapter.getInstance(configuration), true);
+                            dependencyTable.getDisplay().syncExec(new Runnable()
+                            {
+                                public void run()
+                                {
+                                    updateTable(JettyLaunchConfigurationAdapter.getInstance(configuration), true);
+                                }
+                            });
+                        }
+                    }
+                });
+
+        final Color defaultFilterColor = dependencyFilterText.getForeground();
+
+        dependencyFilterText.addFocusListener(new FocusListener()
+        {
+            public void focusLost(FocusEvent e)
+            {
+                if (dependencyFilterText.getText().trim().length() == 0)
+                {
+                    dependencyFilterText.setText(defaultFilterText);
+                    dependencyFilterText.selectAll();
+                    dependencyFilterText.setForeground(dependencyFilterText.getDisplay().getSystemColor(
+                        SWT.COLOR_DARK_GRAY));
+
+                    ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
+
+                    if (configuration != null)
+                    {
+                        updateTable(JettyLaunchConfigurationAdapter.getInstance(configuration), true);
+                    }
+                }
+            }
+
+            public void focusGained(FocusEvent e)
+            {
+                if (defaultFilterText.equalsIgnoreCase(dependencyFilterText.getText().trim()))
+                {
+                    dependencyFilterText.setText("");
+                    dependencyFilterText.setForeground(defaultFilterColor);
+
+                    ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
+
+                    if (configuration != null)
+                    {
+                        updateTable(JettyLaunchConfigurationAdapter.getInstance(configuration), true);
+                    }
+                }
+            }
+        });
+        dependencyFilterText.setText(defaultFilterText);
+        dependencyFilterText.selectAll();
+        dependencyFilterText.setForeground(dependencyFilterText.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
 
         dependencyTable =
-            createTable(tableGroup, SWT.BORDER | SWT.HIDE_SELECTION, -1, 200, 3, 1,
+            createTable(tableGroup, SWT.BORDER | SWT.HIDE_SELECTION, 320, 128, 3, 1,
                 Messages.depConfigTab_dependencyTableInclude, Messages.depConfigTab_dependencyTableName,
                 Messages.depConfigTab_dependencyTableGlobal, Messages.depConfigTab_dependencyTableScope,
                 Messages.depConfigTab_dependencyTablePath);
 
-        createButton(tableGroup, SWT.NONE, Messages.depConfigTab_dependencyTableResetButton,
-            Messages.depConfigTab_dependencyTableResetButtonTip, 196, 3, 1, new SelectionAdapter()
+        Composite buttonComposite = createComposite(tableGroup, SWT.NONE, 4, -1, false, 3, 1);
+
+        createButton(buttonComposite, SWT.NONE, Messages.depConfigTab_dependencyTableResetButton,
+            Messages.depConfigTab_dependencyTableResetButtonTip, 196, 1, 1, new SelectionAdapter()
             {
                 @Override
                 public void widgetSelected(SelectionEvent e)
@@ -133,7 +225,17 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
                 }
             });
 
-        setControl(tabComposite);
+        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createImage(buttonComposite, JettyPlugin.getJettyIcon(), 16, SWT.CENTER, SWT.CENTER, 1, 1);
+        createLink(buttonComposite, SWT.NONE,
+            "ClassNotFoundException? Get help on the <a>Eclipse Jetty Plugin homepage</a>.", 1, 1, new Listener()
+            {
+                public void handleEvent(Event event)
+                {
+                    Program.launch("http://eclipse-jetty.sourceforge.net/"); //$NON-NLS-1$
+                }
+            });
+
     }
 
     /**
@@ -327,8 +429,9 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
                 Collection<Dependency> globalWebappClasspathEntries =
                     delegate.getGlobalWebappClasspathEntries(adapter, webappClasspathEntries);
 
-                if (dependencyEntryList.update(adapter, dependencyTable, originalClasspathEntries,
-                    webappClasspathEntries, globalWebappClasspathEntries, updateType))
+                if (dependencyEntryList
+                    .update(adapter, dependencyTable, originalClasspathEntries, webappClasspathEntries,
+                        globalWebappClasspathEntries, updateType, getDependencyTableFilterPattern()))
                 {
                     if (!dependencyTableFormatted)
                     {
@@ -349,6 +452,18 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         {
             JettyPlugin.error(Messages.depConfigTab_dependencyTableUpdateFailed, e);
         }
+    }
+
+    protected String getDependencyTableFilterPattern()
+    {
+        String text = dependencyFilterText.getText().trim();
+
+        if (defaultFilterText.equalsIgnoreCase(text))
+        {
+            return "*";
+        }
+
+        return "*" + text + "*";
     }
 
     public final class ModifyDialogListener implements ModifyListener, SelectionListener

@@ -34,9 +34,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
@@ -53,17 +58,16 @@ public class JettyLaunchUI
     /**
      * Creates a label
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param text the text of the label
      * @param widthHint the width, <0 to fill up the space
      * @param horizontalSpan the horizontal span
      * @param verticalSpan the vertical span
      * @return the label
      */
-    public static Label createLabel(final Composite composite, final String text, final int widthHint,
-        int horizontalSpan, int verticalSpan)
+    public static Label createLabel(Composite parent, String text, int widthHint, int horizontalSpan, int verticalSpan)
     {
-        Label label = new Label(composite, SWT.NONE);
+        Label label = new Label(parent, SWT.NONE);
 
         GridData gridData =
             new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
@@ -81,48 +85,97 @@ public class JettyLaunchUI
     }
 
     /**
+     * Creates a label with an image
+     * 
+     * @param parent the parent composite
+     * @param image the image
+     * @param widthHint the width, <0 to fill up the space
+     * @param horizontalAlignment the horizontal alignment
+     * @param verticalAlignment the vertical alignment
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @return the label with an image
+     */
+    public static Label createImage(Composite parent, Image image, int widthHint, int horizontalAlignment,
+        int verticalAlignment, int horizontalSpan, int verticalSpan)
+    {
+        Label label = new Label(parent, SWT.NONE);
+
+        GridData gridData =
+            new GridData(horizontalAlignment, verticalAlignment, false, false, horizontalSpan, verticalSpan);
+
+        if (widthHint >= 0)
+        {
+            gridData.widthHint = widthHint;
+        }
+
+        label.setAlignment(horizontalAlignment);
+        label.setLayoutData(gridData);
+        label.setImage(image);
+
+        return label;
+    }
+
+    /**
      * Creates an hint.
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param text the text of the hint
      * @param widthHint the width, <0 to fill up the space
      * @param horizontalSpan the horizontal span
      * @param verticalSpan the vertical span
      * @return the label
      */
-    public static Label createHint(final Composite composite, final String text, final int widthHint,
-        int horizontalSpan, int verticalSpan)
+    public static Label createHint(Composite parent, String text, int widthHint, int horizontalSpan, int verticalSpan)
     {
-        Label label = createLabel(composite, text, widthHint, horizontalSpan, verticalSpan);
+        Label label = createLabel(parent, text, widthHint, horizontalSpan, verticalSpan);
 
         label.setAlignment(SWT.RIGHT);
 
-        FontData[] fontData = label.getFont().getFontData();
-
-        for (FontData element : fontData)
-        {
-            element.setStyle(SWT.ITALIC);
-        }
-
-        final Font italicFont = new Font(composite.getDisplay(), fontData);
-
-        label.setFont(italicFont);
-
-        label.addDisposeListener(new DisposeListener()
-        {
-            public void widgetDisposed(DisposeEvent e)
-            {
-                italicFont.dispose();
-            }
-        });
+        setItalicFont(parent.getDisplay(), label);
 
         return label;
     }
 
     /**
+     * Creates a link
+     * 
+     * @param parent the parent composite
+     * @param style the type
+     * @param text the text
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @param listener the listener
+     * @return the link
+     */
+    public static Link createLink(Composite parent, int style, String text, int horizontalSpan, int verticalSpan,
+        Listener listener)
+    {
+        Link link = new Link(parent, style);
+
+        GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false, horizontalSpan, verticalSpan);
+
+        link.setLayoutData(gridData);
+
+        if (text != null)
+        {
+            link.setText(text);
+        }
+
+        if (listener != null)
+        {
+            link.addListener(SWT.Selection, listener);
+        }
+
+        setItalicFont(parent.getDisplay(), link);
+
+        return link;
+    }
+
+    /**
      * Create a button.
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param style the style
      * @param text the text of the button
      * @param toolTip the tool tip of the button
@@ -132,17 +185,17 @@ public class JettyLaunchUI
      * @param selectionListeners listeners to be notified on action
      * @return the button
      */
-    public static Button createButton(final Composite composite, int style, final String text, String toolTip,
-        final int widthHint, int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
+    public static Button createButton(Composite parent, int style, String text, String toolTip, int widthHint,
+        int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
-        return createButton(composite, style, null, text, toolTip, widthHint, horizontalSpan, verticalSpan,
+        return createButton(parent, style, null, text, toolTip, widthHint, horizontalSpan, verticalSpan,
             selectionListeners);
     }
 
     /**
      * Create a button.
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param style the style
      * @param image the image
      * @param toolTip the tool tip of the button
@@ -152,17 +205,17 @@ public class JettyLaunchUI
      * @param selectionListeners listeners to be notified on action
      * @return the button
      */
-    public static Button createButton(final Composite composite, int style, final Image image, String toolTip,
-        final int widthHint, int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
+    public static Button createButton(Composite parent, int style, Image image, String toolTip, int widthHint,
+        int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
-        return createButton(composite, style, image, null, toolTip, widthHint, horizontalSpan, verticalSpan,
+        return createButton(parent, style, image, null, toolTip, widthHint, horizontalSpan, verticalSpan,
             selectionListeners);
     }
 
     /**
      * Create a button.
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param style the style
      * @param image the image
      * @param text the text of the button
@@ -173,11 +226,10 @@ public class JettyLaunchUI
      * @param selectionListeners listeners to be notified on action
      * @return the button
      */
-    public static Button createButton(final Composite composite, int style, Image image, final String text,
-        String toolTip, final int widthHint, int horizontalSpan, int verticalSpan,
-        SelectionListener... selectionListeners)
+    public static Button createButton(Composite parent, int style, Image image, String text, String toolTip,
+        int widthHint, int horizontalSpan, int verticalSpan, SelectionListener... selectionListeners)
     {
-        Button button = new Button(composite, style);
+        Button button = new Button(parent, style);
 
         GridData gridData =
             new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
@@ -219,7 +271,7 @@ public class JettyLaunchUI
     /**
      * Creates a text component
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param style the style
      * @param toolTip the tool tip
      * @param widthHint the width, <0 to fill up the space
@@ -229,10 +281,10 @@ public class JettyLaunchUI
      * @param selectionListeners listeners to be notified on action
      * @return the component
      */
-    public static Text createText(final Composite composite, int style, String toolTip, final int widthHint,
-        int heightHint, int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
+    public static Text createText(Composite parent, int style, String toolTip, int widthHint, int heightHint,
+        int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
     {
-        Text text = new Text(composite, style);
+        Text text = new Text(parent, style);
 
         GridData gridData =
             new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
@@ -269,7 +321,7 @@ public class JettyLaunchUI
     /**
      * Creates a spinner
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param style the style
      * @param toolTip the tool tip
      * @param widthHint the width, <0 to fill up the space
@@ -279,10 +331,10 @@ public class JettyLaunchUI
      * @param selectionListeners listeners to be notified on action
      * @return the component
      */
-    public static Spinner createSpinner(final Composite composite, int style, String toolTip, final int widthHint,
-        int heightHint, int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
+    public static Spinner createSpinner(Composite parent, int style, String toolTip, int widthHint, int heightHint,
+        int horizontalSpan, int verticalSpan, ModifyListener... modifyListeners)
     {
-        Spinner spinner = new Spinner(composite, style);
+        Spinner spinner = new Spinner(parent, style);
 
         GridData gridData =
             new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
@@ -317,9 +369,60 @@ public class JettyLaunchUI
     }
 
     /**
+     * Creates a titled group
+     * 
+     * @param parent the parent composite
+     * @param title the title
+     * @param columns the number of columns
+     * @param widthHint the width, <0 to fill up the space
+     * @param grabVerticalSpace true to grab all vertical space
+     * @param horizontalSpan the horizontal span
+     * @param verticalSpan the vertical span
+     * @return the group
+     */
+    public static Group createGroup(Composite parent, String title, int columns, int widthHint,
+        boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
+    {
+        Group group = new Group(parent, SWT.NONE);
+
+        group.setLayout(new GridLayout(columns, false));
+
+        GridData gridData =
+            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.FILL : SWT.TOP,
+                widthHint < 0, grabVerticalSpace, horizontalSpan, verticalSpan);
+
+        if (widthHint >= 0)
+        {
+            gridData.widthHint = widthHint;
+        }
+
+        group.setLayoutData(gridData);
+        group.setText(title);
+
+        return group;
+    }
+
+    /**
+     * Creates the main tab composite
+     * 
+     * @param parent the parent
+     * @param columns the number of columns
+     * @param equalWidth true, to make columns equals in width
+     * @return the composite;
+     */
+    public static Composite createTabComposite(Composite parent, int columns, boolean equalWidth)
+    {
+        Composite composite = new Composite(parent, SWT.NONE);
+
+        composite.setLayout(new GridLayout(columns, equalWidth));
+
+        return composite;
+    }
+
+    /**
      * Creates a composite without label and without border (slight margin)
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param style the type
      * @param columns the number of columns
      * @param widthHint the width, <0 to fill up the space
@@ -328,7 +431,7 @@ public class JettyLaunchUI
      * @param verticalSpan the vertical span
      * @return the composite
      */
-    public static Composite createTopComposite(final Composite composite, int style, int columns, final int widthHint,
+    public static Composite createTopComposite(Composite parent, int style, int columns, int widthHint,
         boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
     {
         GridLayout layout = new GridLayout(columns, false);
@@ -336,13 +439,13 @@ public class JettyLaunchUI
         layout.marginHeight = 8;
         layout.marginWidth = 8;
 
-        return createComposite(composite, style, widthHint, grabVerticalSpace, horizontalSpan, verticalSpan, layout);
+        return createComposite(parent, style, widthHint, grabVerticalSpace, horizontalSpan, verticalSpan, layout);
     }
 
     /**
      * Create a composite, usually used for button bars (no margin)
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param style the type
      * @param columns the number of columns
      * @param widthHint the width, <0 to fill up the space
@@ -351,7 +454,7 @@ public class JettyLaunchUI
      * @param verticalSpan the vertical span
      * @return the composite
      */
-    public static Composite createComposite(final Composite composite, int style, int columns, final int widthHint,
+    public static Composite createComposite(Composite parent, int style, int columns, int widthHint,
         boolean grabVerticalSpace, int horizontalSpan, int verticalSpan)
     {
         GridLayout layout = new GridLayout(columns, false);
@@ -359,13 +462,13 @@ public class JettyLaunchUI
         layout.marginHeight = 0;
         layout.marginWidth = 0;
 
-        return createComposite(composite, style, widthHint, grabVerticalSpace, horizontalSpan, verticalSpan, layout);
+        return createComposite(parent, style, widthHint, grabVerticalSpace, horizontalSpan, verticalSpan, layout);
     }
 
     /**
      * Create a composite, using the specified layout
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param style the type
      * @param widthHint the width, <0 to fill up the space
      * @param grabVerticalSpace true to grab all vertical space
@@ -374,15 +477,15 @@ public class JettyLaunchUI
      * @param layout the layout
      * @return the composite
      */
-    private static Composite createComposite(final Composite composite, int style, final int widthHint,
-        boolean grabVerticalSpace, int horizontalSpan, int verticalSpan, GridLayout layout)
+    private static Composite createComposite(Composite parent, int style, int widthHint, boolean grabVerticalSpace,
+        int horizontalSpan, int verticalSpan, GridLayout layout)
     {
-        Composite result = new Composite(composite, style);
+        Composite composite = new Composite(parent, style);
 
-        result.setLayout(layout);
+        composite.setLayout(layout);
 
         GridData gridData =
-            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
+            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.FILL : SWT.TOP,
                 widthHint < 0, grabVerticalSpace, horizontalSpan, verticalSpan);
 
         if (widthHint >= 0)
@@ -390,15 +493,15 @@ public class JettyLaunchUI
             gridData.widthHint = widthHint;
         }
 
-        result.setLayoutData(gridData);
+        composite.setLayoutData(gridData);
 
-        return result;
+        return composite;
     }
 
     /**
      * Creates a table
      * 
-     * @param composite the composite
+     * @param parent the parent composite
      * @param style the type
      * @param widthHint the width, <0 to fill up the space
      * @param heightHint the minimum height, <0 to ignore
@@ -407,15 +510,15 @@ public class JettyLaunchUI
      * @param titles the column titles
      * @return the table
      */
-    public static Table createTable(Composite composite, int style, int widthHint, int heightHint, int horizontalSpan,
+    public static Table createTable(Composite parent, int style, int widthHint, int heightHint, int horizontalSpan,
         int verticalSpan, String... titles)
     {
-        Table table = new Table(composite, style);
+        Table table = new Table(parent, style);
         table.setLinesVisible(false);
         table.setHeaderVisible(true);
 
         GridData gridData =
-            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, SWT.TOP, widthHint < 0, true, horizontalSpan,
+            new GridData(SWT.FILL, SWT.FILL, widthHint < 0, true, horizontalSpan,
                 verticalSpan);
 
         if (widthHint >= 0)
@@ -608,6 +711,28 @@ public class JettyLaunchUI
                 textComponent.setText(text);
             }
         }
+    }
+
+    private static void setItalicFont(Display display, Control control)
+    {
+        FontData[] fontData = control.getFont().getFontData();
+
+        for (FontData element : fontData)
+        {
+            element.setStyle(SWT.ITALIC);
+        }
+
+        final Font italicFont = new Font(display, fontData);
+
+        control.setFont(italicFont);
+
+        control.addDisposeListener(new DisposeListener()
+        {
+            public void widgetDisposed(DisposeEvent e)
+            {
+                italicFont.dispose();
+            }
+        });
     }
 
 }

@@ -48,16 +48,11 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
@@ -95,20 +90,29 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
      */
     public void createControl(Composite parent)
     {
-        Composite tabComposite = new Composite(parent, SWT.NONE);
-        tabComposite.setLayout(new GridLayout(2, false));
+        Composite tabComposite = createTabComposite(parent, 2, false);
 
-        Label label = new Label(tabComposite, SWT.NONE);
-        label.setImage(JettyPlugin.getJettyPluginLogo());
+        createProjectGroup(tabComposite);
+        createImage(tabComposite, JettyPlugin.getJettyPluginLogo(), 96, SWT.CENTER, SWT.TOP, 1, 3);
+        createApplicationGroup(tabComposite);
+        createServerGroup(tabComposite);
+        createHelpGroup(tabComposite);
 
-        Group projectGroup = new Group(tabComposite, SWT.NONE);
-        projectGroup.setLayout(new GridLayout(2, false));
-        projectGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        projectGroup.setText(Messages.configTab_projectGroupTitle);
+        setControl(tabComposite);
+    }
 
+    private void createProjectGroup(Composite tabComposite)
+    {
+        Composite projectGroup = createTopComposite(tabComposite, SWT.NONE, 2, -1, false, 1, 1);
+
+        createLabel(projectGroup, Messages.configTab_projectGroupTitle, 128, 1, 1);
         projectText =
             createText(projectGroup, SWT.BORDER, Messages.configTab_projectTextTip, -1, -1, 1, 1, modifyDialogListener);
-        createButton(projectGroup, SWT.NONE, Messages.configTab_projectBrowseButton,
+
+        Composite buttonComposite = createComposite(projectGroup, SWT.NONE, 2, -1, false, 2, 1);
+
+        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createButton(buttonComposite, SWT.NONE, Messages.configTab_projectBrowseButton,
             Messages.configTab_projectBrowseButtonTip, 128, 1, 1, new SelectionAdapter()
             {
                 @Override
@@ -117,15 +121,22 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
                     chooseJavaProject();
                 }
             });
+    }
 
-        Composite applicationGroup = createTopComposite(tabComposite, SWT.NONE, 4, -1, false, 2, 1);
+    private void createApplicationGroup(Composite tabComposite)
+    {
+        Composite applicationGroup = createTopComposite(tabComposite, SWT.NONE, 2, -1, false, 1, 1);
 
         createLabel(applicationGroup, Messages.configTab_webAppLabel, 128, 1, 1);
         webAppText =
             createText(applicationGroup, SWT.BORDER, Messages.configTab_webAppTextTip, -1, -1, 1, 1,
                 modifyDialogListener);
+
+        Composite buttonComposite = createComposite(applicationGroup, SWT.NONE, 3, -1, false, 2, 1);
+
+        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, 1, 1);
         webAppScanButton =
-            createButton(applicationGroup, SWT.NONE, Messages.configTab_webAppScanButton,
+            createButton(buttonComposite, SWT.NONE, Messages.configTab_webAppScanButton,
                 Messages.configTab_webAppScanButtonTip, 128, 1, 1, new SelectionAdapter()
                 {
                     @Override
@@ -135,7 +146,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
                     }
                 });
         webAppBrowseButton =
-            createButton(applicationGroup, SWT.NONE, Messages.configTab_webAppBrowseButton,
+            createButton(buttonComposite, SWT.NONE, Messages.configTab_webAppBrowseButton,
                 Messages.configTab_webAppBrowseButtonTip, 128, 1, 1, new SelectionAdapter()
                 {
                     @Override
@@ -144,8 +155,11 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
                         chooseWebappDir();
                     }
                 });
+    }
 
-        Composite serverGroup = createTopComposite(tabComposite, SWT.NONE, 7, -1, false, 2, 1);
+    private void createServerGroup(Composite tabComposite)
+    {
+        Composite serverGroup = createTopComposite(tabComposite, SWT.NONE, 7, -1, true, 1, 1);
 
         createLabel(serverGroup, Messages.configTab_contextPathLabel, 128, 1, 1);
         contextText =
@@ -171,23 +185,21 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         httpsEnabledButton =
             createButton(serverGroup, SWT.CHECK, Messages.configTab_httpsEnableButton,
                 Messages.configTab_httpsEnableButtonTip, -1, 3, 1, modifyDialogListener);
+    }
 
-        Composite helpGroup = new Composite(tabComposite, SWT.NONE);
-        helpGroup.setLayout(new GridLayout(1, false));
-        helpGroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+    private void createHelpGroup(Composite tabComposite)
+    {
+        Composite helpGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 2, 1);
 
-        Link link = new Link(helpGroup, SWT.NONE);
-        link.setText(Messages.configTab_homepageLink);
-        link.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1));
-        link.addListener(SWT.Selection, new Listener()
+        createLabel(helpGroup, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createImage(helpGroup, JettyPlugin.getJettyIcon(), 16, SWT.CENTER, SWT.BOTTOM, 1, 1);
+        createLink(helpGroup, SWT.NONE, Messages.configTab_homepageLink, 1, 1, new Listener()
         {
             public void handleEvent(Event event)
             {
                 Program.launch("http://eclipse-jetty.sourceforge.net/"); //$NON-NLS-1$
             }
         });
-
-        setControl(tabComposite);
     }
 
     /**
