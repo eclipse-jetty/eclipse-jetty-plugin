@@ -157,7 +157,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         Composite buttonComposite = createComposite(jettyGroup, SWT.NONE, 3, -1, false, 2, 1);
         
-        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         pathVariablesButton =
             createButton(buttonComposite, SWT.NONE, Messages.advConfigTab_pathVariablesButton,
                 Messages.advConfigTab_pathVariablesButtonTip, 96, 1, 1, new SelectionAdapter()
@@ -236,7 +236,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         threadPoolLimitCountSpinner.setMaximum(128);
         threadPoolLimitCountSpinner.setIncrement(1);
         threadPoolLimitCountSpinner.setPageIncrement(8);
-        createLabel(configGroup, "threads", -1, 1, 1);
+        createLabel(configGroup, "threads", -1, SWT.LEFT, 1, 1);
 
         acceptorLimitEnabledButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_acceptorLimitEnabledButton,
@@ -248,7 +248,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         acceptorLimitCountSpinner.setMaximum(64);
         acceptorLimitCountSpinner.setIncrement(1);
         acceptorLimitCountSpinner.setPageIncrement(8);
-        createLabel(configGroup, "acceptors", -1, 1, 1);
+        createLabel(configGroup, "acceptors", -1, SWT.LEFT, 1, 1);
 
         ajpSupportButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_ajpSupportButton,
@@ -273,7 +273,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 modifyDialogListener);
 
         Composite customWebDefaultsButtons = createComposite(configGroup, SWT.NONE, 4, -1, false, 3, 1);
-        createLabel(customWebDefaultsButtons, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createLabel(customWebDefaultsButtons, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         customWebDefaultsWorkspaceButton =
             createButton(customWebDefaultsButtons, SWT.NONE, Messages.advConfigTab_customWebDefaultsWorkspaceButton,
                 Messages.advConfigTab_customWebDefaultsWorkspaceButtonTip, 96, 1, 1, new SelectionAdapter()
@@ -338,7 +338,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         Group contextGroup = createGroup(tabComposite, Messages.advConfigTab_contextGroupTitle, 6, -1, true, 2, 1);
 
         configTable =
-            createTable(contextGroup, SWT.BORDER | SWT.FULL_SELECTION, 320, 64, 5, 3,
+            createTable(contextGroup, SWT.BORDER | SWT.FULL_SELECTION, 320, 96, 5, 3,
                 Messages.advConfigTab_contextTableInclude, Messages.advConfigTab_contextTableFile);
         configTable.addSelectionListener(new SelectionAdapter()
         {
@@ -385,7 +385,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
                 });
 
-        createLabel(contextGroup, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createLabel(contextGroup, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         createButton(contextGroup, SWT.NONE, Messages.advConfigTab_contextAddButton,
             Messages.advConfigTab_contextAddButtonTip, 128, 1, 1, new SelectionAdapter()
             {
@@ -432,9 +432,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     {
         Composite helpGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 2, 1);
 
-        createLabel(helpGroup, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createLabel(helpGroup, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         createImage(helpGroup, JettyPlugin.getJettyIcon(), 16, SWT.CENTER, SWT.BOTTOM, 1, 1);
-        createLink(helpGroup, SWT.NONE, "Confused? Get help on the <a>Eclipse Jetty Plugin homepage</a>.", 1, 1, new Listener()
+        createLink(helpGroup, SWT.NONE, "Confused? Get help on the <a>Eclipse Jetty Plugin homepage</a>.", SWT.RIGHT, 1, 1, new Listener()
         {
             public void handleEvent(Event event)
             {

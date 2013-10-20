@@ -412,6 +412,16 @@ public class JettyPluginUtils
         return location.replace('\\', '/');
     }
 
+    public static String prepend(String s, String prefix)
+    {
+        if (!s.startsWith(prefix))
+        {
+            s = prefix + s;
+        }
+
+        return s;
+    }
+
     public static String getName(String location)
     {
         int index = location.lastIndexOf('/');

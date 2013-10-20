@@ -202,9 +202,9 @@ public class JettyLaunchDependencyEntryList
      * @return true if updated
      * @throws CoreException on occasion
      */
-    public boolean update(JettyLaunchConfigurationAdapter adapter, Table table, Collection<Dependency> dependencies,
-        Collection<Dependency> includedClasspathEntries, Collection<Dependency> globalClasspathEntries,
-        boolean updateType, String filterPattern) throws CoreException
+    public boolean update(JettyLaunchConfigurationAdapter adapter, final Table table,
+        Collection<Dependency> dependencies, Collection<Dependency> includedClasspathEntries,
+        Collection<Dependency> globalClasspathEntries, boolean updateType, String filterPattern) throws CoreException
     {
         if (configHash != adapter.getConfiguration().hashCode())
         {
@@ -320,14 +320,14 @@ public class JettyLaunchDependencyEntryList
         }
 
         // sort the entries and update the table if entry has changed
-        List<JettyLaunchDependencyEntry> list = getSortedList();
+        final List<JettyLaunchDependencyEntry> list = getSortedList();
         int index = 0;
-        
+
         for (JettyLaunchDependencyEntry entry : list)
         {
             if ((!entry.isObsolete()) && (entry.matches(filterPattern)))
             {
-                updated |= entry.updateItem(table, listener, index);
+                updated |= entry.initItem(table, listener, index);
                 index += 1;
             }
             else
@@ -337,6 +337,17 @@ public class JettyLaunchDependencyEntryList
             }
         }
 
+        table.getDisplay().syncExec(new Runnable()
+        {
+            public void run()
+            {
+                for (JettyLaunchDependencyEntry entry : list)
+                {
+                    entry.updateItem(table);
+                }
+            }
+        });
+        
         // remove those, that were not hit from the local table
         Iterator<Map.Entry<String, JettyLaunchDependencyEntry>> iterator = entries.entrySet().iterator();
         while (iterator.hasNext())

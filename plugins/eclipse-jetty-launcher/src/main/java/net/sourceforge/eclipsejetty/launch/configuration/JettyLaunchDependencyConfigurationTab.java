@@ -99,7 +99,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
     {
         Composite mavenGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 1, 1);
 
-        createLabel(mavenGroup, Messages.depConfigTab_mavenGroupTitle, 224, 1, 1);
+        createLabel(mavenGroup, Messages.depConfigTab_mavenGroupTitle, 224, SWT.LEFT, 1, 1);
         mavenIncludeCompile =
             createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeCompileButton,
                 Messages.depConfigTab_mavenIncludeCompileButtonTip, 224, 1, 1, modifyDialogListener);
@@ -107,7 +107,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
             createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeProvidedButton,
                 Messages.depConfigTab_mavenIncludeProvidedButtonTip, -1, 1, 1, modifyDialogListener);
 
-        m2eLabel = createLabel(mavenGroup, JettyPluginUtils.EMPTY, 224, 1, 2);
+        m2eLabel = createLabel(mavenGroup, JettyPluginUtils.EMPTY, 224, SWT.LEFT, 1, 2);
         mavenIncludeRuntime =
             createButton(mavenGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeRuntimeButton,
                 Messages.depConfigTab_mavenIncludeRuntimeButtonTip, 224, 1, 1, modifyDialogListener);
@@ -130,7 +130,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
     {
         Composite otherGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 2, 1);
 
-        createLabel(otherGroup, Messages.depConfigTab_otherGroupTitle, 224, 1, 1);
+        createLabel(otherGroup, Messages.depConfigTab_otherGroupTitle, 224, SWT.LEFT, 1, 1);
         mavenIncludeNone =
             createButton(otherGroup, SWT.CHECK, Messages.depConfigTab_mavenIncludeNoneButton,
                 Messages.depConfigTab_mavenIncludeNoneButtonTip, 224, 2, 1, modifyDialogListener);
@@ -225,10 +225,10 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
                 }
             });
 
-        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         createImage(buttonComposite, JettyPlugin.getJettyIcon(), 16, SWT.CENTER, SWT.CENTER, 1, 1);
         createLink(buttonComposite, SWT.NONE,
-            "ClassNotFoundException? Get help on the <a>Eclipse Jetty Plugin homepage</a>.", 1, 1, new Listener()
+            "ClassNotFoundException? Get help on the <a>Eclipse Jetty Plugin homepage</a>.", SWT.RIGHT, 1, 1, new Listener()
             {
                 public void handleEvent(Event event)
                 {
@@ -411,47 +411,53 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
      * @param adapter the configuration adapter
      * @param updateType true to update the types of the entries
      */
-    private void updateTable(JettyLaunchConfigurationAdapter adapter, boolean updateType)
+    private void updateTable(final JettyLaunchConfigurationAdapter adapter, final boolean updateType)
     {
-        try
+        dependencyTable.getDisplay().asyncExec(new Runnable()
         {
-            ILaunchDelegate[] delegates =
-                adapter.getConfiguration().getType().getDelegates(new HashSet<String>(Arrays.asList("run"))); //$NON-NLS-1$
-
-            if (delegates.length == 1)
+            public void run()
             {
-                JettyLaunchConfigurationDelegate delegate =
-                    (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
-
-                Collection<Dependency> originalClasspathEntries = delegate.getOriginalClasspathEntries(adapter);
-                Collection<Dependency> webappClasspathEntries =
-                    delegate.getWebappClasspathEntries(adapter, originalClasspathEntries);
-                Collection<Dependency> globalWebappClasspathEntries =
-                    delegate.getGlobalWebappClasspathEntries(adapter, webappClasspathEntries);
-
-                if (dependencyEntryList
-                    .update(adapter, dependencyTable, originalClasspathEntries, webappClasspathEntries,
-                        globalWebappClasspathEntries, updateType, getDependencyTableFilterPattern()))
+                try
                 {
-                    if (!dependencyTableFormatted)
+                    ILaunchDelegate[] delegates =
+                        adapter.getConfiguration().getType().getDelegates(new HashSet<String>(Arrays.asList("run"))); //$NON-NLS-1$
+
+                    if (delegates.length == 1)
                     {
-                        for (int i = 0; i < dependencyTable.getColumnCount(); i += 1)
+                        JettyLaunchConfigurationDelegate delegate =
+                            (JettyLaunchConfigurationDelegate) delegates[0].getDelegate();
+
+                        Collection<Dependency> originalClasspathEntries = delegate.getOriginalClasspathEntries(adapter);
+                        Collection<Dependency> webappClasspathEntries =
+                            delegate.getWebappClasspathEntries(adapter, originalClasspathEntries);
+                        Collection<Dependency> globalWebappClasspathEntries =
+                            delegate.getGlobalWebappClasspathEntries(adapter, webappClasspathEntries);
+
+                        if (dependencyEntryList.update(adapter, dependencyTable, originalClasspathEntries,
+                            webappClasspathEntries, globalWebappClasspathEntries, updateType,
+                            getDependencyTableFilterPattern()))
                         {
-                            dependencyTable.getColumn(i).pack();
+                            if (!dependencyTableFormatted)
+                            {
+                                for (int i = 0; i < dependencyTable.getColumnCount(); i += 1)
+                                {
+                                    dependencyTable.getColumn(i).pack();
+                                }
+                            }
+
+                            if (dependencyTable.getItemCount() > 0)
+                            {
+                                dependencyTableFormatted = true;
+                            }
                         }
                     }
-
-                    if (dependencyTable.getItemCount() > 0)
-                    {
-                        dependencyTableFormatted = true;
-                    }
+                }
+                catch (CoreException e)
+                {
+                    JettyPlugin.error(Messages.depConfigTab_dependencyTableUpdateFailed, e);
                 }
             }
-        }
-        catch (CoreException e)
-        {
-            JettyPlugin.error(Messages.depConfigTab_dependencyTableUpdateFailed, e);
-        }
+        });
     }
 
     protected String getDependencyTableFilterPattern()

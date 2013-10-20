@@ -807,7 +807,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     {
         AbstractServerConfiguration serverConfiguration = version.createServerConfiguration();
 
-        serverConfiguration.setDefaultContextPath(adapter.getContext());
+        serverConfiguration.setDefaultContextPath(JettyPluginUtils.prepend(adapter.getContext().trim(), "/"));
         serverConfiguration.setDefaultWar(adapter.getWebAppPath());
         serverConfiguration.setPort(Integer.valueOf(adapter.getPort()));
 

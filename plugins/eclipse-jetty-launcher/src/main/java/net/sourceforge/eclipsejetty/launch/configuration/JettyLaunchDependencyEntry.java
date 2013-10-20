@@ -352,7 +352,7 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
         globalEditor.horizontalAlignment = SWT.CENTER;
         globalEditor.setEditor(globalButton, item, 2);
 
-        fillItem(item);
+        needsUpdate = true;
         setItem(item);
     }
 
@@ -410,14 +410,15 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
     }
 
     /**
-     * Updates the item, if necessary. Creates it, if necessary. Deletes it, if necessary. Reindexes it, if necessary.
+     * Initializes the item, if necessary. Creates it, if necessary. Deletes it, if necessary. Reindexes it, if
+     * necessary.
      * 
      * @param table the table
      * @param listener the listener, that gets notified on changes
      * @param index the index
      * @return true if updated
      */
-    public boolean updateItem(Table table, SelectionListener listener, int index)
+    public boolean initItem(Table table, SelectionListener listener, int index)
     {
         if (item == null)
         {
@@ -432,7 +433,19 @@ public class JettyLaunchDependencyEntry implements Comparable<JettyLaunchDepende
             return true;
         }
 
-        if (needsUpdate)
+        return false;
+    }
+
+    /**
+     * Updates the item, if necessary.
+     * 
+     * @param table the table
+     * @return true if updated
+     */
+    public boolean updateItem(Table table)
+    {
+        needsUpdate = true;
+        if ((needsUpdate) && (item != null) && (!item.isDisposed()))
         {
             fillItem(item);
             return true;

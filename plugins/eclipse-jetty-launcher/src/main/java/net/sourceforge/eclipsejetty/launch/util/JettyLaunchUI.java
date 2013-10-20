@@ -61,17 +61,19 @@ public class JettyLaunchUI
      * @param parent the parent composite
      * @param text the text of the label
      * @param widthHint the width, <0 to fill up the space
+     * @param horizontalAlignment the horizontal alignment of the text
      * @param horizontalSpan the horizontal span
      * @param verticalSpan the vertical span
      * @return the label
      */
-    public static Label createLabel(Composite parent, String text, int widthHint, int horizontalSpan, int verticalSpan)
+    public static Label createLabel(Composite parent, String text, int widthHint, int horizontalAlignment,
+        int horizontalSpan, int verticalSpan)
     {
         Label label = new Label(parent, SWT.NONE);
 
         GridData gridData =
-            new GridData((widthHint < 0) ? SWT.FILL : SWT.LEFT, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP,
-                widthHint < 0, false, horizontalSpan, verticalSpan);
+            new GridData(SWT.FILL, (verticalSpan <= 1) ? SWT.CENTER : SWT.TOP, widthHint < 0, false, horizontalSpan,
+                verticalSpan);
 
         if (widthHint >= 0)
         {
@@ -80,6 +82,7 @@ public class JettyLaunchUI
 
         label.setLayoutData(gridData);
         label.setText(text);
+        label.setAlignment(horizontalAlignment);
 
         return label;
     }
@@ -128,7 +131,7 @@ public class JettyLaunchUI
      */
     public static Label createHint(Composite parent, String text, int widthHint, int horizontalSpan, int verticalSpan)
     {
-        Label label = createLabel(parent, text, widthHint, horizontalSpan, verticalSpan);
+        Label label = createLabel(parent, text, widthHint, SWT.LEFT, horizontalSpan, verticalSpan);
 
         label.setAlignment(SWT.RIGHT);
 
@@ -143,17 +146,18 @@ public class JettyLaunchUI
      * @param parent the parent composite
      * @param style the type
      * @param text the text
+     * @param horizontalAlignment the horizontal alignment of the text
      * @param horizontalSpan the horizontal span
      * @param verticalSpan the vertical span
      * @param listener the listener
      * @return the link
      */
-    public static Link createLink(Composite parent, int style, String text, int horizontalSpan, int verticalSpan,
-        Listener listener)
+    public static Link createLink(Composite parent, int style, String text, int horizontalAlignment,
+        int horizontalSpan, int verticalSpan, Listener listener)
     {
         Link link = new Link(parent, style);
 
-        GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, false, false, horizontalSpan, verticalSpan);
+        GridData gridData = new GridData(horizontalAlignment, SWT.CENTER, false, false, horizontalSpan, verticalSpan);
 
         link.setLayoutData(gridData);
 
@@ -517,9 +521,7 @@ public class JettyLaunchUI
         table.setLinesVisible(false);
         table.setHeaderVisible(true);
 
-        GridData gridData =
-            new GridData(SWT.FILL, SWT.FILL, widthHint < 0, true, horizontalSpan,
-                verticalSpan);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, widthHint < 0, true, horizontalSpan, verticalSpan);
 
         if (widthHint >= 0)
         {

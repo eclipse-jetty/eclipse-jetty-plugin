@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
@@ -76,6 +77,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     private Spinner portSpinner;
     private Spinner httpsPortSpinner;
     private Button httpsEnabledButton;
+    private Link httpLink;
+    private Link httpsLink;
 
     public JettyLaunchConfigurationTab()
     {
@@ -96,6 +99,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         createImage(tabComposite, JettyPlugin.getJettyPluginLogo(), 96, SWT.CENTER, SWT.TOP, 1, 3);
         createApplicationGroup(tabComposite);
         createServerGroup(tabComposite);
+        createLinkGroup(tabComposite);
         createHelpGroup(tabComposite);
 
         setControl(tabComposite);
@@ -105,13 +109,13 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     {
         Composite projectGroup = createTopComposite(tabComposite, SWT.NONE, 2, -1, false, 1, 1);
 
-        createLabel(projectGroup, Messages.configTab_projectGroupTitle, 128, 1, 1);
+        createLabel(projectGroup, Messages.configTab_projectGroupTitle, 128, SWT.RIGHT, 1, 1);
         projectText =
             createText(projectGroup, SWT.BORDER, Messages.configTab_projectTextTip, -1, -1, 1, 1, modifyDialogListener);
 
         Composite buttonComposite = createComposite(projectGroup, SWT.NONE, 2, -1, false, 2, 1);
 
-        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         createButton(buttonComposite, SWT.NONE, Messages.configTab_projectBrowseButton,
             Messages.configTab_projectBrowseButtonTip, 128, 1, 1, new SelectionAdapter()
             {
@@ -127,14 +131,14 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     {
         Composite applicationGroup = createTopComposite(tabComposite, SWT.NONE, 2, -1, false, 1, 1);
 
-        createLabel(applicationGroup, Messages.configTab_webAppLabel, 128, 1, 1);
+        createLabel(applicationGroup, Messages.configTab_webAppLabel, 128, SWT.RIGHT, 1, 1);
         webAppText =
             createText(applicationGroup, SWT.BORDER, Messages.configTab_webAppTextTip, -1, -1, 1, 1,
                 modifyDialogListener);
 
         Composite buttonComposite = createComposite(applicationGroup, SWT.NONE, 3, -1, false, 2, 1);
 
-        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, SWT.RIGHT, 1, 1);
         webAppScanButton =
             createButton(buttonComposite, SWT.NONE, Messages.configTab_webAppScanButton,
                 Messages.configTab_webAppScanButtonTip, 128, 1, 1, new SelectionAdapter()
@@ -159,14 +163,14 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
     private void createServerGroup(Composite tabComposite)
     {
-        Composite serverGroup = createTopComposite(tabComposite, SWT.NONE, 7, -1, true, 1, 1);
+        Composite serverGroup = createTopComposite(tabComposite, SWT.NONE, 7, -1, false, 1, 1);
 
-        createLabel(serverGroup, Messages.configTab_contextPathLabel, 128, 1, 1);
+        createLabel(serverGroup, Messages.configTab_contextPathLabel, 128, SWT.RIGHT, 1, 1);
         contextText =
             createText(serverGroup, SWT.BORDER, Messages.configTab_contextPathTextTip, -1, -1, 6, 1,
                 modifyDialogListener);
 
-        createLabel(serverGroup, Messages.configTab_portLabel, 128, 1, 1);
+        createLabel(serverGroup, Messages.configTab_portLabel, 128, SWT.RIGHT, 1, 1);
         portSpinner =
             createSpinner(serverGroup, SWT.BORDER, Messages.configTab_portSpinnerTip, 32, -1, 1, 1,
                 modifyDialogListener);
@@ -174,7 +178,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         portSpinner.setMaximum(65535);
         portSpinner.setIncrement(1);
         portSpinner.setPageIncrement(1000);
-        createLabel(serverGroup, "/", 16, 1, 1).setAlignment(SWT.CENTER); //$NON-NLS-1$
+        createLabel(serverGroup, "/", 16, SWT.CENTER, 1, 1); //$NON-NLS-1$
         httpsPortSpinner =
             createSpinner(serverGroup, SWT.BORDER, Messages.configTab_httpProtSpinnerTip, 32, -1, 1, 1,
                 modifyDialogListener);
@@ -187,13 +191,36 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
                 Messages.configTab_httpsEnableButtonTip, -1, 3, 1, modifyDialogListener);
     }
 
+    private void createLinkGroup(Composite tabComposite)
+    {
+        Composite linkGroup = createTopComposite(tabComposite, SWT.NONE, 2, -1, true, 2, 1);
+
+        createLabel(linkGroup, JettyPluginUtils.EMPTY, 128, SWT.RIGHT, 1, 2);
+
+        httpLink = createLink(linkGroup, SWT.NONE, JettyPluginUtils.EMPTY, SWT.LEFT, -1, -1, new Listener()
+        {
+            public void handleEvent(Event event)
+            {
+                launchHTTP();
+            }
+        });
+
+        httpsLink = createLink(linkGroup, SWT.NONE, JettyPluginUtils.EMPTY, SWT.LEFT, -1, -1, new Listener()
+        {
+            public void handleEvent(Event event)
+            {
+                launchHTTPs();
+            }
+        });
+    }
+
     private void createHelpGroup(Composite tabComposite)
     {
         Composite helpGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, false, 2, 1);
 
-        createLabel(helpGroup, JettyPluginUtils.EMPTY, -1, 1, 1);
+        createLabel(helpGroup, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         createImage(helpGroup, JettyPlugin.getJettyIcon(), 16, SWT.CENTER, SWT.BOTTOM, 1, 1);
-        createLink(helpGroup, SWT.NONE, Messages.configTab_homepageLink, 1, 1, new Listener()
+        createLink(helpGroup, SWT.NONE, Messages.configTab_homepageLink, SWT.RIGHT, 1, 1, new Listener()
         {
             public void handleEvent(Event event)
             {
@@ -339,6 +366,9 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         setErrorMessage(null);
         setMessage(null);
 
+        httpLink.setText(JettyPluginUtils.EMPTY);
+        httpsLink.setText(JettyPluginUtils.EMPTY);
+
         httpsPortSpinner.setEnabled(httpsEnabledButton.getSelection());
 
         String projectName = projectText.getText().trim();
@@ -410,6 +440,30 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         {
             setErrorMessage(String.format(Messages.configTab_webAppInvalid, directory));
             return false;
+        }
+
+        String httpURL = getHTTPURL();
+
+        if (httpURL != null)
+        {
+            String text = String.format("Your server will be availabe at <a>%s</a>.", httpURL);
+
+            if (!text.equals(httpLink.getText()))
+            {
+                httpLink.setText(text);
+            }
+        }
+
+        String httpsURL = getHTTPsURL();
+
+        if (httpsURL != null)
+        {
+            String text = String.format("There will be a secure connection availabe at <a>%s</a>, too.", httpsURL);
+
+            if (!text.equals(httpsLink.getText()))
+            {
+                httpsLink.setText(text);
+            }
         }
 
         setDirty(true);
@@ -501,6 +555,38 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
         if (path != null)
         {
             webAppText.setText(path);
+        }
+    }
+
+    protected String getHTTPURL()
+    {
+        return String.format("http://localhost:%s%s", portSpinner.getSelection(),
+            JettyPluginUtils.prepend(contextText.getText().trim(), "/"));
+    }
+
+    protected String getHTTPsURL()
+    {
+        if (!httpsEnabledButton.getSelection())
+        {
+            return null;
+        }
+
+        return String.format("https://localhost:%s%s", httpsPortSpinner.getSelection(),
+            JettyPluginUtils.prepend(contextText.getText().trim(), "/"));
+    }
+
+    protected void launchHTTP()
+    {
+        Program.launch(getHTTPURL());
+    }
+
+    protected void launchHTTPs()
+    {
+        String httpsURL = getHTTPsURL();
+
+        if (httpsURL != null)
+        {
+            Program.launch(httpsURL);
         }
     }
 
