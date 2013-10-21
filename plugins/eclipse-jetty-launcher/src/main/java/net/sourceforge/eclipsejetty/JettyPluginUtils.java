@@ -610,7 +610,7 @@ public class JettyPluginUtils
 
         if (resource.isAbsolute())
         {
-            return resource.makeRelativeTo(project.getLocation()).toString();
+            resource = resource.makeRelativeTo(project.getLocation());
         }
 
         return resource.makeRelativeTo(project.getFullPath()).toString();
