@@ -11,6 +11,8 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.starter.common.command;
 
+import java.util.concurrent.Semaphore;
+
 import net.sourceforge.eclipsejetty.starter.common.ServerAdapter;
 import net.sourceforge.eclipsejetty.starter.console.AbstractCommand;
 import net.sourceforge.eclipsejetty.starter.console.ConsoleAdapter;
@@ -70,21 +72,46 @@ public class RestartCommand extends AbstractCommand
      * @see net.sourceforge.eclipsejetty.starter.console.Command#execute(java.lang.String,
      *      net.sourceforge.eclipsejetty.starter.console.Process)
      */
-    public int execute(String commandName, Process process) throws Exception
+    public int execute(String commandName, final Process process) throws Exception
     {
         process.out.println("Restarting the server...");
 
-        if (serverAdapter.isRunning())
+        // one non-daemon thread must survive!
+        final Semaphore semaphore = new Semaphore(0);
+
+        Thread thread = new Thread(new Runnable()
         {
-            serverAdapter.stop();
-
-            while (serverAdapter.isRunning())
+            public void run()
             {
-                Thread.sleep(1000);
-            }
-        }
+                try
+                {
+                    if (serverAdapter.isRunning())
+                    {
+                        serverAdapter.stop();
 
-        serverAdapter.start();
+                        while (serverAdapter.isRunning())
+                        {
+                            Thread.sleep(1000);
+                        }
+                    }
+
+                    serverAdapter.start();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace(process.err);
+                }
+                finally
+                {
+                    semaphore.release();
+                }
+            }
+        }, "Restart Command");
+
+        thread.setDaemon(false);
+        thread.start();
+
+        semaphore.acquire();
 
         return 0;
     }
