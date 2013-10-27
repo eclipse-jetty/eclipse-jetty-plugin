@@ -21,6 +21,7 @@ public class Messages extends NLS
     public static String adapter_noDefaultScope;
     public static String adapter_noHasAttribute;
     public static String advConfigTab_acceptorLimitCountSpinnerTip;
+    public static String advConfigTab_acceptorLimitCountUnit;
     public static String advConfigTab_acceptorLimitEnabledButton;
     public static String advConfigTab_acceptorLimitEnabledButtonTip;
     public static String advConfigTab_ajpPortSpinnerTip;
@@ -75,6 +76,12 @@ public class Messages extends NLS
     public static String advConfigTab_externalTitle;
     public static String advConfigTab_externButton;
     public static String advConfigTab_externButtonTip;
+    public static String advConfigTab_gracefulShutdownTimeoutEnabledButton;
+    public static String advConfigTab_gracefulShutdownTimeoutEnabledTip;
+    public static String advConfigTab_gracefulShutdownTimeoutLabel;
+    public static String advConfigTab_gracefulShutdownTimeoutTip;
+    public static String advConfigTab_gracefulShutdownTimeoutUnit;
+    public static String advConfigTab_homepageLink;
     public static String advConfigTab_initializeFailed;
     public static String advConfigTab_jettyConfigurationGroupTitle;
     public static String advConfigTab_jettyFeaturesGroupTitle;
@@ -98,6 +105,7 @@ public class Messages extends NLS
     public static String advConfigTab_showLauncherInfoButton;
     public static String advConfigTab_showLauncherInfoButtonTip;
     public static String advConfigTab_threadPoolLimitCountSpinnerTip;
+    public static String advConfigTab_threadPoolLimitCountUnit;
     public static String advConfigTab_threadPoolLimitEnabledButton;
     public static String advConfigTab_threadPoolLimitEnabledButtonTip;
     public static String advConfigTab_title;
@@ -128,6 +136,8 @@ public class Messages extends NLS
     public static String configTab_projectNameInvalid;
     public static String configTab_projectNotExisting;
     public static String configTab_projectTextTip;
+    public static String configTab_serverHTTPLink;
+    public static String configTab_serverHTTPsLink;
     public static String configTab_webAppBrowseButton;
     public static String configTab_webAppBrowseButtonTip;
     public static String configTab_webAppBrowseMessage;
@@ -143,6 +153,8 @@ public class Messages extends NLS
     public static String delegate_keystoreFailed;
     public static String delegate_launchConfigurationFailed;
     public static String delegate_webDefaultsFailed;
+    public static String depConfigTab_dependencyFilterDefault;
+    public static String depConfigTab_dependencyFilterTip;
     public static String depConfigTab_dependencyTableGlobal;
     public static String depConfigTab_dependencyTableInclude;
     public static String depConfigTab_dependencyTableName;
@@ -151,6 +163,7 @@ public class Messages extends NLS
     public static String depConfigTab_dependencyTableResetButtonTip;
     public static String depConfigTab_dependencyTableScope;
     public static String depConfigTab_dependencyTableUpdateFailed;
+    public static String depConfigTab_homepageLink;
     public static String depConfigTab_initializeFailed;
     public static String depConfigTab_m2eNotAvailable;
     public static String depConfigTab_mavenGroupTitle;

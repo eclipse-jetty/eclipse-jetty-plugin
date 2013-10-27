@@ -87,6 +87,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button ajpSupportButton;
     private Spinner ajpPortSpinner;
 
+    private Button gracefulShutdownOverrideEnabledButton;
+    private Spinner gracefulShutdownOverrideTimeoutSpinner;
     private Button threadPoolLimitEnabledButton;
     private Spinner threadPoolLimitCountSpinner;
     private Button acceptorLimitEnabledButton;
@@ -134,21 +136,20 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         createConfigGroup(tabComposite);
         createContextGroup(tabComposite);
         createHelpGroup(tabComposite);
-        
+
         setControl(tabComposite);
     }
 
     private void createJettyGroup(Composite tabComposite)
     {
         Composite composite = createComposite(tabComposite, SWT.NONE, 2, -1, false, 2, 1);
-        
+
         final Composite jettyGroup = createGroup(composite, Messages.advConfigTab_jettyGroupTitle, 2, -1, false, 1, 1);
 
         embeddedButton =
             createButton(jettyGroup, SWT.RADIO, Messages.advConfigTab_embeddedButton,
                 Messages.advConfigTab_embeddedButtonTip, -1, 2, 1, modifyDialogListener);
 
-        
         externButton =
             createButton(jettyGroup, SWT.RADIO, Messages.advConfigTab_externButton,
                 Messages.advConfigTab_externButtonTip, 128, 1, 1, modifyDialogListener);
@@ -156,7 +157,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             createText(jettyGroup, SWT.BORDER, Messages.advConfigTab_pathTextTip, -1, -1, 1, 1, modifyDialogListener);
 
         Composite buttonComposite = createComposite(jettyGroup, SWT.NONE, 3, -1, false, 2, 1);
-        
+
         createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         pathVariablesButton =
             createButton(buttonComposite, SWT.NONE, Messages.advConfigTab_pathVariablesButton,
@@ -185,8 +186,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                         }
                     }
                 });
-        
-        createImage(composite, JettyPlugin.getIcon(JettyPlugin.JETTY_PLUGIN_ADVANCED_LOGO), 96, SWT.CENTER, SWT.TOP, 1, 3);
+
+        createImage(composite, JettyPlugin.getIcon(JettyPlugin.JETTY_PLUGIN_ADVANCED_LOGO), 96, SWT.CENTER, SWT.TOP, 1,
+            3);
     }
 
     private void createJettyFeatureGroup(Composite tabComposite)
@@ -224,7 +226,22 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     private void createConfigGroup(Composite tabComposite)
     {
-        final Composite configGroup = createGroup(tabComposite, Messages.advConfigTab_jettyConfigurationGroupTitle, 3, -1, false, 2, 1);
+        final Composite configGroup =
+            createGroup(tabComposite, Messages.advConfigTab_jettyConfigurationGroupTitle, 3, -1, false, 2, 1);
+
+        gracefulShutdownOverrideEnabledButton =
+            createButton(configGroup, SWT.CHECK, Messages.advConfigTab_gracefulShutdownTimeoutEnabledButton,
+                Messages.advConfigTab_gracefulShutdownTimeoutEnabledTip, 224, 1, 1,
+                modifyDialogListener);
+        gracefulShutdownOverrideTimeoutSpinner =
+            createSpinner(configGroup, SWT.BORDER, Messages.advConfigTab_gracefulShutdownTimeoutTip, 32, -1, 1, 1,
+                modifyDialogListener);
+        gracefulShutdownOverrideTimeoutSpinner.setDigits(1);
+        gracefulShutdownOverrideTimeoutSpinner.setMinimum(1);
+        gracefulShutdownOverrideTimeoutSpinner.setMaximum(3000);
+        gracefulShutdownOverrideTimeoutSpinner.setIncrement(1);
+        gracefulShutdownOverrideTimeoutSpinner.setPageIncrement(10);
+        createLabel(configGroup, Messages.advConfigTab_gracefulShutdownTimeoutUnit, -1, SWT.LEFT, 1, 1);
 
         threadPoolLimitEnabledButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_threadPoolLimitEnabledButton,
@@ -236,7 +253,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         threadPoolLimitCountSpinner.setMaximum(128);
         threadPoolLimitCountSpinner.setIncrement(1);
         threadPoolLimitCountSpinner.setPageIncrement(8);
-        createLabel(configGroup, "threads", -1, SWT.LEFT, 1, 1);
+        createLabel(configGroup, Messages.advConfigTab_threadPoolLimitCountUnit, -1, SWT.LEFT, 1, 1);
 
         acceptorLimitEnabledButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_acceptorLimitEnabledButton,
@@ -248,7 +265,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         acceptorLimitCountSpinner.setMaximum(64);
         acceptorLimitCountSpinner.setIncrement(1);
         acceptorLimitCountSpinner.setPageIncrement(8);
-        createLabel(configGroup, "acceptors", -1, SWT.LEFT, 1, 1);
+        createLabel(configGroup, Messages.advConfigTab_acceptorLimitCountUnit, -1, SWT.LEFT, 1, 1);
 
         ajpSupportButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_ajpSupportButton,
@@ -434,7 +451,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         createLabel(helpGroup, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         createImage(helpGroup, JettyPlugin.getJettyIcon(), 16, SWT.CENTER, SWT.BOTTOM, 1, 1);
-        createLink(helpGroup, SWT.NONE, "Confused? Get help on the <a>Eclipse Jetty Plugin homepage</a>.", SWT.RIGHT, 1, 1, new Listener()
+        createLink(helpGroup, SWT.NONE, Messages.advConfigTab_homepageLink, SWT.RIGHT, 1, 1, new Listener()
         {
             public void handleEvent(Event event)
             {
@@ -497,6 +514,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             jmxSupportButton.setSelection(adapter.isJmxSupport());
             jndiSupportButton.setSelection(adapter.isJndiSupport());
             ajpSupportButton.setSelection(adapter.isAjpSupport());
+            gracefulShutdownOverrideEnabledButton.setSelection(adapter.isGracefulShutdownOverrideEnabled());
+            gracefulShutdownOverrideTimeoutSpinner.setSelection(adapter.getGracefulShutdownOverrideTimeout() / 100);
 
             threadPoolLimitEnabledButton.setSelection(adapter.isThreadPoolLimitEnabled());
             threadPoolLimitCountSpinner.setSelection(adapter.getThreadPoolLimitCount());
@@ -569,6 +588,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             adapter.setJmxSupport(jmxSupportButton.getSelection());
             adapter.setJndiSupport(jndiSupportButton.getSelection());
             adapter.setAjpSupport(ajpSupportButton.getSelection());
+            adapter.setGracefulShutdownOverrideEnabled(gracefulShutdownOverrideEnabledButton.getSelection());
+            adapter.setGracefulShutdownOverrideTimeout(gracefulShutdownOverrideTimeoutSpinner.getSelection() * 100);
 
             adapter.setThreadPoolLimitEnabled(threadPoolLimitEnabledButton.getSelection());
             adapter.setThreadPoolLimitCount(threadPoolLimitCountSpinner.getSelection());
@@ -633,6 +654,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 threadPoolLimitCountSpinner.setSelection(minimum);
             }
         }
+
+        gracefulShutdownOverrideTimeoutSpinner.setEnabled(gracefulShutdownOverrideEnabledButton.getSelection());
 
         boolean customWebDefaultsEnabled = customWebDefaultsEnabledButton.getSelection();
 

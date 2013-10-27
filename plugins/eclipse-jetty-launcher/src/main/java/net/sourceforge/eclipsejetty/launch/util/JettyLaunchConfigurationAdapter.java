@@ -69,6 +69,10 @@ public class JettyLaunchConfigurationAdapter
     private static final String ATTR_THREAD_POOL_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".threadPool.limit.count"; //$NON-NLS-1$
     private static final String ATTR_ACCEPTOR_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".acceptor.limit.enabled"; //$NON-NLS-1$
     private static final String ATTR_ACCEPTOR_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".acceptor.limit.count"; //$NON-NLS-1$
+    private static final String ATTR_GRACEFUL_SHUTDOWN_OVERRIDE_ENABLED = JettyPlugin.PLUGIN_ID
+        + ".gracefulShutdown.override.enabled"; //$NON-NLS-1$
+    private static final String ATTR_GRACEFUL_SHUTDOWN_OVERRIDE_TIMEOUT = JettyPlugin.PLUGIN_ID
+        + ".gracefulShutdown.override.timeout"; //$NON-NLS-1$
     private static final String ATTR_SERVER_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.server.enabled"; //$NON-NLS-1$
     private static final String ATTR_CLIENT_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.client.enabled"; //$NON-NLS-1$
     private static final String ATTR_CUSTOM_WEB_DEFAULTS_ENABLED = JettyPlugin.PLUGIN_ID + ".customWebDefaults.enabled"; //$NON-NLS-1$
@@ -260,6 +264,8 @@ public class JettyLaunchConfigurationAdapter
         setThreadPoolLimitCount(getThreadPoolLimitCount());
         setAcceptorLimitEnabled(isAcceptorLimitEnabled());
         setAcceptorLimitCount(getAcceptorLimitCount());
+        setGracefulShutdownOverrideEnabled(isGracefulShutdownOverrideEnabled());
+        setGracefulShutdownOverrideTimeout(getGracefulShutdownOverrideTimeout());
 
         setServerCacheEnabled(isServerCacheEnabled());
         setClientCacheEnabled(isClientCacheEnabled());
@@ -820,6 +826,50 @@ public class JettyLaunchConfigurationAdapter
     public void setAcceptorLimitCount(int value) throws CoreException
     {
         setAttribute(true, ATTR_ACCEPTOR_LIMIT_COUNT, value);
+    }
+
+    /**
+     * Return true, if the graceful shutdown override is enabled.
+     * 
+     * @return true, if the graceful shutdown override is enabled
+     * @throws CoreException on occasion
+     */
+    public boolean isGracefulShutdownOverrideEnabled() throws CoreException
+    {
+        return getAttribute(true, ATTR_GRACEFUL_SHUTDOWN_OVERRIDE_ENABLED, false);
+    }
+
+    /**
+     * Set to true, if the graceful shutdown override is enabled.
+     * 
+     * @param value true, if the graceful shutdown override is enabled
+     * @throws CoreException on occasion
+     */
+    public void setGracefulShutdownOverrideEnabled(boolean value) throws CoreException
+    {
+        setAttribute(true, ATTR_GRACEFUL_SHUTDOWN_OVERRIDE_ENABLED, value);
+    }
+
+    /**
+     * Returns the timeout for the graceful shutdown (in milliseconds).
+     * 
+     * @return the timeout for the graceful shutdown (in milliseconds)
+     * @throws CoreException on occasion
+     */
+    public int getGracefulShutdownOverrideTimeout() throws CoreException
+    {
+        return getAttribute(true, ATTR_GRACEFUL_SHUTDOWN_OVERRIDE_TIMEOUT, 1000);
+    }
+
+    /**
+     * Sets the timeout for the graceful shutdown (in milliseconds)
+     * 
+     * @param value the timeout for the graceful shutdown (in milliseconds)
+     * @throws CoreException on occasion
+     */
+    public void setGracefulShutdownOverrideTimeout(int value) throws CoreException
+    {
+        setAttribute(true, ATTR_GRACEFUL_SHUTDOWN_OVERRIDE_TIMEOUT, value);
     }
 
     /**

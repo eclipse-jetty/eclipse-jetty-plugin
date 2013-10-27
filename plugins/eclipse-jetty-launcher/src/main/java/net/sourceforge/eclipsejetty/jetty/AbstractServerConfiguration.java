@@ -32,6 +32,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     private boolean jmx = false;
     private Integer port;
     private Integer sslPort;
+    private Integer gracefulShutdown;
     private Integer threadPoolLimit;
     private Integer acceptorLimit;
 
@@ -129,6 +130,26 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     public void setSslPort(Integer sslPort)
     {
         this.sslPort = sslPort;
+    }
+
+    /**
+     * Return the graceful shutdown timeout (in milliseconds).
+     * 
+     * @return the graceful shutdown timeout (in milliseconds)
+     */
+    public Integer getGracefulShutdown()
+    {
+        return gracefulShutdown;
+    }
+
+    /**
+     * Sets the graceful shutdown timeout (in milliseconds)
+     * 
+     * @param gracefulShutdown the graceful shutdown timeout (in milliseconds)
+     */
+    public void setGracefulShutdown(Integer gracefulShutdown)
+    {
+        this.gracefulShutdown = gracefulShutdown;
     }
 
     /**

@@ -446,7 +446,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         if (httpURL != null)
         {
-            String text = String.format("Your server will be availabe at <a>%s</a>.", httpURL);
+            String text = String.format(Messages.configTab_serverHTTPLink, httpURL);
 
             if (!text.equals(httpLink.getText()))
             {
@@ -458,7 +458,7 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         if (httpsURL != null)
         {
-            String text = String.format("There will be a secure connection availabe at <a>%s</a>, too.", httpsURL);
+            String text = String.format(Messages.configTab_serverHTTPsLink, httpsURL);
 
             if (!text.equals(httpsLink.getText()))
             {
@@ -560,8 +560,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
     protected String getHTTPURL()
     {
-        return String.format("http://localhost:%s%s", portSpinner.getSelection(),
-            JettyPluginUtils.prepend(contextText.getText().trim(), "/"));
+        return String.format("http://localhost:%s%s", portSpinner.getSelection(), //$NON-NLS-1$
+            JettyPluginUtils.prepend(contextText.getText().trim(), "/")); //$NON-NLS-1$
     }
 
     protected String getHTTPsURL()
@@ -571,8 +571,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             return null;
         }
 
-        return String.format("https://localhost:%s%s", httpsPortSpinner.getSelection(),
-            JettyPluginUtils.prepend(contextText.getText().trim(), "/"));
+        return String.format("https://localhost:%s%s", httpsPortSpinner.getSelection(), //$NON-NLS-1$
+            JettyPluginUtils.prepend(contextText.getText().trim(), "/")); //$NON-NLS-1$
     }
 
     protected void launchHTTP()

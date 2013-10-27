@@ -807,7 +807,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     {
         AbstractServerConfiguration serverConfiguration = version.createServerConfiguration();
 
-        serverConfiguration.setDefaultContextPath(JettyPluginUtils.prepend(adapter.getContext().trim(), "/"));
+        serverConfiguration.setDefaultContextPath(JettyPluginUtils.prepend(adapter.getContext().trim(), "/")); //$NON-NLS-1$
         serverConfiguration.setDefaultWar(adapter.getWebAppPath());
         serverConfiguration.setPort(Integer.valueOf(adapter.getPort()));
 
@@ -830,6 +830,11 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         serverConfiguration.setJndi(adapter.isJndiSupport());
         serverConfiguration.setJmx(adapter.isJmxSupport());
 
+        if (adapter.isGracefulShutdownOverrideEnabled())
+        {
+            serverConfiguration.setGracefulShutdown(adapter.getGracefulShutdownOverrideTimeout());
+        }
+        
         if (adapter.isThreadPoolLimitEnabled())
         {
             serverConfiguration.setThreadPoolLimit(adapter.getThreadPoolLimitCount());

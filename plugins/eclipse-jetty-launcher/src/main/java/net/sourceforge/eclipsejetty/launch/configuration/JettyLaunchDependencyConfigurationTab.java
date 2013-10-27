@@ -140,10 +140,10 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
     {
         Composite tableGroup = createTopComposite(tabComposite, SWT.NONE, 3, -1, true, 2, 1);
 
-        defaultFilterText = "type filter text";
+        defaultFilterText = Messages.depConfigTab_dependencyFilterDefault;
 
         dependencyFilterText =
-            createText(tableGroup, SWT.BORDER, "Filters the entries in the dependency table.", -1, -1, 3, 1,
+            createText(tableGroup, SWT.BORDER, Messages.depConfigTab_dependencyFilterTip, -1, -1, 3, 1,
                 new ModifyListener()
                 {
                     public void modifyText(ModifyEvent e)
@@ -190,7 +190,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
             {
                 if (defaultFilterText.equalsIgnoreCase(dependencyFilterText.getText().trim()))
                 {
-                    dependencyFilterText.setText("");
+                    dependencyFilterText.setText(JettyPluginUtils.EMPTY);
                     dependencyFilterText.setForeground(defaultFilterColor);
 
                     ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
@@ -228,7 +228,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         createImage(buttonComposite, JettyPlugin.getJettyIcon(), 16, SWT.CENTER, SWT.CENTER, 1, 1);
         createLink(buttonComposite, SWT.NONE,
-            "ClassNotFoundException? Get help on the <a>Eclipse Jetty Plugin homepage</a>.", SWT.RIGHT, 1, 1, new Listener()
+            Messages.depConfigTab_homepageLink, SWT.RIGHT, 1, 1, new Listener()
             {
                 public void handleEvent(Event event)
                 {
@@ -466,10 +466,10 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
         if (defaultFilterText.equalsIgnoreCase(text))
         {
-            return "*";
+            return "*"; //$NON-NLS-1$
         }
 
-        return "*" + text + "*";
+        return "*" + text + "*"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public final class ModifyDialogListener implements ModifyListener, SelectionListener

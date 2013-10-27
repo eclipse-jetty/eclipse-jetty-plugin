@@ -20,8 +20,6 @@ import net.sourceforge.eclipsejetty.util.DOMBuilder;
 public class Jetty7ServerConfiguration extends AbstractServerConfiguration
 {
 
-    private static final int GRACEFUL_SHUTDOWN_MILLIS = 1000;
-
     public Jetty7ServerConfiguration()
     {
         super();
@@ -292,7 +290,14 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
         builder.element("Set", "name", "stopAtShutdown", true);
         builder.element("Set", "name", "sendServerVersion", true);
         builder.element("Set", "name", "sendDateHeader", true);
-        builder.element("Set", "name", "gracefulShutdown", GRACEFUL_SHUTDOWN_MILLIS);
+
+        Integer gracefulShutdown = getGracefulShutdown();
+
+        if (gracefulShutdown != null)
+        {
+            builder.element("Set", "name", "gracefulShutdown", gracefulShutdown);
+        }
+
         builder.element("Set", "name", "dumpAfterStart", false);
         builder.element("Set", "name", "dumpBeforeStop", false);
     }

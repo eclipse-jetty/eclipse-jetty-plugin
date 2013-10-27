@@ -10,6 +10,10 @@
 
 	<body>
 		<release version="3.7.0">
+			<action dev="thred" type="add">
+				Added option for graceful shutdown.
+			</action>
+			
 			<action dev="thred" type="fix">
 				Fixed some minor UI glitches (table not scaling, max width,...). Beautified it a here and there. If it isn't the best launcher, it should be the best looking one ;)
 			</action>
