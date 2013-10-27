@@ -49,9 +49,9 @@ public abstract class AbstractBuilder
             comment.append(LINE_SEPARATOR);
             comment.append("This is a temporary file.");
             comment.append(LINE_SEPARATOR);
-            comment.append("It was created automatically by the Eclipse Jetty Plugin.");
+            comment.append("It was automatically created by the Eclipse Jetty Plugin.");
             comment.append(LINE_SEPARATOR);
-            comment.append("There is no need, nor sense to edit this file!");
+            comment.append("There is no need, nor sense, to edit this file!");
             comment.append(LINE_SEPARATOR);
 
             builder.comment(comment);
