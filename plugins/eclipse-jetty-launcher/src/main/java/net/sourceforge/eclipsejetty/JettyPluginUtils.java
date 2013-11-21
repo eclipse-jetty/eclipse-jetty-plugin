@@ -497,7 +497,12 @@ public class JettyPluginUtils
 
             if (resource.exists())
             {
-                return resource.getLocation().toFile().getAbsoluteFile();
+                IPath location = resource.getLocation();
+
+                if (location != null)
+                {
+                    return location.toFile().getAbsoluteFile();
+                }
             }
         }
         catch (IllegalArgumentException e)
@@ -516,7 +521,12 @@ public class JettyPluginUtils
 
             if (resource.exists())
             {
-                return resource.getLocation().toFile().getAbsoluteFile();
+                IPath location = resource.getLocation();
+
+                if (location != null)
+                {
+                    return location.toFile().getAbsoluteFile();
+                }
             }
         }
         catch (IllegalArgumentException e)
@@ -557,7 +567,12 @@ public class JettyPluginUtils
 
             if (resource.exists())
             {
-                return resource.getLocation().toFile().getAbsoluteFile();
+                IPath location = resource.getLocation();
+
+                if (location != null)
+                {
+                    return location.toFile().getAbsoluteFile();
+                }
             }
         }
         catch (IllegalArgumentException e)
@@ -576,7 +591,12 @@ public class JettyPluginUtils
 
             if (resource.exists())
             {
-                return resource.getLocation().toFile().getAbsoluteFile();
+                IPath location = resource.getLocation();
+
+                if (location != null)
+                {
+                    return location.toFile().getAbsoluteFile();
+                }
             }
         }
         catch (IllegalArgumentException e)
@@ -610,7 +630,12 @@ public class JettyPluginUtils
 
         if (resource.isAbsolute())
         {
-            resource = resource.makeRelativeTo(project.getLocation());
+            IPath location = project.getLocation();
+
+            if (location != null)
+            {
+                resource = resource.makeRelativeTo(location);
+            }
         }
 
         return resource.makeRelativeTo(project.getFullPath()).toString();

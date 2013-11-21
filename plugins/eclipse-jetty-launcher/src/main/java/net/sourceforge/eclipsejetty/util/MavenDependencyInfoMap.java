@@ -114,7 +114,12 @@ public class MavenDependencyInfoMap
 
         for (IPath path : paths)
         {
-            dependencies.put(toLocation(facade, path), dependency);
+            String location = toLocation(facade, path);
+
+            if (location != null)
+            {
+                dependencies.put(location, dependency);
+            }
         }
     }
 
@@ -165,9 +170,40 @@ public class MavenDependencyInfoMap
         return null;
     }
 
+    /**
+     * Converts the path to an absolute location in the file system. Returns null if the path could not be determined.
+     * 
+     * @param facade the facade of the reference project
+     * @param path the path
+     * @return the absolute location, null if unknown
+     */
     public static String toLocation(IMavenProjectFacade facade, IPath path)
     {
-        return facade.getProject().getLocation().append(path.makeRelativeTo(facade.getFullPath())).toString(); // wow!
+        if (path == null)
+        {
+            return null;
+        }
+
+        IProject project = facade.getProject();
+
+        if (project == null)
+        {
+            JettyPlugin.info(String.format("Failed to determine project reference of %s", facade.getArtifactKey()
+                .toPortableString()));
+
+            return null;
+        }
+
+        IPath location = project.getLocation();
+
+        if (location == null)
+        {
+            JettyPlugin.info(String.format("Failed to determine location of project %s", project.getName()));
+
+            return null;
+        }
+
+        return location.append(path.makeRelativeTo(facade.getFullPath())).toString(); 
     }
 
 }
