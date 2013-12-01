@@ -1,41 +1,63 @@
  -----
  Eclipse Jetty Integration - Getting started
  -----
- Christian Köberl
+ Christian Köberl, Manfred Hantschel
  -----
- May 2011
+ December 2013
 
 Getting started
 
-* Running
+* Run As... / Debug As...
 
- To run a web project using Eclipse Jetty - just go to your Run/Debug configurations and click on "New launch 
+ Most projects can be launched by using the Run As.../Debug As... menu options:
+
+[images/RunAs.jpg] Run As option
+
+ This option is available, if your project contains a web.xml file. The launcher will automatically select the Web Application 
+ directory and launch the embedded Jetty. 
+
+* Launch Configuration
+
+ To create a Launch Confiugration for your web project using Eclipse Jetty, just open to your Run/Debug configurations and click on "New launch 
  configuration". Select the project (if it's not yet select). Usually you should be able to run and debug your project
  now.
+ 
+[images/NewLaunchConfiguration.jpg] Create new launch configuration
 
 * WebApp Settings
 
- Eclipse Jetty defaults to the 
- {{{http://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html}Maven standard directory layout}}
- - therfore the default WebApp directory will be "src/main/webapp". If your WebApp directory is located somewhere else
- choose the correct location.
+ The WebApp tab contains the most important options for your Jetty Launch Configuration: the project, the folder, that contains the static files
+ and the WEB-INF directory, the path of the URL and HTTP and HTTPs ports.
+ 
+[images/WebApp.jpg] The WebApp settings
 
- Further options on the "WebApp" tab are the context path and the port under which your application should run.
+ When creating a new Launch Configuration the project and the Web App folder will be determined automatically. If this fails, you have to
+ set the values manually. Select the <<Project>> (should be you WAR module) and scan or browse for the <<Web App folder>>. Eclipse Jetty works
+ best, if you follow the {{{http://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html}Maven standard directory layout}}.
+ 
+ The <<Context Path>> is the first part of the path in the URL to access your application. If you leave it blank, it defaults to "/". 
+ 
+ The <<HTTP Port>> usually defaults to 8080 for web applications. If you need, you can <<Enable HTTPs>> at the specified port (defaults to 8443).
+ The HTTPs connection uses a self-signed certificate of the Jetty Eclipse Plugin, so you have to allow access to your applicatin in your browser.
+    
+* Options
 
- On the bottom you can add your own Jetty confguration file (jetty.xml) - this enables the whole configration 
- possibilities provided by Jetty.
+ The <<Options>> tab contains advanced settings of your Launch Configuration. It allows you to define the Jetty versions, lets you enable features and 
+ you can add configuration files manually.
+ 
+** Jetty
+ 
+[images/OptionsJetty.jpg] Jetty Options
 
-[images/DebugDialog.jpg] The WebApp settings
+ The Jetty Eclipse Plugin comes with an integrated Jetty 8. It is tested and should work with most projects (but you will need at least Java 1.6). If you need, you can
+ use a different Jetty installation. Download it from the {{{http://download.eclipse.org/jetty/}Jetty homepage download section}} and extract it. Browse for the directory. 
+ The Eclipse Jetty Plugin will automatically detect the version of the Jetty (supported are currently 6.x - 9.x).
 
-* Options 
+** Jetty Features
 
-[images/Options.jpg] Options for Eclipse Jetty
+ You can enable and disable some Jetty Features manually. Usually these features are disabled for faster startup times. 
 
- On the tab "Options" you can choose your Jetty version. Eclipse Jetty comes with an embedded Jetty 8 - if you want to
- use another version define the path to your Jetty installation. Eclipse Jetty will automatically detect the version
- (supported are currently 6.x - 9.x).
-
-** The Jetty features
+[images/OptionsFeatures.jpg] Jetty and Plugin Features
 
 *** Enable JSP Support
 
@@ -54,48 +76,99 @@ Getting started
  This enables the Java Management Extension of the JVM and adds some MBeans provided by Jetty.
  You can only connect to the JVM locally.
 
-*** Enable AJP Connector
+** Plugin Features
 
- This feature is currently not implemented. If you need this, or other features, you have to 
- add the JARs of Jetty manually and mark them as "Global" in the dependencies table. Additionally 
- you have to provide needed context files.  
+ The Eclipse Jetty Plugin comes with an enhanced launcher for the Jetty server (like the start.jar of your Jetty).
 
-*** Show Detailed Server Info
+*** Enable Jetty Launch Info
 
  When enabled, some additional information will be shown on startup. Usually this provides
  great help when searching for problems with dependencies:
 
-+--
-   ____    ___                   __    __  __         ___
-  / __/___/ (_)__  ___ ___   __ / /__ / /_/ /___ __  ( _ )
- / _// __/ / / _ \(_-</ -_) / // / -_) __/ __/ // / / _  |
-/___/\__/_/_/ .__/___/\__/  \___/\__/\__/\__/\_, /  \___/
-           /_/                              /___/
+[images/Startup.jpg] Startup
 
-   Configuration: C:\Temp\eclipseJettyPlugin.quickstart_jetty_embedded.xml
-                  C:\workspace\quickstart\src\main\webapp\jetty7-web.xml
-         Version: 8.1.12.v20130726
-         Context: /
-            Port: 8080, 8443
-       Classpath: C:/Repository/antlr/antlr/2.7.7/antlr-2.7.7.jar
-                  C:/Repository/com/yahoo/platform/yui/yuicompressor/2.4.6/yuicompressor-2.4.6.jar
-                  C:/Repository/commons-codec/commons-codec/1.5/commons-codec-1.5.jar
-                  [...]
-+--
+*** Enable Jetty Plugin Console
 
-* Integration with Eclipse m2e Plugin
+ When enabled, the launcher provides a console with some useful features. Just type help in your Eclipse Console and press enter. 
 
-[images/Maven.jpg] Maven Settings for Eclipse Jetty
+[images/Console.jpg] Console
 
- Eclipse Jetty reads information from the m2e plugin (if you use it) and uses it to generate the correct classpath for
- launching your application. The default is to include compile and runtime scope - you can changed this by selecting
- other scopes. 
+** Jetty Configuration
+
+ With the configuration options you can modify the contents of the context file.
  
- The scopes are listed in the table. If the dependency is unknown to Maven, or you are not using
- the m2e plugin, the scope is left blank. The default include/exclude settings can be overwritten with the left check box
- in the table.
+[images/OptionsConfiguration.jpg]
+
+*** Override Graceful Shutdown Timeout
  
- All libraries will be loaded by Jetty within the web application. Sometimes, however, it is necessary, to provide libraries
- in the global classloader (e.g. if you need a database driver as JNDI resource). In such a case, you can check the right check box
- labeled "Global".
+ When you shut down the Jetty server gracefully, this may need some time. If your application has a lot to do when shutting down, 
+ you can increase the timeout for this shutdown operation here.
  
+*** Limit Size of Thread Pool
+
+ A Jetty server maintains a thread pool for all actions. For example, each incoming connection gets one thread from the thread pool
+ (even if it does not get processed). With this option, you can limit the thread pool. This reduces memory consumption and debugging
+ becomes easier.
+ 
+*** Limit Number of Acceptors
+
+ The acceptors of a Jetty are used to process requests. If not enough acceptors are available, the request has to wait. You can limit
+ the number of acceptors to simulate high server load or make sure, that the server does not process more requests than necessary.
+ 
+*** Enable AJP Connector on Port
+
+ This option is reserved for a future enhancements and is currently not implemented. If you need this, or other features, you have to 
+ add the JARs of Jetty manually and mark them as "Global" in the dependencies table. Additionally 
+ you have to provide needed context files.  
+ 
+*** Custom Web Defaults XML
+
+ Before a Jetty server processes the web.xml file, it automatically loads a default file with some settings. With this option, you
+ can override this behavior and define another defaults file.
+ 
+*** Disable Server Cache
+
+ A Jetty server maintains a cache for static resources to increase performance. This cache usually works well and even recognizes 
+ modified files. But under certain circumstances the reload of updated files does not work. If this happens to you, you can disable
+ the cache with this option.
+ 
+*** Disable Client Cache
+
+ If you enable this option, the Jetty server will send a "Cache-Control: max-age=0" for each servlet request. This is great, if you
+ are working on CSS or HTML files, as the browser reloads all files from scratch. 
+
+** Jetty Context Configuration
+
+ With the context configuration, you can add additional Jetty context files to the startup process. 
+ 
+[images/OptionsContext.jpg] Jetty Context Configuration
+
+ The table contains the default Eclipse Jetty Launcher Context. This contains the configuration of the Eclipse Jetty Plugin. Additionally
+ you can add more context files, that are processed in the specified order. You may need this, for example, to define a JNDI data source
+ (see {{{./jndi_howto.html}JNDI Howto}} for an example).
+
+* Dependencies
+
+ The Eclipse Jetty Plugin divides the project libraries into two categories: the Jetty libraries and the dependencies of the project.
+ With the settings on the <<Dependency>> tab, you can alter this behavior.
+ 
+[images/Dependencies.jpg]
+
+ If you are using Maven for your project and you have enabled the M2Eclipse Plugin, a scope is provided for each library. With this
+ scope you can, e.g., distinguish between dependencies for the application and dependencies for the unit tests. 
+ 
+ In the <<Include Maven Dependencies>> settings you can globally add and remove dependencies with the specified scope. By default,
+ only dependencies with a scope of compile or runtime get added.
+ 
+ If you are not using Maven, or a dependency is unknown to Maven, the library does not contain a scope. With the 
+ <<Include Other Dependencies>> option, you can add or remove these libraries. If your project uses Maven and the M2E Plugin,
+ this option is disabled by default, otherwise it is enabled.
+ 
+ The table shows all dependencies/libraries of the project. You can include and exclude the dependencies with the left checkbox.
+ For example, it is sometimes necessary, that you manually add the database driver, because the dependency is set to "provided"
+ by Maven (which is correct for the server), but with your development Jetty you need the dependency.
+ 
+ By default, all dependencies are loaded with the classloader of the web application and not with the System classloader of Java.
+ You can change this behavior by selecting the right checkbox. When enabled, the Jetty launcher will load the specified dependency
+ with the System classloader. You may need this, e.g., for your database driver, if you define a JNDI datasource.
+  

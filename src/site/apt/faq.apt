@@ -1,0 +1,34 @@
+ -----
+ Eclipse Jetty Integration - Getting started
+ -----
+ Christian Köberl, Manfred Hantschel
+ -----
+ December 2013
+
+FAQ
+
+* Features
+
+ <<Can I change the certificate for the HTTPs connection?>>
+ 
+ Unfortunately, not yet. You have to configure the HTTPs connection manually. Open the default Eclipse Jetty Launcher Context files in the 
+ Options tab to get a glue how to do this. 
+
+
+* Common Problems
+
+ <<When launching, the JVM fails with an java.lang.UnsupportedClassVersionError:>>
+ 
+ You may need another JRE/JDK. Jetty 6 and Jetty 7 run with Java 1.5. Jetty 8 needs at least Java 1.6 and Jetty 9 needs Java 1.7. 
+ 
+ <<The application fails with an java.lang.ClassNotFoundException:>>
+ 
+ You may need to tweak the dependency settings in the Dependencies tab. 
+ 
+[images/Dependencies.jpg]
+ 
+ When using M2E, you can alter the default include/exclude options
+ per scope or manually add dependencies. Are there dependencies without a scope? If yes, you may need the check the "Without Scope" option.
+ Are you using a JNDI datasource? You may then need to load the database driver with the System classloader by checking the "Global" checkbox
+ for the dependency. 
+ 

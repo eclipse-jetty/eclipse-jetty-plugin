@@ -3,7 +3,7 @@
  -----
  Christian Köberl
  -----
- September 2013
+ December 2013
 
 JNDI Howto
 
@@ -11,7 +11,7 @@ JNDI Howto
 
  For publishing resources via JNDI you'll have to enable JNDI on the Options tab:
 
-[images/Options.jpg] Options for Eclipse Jetty
+[images/OptionsFeatures.jpg] Options for Eclipse Jetty
 
  This enables JNDI generally but does not publish any resources. 
 
@@ -21,7 +21,7 @@ JNDI Howto
  it on the WebApp tab in the section Jetty Conext Configuration. The file can either be in the 
  Eclipse workspace (Add...) or somewhere else in the file system (Add External...).
  
-[images/ContextConfiguration.jpg] Use Context Configuration to add JNDI configuration
+[images/OptionsContext.jpg] Use Context Configuration to add JNDI configuration
 
  For more information on Jetty JNDI config see 
  {{http://wiki.eclipse.org/Jetty/Feature/JNDI}} on the Eclipse site.
