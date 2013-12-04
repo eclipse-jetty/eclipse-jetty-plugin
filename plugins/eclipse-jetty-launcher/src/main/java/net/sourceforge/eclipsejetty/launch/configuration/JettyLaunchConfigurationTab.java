@@ -17,7 +17,7 @@ import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
-import net.sourceforge.eclipsejetty.launch.util.JettyLaunchUtils;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchUI;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -27,7 +27,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -38,7 +37,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -519,28 +517,20 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
     protected void scanWebappDir()
     {
         IProject project = JettyPluginUtils.getProject(projectText.getText());
-        IPath path = JettyLaunchUtils.findWebappDir(project);
 
-        if (path == null)
+        try
         {
-            Display.getCurrent().syncExec(new Runnable()
+            String webAppDir = JettyLaunchUI.chooseWebAppDir(Display.getCurrent().getActiveShell(), project, webAppText.getText());
+
+            if (webAppDir != null)
             {
-                public void run()
-                {
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                        Messages.configTab_webAppScanFailedTitle,
-                        String.format(Messages.configTab_webAppScanFailedMessage, projectText.getText()));
-                }
-            });
-
-            chooseWebappDir();
-
-            return;
+                webAppText.setText(webAppDir);
+            }
         }
-
-        String containerName = JettyPluginUtils.toRelativePath(project, path.toString());
-
-        webAppText.setText(containerName);
+        catch (CoreException e)
+        {
+            JettyPlugin.error("Failed to scan for WebApp directory", e);
+        }
     }
 
     /**

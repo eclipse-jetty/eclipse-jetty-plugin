@@ -11,6 +11,10 @@
 	<body>
 		<release version="3.7.0">
 			<action dev="thred" type="add">
+				Added selection dialog, if multiple Web App directories were found.
+			</action>
+			
+			<action dev="thred" type="add">
 				Added option for graceful shutdown.
 			</action>
 			

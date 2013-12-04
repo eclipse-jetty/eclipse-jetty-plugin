@@ -15,13 +15,20 @@ import static net.sourceforge.eclipsejetty.launch.util.JettyLaunchUI.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sourceforge.eclipsejetty.JettyPlugin;
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
 import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchUI;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchUtils;
+import net.sourceforge.eclipsejetty.launch.util.LaunchConfigurationLabelProvider;
+import net.sourceforge.eclipsejetty.util.Result;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -38,8 +45,10 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.FileEditorInput;
 
 /**
@@ -111,16 +120,62 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
      */
     protected void launch(final IProject project, IResource resource, String mode)
     {
-        File webAppPath;
+        ILaunchConfiguration[] existingLaunchConfigurations = null;
+        Set<IResource> webXMLResources = new LinkedHashSet<IResource>(findWebXMLResources(resource));
 
-        resource = findWebXMLResource(resource);
-
-        if (resource == null)
+        if (webXMLResources.size() > 0)
         {
-            resource = findWebXMLResource(project);
+            // found web.xml files at the resource, search for existing launch configurations
+            existingLaunchConfigurations =
+                getExistingLaunchConfigurations(project, toWebAppPaths(project, webXMLResources));
         }
 
-        if (resource == null)
+        if ((existingLaunchConfigurations == null) || (existingLaunchConfigurations.length == 0))
+        {
+            // did not find existing launch configurations, search for web.xml in the whole project
+            webXMLResources.addAll(findWebXMLResources(project));
+
+            if (webXMLResources.size() > 0)
+            {
+                // found web.xml files in the project, search for existing launch configurations
+                existingLaunchConfigurations =
+                    getExistingLaunchConfigurations(project, toWebAppPaths(project, webXMLResources));
+            }
+        }
+
+        ILaunchConfiguration launchConfiguration = null;
+
+        if ((existingLaunchConfigurations == null) || (existingLaunchConfigurations.length == 0))
+        {
+            launchConfiguration = createLaunchConfiguration(project, new ArrayList<IResource>(webXMLResources));
+        }
+        else
+        {
+            launchConfiguration = selectLaunchConfiguration(existingLaunchConfigurations);
+        }
+
+        if (launchConfiguration == null)
+        {
+            return;
+        }
+
+        DebugUITools.launch(launchConfiguration, mode);
+    }
+
+    /**
+     * Creates a new launch configuration with a web app path selected from one of the specified web.xml resources. If
+     * not web.xml resource was specified, it asks the user to specify one. If one web.xml resource was provided, it
+     * uses this web.xml resource. If multiple web.xml resources were specified, it asks the user to select one.
+     * 
+     * @param project the project
+     * @param webXMLResources the web.xml resource
+     * @return the launch configuration, null if none was created due to user interruption
+     */
+    protected ILaunchConfiguration createLaunchConfiguration(final IProject project, List<IResource> webXMLResources)
+    {
+        File webAppPath = null;
+
+        if (webXMLResources.size() == 0)
         {
             Display.getCurrent().syncExec(new Runnable()
             {
@@ -139,41 +194,95 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
 
             if (path == null)
             {
-                return;
+                return null;
             }
 
             webAppPath = JettyPluginUtils.resolveFolder(project, path);
         }
+        else if (webXMLResources.size() == 1)
+        {
+            webAppPath =
+                JettyPluginUtils.resolveFolder(project, webXMLResources.get(0).getFullPath().removeLastSegments(2)
+                    .toString());
+        }
         else
         {
-            IPath webAppResource = resource.getFullPath().removeLastSegments(2);
+            try
+            {
+                String webAppDir =
+                    JettyLaunchUI.chooseWebAppDir(Display.getCurrent().getActiveShell(), project,
+                        JettyLaunchUtils.toWebappDirs(webXMLResources), project.getFullPath().toString());
+                if (webAppDir == null)
+                {
+                    return null;
+                }
 
-            webAppPath = JettyPluginUtils.resolveFolder(project, webAppResource.toString());
+                webAppPath = JettyPluginUtils.resolveFolder(project, webAppDir);
+            }
+            catch (CoreException e)
+            {
+                JettyPlugin.error("Failed to choose Web App directory", e);
+                return null;
+            }
         }
 
-        if (webAppPath == null)
+        return createLaunchConfiguration(project, webAppPath);
+    }
+
+    /**
+     * Select one launch configuration. If zero launch configuration are specified, the method return null. If one
+     * launch configuration is specified, it returns this one. If multiple launch configurations are specified, it asks
+     * the user to select one.
+     * 
+     * @param existingLaunchConfigurations the launch configurations
+     * @return a selected launch configuration, or null
+     */
+    protected ILaunchConfiguration selectLaunchConfiguration(final ILaunchConfiguration[] existingLaunchConfigurations)
+    {
+        if ((existingLaunchConfigurations == null) || (existingLaunchConfigurations.length == 0))
         {
-            JettyPlugin.warning(Messages.shortcut_webAppNotFound);
-            return;
+            return null;
         }
 
-        webAppPath = webAppPath.getAbsoluteFile();
-
-        ILaunchConfiguration[] existingLaunchConfigurations = getLaunchConfigurations(project, webAppPath);
-
-        if ((existingLaunchConfigurations != null) && (existingLaunchConfigurations.length > 0))
+        if (existingLaunchConfigurations.length == 1)
         {
-            DebugUITools.launch(existingLaunchConfigurations[0], mode);
-            return;
+            return existingLaunchConfigurations[0];
         }
 
-        ILaunchConfigurationWorkingCopy createdLaunchConfiguration = createLaunchConfiguration(project, webAppPath);
+        final Result<ILaunchConfiguration> result = new Result<ILaunchConfiguration>();
 
-        if (createdLaunchConfiguration != null)
+        Display.getCurrent().syncExec(new Runnable()
         {
-            DebugUITools.launch(createdLaunchConfiguration, mode);
-            return;
+            public void run()
+            {
+                ElementListSelectionDialog dialog =
+                    new ElementListSelectionDialog(Display.getCurrent().getActiveShell(),
+                        new LaunchConfigurationLabelProvider());
+
+                dialog.setElements(existingLaunchConfigurations);
+                dialog.setTitle("Choose Launch Configuration");
+                dialog.setMessage("Multiple launch configuration apply to your selection.\nPlease choose one:");
+                dialog.setMultipleSelection(false);
+
+                if (dialog.open() != Window.OK)
+                {
+                    return;
+                }
+
+                result.setResult((ILaunchConfiguration) dialog.getResult()[0]);
+            }
+        });
+
+        try
+        {
+            return result.getResult();
         }
+        catch (CoreException e)
+        {
+            JettyPlugin.error("Failed to retrieve result", e);
+        }
+
+        return null;
     }
 
     /**
@@ -314,42 +423,36 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
      */
     protected ILaunchConfiguration[] getLaunchConfigurations(final IProject project, IResource resource)
     {
-        File webAppPath;
+        // TODO stricktly spoken, it should first search the specified resource, as
+        // those files are preferred by the launch method, and then search the project
+        // but the following lines only search the project which may result it more
+        // files than ususal
+        List<IResource> webXMLResources = findWebXMLResources(project);
 
-        resource = findWebXMLResource(resource);
-
-        if (resource == null)
-        {
-            resource = findWebXMLResource(project);
-        }
-
-        if (resource == null)
+        if (webXMLResources.size() <= 0)
         {
             return null;
         }
 
-        IPath webAppResource = resource.getFullPath().removeLastSegments(2);
+        List<File> webAppPaths = toWebAppPaths(project, webXMLResources);
 
-        webAppPath = JettyPluginUtils.resolveFolder(project, webAppResource.toString());
-
-        if (webAppPath == null)
+        if (webAppPaths.size() <= 0)
         {
             return null;
         }
 
-        webAppPath = webAppPath.getAbsoluteFile();
-
-        return getLaunchConfigurations(project, webAppPath);
+        return getExistingLaunchConfigurations(project, webAppPaths);
     }
 
     /**
-     * Returns all existing launch configurations with the specified project and the specified web application path.
+     * Returns all existing launch configurations with the specified project and one of the the specified web
+     * application paths.
      * 
      * @param project the project, must no be null
-     * @param webAppPath the web application path, must no be null
+     * @param webAppPaths the web application paths, must no be null
      * @return all existing launch configurations, never null
      */
-    protected ILaunchConfiguration[] getLaunchConfigurations(IProject project, File webAppPath)
+    protected ILaunchConfiguration[] getExistingLaunchConfigurations(IProject project, List<File> webAppPaths)
     {
         List<ILaunchConfiguration> results = new ArrayList<ILaunchConfiguration>();
         String projectName = project.getName();
@@ -380,7 +483,7 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
 
                     currentWebAppPath = currentWebAppPath.getAbsoluteFile();
 
-                    if (!webAppPath.equals(currentWebAppPath))
+                    if (!webAppPaths.contains(currentWebAppPath))
                     {
                         continue;
                     }
@@ -432,37 +535,62 @@ public class JettyLaunchShortcut implements ILaunchShortcut2
     }
 
     /**
+     * Converts the list of webXMLResources to webAppPaths by removing the last two segments
+     * 
+     * @param project the project
+     * @param webXMLResources the resource
+     * @return the files
+     */
+    protected List<File> toWebAppPaths(final IProject project, Collection<IResource> webXMLResources)
+    {
+        List<File> webAppPaths = new ArrayList<File>();
+
+        for (IResource webXMLResource : webXMLResources)
+        {
+            IPath webAppResource = webXMLResource.getFullPath().removeLastSegments(2);
+            File webAppPath = JettyPluginUtils.resolveFolder(project, webAppResource.toString());
+
+            if (webAppPath != null)
+            {
+                webAppPaths.add(webAppPath);
+            }
+        }
+        return webAppPaths;
+    }
+
+    /**
      * Tries to locate the web.xml file within the specified resource. Searches sub-folders if the resource points to a
-     * folder.
+     * folder. Returns a list of resources.
      * 
      * @param resource the resource, may be null
-     * @return the web.xml as resource, null if not found
+     * @return a list of web.xml resources, empty list if none was found
      */
-    protected IResource findWebXMLResource(IResource resource)
+    protected List<IResource> findWebXMLResources(IResource resource)
     {
         try
         {
-            return JettyLaunchUtils.findWebXML(resource);
+            return JettyLaunchUtils.findWebXMLs(resource, Integer.MAX_VALUE);
         }
         catch (CoreException e)
         {
             // ignore
         }
 
-        return null;
+        return Collections.<IResource> emptyList();
     }
 
     /**
-     * Tries to locate the web.xml file within the specified project.
+     * Tries to locate all the web.xml files within the specified resource and the project.
      * 
+     * @param resource the resource, may be null
      * @param project the project, may be null
-     * @return the web.xml as resource, null if not found
+     * @return all the web.xml files as resource, null if not found
      */
-    protected IResource findWebXMLResource(IProject project)
+    protected List<IResource> findWebXMLResources(IProject project)
     {
         try
         {
-            return JettyLaunchUtils.findWebXML(project);
+            return JettyLaunchUtils.findWebXMLs(project, Integer.MAX_VALUE);
         }
         catch (CoreException e)
         {

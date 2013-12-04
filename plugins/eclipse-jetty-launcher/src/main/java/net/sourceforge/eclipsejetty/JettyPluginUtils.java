@@ -640,7 +640,7 @@ public class JettyPluginUtils
 
         return resource.makeRelativeTo(project.getFullPath()).toString();
     }
-
+    
     public static IProject getProject(String projectName)
     {
         if ((projectName == null) || (projectName.length() == 0))

@@ -12,15 +12,20 @@
 package net.sourceforge.eclipsejetty.launch.util;
 
 import java.io.File;
+import java.util.List;
 
 import net.sourceforge.eclipsejetty.JettyPluginUtils;
+import net.sourceforge.eclipsejetty.Messages;
+import net.sourceforge.eclipsejetty.util.Result;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -48,6 +53,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
@@ -713,6 +719,91 @@ public class JettyLaunchUI
                 textComponent.setText(text);
             }
         }
+    }
+
+    /**
+     * Searches for the web app directory.
+     * 
+     * @param shell the shell
+     * @param project the project
+     * @param path the current path, may be null
+     * @return the web app directory
+     * @throws CoreException on occasion
+     */
+    public static String chooseWebAppDir(final Shell shell, final IProject project, final String path)
+        throws CoreException
+    {
+        final List<IPath> paths = JettyLaunchUtils.findWebappDirs(project, Integer.MAX_VALUE);
+
+        if (paths.size() == 0)
+        {
+            Display.getCurrent().syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                        Messages.configTab_webAppScanFailedTitle,
+                        String.format(Messages.configTab_webAppScanFailedMessage, project.getName()));
+                }
+            });
+
+            return chooseWorkspaceDirectory(shell, project, Messages.configTab_webAppBrowseTitle,
+                Messages.configTab_webAppBrowseMessage, path);
+        }
+        else if (paths.size() > 1)
+        {
+            return chooseWebAppDir(shell, project, paths, path);
+        }
+
+        return JettyPluginUtils.toRelativePath(project, paths.get(0).toString());
+    }
+
+    /**
+     * Choose one webApp directory from a list of directories. Show a user selection on cancel
+     * 
+     * @param shell the shell
+     * @param project the project
+     * @param paths the paths
+     * @param path the path for the file selection
+     * @return the selected directory, null if none was selected
+     * @throws CoreException on occasion
+     */
+    public static String chooseWebAppDir(final Shell shell, final IProject project, final List<IPath> paths,
+        final String path) throws CoreException
+    {
+        final Result<String> result = new Result<String>();
+
+        Display.getCurrent().syncExec(new Runnable()
+        {
+            public void run()
+            {
+                ElementListSelectionDialog dialog =
+                    new ElementListSelectionDialog(Display.getCurrent().getActiveShell(), new WebAppPathLabelProvider());
+                String[] elements = JettyLaunchUtils.toStringArray(paths);
+
+                for (int i = 0; i < elements.length; i += 1)
+                {
+                    elements[i] = JettyPluginUtils.toRelativePath(project, elements[i]);
+                }
+                dialog.setElements(elements);
+                dialog.setTitle("Choose WebApp Directory");
+                dialog
+                    .setMessage("There are multiple folders, that may act as Web Application directory.\nPlease choose one:");
+                dialog.setMultipleSelection(false);
+
+                if (dialog.open() != Window.OK)
+                {
+                    result.setResult(chooseWorkspaceDirectory(shell, project, Messages.configTab_webAppBrowseTitle,
+                        Messages.configTab_webAppBrowseMessage, path));
+
+                    return;
+                }
+
+                result.setResult((String) dialog.getResult()[0]);
+            }
+        });
+
+        return result.getResult();
     }
 
     private static void setItalicFont(Display display, Control control)

@@ -202,22 +202,20 @@ public class JettyLaunchConfigurationAdapter
 
         if (webAppPath == null)
         {
-            IResource webXMLResource = null;
-
             try
             {
-                webXMLResource = JettyLaunchUtils.findWebXML(project);
+                List<IResource> path = JettyLaunchUtils.findWebXMLs(project, 1);
+
+                if (path.size() > 0)
+                {
+                    IPath webAppResource = path.get(0).getFullPath().removeLastSegments(2);
+
+                    webAppPath = JettyPluginUtils.resolveFolder(project, webAppResource.toString());
+                }
             }
             catch (CoreException e)
             {
                 // ignore
-            }
-
-            if (webXMLResource != null)
-            {
-                IPath webAppResource = webXMLResource.getFullPath().removeLastSegments(2);
-
-                webAppPath = JettyPluginUtils.resolveFolder(project, webAppResource.toString());
             }
         }
 

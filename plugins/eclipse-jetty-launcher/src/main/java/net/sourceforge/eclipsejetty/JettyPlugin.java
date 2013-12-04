@@ -44,6 +44,7 @@ public class JettyPlugin extends AbstractUIPlugin
     public static final String REMOVE_CONTEXT_ICON = PLUGIN_ID + ".removeContext";
     public static final String MOVE_UP_CONTEXT_ICON = PLUGIN_ID + ".moveUpContext";
     public static final String MOVE_DOWN_CONTEXT_ICON = PLUGIN_ID + ".moveDownContext";
+    public static final String FOLDER_ICON = PLUGIN_ID + ".folder";
 
     public static final String DEPENDENCY_OTHER = PLUGIN_ID + ".dependencyOther";
     public static final String DEPENDENCY_JAR = PLUGIN_ID + ".dependencyJar";
@@ -120,6 +121,7 @@ public class JettyPlugin extends AbstractUIPlugin
         initializeImageRegistry(reg, REMOVE_CONTEXT_ICON, "/icons/remove_context.gif");
         initializeImageRegistry(reg, MOVE_UP_CONTEXT_ICON, "/icons/move_up_context.gif");
         initializeImageRegistry(reg, MOVE_DOWN_CONTEXT_ICON, "/icons/move_down_context.gif");
+        initializeImageRegistry(reg, FOLDER_ICON, "/icons/folder.gif");
 
         initializeImageRegistry(reg, DEPENDENCY_OTHER, "/icons/dependency-other.gif");
         initializeImageRegistry(reg, DEPENDENCY_JAR, "/icons/dependency-jar.gif");

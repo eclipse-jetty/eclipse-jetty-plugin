@@ -56,7 +56,7 @@ public class JettyLaunchPossiblePropertiesTester extends PropertyTester
 
         try
         {
-            return JettyLaunchUtils.findWebXML(project) != null;
+            return JettyLaunchUtils.findWebXMLs(project, 1).size() > 0;
         }
         catch (CoreException e)
         {
