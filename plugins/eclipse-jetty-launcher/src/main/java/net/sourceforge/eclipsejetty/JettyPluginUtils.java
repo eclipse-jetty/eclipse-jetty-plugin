@@ -634,7 +634,7 @@ public class JettyPluginUtils
 
             if (location != null)
             {
-                resource = resource.makeRelativeTo(location);
+                return resource.makeRelativeTo(location).toString();
             }
         }
 
