@@ -9,15 +9,19 @@
 	</properties>
 
 	<body>
-		<release version="3.7.0">
+		<release version="3.7.0" date="2014-05-03">
+			<action dev="ckoeberl" type="fix" issue="17">
+				Fixed relative path extraction for webapp path and context file location.
+			</action>
+
 			<action dev="thred" type="add">
 				Added selection dialog, if multiple Web App directories were found.
 			</action>
-			
+
 			<action dev="thred" type="add">
 				Added option for graceful shutdown.
 			</action>
-			
+
 			<action dev="thred" type="fix">
 				Fixed some minor UI glitches (table not scaling, max width,...). Beautified it a here and there. If it isn't the best launcher, it should be the best looking one ;)
 			</action>
