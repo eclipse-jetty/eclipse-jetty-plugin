@@ -5,7 +5,7 @@
 	<artifactId>parent</artifactId>
 	<packaging>pom</packaging>
 	<name>Eclipse Jetty Integration</name>
-	<version>3.7.0</version>
+	<version>3.8.0-SNAPSHOT</version>
 	<description>Provides integration for Jetty server as launch configurations in Eclipse.</description>
 	<url>http://eclipse-jetty.sourceforge.net/</url>
 	<inceptionYear>2009</inceptionYear>
