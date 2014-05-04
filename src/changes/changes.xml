@@ -10,6 +10,10 @@
 
 	<body>
 		<release version="3.7.0" date="2014-05-03">
+			<action dev="thred" type="fix" issue="15">
+				Now WebApp without web.xml can be used (Jetty 9 recommended).
+			</action>
+			
 			<action dev="ckoeberl" type="fix" issue="17">
 				Fixed relative path extraction for webapp path and context file location.
 			</action>

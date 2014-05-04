@@ -32,3 +32,7 @@ FAQ
  Are you using a JNDI datasource? You may then need to load the database driver with the System classloader by checking the "Global" checkbox
  for the dependency. 
  
+ <<My Servlet 2.5 Annotations do not work!>>
+ 
+ First of all you need to enable <<JNDI and Annotations Support>> in the <<Options>> tab and next you have to make sure, that you are using
+ Jetty 9 (highly recommendet) or prior to that, a Jetty Hightide dirstibution (you can find one on the {{{http://dist.codehaus.org/jetty/}Codehaus Site}}).  

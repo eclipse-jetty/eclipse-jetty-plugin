@@ -14,9 +14,6 @@ package net.sourceforge.eclipsejetty.jetty;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
-
-import net.sourceforge.eclipsejetty.util.DOMBuilder;
 
 /**
  * Abstract builder for a Jetty configuration
@@ -28,8 +25,13 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     private final Collection<String> defaultClasspath;
 
-    private boolean jndi = false;
-    private boolean jmx = false;
+    private Integer majorVersion;
+    private Integer minorVersion;
+    private Integer microVersion;
+
+    private boolean annotationsEnabled = false;
+    private boolean jndiEnabled = false;
+    private boolean jmxEnabled = false;
     private Integer port;
     private Integer sslPort;
     private Integer gracefulShutdown;
@@ -51,24 +53,74 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         defaultClasspath = new LinkedHashSet<String>();
     }
 
+    public Integer getMajorVersion()
+    {
+        return majorVersion;
+    }
+
+    public void setMajorVersion(Integer majorVersion)
+    {
+        this.majorVersion = majorVersion;
+    }
+
+    public Integer getMinorVersion()
+    {
+        return minorVersion;
+    }
+
+    public void setMinorVersion(Integer minorVersion)
+    {
+        this.minorVersion = minorVersion;
+    }
+
+    public Integer getMicroVersion()
+    {
+        return microVersion;
+    }
+
+    public void setMicroVersion(Integer microVersion)
+    {
+        this.microVersion = microVersion;
+    }
+
+    /**
+     * Returns true if Annotations support is enabled.
+     * 
+     * @return true if Annotations support is enabled
+     */
+    public boolean isAnnotationsEnabled()
+    {
+        return annotationsEnabled || jndiEnabled;
+    }
+
+    /**
+     * Set to true if Annotations support is enabled.
+     * 
+     * @param annotationsEnabled true if Annotations support is enabled
+     */
+    public void setAnnotationsEnabled(boolean annotationsEnabled)
+    {
+        this.annotationsEnabled = annotationsEnabled;
+    }
+
     /**
      * Returns true if JNDI support is enabled.
      * 
      * @return true if JNDI support is enabled
      */
-    public boolean isJndi()
+    public boolean isJndiEnabled()
     {
-        return jndi;
+        return jndiEnabled;
     }
 
     /**
-     * Toggles the JNDI support
+     * Toggles the JNDI support.
      * 
-     * @param jndi true to enable JNDI
+     * @param jndiEnabled true to enable JNDI
      */
-    public void setJndi(boolean jndi)
+    public void setJndiEnabled(boolean jndiEnabled)
     {
-        this.jndi = jndi;
+        this.jndiEnabled = jndiEnabled;
     }
 
     /**
@@ -76,23 +128,23 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
      * 
      * @return true if JMX support is enabled
      */
-    public boolean isJmx()
+    public boolean isJmxEnabled()
     {
-        return jmx;
+        return jmxEnabled;
     }
 
     /**
-     * Toggles the JMX support
+     * Toggles the JMX support.
      * 
-     * @param jmx true to enable JMX
+     * @param jmxEnabled true to enable JMX
      */
-    public void setJmx(boolean jmx)
+    public void setJmxEnabled(boolean jmxEnabled)
     {
-        this.jmx = jmx;
+        this.jmxEnabled = jmxEnabled;
     }
 
     /**
-     * Returns the (HTTP) port
+     * Returns the (HTTP) port.
      * 
      * @return the port
      */
@@ -102,7 +154,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the (HTTP) port, null to disable
+     * Sets the (HTTP) port, null to disable.
      * 
      * @param port the port
      */
@@ -112,7 +164,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the HTTPs port
+     * Returns the HTTPs port.
      * 
      * @return the HTTPs port
      */
@@ -143,7 +195,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the graceful shutdown timeout (in milliseconds)
+     * Sets the graceful shutdown timeout (in milliseconds).
      * 
      * @param gracefulShutdown the graceful shutdown timeout (in milliseconds)
      */
@@ -153,7 +205,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the thread pool limit
+     * Returns the thread pool limit.
      * 
      * @return the thread pool limit
      */
@@ -163,7 +215,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the thread pool limit, null to disable
+     * Sets the thread pool limit, null to disable.
      * 
      * @param threadPoolLimit the thread pool limit
      */
@@ -173,7 +225,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the acceptor limit
+     * Returns the acceptor limit.
      * 
      * @return the acceptor limit
      */
@@ -183,7 +235,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the acceptor limit, null to disable
+     * Sets the acceptor limit, null to disable.
      * 
      * @param acceptorLimit the acceptor limit
      */
@@ -193,7 +245,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the key store path
+     * Returns the key store path.
      * 
      * @return the key store path
      */
@@ -203,7 +255,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the key store path
+     * Sets the key store path.
      * 
      * @param keyStorePath the key store path
      */
@@ -213,7 +265,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the key store password
+     * Returns the key store password.
      * 
      * @return the key store password
      */
@@ -223,7 +275,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the key store password
+     * Sets the key store password.
      * 
      * @param keyStorePassword the key store password
      */
@@ -233,7 +285,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the key manager password
+     * Returns the key manager password.
      * 
      * @return the key manager password
      */
@@ -243,7 +295,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Set the key manager password
+     * Set the key manager password.
      * 
      * @param keyManagerPassword the key manager password
      */
@@ -253,7 +305,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the path to the webapp directory
+     * Returns the path to the webapp directory.
      * 
      * @return the path to the webapp directory
      */
@@ -263,7 +315,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the path to the webapp directory
+     * Sets the path to the webapp directory.
      * 
      * @param defaultWar the path to the webapp directory
      */
@@ -273,7 +325,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the context path
+     * Returns the context path.
      * 
      * @return the context path
      */
@@ -283,7 +335,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the context path
+     * Sets the context path.
      * 
      * @param defaultContextPath the context path
      */
@@ -293,7 +345,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the path to the custom web defaults file
+     * Returns the path to the custom web defaults file.
      * 
      * @return the path to the custom web defaults file
      */
@@ -303,7 +355,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the path to the custom web defaults file
+     * Sets the path to the custom web defaults file.
      * 
      * @param customWebDefaultsFile the path to the custom web defaults file
      */
@@ -313,7 +365,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Returns the classpath of the web application
+     * Returns the classpath of the web application.
      * 
      * @return the classpath of the web application
      */
@@ -323,7 +375,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     }
 
     /**
-     * Sets the classpath of the web application
+     * Sets the classpath of the web application.
      * 
      * @param classpaths the classpath of the web application
      */
@@ -352,7 +404,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
      * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#buildContent(net.sourceforge.eclipsejetty.util.DOMBuilder)
      */
     @Override
-    protected void buildContent(DOMBuilder builder)
+    protected void buildContent(JettyConfigBuilder builder)
     {
         buildThreadPool(builder);
         buildHttpConfig(builder);
@@ -360,6 +412,8 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         buildHttpsConfig(builder);
         buildHttpsConnector(builder);
         buildHandler(builder);
+        buildAnnotations(builder);
+        buildJNDI(builder);
         buildJMX(builder);
         buildExtraOptions(builder);
 
@@ -370,82 +424,42 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
      * 
      * @param builder the builder
      */
-    protected abstract void buildThreadPool(DOMBuilder builder);
+    protected abstract void buildThreadPool(JettyConfigBuilder builder);
 
     /**
      * Builds the HTTP config part.
      * 
      * @param builder the builder
      */
-    protected abstract void buildHttpConfig(DOMBuilder builder);
-
-    /**
-     * Builds the HTTPS config part.
-     * 
-     * @param builder the builder
-     */
-    protected abstract void buildHttpsConfig(DOMBuilder builder);
-
-    /**
-     * Builds the JNDI part, if enabled.
-     * 
-     * @param builder the builder
-     */
-    protected void buildJNDI(DOMBuilder builder)
-    {
-        if (isJndi())
-        {
-            builder.begin("Array").attribute("id", "plusConfig").attribute("type", "String");
-            {
-                for (String item : getJNDIItems())
-                {
-                    builder.element("Item", item);
-                }
-            }
-            builder.end();
-
-            builder.begin("Set").attribute("name", "configurationClasses");
-            {
-                builder.element("Ref", "id", "plusConfig");
-            }
-            builder.end();
-        }
-    }
-
-    /**
-     * Returns the list of JNDI items as required by the defined Jetty.
-     * 
-     * @return the list of JNDI items as required by the defined Jetty
-     */
-    protected abstract List<String> getJNDIItems();
-
-    /**
-     * Builds the JMX part, if enabled.
-     * 
-     * @param builder the builder
-     */
-    protected abstract void buildJMX(DOMBuilder builder);
+    protected abstract void buildHttpConfig(JettyConfigBuilder builder);
 
     /**
      * Builds the HTTP connector part.
      * 
      * @param builder the builder
      */
-    protected abstract void buildHttpConnector(DOMBuilder builder);
+    protected abstract void buildHttpConnector(JettyConfigBuilder builder);
 
     /**
-     * Builds the HTTPs connector part, if enabled
+     * Builds the HTTPS config part.
      * 
      * @param builder the builder
      */
-    protected abstract void buildHttpsConnector(DOMBuilder builder);
+    protected abstract void buildHttpsConfig(JettyConfigBuilder builder);
+
+    /**
+     * Builds the HTTPs connector part, if enabled.
+     * 
+     * @param builder the builder
+     */
+    protected abstract void buildHttpsConnector(JettyConfigBuilder builder);
 
     /**
      * Builds the handler part.
      * 
      * @param builder the builder
      */
-    protected void buildHandler(DOMBuilder builder)
+    protected void buildHandler(JettyConfigBuilder builder)
     {
         buildDefaultHandler(builder);
     }
@@ -455,21 +469,31 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
      * 
      * @param builder the builder
      */
-    protected void buildDefaultHandler(DOMBuilder builder)
+    protected void buildDefaultHandler(JettyConfigBuilder builder)
     {
-        builder.begin("Set").attribute("name", "handler");
+        builder.comment("Handler");
+
+        builder.beginSet("handler");
         {
-            builder.begin("New").attribute("class", getDefaultHandlerClass());
+            builder.beginNew(getDefaultHandlerClass());
             {
-                builder.element("Arg", "type", "String", getDefaultWar());
-                builder.element("Arg", "type", "String", getDefaultContextPath());
+                builder.arg(getDefaultWar().getAbsolutePath());
+                builder.arg(getDefaultContextPath());
 
                 if (getCustomWebDefaultsFile() != null)
                 {
-                    builder.element("Set", "name", "defaultsDescriptor", getCustomWebDefaultsFile().getAbsolutePath());
+                    builder.set("defaultsDescriptor", getCustomWebDefaultsFile().getAbsolutePath());
                 }
 
-                buildJNDI(builder);
+                Collection<String> configurations = new LinkedHashSet<String>();
+
+                collectDefaultHandlerConfigurations(configurations);
+
+                if (configurations.size() > 0)
+                {
+                    builder.setArray("configurationClasses", configurations.toArray());
+                }
+
                 buildDefaultHandlerSetters(builder);
             }
             builder.end();
@@ -485,20 +509,48 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     protected abstract String getDefaultHandlerClass();
 
     /**
-     * Builds additional handler setters
+     * Builds additional handler setters.
      * 
      * @param builder the builder
      */
-    protected void buildDefaultHandlerSetters(DOMBuilder builder)
+    protected void buildDefaultHandlerSetters(JettyConfigBuilder builder)
     {
-        builder.element("Set", "name", "extraClasspath", link(defaultClasspath));
+        builder.set("extraClasspath", link(defaultClasspath));
     }
+
+    /**
+     * Collect all configurations for the handler
+     * 
+     * @param configurations the configurations
+     */
+    protected abstract void collectDefaultHandlerConfigurations(Collection<String> configurations);
+
+    /**
+     * Builds the Annotations part, if needed.
+     * 
+     * @param builder the builder
+     */
+    protected abstract void buildAnnotations(JettyConfigBuilder builder);
+
+    /**
+     * Builds the JNDI part, if enabled.
+     * 
+     * @param builder the builder
+     */
+    protected abstract void buildJNDI(JettyConfigBuilder builder);
+
+    /**
+     * Builds the JMX part, if enabled.
+     * 
+     * @param builder the builder
+     */
+    protected abstract void buildJMX(JettyConfigBuilder builder);
 
     /**
      * Builds extra options.
      * 
      * @param builder the builder
      */
-    protected abstract void buildExtraOptions(DOMBuilder builder);
+    protected abstract void buildExtraOptions(JettyConfigBuilder builder);
 
 }

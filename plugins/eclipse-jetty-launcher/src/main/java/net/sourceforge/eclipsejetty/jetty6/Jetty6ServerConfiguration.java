@@ -11,11 +11,11 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty6;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
-import net.sourceforge.eclipsejetty.util.DOMBuilder;
+import net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder;
+import net.sourceforge.eclipsejetty.jetty.JettyVersionType;
 
 /**
  * Configuration for Jetty 6
@@ -33,6 +33,17 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     /**
      * {@inheritDoc}
      * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getJettyVersionType()
+     */
+    @Override
+    protected JettyVersionType getJettyVersionType()
+    {
+        return JettyVersionType.JETTY_6;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
      * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getDocType()
      */
     @Override
@@ -45,23 +56,28 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildThreadPool(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildThreadPool(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override
-    protected void buildThreadPool(DOMBuilder builder)
+    protected void buildThreadPool(JettyConfigBuilder builder)
     {
-        builder.begin("Set").attribute("name", "ThreadPool");
+        builder.comment("Thread Pool");
+
+        builder.beginSet("ThreadPool");
         {
-            builder.begin("New").attribute("class", "org.mortbay.thread.QueuedThreadPool");
+            builder.beginNew("org.mortbay.thread.QueuedThreadPool");
             {
-                builder.element("Set", "name", "minThreads", 1);
+                builder.set("minThreads", 1);
 
                 Integer connectionLimit = getThreadPoolLimit();
 
                 if (connectionLimit != null)
                 {
-                    builder.element("Set", "name", "maxThreads", connectionLimit);
+                    builder.set("maxThreads", connectionLimit);
                 }
+
+                builder.set("lowThreads", 1);
+
             }
             builder.end();
         }
@@ -71,10 +87,10 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConfig(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConfig(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override
-    protected void buildHttpConfig(DOMBuilder builder)
+    protected void buildHttpConfig(JettyConfigBuilder builder)
     {
         // nothing to do
     }
@@ -82,58 +98,176 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConfig(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConnector(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override
-    protected void buildHttpsConfig(DOMBuilder builder)
+    protected void buildHttpConnector(JettyConfigBuilder builder)
     {
-        // nothing to do
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#getJNDIItems()
-     */
-    @Override
-    protected List<String> getJNDIItems()
-    {
-        return Arrays.asList("org.mortbay.jetty.webapp.WebInfConfiguration",
-            "org.mortbay.jetty.plus.webapp.EnvConfiguration", "org.mortbay.jetty.plus.webapp.Configuration",
-            "org.mortbay.jetty.webapp.JettyWebXmlConfiguration", "org.mortbay.jetty.webapp.TagLibConfiguration");
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildJMX(net.sourceforge.eclipsejetty.util.DOMBuilder)
-     */
-    @Override
-    protected void buildJMX(DOMBuilder builder)
-    {
-        if (isJmx())
+        if (getPort() == null)
         {
-            builder.begin("Call").attribute("id", "MBeanServer")
-                .attribute("class", "java.lang.management.ManagementFactory")
-                .attribute("name", "getPlatformMBeanServer").end();
+            return;
+        }
 
-            builder.begin("Get").attribute("id", "Container").attribute("name", "container");
+        builder.comment("HTTP Connector");
+
+        builder.beginCall("addConnector");
+        {
+            builder.beginArg();
             {
-                builder.begin("Call").attribute("name", "addEventListener");
+                builder.beginNew("org.mortbay.jetty.nio.SelectChannelConnector");
                 {
-                    builder.begin("Arg");
-                    {
-                        builder.begin("New").attribute("class", "org.mortbay.management.MBeanContainer");
-                        {
-                            builder.begin("Arg");
-                            {
-                                builder.element("Ref", "id", "MBeanServer");
-                            }
-                            builder.end();
+                    builder.set("port", getPort());
+                    builder.set("maxIdleTime", 30000);
 
-                            builder.element("Call", "name", "start");
-                        }
-                        builder.end();
+                    if (getAcceptorLimit() != null)
+                    {
+                        builder.set("Acceptors", getAcceptorLimit());
+                    }
+
+                    builder.set("statsOn", false);
+
+                    if (getSslPort() != null)
+                    {
+                        builder.set("confidentialPort", getSslPort());
+                    }
+
+                    builder.set("lowResourcesConnections", 5000);
+                    builder.set("lowResourcesMaxIdleTime", 5000);
+                }
+                builder.end();
+            }
+            builder.end();
+        }
+        builder.end();
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConfig(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildHttpsConfig(JettyConfigBuilder builder)
+    {
+        // nothing to do
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConnector(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildHttpsConnector(JettyConfigBuilder builder)
+    {
+        if (getSslPort() == null)
+        {
+            return;
+        }
+
+        builder.comment("HTTPs Connector");
+
+        builder.beginCall("addConnector");
+        {
+            builder.beginArg();
+            {
+                builder.beginNew("org.mortbay.jetty.security.SslSocketConnector");
+                {
+                    builder.set("Port", getSslPort());
+                    builder.set("maxIdleTime", 30000);
+
+                    if (getAcceptorLimit() != null)
+                    {
+                        builder.set("Acceptors", getAcceptorLimit());
+                    }
+
+                    builder.set("handshakeTimeout", 2000);
+                    builder.set("keystore", getKeyStorePath());
+                    builder.set("password", getKeyStorePassword());
+                    builder.set("keyPassword", getKeyManagerPassword());
+                    builder.set("truststore", getKeyStorePath());
+                    builder.set("trustPassword", getKeyStorePassword());
+                }
+                builder.end();
+            }
+            builder.end();
+        }
+        builder.end();
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#getDefaultHandlerClass()
+     */
+    @Override
+    protected String getDefaultHandlerClass()
+    {
+        return "org.mortbay.jetty.webapp.WebAppContext";
+    }
+
+    @Override
+    protected void collectDefaultHandlerConfigurations(Collection<String> configurations)
+    {
+        if (isJndiEnabled())
+        {
+            configurations.add("org.mortbay.jetty.webapp.WebInfConfiguration");
+            configurations.add("org.mortbay.jetty.plus.webapp.EnvConfiguration");
+            configurations.add("org.mortbay.jetty.plus.webapp.Configuration");
+            configurations.add("org.mortbay.jetty.webapp.JettyWebXmlConfiguration");
+            configurations.add("org.mortbay.jetty.webapp.TagLibConfiguration");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildAnnotations(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildAnnotations(JettyConfigBuilder builder)
+    {
+        // intentionally left blank
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildJNDI(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildJNDI(JettyConfigBuilder builder)
+    {
+        // intentionally left blank
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildJMX(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildJMX(JettyConfigBuilder builder)
+    {
+        if (!isJmxEnabled())
+        {
+            return;
+        }
+
+        builder.comment("JMX");
+
+        builder.call("MBeanServer", "java.lang.management.ManagementFactory", "getPlatformMBeanServer");
+
+        builder.beginGet("Container", "container");
+        {
+            builder.beginCall("addEventListener");
+            {
+                builder.beginArg();
+                {
+                    builder.beginNew("org.mortbay.management.MBeanContainer");
+                    {
+                        builder.argRef("MBeanServer");
+                        builder.call("start");
                     }
                     builder.end();
                 }
@@ -141,6 +275,7 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
             }
             builder.end();
         }
+        builder.end();
     }
 
     /**
@@ -157,105 +292,22 @@ public class Jetty6ServerConfiguration extends AbstractServerConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConnector(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildExtraOptions(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override
-    protected void buildHttpConnector(DOMBuilder builder)
+    protected void buildExtraOptions(JettyConfigBuilder builder)
     {
-        if (getPort() != null)
-        {
-            builder.begin("Call").attribute("name", "addConnector");
-            {
-                builder.begin("Arg");
-                {
-                    builder.begin("New").attribute("class", "org.mortbay.jetty.nio.SelectChannelConnector");
-                    {
-                        builder.element("Set", "name", "port", getPort());
-                        builder.element("Set", "name", "maxIdleTime", 30000);
+        builder.comment("Extra Options");
 
-                        if (getAcceptorLimit() != null)
-                        {
-                            builder.element("Set", "name", "Acceptors", getAcceptorLimit());
-                        }
-
-                        builder.element("Set", "name", "statsOn", false);
-                    }
-                    builder.end();
-                }
-                builder.end();
-            }
-            builder.end();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConnector(net.sourceforge.eclipsejetty.util.DOMBuilder)
-     */
-    @Override
-    protected void buildHttpsConnector(DOMBuilder builder)
-    {
-        if (getSslPort() != null)
-        {
-            builder.begin("Call").attribute("name", "addConnector");
-            {
-                builder.begin("Arg");
-                {
-                    builder.begin("New").attribute("class", "org.mortbay.jetty.security.SslSocketConnector");
-                    {
-                        builder.element("Set", "name", "Port", getSslPort());
-                        builder.element("Set", "name", "maxIdleTime", 30000);
-
-                        if (getAcceptorLimit() != null)
-                        {
-                            builder.element("Set", "name", "Acceptors", getAcceptorLimit());
-                        }
-
-                        builder.element("Set", "name", "handshakeTimeout", 2000);
-                        builder.element("Set", "name", "keystore", getKeyStorePath());
-                        builder.element("Set", "name", "password", getKeyStorePassword());
-                        builder.element("Set", "name", "keyPassword", getKeyManagerPassword());
-                        builder.element("Set", "name", "truststore", getKeyStorePath());
-                        builder.element("Set", "name", "trustPassword", getKeyStorePassword());
-                    }
-                    builder.end();
-                }
-                builder.end();
-            }
-            builder.end();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#getDefaultHandlerClass()
-     */
-    @Override
-    protected String getDefaultHandlerClass()
-    {
-        return "org.mortbay.jetty.webapp.WebAppContext";
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildExtraOptions(net.sourceforge.eclipsejetty.util.DOMBuilder)
-     */
-    @Override
-    protected void buildExtraOptions(DOMBuilder builder)
-    {
-        builder.element("Set", "name", "stopAtShutdown", true);
-        builder.element("Set", "name", "sendServerVersion", true);
-        builder.element("Set", "name", "sendDateHeader", true);
+        builder.set("stopAtShutdown", true);
+        builder.set("sendServerVersion", true);
+        builder.set("sendDateHeader", true);
 
         Integer gracefulShutdown = getGracefulShutdown();
 
         if (gracefulShutdown != null)
         {
-            builder.element("Set", "name", "gracefulShutdown", gracefulShutdown);
+            builder.set("gracefulShutdown", gracefulShutdown);
         }
     }
-
 }

@@ -11,11 +11,11 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty7;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
-import net.sourceforge.eclipsejetty.util.DOMBuilder;
+import net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder;
+import net.sourceforge.eclipsejetty.jetty.JettyVersionType;
 
 public class Jetty7ServerConfiguration extends AbstractServerConfiguration
 {
@@ -23,6 +23,17 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     public Jetty7ServerConfiguration()
     {
         super();
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getJettyVersionType()
+     */
+    @Override
+    protected JettyVersionType getJettyVersionType()
+    {
+        return JettyVersionType.JETTY_7;
     }
 
     /**
@@ -40,23 +51,27 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildThreadPool(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildThreadPool(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override
-    protected void buildThreadPool(DOMBuilder builder)
+    protected void buildThreadPool(JettyConfigBuilder builder)
     {
-        builder.begin("Set").attribute("name", "ThreadPool");
+        builder.comment("Thread Pool");
+
+        builder.beginSet("ThreadPool");
         {
-            builder.begin("New").attribute("class", "org.eclipse.jetty.util.thread.QueuedThreadPool");
+            builder.beginNew("org.eclipse.jetty.util.thread.QueuedThreadPool");
             {
-                builder.element("Set", "name", "minThreads", 1);
+                builder.set("minThreads", 1);
+
                 Integer connectionLimit = getThreadPoolLimit();
 
                 if (connectionLimit != null)
                 {
-                    builder.element("Set", "name", "maxThreads", connectionLimit);
+                    builder.set("maxThreads", connectionLimit);
                 }
-                builder.element("Set", "name", "detailedDump", false);
+
+                builder.set("detailedDump", false);
             }
             builder.end();
         }
@@ -66,10 +81,10 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConfig(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConfig(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override
-    protected void buildHttpConfig(DOMBuilder builder)
+    protected void buildHttpConfig(JettyConfigBuilder builder)
     {
         // nothing to do
     }
@@ -77,195 +92,112 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConfig(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConnector(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override
-    protected void buildHttpsConfig(DOMBuilder builder)
+    protected void buildHttpConnector(JettyConfigBuilder builder)
     {
-        if (getSslPort() != null)
+        if (getPort() == null)
         {
-            builder.begin("New").attribute("id", "sslContextFactory")
-                .attribute("class", "org.eclipse.jetty.http.ssl.SslContextFactory");
-            {
-                builder.element("Set", "name", "KeyStore", getKeyStorePath());
-                builder.element("Set", "name", "KeyStorePassword", getKeyStorePassword());
-                builder.element("Set", "name", "KeyManagerPassword", getKeyManagerPassword());
-                builder.element("Set", "name", "TrustStore", getKeyStorePath());
-                builder.element("Set", "name", "TrustStorePassword", getKeyStorePassword());
-            }
-            builder.end();
+            return;
         }
-    }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#getJNDIItems()
-     */
-    @Override
-    protected List<String> getJNDIItems()
-    {
-        return Arrays.asList("org.eclipse.jetty.webapp.WebInfConfiguration",
-            "org.eclipse.jetty.webapp.WebXmlConfiguration", "org.eclipse.jetty.webapp.MetaInfConfiguration",
-            "org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration",
-            "org.eclipse.jetty.plus.webapp.PlusConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration",
-            "org.eclipse.jetty.webapp.JettyWebXmlConfiguration", "org.eclipse.jetty.webapp.TagLibConfiguration");
-    }
+        builder.comment("HTTP Connector");
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildJMX(net.sourceforge.eclipsejetty.util.DOMBuilder)
-     */
-    @Override
-    protected void buildJMX(DOMBuilder builder)
-    {
-        if (isJmx())
+        builder.beginCall("addConnector");
         {
-            builder.begin("Call").attribute("id", "MBeanServer")
-                .attribute("class", "java.lang.management.ManagementFactory")
-                .attribute("name", "getPlatformMBeanServer").end();
-
-            builder.begin("New").attribute("id", "MBeanContainer")
-                .attribute("class", "org.eclipse.jetty.jmx.MBeanContainer");
+            builder.beginArg();
             {
-                builder.begin("Arg");
+                builder.beginNew("org.eclipse.jetty.server.nio.SelectChannelConnector");
                 {
-                    builder.element("Ref", "id", "MBeanServer");
-                }
-                builder.end();
+                    builder.set("port", getPort());
+                    builder.set("maxIdleTime", 300000);
 
-                builder.element("Call", "name", "start");
-            }
-            builder.end();
-
-            builder.begin("Get").attribute("id", "Container").attribute("name", "container");
-            {
-                builder.begin("Call").attribute("name", "addEventListener");
-                {
-                    builder.begin("Arg");
+                    if (getAcceptorLimit() != null)
                     {
-                        builder.element("Ref", "id", "MBeanContainer");
+                        builder.set("Acceptors", getAcceptorLimit());
                     }
-                    builder.end();
-                }
-                builder.end();
-            }
-            builder.end();
 
-            builder.begin("Call").attribute("name", "addBean");
-            {
-                builder.begin("Arg");
-                {
-                    builder.element("Ref", "id", "MBeanContainer");
-                }
-                builder.end();
+                    builder.set("statsOn", false);
 
-                builder.element("Arg", "type", "boolean", true);
-            }
-            builder.end();
-
-            builder.begin("Ref").attribute("id", "MBeanContainer");
-            {
-                builder.begin("Call").attribute("name", "addBean");
-                {
-                    builder.begin("Arg");
+                    if (getSslPort() != null)
                     {
-                        builder.element("New", "class", "org.eclipse.jetty.util.log.Log");
+                        builder.set("confidentialPort", getSslPort());
                     }
-                    builder.end();
+
+                    builder.set("lowResourcesConnections", 5000);
+                    builder.set("lowResourcesMaxIdleTime", 5000);
                 }
                 builder.end();
             }
             builder.end();
         }
+        builder.end();
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getClassToConfigure()
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConfig(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override
-    protected String getClassToConfigure()
+    protected void buildHttpsConfig(JettyConfigBuilder builder)
     {
-        return "org.eclipse.jetty.server.Server";
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpConnector(net.sourceforge.eclipsejetty.util.DOMBuilder)
-     */
-    @Override
-    protected void buildHttpConnector(DOMBuilder builder)
-    {
-        if (getPort() != null)
+        if (getSslPort() == null)
         {
-            builder.begin("Call").attribute("name", "addConnector");
+            return;
+        }
+
+        builder.comment("HTTPs Config");
+
+        builder.beginNew("sslContextFactory", "org.eclipse.jetty.http.ssl.SslContextFactory");
+        {
+            builder.set("KeyStore", getKeyStorePath());
+            builder.set("KeyStorePassword", getKeyStorePassword());
+            builder.set("KeyManagerPassword", getKeyManagerPassword());
+            builder.set("TrustStore", getKeyStorePath());
+            builder.set("TrustStorePassword", getKeyStorePassword());
+        }
+        builder.end();
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConnector(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildHttpsConnector(JettyConfigBuilder builder)
+    {
+        if (getSslPort() == null)
+        {
+            return;
+        }
+
+        builder.comment("HTTPs Connector");
+
+        builder.beginCall("addConnector");
+        {
+            builder.beginArg();
             {
-                builder.begin("Arg");
+                builder.beginNew("org.eclipse.jetty.server.ssl.SslSelectChannelConnector");
                 {
-                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.nio.SelectChannelConnector");
-                    //                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.bio.SocketConnector");
+                    builder.argRef("sslContextFactory");
+                    builder.set("Port", getSslPort());
+                    builder.set("maxIdleTime", 30000);
+
+                    if (getAcceptorLimit() != null)
                     {
-                        builder.element("Set", "name", "port", getPort());
-                        builder.element("Set", "name", "maxIdleTime", 30000);
-
-                        if (getAcceptorLimit() != null)
-                        {
-                            builder.element("Set", "name", "Acceptors", getAcceptorLimit());
-                        }
-
-                        builder.element("Set", "name", "statsOn", false);
-
+                        builder.set("Acceptors", getAcceptorLimit());
                     }
-                    builder.end();
+
+                    builder.set("AcceptQueueSize", 100);
                 }
                 builder.end();
             }
             builder.end();
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildHttpsConnector(net.sourceforge.eclipsejetty.util.DOMBuilder)
-     */
-    @Override
-    protected void buildHttpsConnector(DOMBuilder builder)
-    {
-        if (getSslPort() != null)
-        {
-            builder.begin("Call").attribute("name", "addConnector");
-            {
-                builder.begin("Arg");
-                {
-                    //                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.ssl.SslSocketConnector");
-                    builder.begin("New").attribute("class", "org.eclipse.jetty.server.ssl.SslSelectChannelConnector");
-                    {
-                        builder.begin("Arg");
-                        {
-                            builder.element("Ref", "id", "sslContextFactory");
-                        }
-                        builder.end();
-                        builder.element("Set", "name", "Port", getSslPort());
-                        builder.element("Set", "name", "maxIdleTime", 30000);
-
-                        if (getAcceptorLimit() != null)
-                        {
-                            builder.element("Set", "name", "Acceptors", getAcceptorLimit());
-                        }
-
-                        builder.element("Set", "name", "AcceptQueueSize", 100);
-                    }
-                    builder.end();
-                }
-                builder.end();
-            }
-            builder.end();
-        }
+        builder.end();
     }
 
     /**
@@ -282,24 +214,147 @@ public class Jetty7ServerConfiguration extends AbstractServerConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildExtraOptions(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#collectDefaultHandlerConfigurations(java.util.Collection)
      */
     @Override
-    protected void buildExtraOptions(DOMBuilder builder)
+    protected void collectDefaultHandlerConfigurations(Collection<String> configurations)
     {
-        builder.element("Set", "name", "stopAtShutdown", true);
-        builder.element("Set", "name", "sendServerVersion", true);
-        builder.element("Set", "name", "sendDateHeader", true);
+        if (isAnnotationsEnabled())
+        {
+            configurations.add("org.eclipse.jetty.webapp.WebInfConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.WebXmlConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.MetaInfConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.FragmentConfiguration");
+            configurations.add("org.eclipse.jetty.annotations.AnnotationConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
+        }
+
+        if (isJndiEnabled())
+        {
+            configurations.add("org.eclipse.jetty.webapp.WebInfConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.WebXmlConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.MetaInfConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.FragmentConfiguration");
+            configurations.add("org.eclipse.jetty.plus.webapp.EnvConfiguration");
+            configurations.add("org.eclipse.jetty.plus.webapp.PlusConfiguration");
+            configurations.add("org.eclipse.jetty.annotations.AnnotationConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.TagLibConfiguration");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildAnnotations(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildAnnotations(JettyConfigBuilder builder)
+    {
+        // intentionally left blank
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildJNDI(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildJNDI(JettyConfigBuilder builder)
+    {
+        // intentionally left blank
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildJMX(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildJMX(JettyConfigBuilder builder)
+    {
+        if (!isJmxEnabled())
+        {
+            return;
+        }
+
+        builder.comment("JMX");
+
+        builder.call("MBeanServer", "java.lang.management.ManagementFactory", "getPlatformMBeanServer");
+
+        builder.beginNew("MBeanContainer", "org.eclipse.jetty.jmx.MBeanContainer");
+        {
+            builder.argRef("MBeanServer");
+            builder.call("start");
+        }
+        builder.end();
+
+        builder.beginGet("Container", "container");
+        {
+            builder.beginCall("addEventListener");
+            {
+                builder.argRef("MBeanContainer");
+            }
+            builder.end();
+        }
+        builder.end();
+
+        builder.beginCall("addBean");
+        {
+            builder.argRef("MBeanContainer");
+            builder.arg(true);
+        }
+        builder.end();
+
+        builder.beginRef("MBeanContainer");
+        {
+            builder.beginCall("addBean");
+            {
+                builder.beginArg();
+                {
+                    builder.beginNew("org.eclipse.jetty.util.log.Log").end();
+                }
+                builder.end();
+            }
+            builder.end();
+        }
+        builder.end();
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getClassToConfigure()
+     */
+    @Override
+    protected String getClassToConfigure()
+    {
+        return "org.eclipse.jetty.server.Server";
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration#buildExtraOptions(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
+     */
+    @Override
+    protected void buildExtraOptions(JettyConfigBuilder builder)
+    {
+        builder.comment("Extra Options");
+
+        builder.set("stopAtShutdown", true);
+        builder.set("sendServerVersion", true);
+        builder.set("sendDateHeader", true);
 
         Integer gracefulShutdown = getGracefulShutdown();
 
         if (gracefulShutdown != null)
         {
-            builder.element("Set", "name", "gracefulShutdown", gracefulShutdown);
+            builder.set("gracefulShutdown", gracefulShutdown);
         }
 
-        builder.element("Set", "name", "dumpAfterStart", false);
-        builder.element("Set", "name", "dumpBeforeStop", false);
+        builder.set("dumpAfterStart", false);
+        builder.set("dumpBeforeStop", false);
     }
 
 }

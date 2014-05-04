@@ -85,6 +85,17 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
     {
         dependencies.add(".*/naming/jetty-naming-.*\\.jar");
         dependencies.add(".*/naming/mail-.*\\.jar");
+        dependencies.add(".*/plus/jetty-plus-.*\\.jar");
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addAnnotationsDependencies(java.util.Collection)
+     */
+    @Override
+    protected void addAnnotationsDependencies(Collection<String> dependencies)
+    {
         dependencies.add(".*/annotations/geronimo-annotation_1.0_spec-.*\\.jar");
         dependencies.add(".*/annotations/jetty-annotations-.*\\.jar");
         dependencies.add(".*/plus/jetty-plus-.*\\.jar");
@@ -98,7 +109,6 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
     @Override
     protected void addAJPDependencies(Collection<String> dependencies)
     {
-        // TODO verify
         dependencies.add(".*/ext/jetty-ajp-.*\\.jar");
     }
 

@@ -29,14 +29,23 @@ public abstract class AbstractConfiguration extends AbstractBuilder
     }
 
     /**
+     * Returns the version of the Jetty
+     * 
+     * @return the version of the Jetty
+     */
+    protected abstract JettyVersionType getJettyVersionType();
+
+    /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractBuilder#buildBody(net.sourceforge.eclipsejetty.util.DOMBuilder)
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractBuilder#buildBody(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override
-    protected void buildBody(DOMBuilder builder)
+    protected void buildBody(DOMBuilder domBuilder)
     {
-        builder.begin("Configure").attribute("id", getIdToConfigure()).attribute("class", getClassToConfigure());
+        JettyConfigBuilder builder = new JettyConfigBuilder(domBuilder, getJettyVersionType());
+
+        builder.beginConfigure(getIdToConfigure(), getClassToConfigure());
         {
             buildContent(builder);
         }
@@ -69,7 +78,7 @@ public abstract class AbstractConfiguration extends AbstractBuilder
      * 
      * @param builder the builder
      */
-    protected abstract void buildContent(DOMBuilder builder);
+    protected abstract void buildContent(JettyConfigBuilder builder);
 
     /**
      * Creates a semicolon separated list of values.

@@ -31,11 +31,12 @@ public interface JettyLibStrategy
      * @param jspSupport true if JSP support is needed
      * @param jmxSupport true if JMX support is needed
      * @param jndiSupport true if JNDI support is needed
+     * @param annotationsSupport true if Annotations support is needed
      * @param ajpSupport true if AJP support is needed
      * @return a collection of files
      * @throws CoreException on occasion
      */
     Collection<File> find(File jettyPath, boolean jspSupport, boolean jmxSupport, boolean jndiSupport,
-        boolean ajpSupport) throws CoreException;
+        boolean annotationsSupport, boolean ajpSupport) throws CoreException;
 
 }

@@ -80,9 +80,7 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
     @Override
     protected void addJMXDependencies(Collection<String> dependencies)
     {
-        //    private static final String[] FEATURE_JMX = {"jetty-jmx", "jetty-util"};
         dependencies.add("jetty-jmx");
-        dependencies.add("jetty-util");
     }
 
     /**
@@ -93,16 +91,23 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
     @Override
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
-        //    private static final String[] FEATURE_JNDI = {"jetty-jndi", "javax.mail.glassfish", "javax.activation"};
         dependencies.add("jetty-jndi");
         dependencies.add("javax.mail.glassfish");
         dependencies.add("javax.activation");
-        dependencies.add("jetty-annotations");
         dependencies.add("jetty-plus");
-        dependencies.add("jetty-webapp");
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addAnnotationDependencies(java.util.Collection)
+     */
+    @Override
+    protected void addAnnotationsDependencies(Collection<String> dependencies)
+    {
+        dependencies.add("jetty-annotations");
         dependencies.add("javax.annotation");
         dependencies.add("org.objectweb.asm");
-        dependencies.add("javax.transaction");
     }
 
     /**
@@ -113,8 +118,6 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
     @Override
     protected void addAJPDependencies(Collection<String> dependencies)
     {
-        //    private static final String[] FEATURE_AJP = {"jetty-ajp"};
-        // TODO verify
         dependencies.add("jetty-ajp");
     }
 

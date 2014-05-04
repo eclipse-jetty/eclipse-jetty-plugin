@@ -44,14 +44,21 @@ public class Jetty9LibStrategy extends Jetty8LibStrategy
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
         dependencies.add(".*/jetty-jndi-.*\\.jar");
-        dependencies.add(".*/jndi/javax.mail.glassfish-.*\\.jar");
-        dependencies.add(".*/jndi/javax.activation-.*\\.jar");
-        dependencies.add(".*/jndi/javax.transaction-.*\\.jar");
+        dependencies.add(".*/jetty-plus-.*\\.jar");
+        dependencies.add(".*/jndi/.*\\.jar");
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy#addAnnotationsDependencies(java.util.Collection)
+     */
+    @Override
+    protected void addAnnotationsDependencies(Collection<String> dependencies)
+    {
         dependencies.add(".*/jetty-annotations-.*\\.jar");
         dependencies.add(".*/jetty-plus-.*\\.jar");
-        dependencies.add(".*/jetty-webapp-.*\\.jar");
-        dependencies.add(".*/annotations/javax.annotation-.*\\.jar");
-        dependencies.add(".*/annotations/org.objectweb.asm-.*\\.jar");
+        dependencies.add(".*/annotations/.*\\.jar");
     }
 
 }

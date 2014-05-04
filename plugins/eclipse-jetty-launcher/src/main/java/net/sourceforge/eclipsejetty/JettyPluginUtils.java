@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
-import net.sourceforge.eclipsejetty.jetty.JettyVersion;
 import net.sourceforge.eclipsejetty.util.Dependency;
 import net.sourceforge.eclipsejetty.util.RegularMatcher;
 
@@ -152,66 +151,6 @@ public class JettyPluginUtils
     public static int dictionaryCompare(final String left, final String right)
     {
         return compare(DICTIONARY_COLLATOR, left, right);
-    }
-
-    /**
-     * Returns the Jetty version.
-     * 
-     * @param embedded true if embedded
-     * @param jettyPath the path of the Jetty installation
-     * @return the version, not AUTO
-     * @throws IllegalArgumentException if the detection fails
-     */
-    public static JettyVersion detectJettyVersion(boolean embedded, final String jettyPath)
-        throws IllegalArgumentException
-    {
-        if (embedded)
-        {
-            return JettyVersion.JETTY_EMBEDDED;
-        }
-
-        final File jettyLibDir = new File(jettyPath, "lib");
-
-        if (!jettyLibDir.exists() || !jettyLibDir.isDirectory())
-        {
-            throw new IllegalArgumentException("Could not find Jetty libs");
-        }
-
-        for (File file : jettyLibDir.listFiles())
-        {
-            if (!file.isFile())
-            {
-                continue;
-            }
-
-            String name = file.getName();
-
-            if ((name.startsWith("jetty-")) && (name.endsWith(".jar")))
-            {
-                // jetty-6.1.26.jar - Jetty 6
-                // jetty-server-7.6.3.v20120416.jar - Jetty 7
-                // jetty-server-8.1.3.v20120416.jar - Jetty 8
-
-                if (name.contains("-6."))
-                {
-                    return JettyVersion.JETTY_6;
-                }
-                else if (name.contains("-7."))
-                {
-                    return JettyVersion.JETTY_7;
-                }
-                else if (name.contains("-8."))
-                {
-                    return JettyVersion.JETTY_8;
-                }
-                else if (name.contains("-9."))
-                {
-                    return JettyVersion.JETTY_9;
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("Failed to detect Jetty version.");
     }
 
     public static List<RegularMatcher> extractPatterns(final List<RegularMatcher> list, final Collection<String> text)
@@ -640,7 +579,7 @@ public class JettyPluginUtils
 
         return resource.makeRelativeTo(project.getFullPath()).toString();
     }
-    
+
     public static IProject getProject(String projectName)
     {
         if ((projectName == null) || (projectName.length() == 0))

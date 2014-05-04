@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
@@ -80,10 +81,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Text pathText;
     private Button pathVariablesButton;
     private Button pathBrowseButton;
+    private Label versionHint;
 
     private Button jspSupportButton;
     private Button jmxSupportButton;
     private Button jndiSupportButton;
+    private Button annotationsSupportButton;
     private Button ajpSupportButton;
     private Spinner ajpPortSpinner;
 
@@ -187,6 +190,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                     }
                 });
 
+        versionHint = createHint(jettyGroup, String.format("Detected Jetty Version: %s", "none"), -1, 2, 1);
+        versionHint.setAlignment(SWT.LEFT);
+        
         createImage(composite, JettyPlugin.getIcon(JettyPlugin.JETTY_PLUGIN_ADVANCED_LOGO), 96, SWT.CENTER, SWT.TOP, 1,
             3);
     }
@@ -204,6 +210,10 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jndiSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, Messages.advConfigTab_jndiSupportButton,
                 Messages.advConfigTab_jndiSupportButtonTip, -1, 1, 1, modifyDialogListener);
+        annotationsSupportButton =
+            createButton(jettyFeatureGroup, SWT.CHECK, "Enable Annotations Support",
+                "Enables support for annotations as specified in the Servlet 2.5 Specification", -1, 1, 1,
+                modifyDialogListener);
         jmxSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, Messages.advConfigTab_jmxSupportButton,
                 Messages.advConfigTab_jmxSupportButtonTip, -1, 1, 1, modifyDialogListener);
@@ -231,8 +241,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         gracefulShutdownOverrideEnabledButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_gracefulShutdownTimeoutEnabledButton,
-                Messages.advConfigTab_gracefulShutdownTimeoutEnabledTip, 224, 1, 1,
-                modifyDialogListener);
+                Messages.advConfigTab_gracefulShutdownTimeoutEnabledTip, 224, 1, 1, modifyDialogListener);
         gracefulShutdownOverrideTimeoutSpinner =
             createSpinner(configGroup, SWT.BORDER, Messages.advConfigTab_gracefulShutdownTimeoutTip, 32, -1, 1, 1,
                 modifyDialogListener);
@@ -513,6 +522,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             jspSupportButton.setSelection(adapter.isJspSupport());
             jmxSupportButton.setSelection(adapter.isJmxSupport());
             jndiSupportButton.setSelection(adapter.isJndiSupport());
+            annotationsSupportButton.setSelection(adapter.isAnnotationsSupport());
             ajpSupportButton.setSelection(adapter.isAjpSupport());
             gracefulShutdownOverrideEnabledButton.setSelection(adapter.isGracefulShutdownOverrideEnabled());
             gracefulShutdownOverrideTimeoutSpinner.setSelection(adapter.getGracefulShutdownOverrideTimeout() / 100);
@@ -573,11 +583,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
             try
             {
-                JettyVersion jettyVersion =
-                    JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(jettyPath));
+                JettyVersion jettyVersion = JettyVersion.detect(JettyPluginUtils.resolveVariables(jettyPath), embedded);
 
                 adapter.setMainTypeName(jettyVersion);
                 adapter.setVersion(jettyVersion);
+                adapter.setMinorVersion(jettyVersion);
+                adapter.setMicroVersion(jettyVersion);
             }
             catch (IllegalArgumentException e)
             {
@@ -587,6 +598,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             adapter.setJspSupport(jspSupportButton.getSelection());
             adapter.setJmxSupport(jmxSupportButton.getSelection());
             adapter.setJndiSupport(jndiSupportButton.getSelection());
+            adapter.setAnnotationsSupport(annotationsSupportButton.getSelection());
             adapter.setAjpSupport(ajpSupportButton.getSelection());
             adapter.setGracefulShutdownOverrideEnabled(gracefulShutdownOverrideEnabledButton.getSelection());
             adapter.setGracefulShutdownOverrideTimeout(gracefulShutdownOverrideTimeoutSpinner.getSelection() * 100);
@@ -629,6 +641,18 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         setErrorMessage(null);
         setMessage(null);
 
+        boolean jndi = jndiSupportButton.getSelection();
+
+        if (jndi)
+        {
+            annotationsSupportButton.setEnabled(false);
+            annotationsSupportButton.setSelection(true);
+        }
+        else
+        {
+            annotationsSupportButton.setEnabled(true);
+        }
+
         boolean embedded = embeddedButton.getSelection();
 
         pathText.setEnabled(!embedded);
@@ -666,9 +690,11 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         serverCacheDisabledButton.setEnabled(!customWebDefaultsEnabled);
         clientCacheDisabledButton.setEnabled(!customWebDefaultsEnabled);
 
+        String jettyPath = null;
+        
         if (!embedded)
         {
-            String jettyPath = JettyPluginUtils.resolveVariables(pathText.getText()).trim();
+            jettyPath = JettyPluginUtils.resolveVariables(pathText.getText()).trim();
 
             if (jettyPath.length() > 0)
             {
@@ -684,16 +710,19 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 setErrorMessage(Messages.advConfigTab_pathMissing);
                 return false;
             }
+        }
 
-            try
-            {
-                JettyPluginUtils.detectJettyVersion(embedded, jettyPath);
-            }
-            catch (final IllegalArgumentException e)
-            {
-                setErrorMessage(String.format(Messages.advConfigTab_versionDetectionFailed, jettyPath));
-                return false;
-            }
+        try
+        {
+            JettyVersion version = JettyVersion.detect(JettyPluginUtils.resolveVariables(jettyPath), embedded);
+
+            versionHint.setText(String.format("Detected Jetty Version: %s", version.getVersion()));
+        }
+        catch (final IllegalArgumentException e)
+        {
+            versionHint.setText(String.format("Detected Jetty Version: %s", "unknown"));
+            setErrorMessage(String.format(Messages.advConfigTab_versionDetectionFailed, jettyPath));
+            return false;
         }
 
         if (customWebDefaultsEnabled)

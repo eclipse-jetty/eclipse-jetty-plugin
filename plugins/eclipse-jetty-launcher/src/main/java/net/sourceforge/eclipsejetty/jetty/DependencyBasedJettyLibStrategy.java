@@ -29,10 +29,11 @@ public abstract class DependencyBasedJettyLibStrategy implements JettyLibStrateg
     /**
      * {@inheritDoc}
      * 
-     * @see net.sourceforge.eclipsejetty.jetty.JettyLibStrategy#find(java.io.File, boolean, boolean, boolean, boolean)
+     * @see net.sourceforge.eclipsejetty.jetty.JettyLibStrategy#find(java.io.File, boolean, boolean, boolean, boolean,
+     *      boolean)
      */
     public Collection<File> find(File path, boolean jspSupport, boolean jmxSupport, boolean jndiSupport,
-        boolean ajpSupport) throws CoreException
+        boolean annotationsSupport, boolean ajpSupport) throws CoreException
     {
         Collection<String> dependencies = new LinkedHashSet<String>();
 
@@ -51,6 +52,11 @@ public abstract class DependencyBasedJettyLibStrategy implements JettyLibStrateg
         if (jndiSupport)
         {
             addJNDIDependencies(dependencies);
+        }
+
+        if (annotationsSupport || jndiSupport)
+        {
+            addAnnotationsDependencies(dependencies);
         }
 
         if (ajpSupport)
@@ -92,6 +98,13 @@ public abstract class DependencyBasedJettyLibStrategy implements JettyLibStrateg
      * @param dependencies the dependencies to be filled
      */
     protected abstract void addJSPDependencies(Collection<String> dependencies);
+
+    /**
+     * Add all dependencies for Annotations
+     * 
+     * @param dependencies the dependencies to be filled
+     */
+    protected abstract void addAnnotationsDependencies(Collection<String> dependencies);
 
     /**
      * Add all dependencies for AJP

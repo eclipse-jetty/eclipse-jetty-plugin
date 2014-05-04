@@ -11,9 +11,9 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty8;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
+import net.sourceforge.eclipsejetty.jetty.JettyVersionType;
 import net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration;
 
 public class Jetty8ServerConfiguration extends Jetty7ServerConfiguration
@@ -26,16 +26,68 @@ public class Jetty8ServerConfiguration extends Jetty7ServerConfiguration
 
     /**
      * {@inheritDoc}
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#getJNDIItems()
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getJettyVersionType()
      */
     @Override
-    protected List<String> getJNDIItems()
+    protected JettyVersionType getJettyVersionType()
     {
-        return Arrays.asList("org.eclipse.jetty.webapp.WebInfConfiguration",
-            "org.eclipse.jetty.webapp.WebXmlConfiguration", "org.eclipse.jetty.webapp.MetaInfConfiguration",
-            "org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.plus.webapp.EnvConfiguration",
-            "org.eclipse.jetty.plus.webapp.PlusConfiguration", "org.eclipse.jetty.annotations.AnnotationConfiguration",
-            "org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
+        return JettyVersionType.JETTY_8;
     }
 
+    @Override
+    protected void collectDefaultHandlerConfigurations(Collection<String> configurations)
+    {
+        if (isAnnotationsEnabled())
+        {
+            configurations.add("org.eclipse.jetty.webapp.WebInfConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.WebXmlConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.MetaInfConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.FragmentConfiguration");
+
+            if (isAnnoationConfigurationWorkaroundAllowed())
+            {
+                configurations.add("net.sourceforge.eclipsejetty.starter.jetty8.ExtendedAnnotationConfiguration");
+            }
+
+            configurations.add("org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
+        }
+
+        if (isJndiEnabled())
+        {
+            configurations.add("org.eclipse.jetty.webapp.WebInfConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.WebXmlConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.MetaInfConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.FragmentConfiguration");
+            configurations.add("org.eclipse.jetty.plus.webapp.EnvConfiguration");
+            configurations.add("org.eclipse.jetty.plus.webapp.PlusConfiguration");
+
+            if (isAnnoationConfigurationWorkaroundAllowed())
+            {
+                configurations.add("net.sourceforge.eclipsejetty.starter.jetty8.ExtendedAnnotationConfiguration");
+            }
+
+            configurations.add("org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
+            configurations.add("org.eclipse.jetty.webapp.TagLibConfiguration");
+        }
+    }
+
+    protected boolean isAnnoationConfigurationWorkaroundAllowed()
+    {
+        if ((getMinorVersion() == null) || (getMicroVersion() == null))
+        {
+            return false;
+        }
+
+        if (getMinorVersion().intValue() > 1)
+        {
+            return true;
+        }
+       
+        if (getMinorVersion().intValue() == 1) {
+            return (getMicroVersion().intValue() >= 8);
+        }
+        
+        return false;
+    }
 }

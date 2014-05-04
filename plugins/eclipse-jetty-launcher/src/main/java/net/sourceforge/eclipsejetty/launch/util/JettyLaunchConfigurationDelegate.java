@@ -33,7 +33,7 @@ import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.jetty.AbstractServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty.AbstractWebDefaults;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
-import net.sourceforge.eclipsejetty.jetty.JettyVersion;
+import net.sourceforge.eclipsejetty.jetty.JettyVersionType;
 import net.sourceforge.eclipsejetty.util.Dependency;
 import net.sourceforge.eclipsejetty.util.DependencyMatcher;
 import net.sourceforge.eclipsejetty.util.MavenDependencyInfoMap;
@@ -624,10 +624,11 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         }
 
         final File jettyPath = adapter.getPath();
-        final JettyVersion jettyVersion = adapter.getVersion();
+        final JettyVersionType jettyVersion = adapter.getVersion();
         boolean jspSupport = adapter.isJspSupport();
         boolean jmxSupport = adapter.isJmxSupport();
         boolean jndiSupport = adapter.isJndiSupport();
+        boolean annotationsSupport = adapter.isAnnotationsSupport();
         boolean ajpSupport = adapter.isAjpSupport();
         boolean consoleEnabled = adapter.isConsoleEnabled();
 
@@ -653,7 +654,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                 .getFile())));
 
             for (final File jettyLib : jettyVersion.getLibStrategy().find(jettyPath, jspSupport, jmxSupport,
-                jndiSupport, ajpSupport))
+                jndiSupport, annotationsSupport, ajpSupport))
             {
                 entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(jettyLib.getCanonicalPath())));
             }
@@ -787,7 +788,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     {
         String[] webappClasspath =
             getLocalWebappClasspath(adapter, getWebappClasspathEntries(adapter, getOriginalClasspathEntries(adapter)));
-        JettyVersion jettyVersion = adapter.getVersion();
+        JettyVersionType jettyVersion = adapter.getVersion();
 
         return createJettyConfigurationFile(adapter, jettyVersion, formatted, webappClasspath);
     }
@@ -802,11 +803,15 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
      * @return the file
      * @throws CoreException on occasion
      */
-    private File createJettyConfigurationFile(JettyLaunchConfigurationAdapter adapter, JettyVersion version,
+    private File createJettyConfigurationFile(JettyLaunchConfigurationAdapter adapter, JettyVersionType version,
         boolean formatted, String[] classpath) throws CoreException
     {
         AbstractServerConfiguration serverConfiguration = version.createServerConfiguration();
 
+        serverConfiguration.setMajorVersion(adapter.getMajorVersion());
+        serverConfiguration.setMinorVersion(adapter.getMinorVersion());
+        serverConfiguration.setMicroVersion(adapter.getMicroVersion());
+        
         serverConfiguration.setDefaultContextPath(JettyPluginUtils.prepend(adapter.getContext().trim(), "/")); //$NON-NLS-1$
         serverConfiguration.setDefaultWar(adapter.getWebAppPath());
         serverConfiguration.setPort(Integer.valueOf(adapter.getPort()));
@@ -827,14 +832,15 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             serverConfiguration.setKeyManagerPassword("correct horse battery staple"); //$NON-NLS-1$
         }
 
-        serverConfiguration.setJndi(adapter.isJndiSupport());
-        serverConfiguration.setJmx(adapter.isJmxSupport());
+        serverConfiguration.setJndiEnabled(adapter.isJndiSupport());
+        serverConfiguration.setAnnotationsEnabled(adapter.isAnnotationsSupport());
+        serverConfiguration.setJmxEnabled(adapter.isJmxSupport());
 
         if (adapter.isGracefulShutdownOverrideEnabled())
         {
             serverConfiguration.setGracefulShutdown(adapter.getGracefulShutdownOverrideTimeout());
         }
-        
+
         if (adapter.isThreadPoolLimitEnabled())
         {
             serverConfiguration.setThreadPoolLimit(adapter.getThreadPoolLimitCount());

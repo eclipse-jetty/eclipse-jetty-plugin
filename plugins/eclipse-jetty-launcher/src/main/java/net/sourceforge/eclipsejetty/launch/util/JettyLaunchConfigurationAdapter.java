@@ -23,6 +23,7 @@ import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.jetty.JettyConfig;
 import net.sourceforge.eclipsejetty.jetty.JettyConfigType;
 import net.sourceforge.eclipsejetty.jetty.JettyVersion;
+import net.sourceforge.eclipsejetty.jetty.JettyVersionType;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -58,9 +59,13 @@ public class JettyLaunchConfigurationAdapter
     private static final String ATTR_JETTY_PATH = JettyPlugin.PLUGIN_ID + ".jetty.path"; //$NON-NLS-1$
     private static final String ATTR_JETTY_EMBEDDED = JettyPlugin.PLUGIN_ID + ".jetty.embedded"; //$NON-NLS-1$
     private static final String ATTR_JETTY_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.version"; //$NON-NLS-1$
+    private static final String ATTR_JETTY_MAJOR_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.majorVersion"; //$NON-NLS-1$
+    private static final String ATTR_JETTY_MINOR_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.minorVersion"; //$NON-NLS-1$
+    private static final String ATTR_JETTY_MICRO_VERSION = JettyPlugin.PLUGIN_ID + ".jetty.microVersion"; //$NON-NLS-1$
     private static final String ATTR_JETTY_CONFIG_PATH = JettyPlugin.PLUGIN_ID + ".jetty.config.path."; //$NON-NLS-1$
     private static final String ATTR_JETTY_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".jetty.config.type."; //$NON-NLS-1$
     private static final String ATTR_JETTY_CONFIG_ACTIVE = JettyPlugin.PLUGIN_ID + ".jetty.config.active."; //$NON-NLS-1$
+    private static final String ATTR_ANNOTATIONS_ENABLED = JettyPlugin.PLUGIN_ID + ".annotations.enabled"; //$NON-NLS-1$
     private static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled"; //$NON-NLS-1$
     private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled"; //$NON-NLS-1$
     private static final String ATTR_JNDI_ENABLED = JettyPlugin.PLUGIN_ID + ".jndi.enabled"; //$NON-NLS-1$
@@ -242,11 +247,12 @@ public class JettyLaunchConfigurationAdapter
 
         try
         {
-            JettyVersion jettyVersion =
-                JettyPluginUtils.detectJettyVersion(embedded, JettyPluginUtils.resolveVariables(jettyPath));
+            JettyVersion jettyVersion = JettyVersion.detect(JettyPluginUtils.resolveVariables(jettyPath), embedded);
 
             setMainTypeName(jettyVersion);
             setVersion(jettyVersion);
+            setMinorVersion(jettyVersion);
+            setMicroVersion(jettyVersion);
         }
         catch (IllegalArgumentException e)
         {
@@ -566,9 +572,9 @@ public class JettyLaunchConfigurationAdapter
      * @return the version of the Jetty
      * @throws CoreException on occasion
      */
-    public JettyVersion getVersion() throws CoreException
+    public JettyVersionType getVersion() throws CoreException
     {
-        return JettyVersion.valueOf(getAttribute(true, ATTR_JETTY_VERSION, JettyVersion.JETTY_EMBEDDED.name()));
+        return JettyVersionType.valueOf(getAttribute(true, ATTR_JETTY_VERSION, JettyVersionType.JETTY_EMBEDDED.name()));
     }
 
     /**
@@ -579,7 +585,76 @@ public class JettyLaunchConfigurationAdapter
      */
     public void setVersion(JettyVersion jettyVersion) throws CoreException
     {
-        setAttribute(true, ATTR_JETTY_VERSION, jettyVersion.name());
+        setAttribute(true, ATTR_JETTY_VERSION, jettyVersion.getType().name());
+    }
+
+    /**
+     * Returns the major version of the Jetty.
+     * 
+     * @return the major version of the Jetty
+     * @throws CoreException on occasion
+     */
+    public int getMajorVersion() throws CoreException
+    {
+        return getAttribute(true, ATTR_JETTY_MAJOR_VERSION, -1);
+    }
+
+    /**
+     * Sets the major version of the Jetty.
+     * 
+     * @param jettyVersion the version
+     * @throws CoreException on occasion
+     */
+    public void setMajorVersion(JettyVersion jettyVersion) throws CoreException
+    {
+        setAttribute(true, ATTR_JETTY_MAJOR_VERSION, (jettyVersion.getMajorVersion() != null) ? jettyVersion
+            .getMajorVersion().intValue() : -1);
+    }
+
+    /**
+     * Returns the minor version of the Jetty.
+     * 
+     * @return the minor version of the Jetty
+     * @throws CoreException on occasion
+     */
+    public int getMinorVersion() throws CoreException
+    {
+        return getAttribute(true, ATTR_JETTY_MINOR_VERSION, -1);
+    }
+
+    /**
+     * Sets the minor version of the Jetty.
+     * 
+     * @param jettyVersion the version
+     * @throws CoreException on occasion
+     */
+    public void setMinorVersion(JettyVersion jettyVersion) throws CoreException
+    {
+        setAttribute(true, ATTR_JETTY_MINOR_VERSION, (jettyVersion.getMinorVersion() != null) ? jettyVersion
+            .getMinorVersion().intValue() : -1);
+    }
+
+    /**
+     * Returns the micro version of the Jetty.
+     * 
+     * @return the micro version of the Jetty
+     * @throws CoreException on occasion
+     */
+    public int getMicroVersion() throws CoreException
+    {
+        return getAttribute(true, ATTR_JETTY_MICRO_VERSION, -1);
+    }
+
+    /**
+     * Sets the micro version of the Jetty.
+     * 
+     * @param jettyVersion the version
+     * @throws CoreException on occasion
+     */
+    public void setMicroVersion(JettyVersion jettyVersion) throws CoreException
+    {
+        setAttribute(true, ATTR_JETTY_MICRO_VERSION, (jettyVersion.getMicroVersion() != null) ? jettyVersion
+            .getMicroVersion().intValue() : -1);
     }
 
     /**
@@ -648,6 +723,28 @@ public class JettyLaunchConfigurationAdapter
 
             index += 1;
         }
+    }
+
+    /**
+     * Returns true, if annotations should be supported.
+     * 
+     * @return true, if annotations should be supported
+     * @throws CoreException on occasion
+     */
+    public boolean isAnnotationsSupport() throws CoreException
+    {
+        return !"false".equals(getAttribute(true, ATTR_ANNOTATIONS_ENABLED, "true")); // string for backward compatibility //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * Set to true, if JSPs should be supported.
+     * 
+     * @param annotationsSupport true, if JSPs should be supported
+     * @throws CoreException on occasion
+     */
+    public void setAnnotationsSupport(boolean annotationsSupport) throws CoreException
+    {
+        setAttribute(true, ATTR_ANNOTATIONS_ENABLED, String.valueOf(annotationsSupport)); // string for backward compatibility
     }
 
     /**
@@ -1342,7 +1439,8 @@ public class JettyLaunchConfigurationAdapter
      */
     public void setMainTypeName(JettyVersion jettyVersion) throws CoreException
     {
-        setAttribute(false, IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, jettyVersion.getMainClass());
+        setAttribute(false, IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, jettyVersion.getType()
+            .getMainClass());
     }
 
     /**

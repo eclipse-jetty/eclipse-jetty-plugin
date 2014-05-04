@@ -19,7 +19,6 @@ import net.sourceforge.eclipsejetty.Messages;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
 import net.sourceforge.eclipsejetty.launch.util.JettyLaunchUI;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -28,7 +27,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.core.IJavaElement;
@@ -416,8 +414,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
             return false;
         }
 
-        IFile file;
         String directory = webAppText.getText().trim();
+        
         if (directory.length() > 0)
         {
             IFolder folder = project.getFolder(directory);
@@ -427,17 +425,6 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
                 setErrorMessage(String.format(Messages.configTab_webAppNotExisting, directory, project.getName()));
                 return false;
             }
-            file = project.getFile(new Path(directory + "/WEB-INF/web.xml")); //$NON-NLS-1$
-        }
-        else
-        {
-            file = project.getFile(new Path("/WEB-INF/web.xml")); //$NON-NLS-1$
-        }
-
-        if (!file.exists())
-        {
-            setErrorMessage(String.format(Messages.configTab_webAppInvalid, directory));
-            return false;
         }
 
         String httpURL = getHTTPURL();
@@ -520,7 +507,8 @@ public class JettyLaunchConfigurationTab extends AbstractJettyLaunchConfiguratio
 
         try
         {
-            String webAppDir = JettyLaunchUI.chooseWebAppDir(Display.getCurrent().getActiveShell(), project, webAppText.getText());
+            String webAppDir =
+                JettyLaunchUI.chooseWebAppDir(Display.getCurrent().getActiveShell(), project, webAppText.getText());
 
             if (webAppDir != null)
             {

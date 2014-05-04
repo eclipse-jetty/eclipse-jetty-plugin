@@ -70,7 +70,6 @@ public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
     protected void addJMXDependencies(Collection<String> dependencies)
     {
         dependencies.add(".*/jetty-jmx-.*\\.jar");
-        dependencies.add(".*/jetty-util-.*\\.jar");
     }
 
     /**
@@ -82,14 +81,21 @@ public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
         dependencies.add(".*/jetty-jndi-.*\\.jar");
-        dependencies.add(".*/jndi/javax.mail.glassfish-.*\\.jar");
-        dependencies.add(".*/jndi/javax.activation-.*\\.jar");
+        dependencies.add(".*/jetty-plus-.*\\.jar");
+        dependencies.add(".*/jndi/.*\\.jar");
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addAnnotationDependencies(java.util.Collection)
+     */
+    @Override
+    protected void addAnnotationsDependencies(Collection<String> dependencies)
+    {
         dependencies.add(".*/jetty-annotations-.*\\.jar");
         dependencies.add(".*/jetty-plus-.*\\.jar");
-        dependencies.add(".*/jetty-webapp-.*\\.jar");
-        dependencies.add(".*/annotations/javax.annotation-.*\\.jar");
-        dependencies.add(".*/annotations/org.objectweb.asm-.*\\.jar");
-        dependencies.add(".*/jta/javax.transaction-.*\\.jar");
+        dependencies.add(".*/annotations/.*\\.jar");
     }
 
     /**
@@ -100,8 +106,6 @@ public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
     @Override
     protected void addAJPDependencies(Collection<String> dependencies)
     {
-        //    private static final String[] FEATURE_AJP = {"jetty-ajp"};
-        // TODO verify
         dependencies.add(".*/jetty-ajp-.*\\.jar");
     }
 
