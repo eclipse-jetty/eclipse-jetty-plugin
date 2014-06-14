@@ -189,7 +189,7 @@ public abstract class AbstractJettyLauncherMain
         }
         catch (ParserConfigurationException e)
         {
-            throw new IOException("Failed to configure parser");
+            throw new IOException("Failed to configure parser", e);
         }
 
         Document document;
@@ -200,11 +200,11 @@ public abstract class AbstractJettyLauncherMain
         }
         catch (SAXException e)
         {
-            throw new IOException(String.format("Failed to parse %s", file));
+            throw new IOException(String.format("Failed to parse %s", file), e);
         }
         catch (IOException e)
         {
-            throw new IOException(String.format("Failed to read %s", file));
+            throw new IOException(String.format("Failed to read %s", file), e);
         }
 
         NodeList nodeList = document.getElementsByTagName("Configure");
