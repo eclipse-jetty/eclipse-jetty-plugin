@@ -23,41 +23,33 @@ import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
  */
 public class Jetty9LibStrategy extends Jetty8LibStrategy
 {
+    @Override
+    protected void addServerDependencies(Collection<String> dependencies)
+    {
+        dependencies.add(".*\\/lib\\/jetty-.*\\.jar");
+        dependencies.add(".*/servlet-api-.*\\.jar");
+    }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy#addJMXDependencies(java.util.Collection)
-     */
+    @Override
+    protected void addJSPDependencies(Collection<String> dependencies)
+    {
+        dependencies.add(".*\\/lib\\/jsp\\/.*\\.jar");
+    }
+
     @Override
     protected void addJMXDependencies(Collection<String> dependencies)
     {
-        dependencies.add(".*/jetty-jmx-.*\\.jar");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy#addJNDIDependencies(java.util.Collection)
-     */
     @Override
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
-        dependencies.add(".*/jetty-jndi-.*\\.jar");
-        dependencies.add(".*/jetty-plus-.*\\.jar");
         dependencies.add(".*/jndi/.*\\.jar");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy#addAnnotationsDependencies(java.util.Collection)
-     */
     @Override
     protected void addAnnotationsDependencies(Collection<String> dependencies)
     {
-        dependencies.add(".*/jetty-annotations-.*\\.jar");
-        dependencies.add(".*/jetty-plus-.*\\.jar");
         dependencies.add(".*/annotations/.*\\.jar");
     }
 
