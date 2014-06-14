@@ -24,14 +24,10 @@
 			<name>Christian Köberl</name>
 			<email>christian.koeberl at gmail com</email>
 			<url>http://derkoe.wordpress.com/</url>
-			<organization>Porsche Informatik</organization>
-			<organizationUrl>http://www.porscheinformatik.com/</organizationUrl>
 		</developer>
 		<developer>
 			<id>thred</id>
 			<name>Manfred Hantschel</name>
-			<organization>Porsche Informatik</organization>
-			<organizationUrl>http://www.porscheinformatik.com/</organizationUrl>
 		</developer>
 	</developers>
 
@@ -40,8 +36,10 @@
 	</properties>
 
 	<scm>
-		<connection>scm:svn:https://svn.code.sf.net/p/eclipse-jetty/code/trunk/</connection>
-		<url>http://sourceforge.net/p/eclipse-jetty/code/</url>
+		<connection>scm:git:https://github.com/eclipse-jetty/eclipse-jetty-plugin.git</connection>
+		<developerConnection>scm:git:https://github.com/eclipse-jetty/eclipse-jetty-plugin.git</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/eclipse-jetty/eclipse-jetty-plugin</url>
 	</scm>
 
 	<modules>
