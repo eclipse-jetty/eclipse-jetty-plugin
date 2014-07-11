@@ -108,6 +108,7 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("jetty-annotations");
         dependencies.add("javax.annotation");
         dependencies.add("org.objectweb.asm");
+        dependencies.add("jetty-plus");
     }
 
     /**

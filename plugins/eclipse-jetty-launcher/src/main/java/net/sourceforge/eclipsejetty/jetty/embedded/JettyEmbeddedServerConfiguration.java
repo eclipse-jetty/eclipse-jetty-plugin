@@ -15,7 +15,7 @@ import net.sourceforge.eclipsejetty.jetty8.Jetty8ServerConfiguration;
 
 /**
  * Server configuration for the embedded server.
- * 
+ *
  * @author Manfred Hantschel
  */
 public class JettyEmbeddedServerConfiguration extends Jetty8ServerConfiguration
@@ -24,6 +24,12 @@ public class JettyEmbeddedServerConfiguration extends Jetty8ServerConfiguration
     public JettyEmbeddedServerConfiguration()
     {
         super();
+    }
+
+    @Override
+    protected String getExtendedAnnotationConfigurationClassName()
+    {
+        return "net.sourceforge.eclipsejetty.starter.embedded.ExtendedAnnotationConfiguration";
     }
 
 }

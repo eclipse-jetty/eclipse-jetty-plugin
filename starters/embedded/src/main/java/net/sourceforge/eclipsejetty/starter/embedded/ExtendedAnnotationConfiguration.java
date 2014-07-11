@@ -1,4 +1,4 @@
-package net.sourceforge.eclipsejetty.starter.jetty8;
+package net.sourceforge.eclipsejetty.starter.embedded;
 
 import java.io.IOException;
 import java.net.URL;

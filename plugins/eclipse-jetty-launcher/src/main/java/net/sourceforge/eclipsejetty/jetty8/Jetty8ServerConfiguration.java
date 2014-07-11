@@ -47,7 +47,7 @@ public class Jetty8ServerConfiguration extends Jetty7ServerConfiguration
 
             if (isAnnoationConfigurationWorkaroundAllowed())
             {
-                configurations.add("net.sourceforge.eclipsejetty.starter.jetty8.ExtendedAnnotationConfiguration");
+                configurations.add(getExtendedAnnotationConfigurationClassName());
             }
 
             configurations.add("org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
@@ -64,12 +64,17 @@ public class Jetty8ServerConfiguration extends Jetty7ServerConfiguration
 
             if (isAnnoationConfigurationWorkaroundAllowed())
             {
-                configurations.add("net.sourceforge.eclipsejetty.starter.jetty8.ExtendedAnnotationConfiguration");
+                configurations.add(getExtendedAnnotationConfigurationClassName());
             }
 
             configurations.add("org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
             configurations.add("org.eclipse.jetty.webapp.TagLibConfiguration");
         }
+    }
+
+    protected String getExtendedAnnotationConfigurationClassName()
+    {
+        return "net.sourceforge.eclipsejetty.starter.jetty8.ExtendedAnnotationConfiguration";
     }
 
     protected boolean isAnnoationConfigurationWorkaroundAllowed()

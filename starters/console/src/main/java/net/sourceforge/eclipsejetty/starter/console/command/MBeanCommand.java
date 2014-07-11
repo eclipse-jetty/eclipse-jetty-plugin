@@ -194,7 +194,6 @@ public class MBeanCommand extends AbstractCommand
 
     protected int list(Process process) throws MalformedObjectNameException
     {
-        @SuppressWarnings("unchecked")
         Set<ObjectName> objectNames = server.queryNames(new ObjectName("*.*:*"), null);
 
         for (ObjectName objectName : objectNames)
@@ -479,7 +478,6 @@ public class MBeanCommand extends AbstractCommand
 
         if (pattern != null)
         {
-            @SuppressWarnings("unchecked")
             Set<ObjectName> objectNames = server.queryNames(new ObjectName("*.*:*"), null);
 
             for (ObjectName objectName : objectNames)
