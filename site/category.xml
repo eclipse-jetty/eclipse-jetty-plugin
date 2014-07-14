@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description url="http://eclipse-jetty.sourceforge.net/update/">
+   <description url="http://eclipse-jetty.github.io/update/">
       Eclipse Jetty Integration
    </description>
    <feature url="features/net.sourceforge.eclipsejetty.feature_3.9.0.qualifier.jar" id="net.sourceforge.eclipsejetty.feature" version="3.9.0.qualifier">

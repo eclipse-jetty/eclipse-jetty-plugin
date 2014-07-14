@@ -5,7 +5,7 @@ Eclipse Jetty Integration provides a launch configuration for launching Jetty se
 
 Currently supported versions of Jetty are 6.x, 7.x, 8.x and 9.x. You can use either the bundled Jetty 8 or any other manually installed one.
 
-More information on the project web site: http://eclipse-jetty.sourceforge.net/
+More information on the project web site: http://eclipse-jetty.github.io/
 
 ## License
 

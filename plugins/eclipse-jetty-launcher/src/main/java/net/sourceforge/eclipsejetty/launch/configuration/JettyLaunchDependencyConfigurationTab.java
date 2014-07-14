@@ -232,7 +232,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
             {
                 public void handleEvent(Event event)
                 {
-                    Program.launch("http://eclipse-jetty.sourceforge.net/"); //$NON-NLS-1$
+                    Program.launch("http://eclipse-jetty.github.io/"); //$NON-NLS-1$
                 }
             });
 

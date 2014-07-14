@@ -19,7 +19,7 @@ Introduction
  or by using the following update site from within Eclipse:
 
 +-------------------------------+
-http://eclipse-jetty.sourceforge.net/update/
+http://eclipse-jetty.github.io/update/
 +-------------------------------+
   
  For more information on installation see {{{./installation.html}Installation}}.
@@ -34,7 +34,7 @@ http://eclipse-jetty.sourceforge.net/update/
  
 * About
 
- The Eclipse Jetty Plugin is hosted on {{{http://sourceforge.net/projects/eclipse-jetty/}SourceForge}} and is maintained by
+ The Eclipse Jetty Plugin is hosted on {{{https://github.com/eclipse-jetty/eclipse-jetty-plugin}GitHub}} and is maintained by
  Christian Köberl and Manfred Hantschel. It's primary goal, is to provide a stable and consistent launch environment for 
  large projects and development teams (reducing configuration needs per developer to a minimum). 
  

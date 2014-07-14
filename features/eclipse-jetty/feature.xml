@@ -5,7 +5,7 @@
       version="3.9.0.qualifier"
       provider-name="Christian Köberl">
 
-   <description url="http://eclipse-jetty.sourceforge.net/">
+   <description url="http://eclipse-jetty.github.io/">
       Eclipse Jetty Integration
    </description>
 
@@ -28,7 +28,7 @@ limitations under the License.
    </license>
 
    <url>
-      <update label="Eclipse Jetty Update Site" url="http://eclipse-jetty.sourceforge.net/update/"/>
+      <update label="Eclipse Jetty Update Site" url="http://eclipse-jetty.github.io/update/"/>
    </url>
 
    <plugin
