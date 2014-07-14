@@ -4,47 +4,47 @@
 	xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 	<url>
-		<loc>http://eclipse-jetty.sourceforge.net/</loc>
+		<loc>http://eclipse-jetty.github.io/</loc>
 		<changefreq>monthly</changefreq>
 		<priority>1.0</priority>
 	</url>
 	<url>
-		<loc>http://eclipse-jetty.sourceforge.net/installation.html</loc>
+		<loc>http://eclipse-jetty.github.io/installation.html</loc>
 		<changefreq>monthly</changefreq>
 		<priority>0.1</priority>
 	</url>
 	<url>
-		<loc>http://eclipse-jetty.sourceforge.net/getting_started.html</loc>
+		<loc>http://eclipse-jetty.github.io/getting_started.html</loc>
 		<changefreq>monthly</changefreq>
 		<priority>0.1</priority>
 	</url>
 	<url>
-		<loc>http://eclipse-jetty.sourceforge.net/jndi_howto.html</loc>
+		<loc>http://eclipse-jetty.github.io/jndi_howto.html</loc>
 		<changefreq>monthly</changefreq>
 		<priority>0.1</priority>
 	</url>
 	<url>
-		<loc>http://eclipse-jetty.sourceforge.net/changes-report.html</loc>
+		<loc>http://eclipse-jetty.github.io/changes-report.html</loc>
 		<changefreq>monthly</changefreq>
 		<priority>0.1</priority>
 	</url>
 	<url>
-		<loc>http://eclipse-jetty.sourceforge.net/team-list.html</loc>
+		<loc>http://eclipse-jetty.github.io/team-list.html</loc>
 		<changefreq>monthly</changefreq>
 		<priority>0.0</priority>
 	</url>
 	<url>
-		<loc>http://eclipse-jetty.sourceforge.net/license.html</loc>
+		<loc>http://eclipse-jetty.github.io/license.html</loc>
 		<changefreq>monthly</changefreq>
 		<priority>0.0</priority>
 	</url>
 	<url>
-		<loc>http://eclipse-jetty.sourceforge.net/source-repository.html</loc>
+		<loc>http://eclipse-jetty.github.io/source-repository.html</loc>
 		<changefreq>monthly</changefreq>
 		<priority>0.0</priority>
 	</url>
 	<url>
-		<loc>http://eclipse-jetty.sourceforge.net/index.html</loc>
+		<loc>http://eclipse-jetty.github.io/index.html</loc>
 		<changefreq>monthly</changefreq>
 		<priority>1.0</priority>
 	</url>
