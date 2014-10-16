@@ -70,6 +70,7 @@ public class JettyLaunchConfigurationAdapter
     private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled"; //$NON-NLS-1$
     private static final String ATTR_JNDI_ENABLED = JettyPlugin.PLUGIN_ID + ".jndi.enabled"; //$NON-NLS-1$
     private static final String ATTR_AJP_ENABLED = JettyPlugin.PLUGIN_ID + ".ajp.enabled"; //$NON-NLS-1$
+    private static final String ATTR_WEBSOCKET_ENABLED = JettyPlugin.PLUGIN_ID + ".websocket.enabled"; //$NON-NLS-1$
     private static final String ATTR_THREAD_POOL_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".threadPool.limit.enabled"; //$NON-NLS-1$
     private static final String ATTR_THREAD_POOL_LIMIT_COUNT = JettyPlugin.PLUGIN_ID + ".threadPool.limit.count"; //$NON-NLS-1$
     private static final String ATTR_ACCEPTOR_LIMIT_ENABLED = JettyPlugin.PLUGIN_ID + ".acceptor.limit.enabled"; //$NON-NLS-1$
@@ -834,6 +835,27 @@ public class JettyLaunchConfigurationAdapter
     {
         setAttribute(true, ATTR_AJP_ENABLED, String.valueOf(ajpSupport)); // string for backward compatibility
     }
+    
+    /**
+     * returns true, if websockets should be supported.
+     * 
+     * @return
+     * @throws CoreException on occasion
+     */
+    public boolean isWebsocketSupport() throws CoreException {
+        return !"false".equals(getAttribute(true, ATTR_WEBSOCKET_ENABLED, "false")); // string for backward compatibility //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * Set to true, if websockets should be supported.
+     * 
+     * @param websocketSupport true, if websockets should be supported
+     * @throws CoreException on occasion
+     */
+    public void setWebsocketSupport(boolean websocketSupport) throws CoreException {
+        setAttribute(true, ATTR_WEBSOCKET_ENABLED, String.valueOf(websocketSupport)); // string for backward compatibility
+    }
+
 
     /**
      * Returns true, if the size of Jetty's thread pool is limited.

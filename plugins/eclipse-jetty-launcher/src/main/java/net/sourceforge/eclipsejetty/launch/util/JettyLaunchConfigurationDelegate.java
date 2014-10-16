@@ -630,6 +630,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         boolean jndiSupport = adapter.isJndiSupport();
         boolean annotationsSupport = adapter.isAnnotationsSupport();
         boolean ajpSupport = adapter.isAjpSupport();
+        boolean websocketSupport = adapter.isWebsocketSupport();
         boolean consoleEnabled = adapter.isConsoleEnabled();
 
         try
@@ -654,7 +655,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
                 .getFile())));
 
             for (final File jettyLib : jettyVersion.getLibStrategy().find(jettyPath, jspSupport, jmxSupport,
-                jndiSupport, annotationsSupport, ajpSupport))
+                jndiSupport, annotationsSupport, ajpSupport, websocketSupport))
             {
                 entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(jettyLib.getCanonicalPath())));
             }
@@ -835,6 +836,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         serverConfiguration.setJndiEnabled(adapter.isJndiSupport());
         serverConfiguration.setAnnotationsEnabled(adapter.isAnnotationsSupport());
         serverConfiguration.setJmxEnabled(adapter.isJmxSupport());
+        serverConfiguration.setWebsocketEnabled(adapter.isWebsocketSupport());
 
         if (adapter.isGracefulShutdownOverrideEnabled())
         {

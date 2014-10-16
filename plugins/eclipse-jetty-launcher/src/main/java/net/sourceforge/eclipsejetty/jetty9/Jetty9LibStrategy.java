@@ -33,7 +33,8 @@ public class Jetty9LibStrategy extends Jetty8LibStrategy
     @Override
     protected void addJSPDependencies(Collection<String> dependencies)
     {
-        dependencies.add(".*\\/lib\\/jsp\\/.*\\.jar");
+        dependencies.add(".*\\/lib\\/apache-jsp\\/.*\\.jar");
+        dependencies.add(".*\\/lib\\/apache-jstl\\/.*\\.jar");
     }
 
     @Override
@@ -51,6 +52,10 @@ public class Jetty9LibStrategy extends Jetty8LibStrategy
     protected void addAnnotationsDependencies(Collection<String> dependencies)
     {
         dependencies.add(".*/annotations/.*\\.jar");
+    }
+    
+    protected void addWebsocketDependencies(Collection<String> dependencies) {
+        dependencies.add(".*\\/lib\\/websocket\\/.*\\.jar");
     }
 
 }

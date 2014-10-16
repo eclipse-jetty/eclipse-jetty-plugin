@@ -92,6 +92,8 @@ public class Messages extends NLS
     public static String advConfigTab_jndiSupportButtonTip;
     public static String advConfigTab_jspSupportButton;
     public static String advConfigTab_jspSupportButtonTip;
+    public static String advConfigTab_websocketSupportButton;
+    public static String advConfigTab_websocketSupportButtonTip;
     public static String advConfigTab_message;
     public static String advConfigTab_pathInvalid;
     public static String advConfigTab_pathMissing;
