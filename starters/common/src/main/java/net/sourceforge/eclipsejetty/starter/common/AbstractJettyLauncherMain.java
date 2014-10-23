@@ -40,7 +40,6 @@ import org.xml.sax.SAXException;
  */
 public abstract class AbstractJettyLauncherMain
 {
-
     public static final String CONFIGURATION_KEY = "jetty.launcher.configuration";
     public static final String HIDE_LAUNCH_INFO_KEY = "jetty.launcher.hideLaunchInfo";
     public static final String DISABLE_CONSOLE_KEY = "jetty.launcher.disableConsole";
@@ -196,7 +195,7 @@ public abstract class AbstractJettyLauncherMain
 
         try
         {
-            document = builder.parse(new InputSource(file.getAbsolutePath()));
+            document = builder.parse(new InputSource(new FileInputStream(file)));
         }
         catch (SAXException e)
         {
