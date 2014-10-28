@@ -366,6 +366,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private void createContextGroup(Composite tabComposite)
     {
         Group contextGroup = createGroup(tabComposite, Messages.advConfigTab_contextGroupTitle, 6, -1, true, 2, 1);
+        Object ld = contextGroup.getLayoutData();
+        // at least on SWT.GTK grabVerticalSpace does not correctly calculate the minHeight of the the composite.
+        if (ld instanceof GridData) {
+            GridData gd = (GridData)ld;
+            gd.heightHint = 180;
+        }
 
         configTable =
             createTable(contextGroup, SWT.BORDER | SWT.FULL_SELECTION, 320, 96, 5, 3,
