@@ -15,13 +15,81 @@ import org.eclipse.core.runtime.Path;
 
 public class JettyVersion
 {
+
+    private static class CacheKey
+    {
+        private final String jettyPath;
+        private final boolean embedded;
+
+        public CacheKey(String jettyPath, boolean embedded)
+        {
+            super();
+
+            this.jettyPath = jettyPath;
+            this.embedded = embedded;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            final int prime = 31;
+            int result = 1;
+
+            result = (prime * result) + (embedded ? 1231 : 1237);
+            result = (prime * result) + ((jettyPath == null) ? 0 : jettyPath.hashCode());
+
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+            {
+                return true;
+            }
+
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if (getClass() != obj.getClass())
+            {
+                return false;
+            }
+
+            CacheKey other = (CacheKey) obj;
+
+            if (embedded != other.embedded)
+            {
+                return false;
+            }
+
+            if (jettyPath == null)
+            {
+                if (other.jettyPath != null)
+                {
+                    return false;
+                }
+            }
+            else if (!jettyPath.equals(other.jettyPath))
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
     private static final long MAX_TIME_TO_LIVE = 60 * 1000;
 
-    private static final Map<String, JettyVersion> CACHE = new HashMap<String, JettyVersion>();
+    private static final Map<CacheKey, JettyVersion> CACHE = new HashMap<CacheKey, JettyVersion>();
 
     public static JettyVersion detect(String jettyPath, boolean embedded)
     {
-        JettyVersion version = CACHE.get(jettyPath);
+        CacheKey cacheKey = new CacheKey(jettyPath, embedded);
+        JettyVersion version = CACHE.get(cacheKey);
 
         if ((version != null) && ((System.currentTimeMillis() - version.timestamp) < MAX_TIME_TO_LIVE))
         {
@@ -84,7 +152,7 @@ public class JettyVersion
             throw new IllegalArgumentException("Invalid Jetty version detected");
         }
 
-        CACHE.put(jettyPath, version);
+        CACHE.put(cacheKey, version);
 
         return version;
     }

@@ -50,7 +50,7 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * UI
- * 
+ *
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
@@ -80,7 +80,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
      * @wbp.parser.entryPoint
      */
@@ -145,24 +145,24 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
         dependencyFilterText =
             createText(tableGroup, SWT.BORDER, Messages.depConfigTab_dependencyFilterTip, -1, -1, 3, 1,
                 new ModifyListener()
+            {
+                public void modifyText(ModifyEvent e)
                 {
-                    public void modifyText(ModifyEvent e)
-                    {
-                        final ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
+                    final ILaunchConfiguration configuration = getCurrentLaunchConfiguration();
 
-                        if (configuration != null)
+                    if (configuration != null)
+                    {
+                        updateTable(JettyLaunchConfigurationAdapter.getInstance(configuration), true);
+                        dependencyTable.getDisplay().syncExec(new Runnable()
                         {
-                            updateTable(JettyLaunchConfigurationAdapter.getInstance(configuration), true);
-                            dependencyTable.getDisplay().syncExec(new Runnable()
+                            public void run()
                             {
-                                public void run()
-                                {
-                                    updateTable(JettyLaunchConfigurationAdapter.getInstance(configuration), true);
-                                }
-                            });
-                        }
+                                updateTable(JettyLaunchConfigurationAdapter.getInstance(configuration), true);
+                            }
+                        });
                     }
-                });
+                }
+            });
 
         final Color defaultFilterColor = dependencyFilterText.getForeground();
 
@@ -216,31 +216,30 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
         createButton(buttonComposite, SWT.NONE, Messages.depConfigTab_dependencyTableResetButton,
             Messages.depConfigTab_dependencyTableResetButtonTip, 196, 1, 1, new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
             {
-                @Override
-                public void widgetSelected(SelectionEvent e)
-                {
-                    dependencyEntryList.reset();
-                    updateLaunchConfigurationDialog();
-                }
-            });
+                dependencyEntryList.reset();
+                updateLaunchConfigurationDialog();
+            }
+        });
 
         createLabel(buttonComposite, JettyPluginUtils.EMPTY, -1, SWT.LEFT, 1, 1);
         createImage(buttonComposite, JettyPlugin.getJettyIcon(), 16, SWT.CENTER, SWT.CENTER, 1, 1);
-        createLink(buttonComposite, SWT.NONE,
-            Messages.depConfigTab_homepageLink, SWT.RIGHT, 1, 1, new Listener()
+        createLink(buttonComposite, SWT.NONE, Messages.depConfigTab_homepageLink, SWT.RIGHT, 1, 1, new Listener()
+        {
+            public void handleEvent(Event event)
             {
-                public void handleEvent(Event event)
-                {
-                    Program.launch("http://eclipse-jetty.github.io/"); //$NON-NLS-1$
-                }
-            });
+                Program.launch("http://eclipse-jetty.github.io/"); //$NON-NLS-1$
+            }
+        });
 
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
      */
     public String getName()
@@ -250,7 +249,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getImage()
      */
     @Override
@@ -261,7 +260,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getMessage()
      */
     @Override
@@ -272,7 +271,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.jdt.debug.ui.launchConfigurations.JavaLaunchTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
      */
     @Override
@@ -302,7 +301,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
      */
     public void setDefaults(final ILaunchConfigurationWorkingCopy configuration)
@@ -312,7 +311,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
      */
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)
@@ -356,7 +355,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
      */
     @Override
@@ -407,7 +406,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
     /**
      * Updates the dependency table
-     * 
+     *
      * @param adapter the configuration adapter
      * @param updateType true to update the types of the entries
      */
@@ -476,7 +475,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
     {
         /**
          * {@inheritDoc}
-         * 
+         *
          * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
          */
         @SuppressWarnings("synthetic-access")
@@ -487,7 +486,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
         /**
          * {@inheritDoc}
-         * 
+         *
          * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
          */
         public void widgetDefaultSelected(final SelectionEvent arg0)
@@ -497,7 +496,7 @@ public class JettyLaunchDependencyConfigurationTab extends AbstractJettyLaunchCo
 
         /**
          * {@inheritDoc}
-         * 
+         *
          * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
          */
         @SuppressWarnings("synthetic-access")
