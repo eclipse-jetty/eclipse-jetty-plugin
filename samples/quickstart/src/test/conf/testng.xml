@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="quickstart Application Test Suite" annotations="1.5">
+    <test name="Unit Tests">
+        <packages>
+            <package name="test.quickstart"/>
+        </packages>
+    </test>
+</suite>

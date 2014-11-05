@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="net.sourceforge.eclipsejetty.launchConfigurationType">
+<intAttribute key="net.sourceforge.eclipsejetty.launcher.acceptor.limit.count" value="2"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.acceptor.limit.enabled" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.ajp.enabled" value="false"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.annotations.enabled" value="true"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.cache.client.enabled" value="true"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.cache.server.enabled" value="true"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.collection.limit.enabled" value="true"/>
+<intAttribute key="net.sourceforge.eclipsejetty.launcher.configVersion" value="1"/>
+<intAttribute key="net.sourceforge.eclipsejetty.launcher.connection.limit.count" value="4"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.console.enabled" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.context" value="/quickstart"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.customWebDefaults.enabled" value="false"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.customWebDefaults.resource" value=""/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.gracefulShutdown.override.enabled" value="false"/>
+<intAttribute key="net.sourceforge.eclipsejetty.launcher.gracefulShutdown.override.timeout" value="1000"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.httpsEnabled" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.httpsPort" value="8443"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.active.0" value="true"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.active.1" value="true"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.active.2" value="false"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.path.0" value=""/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.path.1" value="/quickstart/src/main/webapp/jetty6-env.xml"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.path.2" value="/quickstart/src/main/webapp/jetty7-web.xml"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.scope.0" value="SERVER"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.type.0" value="DEFAULT"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.type.1" value="WORKSPACE"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.type.2" value="WORKSPACE"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.context.active.0" value="true"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.context.active.1" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.context.path.0" value=""/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.context.path.1" value="/quickstart/src/main/webapp/WEB-INF/jetty-env.xml"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.context.type.0" value="DEFAULT"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.context.type.1" value="WORKSPACE"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.embedded" value="false"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.extern" value="false"/>
+<intAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.microVersion" value="26"/>
+<intAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.minorVersion" value="1"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.path" value="${JETTY6_HOME}"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.version" value="JETTY_6"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jmx.enabled" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jndi.enabled" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jsp.enabled" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.launcher.excludeGenericIds" value=""/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.launcher.excludeLibs" value=""/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.launcher.globalGenericIds" value="c3p0:c3p0:0.9.1.2::, com.h2database:h2:1.3.168::"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.launcher.globalLibs" value=".*/c3p0-0\.9\.1\.2\.jar, .*/h2-1\.3\.168\.jar"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.launcher.includeGenericIds" value=""/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.launcher.includeLibs" value=""/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.launcher.info" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.plus.enabled" value="false"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.port" value="8080"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.scope.compile.exclude" value="false"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.scope.import.exclude" value="true"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.scope.none.exclude" value="false"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.scope.provided.exclude" value="true"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.scope.runtime.exclude" value="false"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.scope.system.exclude" value="true"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.scope.test.exclude" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.servlets.enabled" value="false"/>
+<intAttribute key="net.sourceforge.eclipsejetty.launcher.threadPool.limit.count" value="16"/>
+<booleanAttribute key="net.sourceforge.eclipsejetty.launcher.threadPool.limit.enabled" value="true"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.webappdir" value="src/main/webapp"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+</listAttribute>
+<listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5&quot; javaProject=&quot;quickstart&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#13;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#13;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;quickstart&quot;/&gt;&#13;&#10;&lt;/runtimeClasspathEntry&gt;&#13;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/quickstart/src/main/webapp/WEB-INF/lib/events-on-fire-1.3-SNAPSHOT.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#13;&#10;"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="net.sourceforge.eclipsejetty.launcher.JettyLaunchClassPathProvider"/>
+<booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="net.sourceforge.eclipsejetty.starter.jetty6.Jetty6LauncherMain"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="quickstart"/>
+</launchConfiguration>

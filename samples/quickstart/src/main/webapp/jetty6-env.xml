@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<Configure class="org.mortbay.jetty.webapp.WebAppContext" id="WAC">
+	<New id="DSTest" class="org.mortbay.jetty.plus.naming.Resource">
+		<Arg></Arg>
+		<Arg>jdbc/DSTest</Arg>
+		<Arg>
+			<New class="com.mchange.v2.c3p0.ComboPooledDataSource">
+				<Set name="driverClass">org.h2.Driver</Set>
+				<Set name="jdbcUrl">jdbc:h2:~/test</Set>
+				<Set name="user"></Set>
+				<Set name="password"></Set>
+			</New>
+		</Arg>
+	</New>
+	
+</Configure>

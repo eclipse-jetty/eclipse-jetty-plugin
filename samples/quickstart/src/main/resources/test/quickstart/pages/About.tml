@@ -1,0 +1,7 @@
+<html t:type="layout" title="About quickstart"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+      xmlns:p="tapestry:parameter">
+
+    <p>About quickstart application ...</p>
+
+</html>

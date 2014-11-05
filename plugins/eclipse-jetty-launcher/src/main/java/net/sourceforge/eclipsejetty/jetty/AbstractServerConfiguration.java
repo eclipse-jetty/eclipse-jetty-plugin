@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 
 /**
  * Abstract builder for a Jetty configuration
- * 
+ *
  * @author Manfred Hantschel
  */
 public abstract class AbstractServerConfiguration extends AbstractConfiguration
@@ -85,7 +85,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns true if Annotations support is enabled.
-     * 
+     *
      * @return true if Annotations support is enabled
      */
     public boolean isAnnotationsEnabled()
@@ -95,7 +95,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Set to true if Annotations support is enabled.
-     * 
+     *
      * @param annotationsEnabled true if Annotations support is enabled
      */
     public void setAnnotationsEnabled(boolean annotationsEnabled)
@@ -105,7 +105,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns true if JNDI support is enabled.
-     * 
+     *
      * @return true if JNDI support is enabled
      */
     public boolean isJndiEnabled()
@@ -115,7 +115,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Toggles the JNDI support.
-     * 
+     *
      * @param jndiEnabled true to enable JNDI
      */
     public void setJndiEnabled(boolean jndiEnabled)
@@ -125,7 +125,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns true if JMX support is enabled.
-     * 
+     *
      * @return true if JMX support is enabled
      */
     public boolean isJmxEnabled()
@@ -135,7 +135,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Toggles the JMX support.
-     * 
+     *
      * @param jmxEnabled true to enable JMX
      */
     public void setJmxEnabled(boolean jmxEnabled)
@@ -145,7 +145,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the (HTTP) port.
-     * 
+     *
      * @return the port
      */
     public Integer getPort()
@@ -155,7 +155,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the (HTTP) port, null to disable.
-     * 
+     *
      * @param port the port
      */
     public void setPort(Integer port)
@@ -165,7 +165,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the HTTPs port.
-     * 
+     *
      * @return the HTTPs port
      */
     public Integer getSslPort()
@@ -176,7 +176,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     /**
      * Sets the HTTPs port, null to disable. The keystore stuff must also be set: {@link #setKeyStorePath(String)},
      * {@link #setKeyStorePassword(String)}, {@link #setKeyManagerPassword(String)}.
-     * 
+     *
      * @param sslPort the HTTPs port
      */
     public void setSslPort(Integer sslPort)
@@ -186,7 +186,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Return the graceful shutdown timeout (in milliseconds).
-     * 
+     *
      * @return the graceful shutdown timeout (in milliseconds)
      */
     public Integer getGracefulShutdown()
@@ -196,7 +196,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the graceful shutdown timeout (in milliseconds).
-     * 
+     *
      * @param gracefulShutdown the graceful shutdown timeout (in milliseconds)
      */
     public void setGracefulShutdown(Integer gracefulShutdown)
@@ -206,7 +206,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the thread pool limit.
-     * 
+     *
      * @return the thread pool limit
      */
     public Integer getThreadPoolLimit()
@@ -216,7 +216,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the thread pool limit, null to disable.
-     * 
+     *
      * @param threadPoolLimit the thread pool limit
      */
     public void setThreadPoolLimit(Integer threadPoolLimit)
@@ -226,7 +226,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the acceptor limit.
-     * 
+     *
      * @return the acceptor limit
      */
     public Integer getAcceptorLimit()
@@ -236,7 +236,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the acceptor limit, null to disable.
-     * 
+     *
      * @param acceptorLimit the acceptor limit
      */
     public void setAcceptorLimit(Integer acceptorLimit)
@@ -246,7 +246,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the key store path.
-     * 
+     *
      * @return the key store path
      */
     public String getKeyStorePath()
@@ -256,7 +256,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the key store path.
-     * 
+     *
      * @param keyStorePath the key store path
      */
     public void setKeyStorePath(String keyStorePath)
@@ -266,7 +266,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the key store password.
-     * 
+     *
      * @return the key store password
      */
     public String getKeyStorePassword()
@@ -276,7 +276,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the key store password.
-     * 
+     *
      * @param keyStorePassword the key store password
      */
     public void setKeyStorePassword(String keyStorePassword)
@@ -286,7 +286,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the key manager password.
-     * 
+     *
      * @return the key manager password
      */
     public String getKeyManagerPassword()
@@ -296,7 +296,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Set the key manager password.
-     * 
+     *
      * @param keyManagerPassword the key manager password
      */
     public void setKeyManagerPassword(String keyManagerPassword)
@@ -306,7 +306,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the path to the webapp directory.
-     * 
+     *
      * @return the path to the webapp directory
      */
     public File getDefaultWar()
@@ -316,7 +316,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the path to the webapp directory.
-     * 
+     *
      * @param defaultWar the path to the webapp directory
      */
     public void setDefaultWar(File defaultWar)
@@ -326,7 +326,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the context path.
-     * 
+     *
      * @return the context path
      */
     public String getDefaultContextPath()
@@ -336,7 +336,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the context path.
-     * 
+     *
      * @param defaultContextPath the context path
      */
     public void setDefaultContextPath(String defaultContextPath)
@@ -346,7 +346,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the path to the custom web defaults file.
-     * 
+     *
      * @return the path to the custom web defaults file
      */
     public File getCustomWebDefaultsFile()
@@ -356,7 +356,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the path to the custom web defaults file.
-     * 
+     *
      * @param customWebDefaultsFile the path to the custom web defaults file
      */
     public void setCustomWebDefaultsFile(File customWebDefaultsFile)
@@ -366,7 +366,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the classpath of the web application.
-     * 
+     *
      * @return the classpath of the web application
      */
     public Collection<String> getDefaultClasspath()
@@ -376,7 +376,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Sets the classpath of the web application.
-     * 
+     *
      * @param classpaths the classpath of the web application
      */
     public void addDefaultClasspath(String... classpaths)
@@ -389,7 +389,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getIdToConfigure()
      */
     @Override
@@ -400,7 +400,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#buildContent(net.sourceforge.eclipsejetty.util.DOMBuilder)
      */
     @Override
@@ -421,42 +421,42 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Builds the thread pool part.
-     * 
+     *
      * @param builder the builder
      */
     protected abstract void buildThreadPool(JettyConfigBuilder builder);
 
     /**
      * Builds the HTTP config part.
-     * 
+     *
      * @param builder the builder
      */
     protected abstract void buildHttpConfig(JettyConfigBuilder builder);
 
     /**
      * Builds the HTTP connector part.
-     * 
+     *
      * @param builder the builder
      */
     protected abstract void buildHttpConnector(JettyConfigBuilder builder);
 
     /**
      * Builds the HTTPS config part.
-     * 
+     *
      * @param builder the builder
      */
     protected abstract void buildHttpsConfig(JettyConfigBuilder builder);
 
     /**
      * Builds the HTTPs connector part, if enabled.
-     * 
+     *
      * @param builder the builder
      */
     protected abstract void buildHttpsConnector(JettyConfigBuilder builder);
 
     /**
      * Builds the handler part.
-     * 
+     *
      * @param builder the builder
      */
     protected void buildHandler(JettyConfigBuilder builder)
@@ -466,7 +466,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Builds the default handler.
-     * 
+     *
      * @param builder the builder
      */
     protected void buildDefaultHandler(JettyConfigBuilder builder)
@@ -477,7 +477,16 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         {
             builder.beginNew(getDefaultHandlerClass());
             {
-                builder.arg(getDefaultWar().getAbsolutePath());
+                File defaultWar = getDefaultWar();
+
+                if (defaultWar != null)
+                {
+                    builder.arg(defaultWar.getAbsolutePath());
+                }
+                else {
+                    builder.arg(null);
+                }
+
                 builder.arg(getDefaultContextPath());
 
                 if (getCustomWebDefaultsFile() != null)
@@ -503,14 +512,14 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Returns the default handler class for the Jetty version.
-     * 
+     *
      * @return the default handler class
      */
     protected abstract String getDefaultHandlerClass();
 
     /**
      * Builds additional handler setters.
-     * 
+     *
      * @param builder the builder
      */
     protected void buildDefaultHandlerSetters(JettyConfigBuilder builder)
@@ -520,35 +529,35 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     /**
      * Collect all configurations for the handler
-     * 
+     *
      * @param configurations the configurations
      */
     protected abstract void collectDefaultHandlerConfigurations(Collection<String> configurations);
 
     /**
      * Builds the Annotations part, if needed.
-     * 
+     *
      * @param builder the builder
      */
     protected abstract void buildAnnotations(JettyConfigBuilder builder);
 
     /**
      * Builds the JNDI part, if enabled.
-     * 
+     *
      * @param builder the builder
      */
     protected abstract void buildJNDI(JettyConfigBuilder builder);
 
     /**
      * Builds the JMX part, if enabled.
-     * 
+     *
      * @param builder the builder
      */
     protected abstract void buildJMX(JettyConfigBuilder builder);
 
     /**
      * Builds extra options.
-     * 
+     *
      * @param builder the builder
      */
     protected abstract void buildExtraOptions(JettyConfigBuilder builder);

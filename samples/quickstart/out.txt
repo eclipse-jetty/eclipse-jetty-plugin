@@ -1,0 +1,204 @@
+Jetty Dump
+==========
+
+org.eclipse.jetty.server.Server@4b7361e2 - STARTED
+ +- o.e.j.w.WebAppContext{/quickstart,file:/C:/home/dev/java/w.test/quickstart/src/main/webapp/},src/main/webapp - STARTED
+ |   +- WebAppClassLoader=quickstart Tapestry 5 Application@560932fe
+ |   |   +- file:/C:/home/dev/java/w.test/quickstart/target/classes/
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-core/5.3.2/tapestry-core-5.3.2.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/commons-codec/commons-codec/1.5/commons-codec-1.5.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-json/5.3.2/tapestry-json-5.3.2.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-ioc/5.3.2/tapestry-ioc-5.3.2.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/apache/tapestry/plastic/5.3.2/plastic-5.3.2.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/slf4j/slf4j-api/1.6.1/slf4j-api-1.6.1.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/slf4j/slf4j-log4j12/1.6.1/slf4j-log4j12-1.6.1.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry5-annotations/5.3.2/tapestry5-annotations-5.3.2.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-func/5.3.2/tapestry-func-5.3.2.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/javassist/javassist/3.12.1.GA/javassist-3.12.1.GA.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-yuicompressor/5.3.2/tapestry-yuicompressor-5.3.2.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/com/yahoo/platform/yui/yuicompressor/2.4.6/yuicompressor-2.4.6.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/rhino/js/1.6R7/js-1.6R7.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/junit/junit/4.10/junit-4.10.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/antlr/antlr-runtime/3.4/antlr-runtime-3.4.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/org/antlr/stringtemplate/3.2.1/stringtemplate-3.2.1.jar
+ |   |   +- file:/C:/Users/thred/.m2/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar
+ |   |   +- file:/C:/home/dev/java/w.test/quickstart/src/main/webapp/WEB-INF/lib/events-on-fire-1.3-SNAPSHOT.jar
+ |   |   |
+ |   |   +- sun.misc.Launcher$AppClassLoader@35a16869
+ |   |       +- file:/C:/Users/thred/.m2/repository/com/h2database/h2/1.3.168/h2-1.3.168.jar
+ |   |       +- file:/C:/Users/thred/.m2/repository/c3p0/c3p0/0.9.1.2/c3p0-0.9.1.2.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/eclipse-jetty-starters-common.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/eclipse-jetty-starters-embedded.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/javax.servlet.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-server.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-continuation.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-http.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-io.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-util.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-security.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-servlet.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-webapp.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-xml.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-jsp.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/javax.servlet.jsp.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/org.apache.jasper.glassfish.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/javax.servlet.jsp.jstl.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/org.apache.taglibs.standard.glassfish.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/javax.el.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/com.sun.el.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/org.eclipse.jdt.core.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-jmx.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-jndi.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/javax.mail.glassfish.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/javax.activation.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-annotations.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/jetty-plus.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/javax.annotation.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/org.objectweb.asm.jar
+ |   |       +- file:/C:/home/dev/java/w.plugins/eclipse-jetty-code/plugins/eclipse-jetty-launcher/lib/jetty/javax.transaction.jar
+ |   |       |
+ |   |       +- sun.misc.Launcher$ExtClassLoader@77cde100
+ |   |
+ |   +- org.eclipse.jetty.server.session.SessionHandler@66e8c7db - STARTED
+ |   |   |
+ |   |   +- org.eclipse.jetty.security.ConstraintSecurityHandler@68c0890f - STARTED
+ |   |       +- null
+ |   |       |
+ |   |       +- null
+ |   |       |
+ |   |       +- null
+ |   |       |
+ |   |       +- []
+ |   |       |
+ |   |       +- /={TRACE={RoleInfo,F,C[]}}
+ |   |       |
+ |   |       |
+ |   |       +- org.eclipse.jetty.servlet.ServletHandler@52287b58 - STARTED
+ |   |           |
+ |   |           |
+ |   |           +- [/*]/[]==0=>app
+ |   |           |
+ |   |           +- app==org.apache.tapestry5.TapestryFilter - STARTED
+ |   |           |
+ |   |           +- [/]=>default
+ |   |           +- [*.jsp, *.jspf, *.jspx, *.xsp, *.JSP, *.JSPF, *.JSPX, *.XSP]=>jsp
+ |   |           |
+ |   |           +- default==org.eclipse.jetty.servlet.DefaultServlet - STARTED
+ |   |           |   +- maxCacheSize=256000000
+ |   |           |   +- dirAllowed=true
+ |   |           |   +- gzip=true
+ |   |           |   +- maxCachedFileSize=200000000
+ |   |           |   +- redirectWelcome=false
+ |   |           |   +- acceptRanges=true
+ |   |           |   +- welcomeServlets=false
+ |   |           |   +- aliases=false
+ |   |           |   +- useFileMappedBuffer=true
+ |   |           |   +- maxCachedFiles=2048
+ |   |           +- jsp==org.apache.jasper.servlet.JspServlet - STARTED
+ |   |               +- logVerbosityLevel=DEBUG
+ |   |               +- fork=false
+ |   |               +- com.sun.appserv.jsp.classpath=C:\Users\thred\.m2\repository\com\h2database\h2\1.3.168\h2-1.3.168.jar;C:\Users\thred\.m2\repository\c3p0\c3p0\0.9.1.2\c3p0-0.9.1.2.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\eclipse-jetty-starters-common.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\eclipse-jetty-starters-embedded.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\javax.servlet.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-server.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-continuation.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-http.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-io.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-util.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-security.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-servlet.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-webapp.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-xml.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-jsp.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\javax.servlet.jsp.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\org.apache.jasper.glassfish.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\javax.servlet.jsp.jstl.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\org.apache.taglibs.standard.glassfish.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\javax.el.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\com.sun.el.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\org.eclipse.jdt.core.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-jmx.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-jndi.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\javax.mail.glassfish.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\javax.activation.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-annotations.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\jetty-plus.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\javax.annotation.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\org.objectweb.asm.jar;C:\home\dev\java\w.plugins\eclipse-jetty-code\plugins\eclipse-jetty-launcher\lib\jetty\javax.transaction.jar;C:\Program Files\Java\jdk1.6.0_45\jre\lib\ext\dnsns.jar;C:\Program Files\Java\jdk1.6.0_45\jre\lib\ext\localedata.jar;C:\Program Files\Java\jdk1.6.0_45\jre\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jdk1.6.0_45\jre\lib\ext\sunmscapi.jar
+ |   |               +- xpoweredBy=false
+ |   |               +- scratchdir=C:\Users\thred\AppData\Local\Temp\jetty-0.0.0.0-8080-webapp-_quickstart-any-\jsp
+ |   |
+ |   +- org.eclipse.jetty.annotations.ServletContainerInitializerListener@5dc37b8f - STARTED
+ |   |
+ |   +- tapestry.development-modules=test.quickstart.services.DevelopmentModule
+ |   +- tapestry.qa-modules=test.quickstart.services.QaModule
+ |   +- tapestry.app-package=test.quickstart
+ |   |
+ |   +- org.eclipse.jetty.lifecyleCallbackCollection=org.eclipse.jetty.plus.annotation.LifeCycleCallbackCollection@4ce51960
+ |   +- org.eclipse.jetty.containerInitializerListener=org.eclipse.jetty.annotations.ServletContainerInitializerListener@5dc37b8f
+ |   +- org.apache.catalina.jsp_classpath=C:\home\dev\java\w.test\quickstart\target\classes;C:\Users\thred\.m2\repository\org\apache\tapestry\tapestry-core\5.3.2\tapestry-core-5.3.2.jar;C:\Users\thred\.m2\repository\commons-codec\commons-codec\1.5\commons-codec-1.5.jar;C:\Users\thred\.m2\repository\org\apache\tapestry\tapestry-json\5.3.2\tapestry-json-5.3.2.jar;C:\Users\thred\.m2\repository\org\apache\tapestry\tapestry-ioc\5.3.2\tapestry-ioc-5.3.2.jar;C:\Users\thred\.m2\repository\org\apache\tapestry\plastic\5.3.2\plastic-5.3.2.jar;C:\Users\thred\.m2\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;C:\Users\thred\.m2\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;C:\Users\thred\.m2\repository\javax\inject\javax.inject\1\javax.inject-1.jar;C:\Users\thred\.m2\repository\org\apache\tapestry\tapestry5-annotations\5.3.2\tapestry5-annotations-5.3.2.jar;C:\Users\thred\.m2\repository\org\apache\tapestry\tapestry-func\5.3.2\tapestry-func-5.3.2.jar;C:\Users\thred\.m2\repository\log4j\log4j\1.2.14\log4j-1.2.14.jar;C:\Users\thred\.m2\repository\javassist\javassist\3.12.1.GA\javassist-3.12.1.GA.jar;C:\Users\thred\.m2\repository\org\apache\tapestry\tapestry-yuicompressor\5.3.2\tapestry-yuicompressor-5.3.2.jar;C:\Users\thred\.m2\repository\com\yahoo\platform\yui\yuicompressor\2.4.6\yuicompressor-2.4.6.jar;C:\Users\thred\.m2\repository\rhino\js\1.6R7\js-1.6R7.jar;C:\Users\thred\.m2\repository\junit\junit\4.10\junit-4.10.jar;C:\Users\thred\.m2\repository\org\hamcrest\hamcrest-core\1.1\hamcrest-core-1.1.jar;C:\Users\thred\.m2\repository\org\antlr\antlr-runtime\3.4\antlr-runtime-3.4.jar;C:\Users\thred\.m2\repository\org\antlr\stringtemplate\3.2.1\stringtemplate-3.2.1.jar;C:\Users\thred\.m2\repository\antlr\antlr\2.7.7\antlr-2.7.7.jar;C:\home\dev\java\w.test\quickstart\src\main\webapp\WEB-INF\lib\events-on-fire-1.3-SNAPSHOT.jar
+ |   +- org.eclipse.jetty.runAsCollection=org.eclipse.jetty.plus.annotation.RunAsCollection@54e51510
+ |   +- javax.servlet.context.tempdir=C:\Users\thred\AppData\Local\Temp\jetty-0.0.0.0-8080-webapp-_quickstart-any-
+ |   +- org.eclipse.jetty.containerInitializers=[]
+ |   +- org.eclipse.jetty.injectionCollection=org.eclipse.jetty.plus.annotation.InjectionCollection@bc9f8fb
+ |   |
+ |   +- com.sun.jsp.tagFileJarUrlsCache={}
+ |   +- com.sun.jsp.tldUriToLocationMap={http://java.sun.com/jsp/jstl/fmt=[Ljava.lang.String;@37debcf3, http://java.sun.com/jstl/fmt=[Ljava.lang.String;@47122d, http://java.sun.com/jsp/jstl/sql=[Ljava.lang.String;@39fa487f, http://java.sun.com/jstl/xml=[Ljava.lang.String;@5eada795, http://java.sun.com/jstl/sql_rt=[Ljava.lang.String;@5ad557c2, http://java.sun.com/jstl/sql=[Ljava.lang.String;@6c74b024, http://java.sun.com/jstl/core=[Ljava.lang.String;@60d8431c, http://jakarta.apache.org/taglibs/standard/scriptfree=[Ljava.lang.String;@161e14f0, http://java.sun.com/jstl/fmt_rt=[Ljava.lang.String;@10f0a3e8, http://java.sun.com/jsp/jstl/xml=[Ljava.lang.String;@2698dd08, http://java.sun.com/jsp/jstl/core=[Ljava.lang.String;@7dd74c03, http://java.sun.com/jstl/core_rt=[Ljava.lang.String;@41bf9980, http://java.sun.com/jstl/xml_rt=[Ljava.lang.String;@9f6c439, http://java.sun.com/jsp/jstl/functions=[Ljava.lang.String;@27cc7f4b, http://jakarta.apache.org/taglibs/standard/permittedTaglibs=[Ljava.lang.String;@62b92956}
+ |   +- org.apache.tapestry5.application-registry=org.apache.tapestry5.ioc.internal.RegistryWrapper@6a48ffbc
+ |   +- com.sun.jsp.taglibraryCache={}
+ |
+ +- qtp570110481{2<=1<=9/10,0} - STARTED
+ |   +- 19 qtp570110481-19 Selector0 RUNNABLE @ sun.nio.ch.WindowsSelectorImpl$SubSelector.poll0(Native Method)
+ |   +- 20 qtp570110481-20 Acceptor1 SelectChannelConnector@0.0.0.0:8080 BLOCKED @ sun.nio.ch.ServerSocketChannelImpl.accept(ServerSocketChannelImpl.java:134)
+ |   +- 21 qtp570110481-21 Selector1 RUNNABLE @ sun.nio.ch.WindowsSelectorImpl$SubSelector.poll0(Native Method)
+ |   +- 22 qtp570110481-22 Acceptor0 SelectChannelConnector@0.0.0.0:8080 RUNNABLE @ sun.nio.ch.ServerSocketChannelImpl.accept0(Native Method)
+ |   +- 24 qtp570110481-24 Selector1 RUNNABLE @ sun.nio.ch.WindowsSelectorImpl$SubSelector.poll0(Native Method)
+ |   +- 25 qtp570110481-25 TIMED_WAITING @ sun.misc.Unsafe.park(Native Method) IDLE
+ |   +- 26 qtp570110481-26 Selector0 RUNNABLE @ sun.nio.ch.WindowsSelectorImpl$SubSelector.poll0(Native Method)
+ |   +- 27 qtp570110481-27 Acceptor1 SslSelectChannelConnector@0.0.0.0:8443 BLOCKED @ sun.nio.ch.ServerSocketChannelImpl.accept(ServerSocketChannelImpl.java:134)
+ |   +- 29 qtp570110481-29 Acceptor0 SslSelectChannelConnector@0.0.0.0:8443 RUNNABLE @ sun.nio.ch.ServerSocketChannelImpl.accept0(Native Method)
+ +- org.eclipse.jetty.jmx.MBeanContainer@7471c619 - STARTED
+ |   +- [*.jsp, *.jspf, *.jspx, *.xsp, *.JSP, *.JSPF, *.JSPX, *.XSP]=>jsp=org.eclipse.jetty.servlet:type=servletmapping,name=jsp,id=0
+ |   +- [/*]/[]==0=>app=org.eclipse.jetty.servlet:type=filtermapping,name=app,id=0
+ |   +- org.eclipse.jetty.servlet.ServletHandler@52287b58=org.eclipse.jetty.servlet:type=servlethandler,context=quickstart,id=0
+ |   +- org.eclipse.jetty.util.log.Log@99d12cc=org.eclipse.jetty.util.log:type=log,id=0
+ |   +- o.e.j.w.WebAppContext{/quickstart,file:/C:/home/dev/java/w.test/quickstart/src/main/webapp/},src/main/webapp=org.eclipse.jetty.webapp:type=webappcontext,name=quickstart,id=0
+ |   +- org.eclipse.jetty.server.session.HashSessionIdManager@1915470e=org.eclipse.jetty.server.session:type=hashsessionidmanager,id=0
+ |   +- app=org.eclipse.jetty.servlet:type=filterholder,name=app,id=0
+ |   +- org.eclipse.jetty.security.ConstraintSecurityHandler@68c0890f=org.eclipse.jetty.security:type=constraintsecurityhandler,context=quickstart,id=0
+ |   +- org.eclipse.jetty.server.session.SessionHandler@66e8c7db=org.eclipse.jetty.server.session:type=sessionhandler,context=quickstart,id=0
+ |   +- jsp=org.eclipse.jetty.servlet:type=servletholder,name=jsp,id=0
+ |   +- default=org.eclipse.jetty.servlet:type=servletholder,name=default,id=0
+ |   +- org.eclipse.jetty.server.Server@4b7361e2=org.eclipse.jetty.server:type=server,id=0
+ |   +- org.eclipse.jetty.server.session.HashSessionManager@74b70648=org.eclipse.jetty.server.session:type=hashsessionmanager,context=quickstart,id=0
+ |   +- [/]=>default=org.eclipse.jetty.servlet:type=servletmapping,name=default,id=0
+ +- org.eclipse.jetty.server.session.HashSessionIdManager@1915470e - STARTED
+ |
+ +- SelectChannelConnector@0.0.0.0:8080 - STARTED
+ |   +- PooledBuffers [0/1024@6144,0/1024@16384,0/1024@-]/PooledBuffers [0/1024@6144,0/1024@32768,0/1024@-] - STARTED
+ |   +- org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@55d866c5 - STARTED
+ |   |   +- org.eclipse.jetty.io.nio.SelectorManager$SelectSet@72433b8a keys=0 selected=0 id=0
+ |   |   |   +- org.eclipse.jetty.io.nio.SelectorManager$SelectSet.doSelect(SelectorManager.java:569)
+ |   |   |   +- sun.nio.ch.WindowsSelectorImpl@76f33280 keys=0
+ |   |   +- org.eclipse.jetty.io.nio.SelectorManager$SelectSet@5878ae82 keys=0 selected=0 id=1
+ |   |       +- org.eclipse.jetty.io.nio.SelectorManager$SelectSet.doSelect(SelectorManager.java:569)
+ |   |       +- sun.nio.ch.WindowsSelectorImpl@2d74e4b3 keys=0
+ |   +- sun.nio.ch.ServerSocketChannelImpl[/0.0.0.0:8080]
+ |   +- qtp570110481{2<=1<=9/10,0} - STARTED
+ +- SslSelectChannelConnector@0.0.0.0:8443 - STARTED
+     +- PooledBuffers [0/1024@16660,0/1024@16660,0/1024@-]/PooledBuffers [0/1024@6144,0/1024@32768,0/1024@-] - STARTED
+     +- org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@5552bb15 - STARTED
+     |   +- org.eclipse.jetty.io.nio.SelectorManager$SelectSet@2a788b76 keys=0 selected=0 id=0
+     |   |   +- org.eclipse.jetty.io.nio.SelectorManager$SelectSet.doSelect(SelectorManager.java:569)
+     |   |   +- sun.nio.ch.WindowsSelectorImpl@454e2c9c keys=0
+     |   +- org.eclipse.jetty.io.nio.SelectorManager$SelectSet@f52d950 keys=0 selected=0 id=1
+     |       +- org.eclipse.jetty.io.nio.SelectorManager$SelectSet.doSelect(SelectorManager.java:569)
+     |       +- sun.nio.ch.WindowsSelectorImpl@5d1eb50b keys=0
+     +- SslContextFactory@b0014f0(C:\Users\thred\AppData\Local\Temp\eclipseJettyPlugin.1765586377322837975.keystore,C:\Users\thred\AppData\Local\Temp\eclipseJettyPlugin.1765586377322837975.keystore) - STARTED
+     +- sun.nio.ch.ServerSocketChannelImpl[/0.0.0.0:8443]
+     +- qtp570110481{2<=1<=9/10,0} - STARTED
+
+Server Info
+===========
+
+         Version: 8.1.12.v20130726
+         Context: /quickstart
+            Port: 8080, 8443
+       Classpath: C:/Users/thred/.m2/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar
+                  C:/Users/thred/.m2/repository/com/yahoo/platform/yui/yuicompressor/2.4.6/yuicompressor-2.4.6.jar
+                  C:/Users/thred/.m2/repository/commons-codec/commons-codec/1.5/commons-codec-1.5.jar
+                  C:/Users/thred/.m2/repository/javassist/javassist/3.12.1.GA/javassist-3.12.1.GA.jar
+                  C:/Users/thred/.m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar
+                  C:/Users/thred/.m2/repository/junit/junit/4.10/junit-4.10.jar
+                  C:/Users/thred/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar
+                  C:/Users/thred/.m2/repository/org/antlr/antlr-runtime/3.4/antlr-runtime-3.4.jar
+                  C:/Users/thred/.m2/repository/org/antlr/stringtemplate/3.2.1/stringtemplate-3.2.1.jar
+                  C:/Users/thred/.m2/repository/org/apache/tapestry/plastic/5.3.2/plastic-5.3.2.jar
+                  C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-core/5.3.2/tapestry-core-5.3.2.jar
+                  C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-func/5.3.2/tapestry-func-5.3.2.jar
+                  C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-ioc/5.3.2/tapestry-ioc-5.3.2.jar
+                  C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-json/5.3.2/tapestry-json-5.3.2.jar
+                  C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry-yuicompressor/5.3.2/tapestry-yuicompressor-5.3.2.jar
+                  C:/Users/thred/.m2/repository/org/apache/tapestry/tapestry5-annotations/5.3.2/tapestry5-annotations-5.3.2.jar
+                  C:/Users/thred/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar
+                  C:/Users/thred/.m2/repository/org/slf4j/slf4j-api/1.6.1/slf4j-api-1.6.1.jar
+                  C:/Users/thred/.m2/repository/org/slf4j/slf4j-log4j12/1.6.1/slf4j-log4j12-1.6.1.jar
+                  C:/Users/thred/.m2/repository/rhino/js/1.6R7/js-1.6R7.jar
+                  C:/home/dev/java/w.test/quickstart/src/main/webapp/WEB-INF/lib/events-on-fire-1.3-SNAPSHOT.jar
+                  C:/home/dev/java/w.test/quickstart/target/classes
