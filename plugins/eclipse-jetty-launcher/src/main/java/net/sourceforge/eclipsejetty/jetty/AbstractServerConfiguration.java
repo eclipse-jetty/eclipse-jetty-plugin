@@ -478,15 +478,8 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
             builder.beginNew(getDefaultHandlerClass());
             {
                 File defaultWar = getDefaultWar();
-
-                if (defaultWar != null)
-                {
-                    builder.arg(defaultWar.getAbsolutePath());
-                }
-                else {
-                    builder.arg(null);
-                }
-
+                
+                builder.arg((defaultWar != null) ? defaultWar.getAbsolutePath() : "/");
                 builder.arg(getDefaultContextPath());
 
                 if (getCustomWebDefaultsFile() != null)
