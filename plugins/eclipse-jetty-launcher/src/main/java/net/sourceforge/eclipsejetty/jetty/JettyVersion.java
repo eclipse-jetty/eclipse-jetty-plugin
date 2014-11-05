@@ -167,21 +167,29 @@ public class JettyVersion
         try
         {
             JarFile jarFile = new JarFile(file);
-            Manifest manifest = jarFile.getManifest();
 
-            if (manifest == null)
+            try
             {
-                return null;
+                Manifest manifest = jarFile.getManifest();
+
+                if (manifest == null)
+                {
+                    return null;
+                }
+
+                Attributes attributes = manifest.getMainAttributes();
+
+                if ((attributes == null) || (attributes.size() == 0))
+                {
+                    return null;
+                }
+
+                return attributes.getValue("Implementation-Version");
             }
-
-            Attributes attributes = manifest.getMainAttributes();
-
-            if ((attributes == null) || (attributes.size() == 0))
+            finally
             {
-                return null;
+                jarFile.close();
             }
-
-            return attributes.getValue("Implementation-Version");
         }
         catch (IOException e)
         {
