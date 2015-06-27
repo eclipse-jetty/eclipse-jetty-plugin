@@ -180,8 +180,17 @@ public abstract class AbstractJettyLauncherMain
     protected static Class<?> determineClass(File file) throws IOException
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
+        factory.setExpandEntityReferences(false);
+        try
+        {
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        }
+        catch (ParserConfigurationException e1)
+        {
+            // ignore
+        }
 
+        DocumentBuilder builder;
         try
         {
             builder = factory.newDocumentBuilder();
@@ -192,7 +201,6 @@ public abstract class AbstractJettyLauncherMain
         }
 
         Document document;
-
         try
         {
             document = builder.parse(new InputSource(new FileInputStream(file)));
