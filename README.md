@@ -1,4 +1,4 @@
-Eclipse Jetty Plugin
+Eclipse Jetty Plugin [![Build Status](https://travis-ci.org/eclipse-jetty/eclipse-jetty-plugin.svg?branch=master)](https://travis-ci.org/eclipse-jetty/eclipse-jetty-plugin)
 ===================
 
 Eclipse Jetty Integration provides a launch configuration for launching Jetty server out of the Eclipse IDE (4.x, 3.4 and up).
