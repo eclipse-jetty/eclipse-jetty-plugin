@@ -11,6 +11,8 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty8;
 
+import java.util.Collection;
+
 import net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy;
 
 /**
@@ -22,6 +24,9 @@ import net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy;
 public class Jetty8LibStrategy extends Jetty7LibStrategy
 {
 
-    // intentionally left blank
+    protected void addWebsocketDependencies(Collection<String> dependencies) {
+        dependencies.add(".*/jetty-continuation-.*\\.jar");
+        dependencies.add(".*/jetty-websocket-.*\\.jar");
+    }
 
 }

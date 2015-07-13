@@ -87,6 +87,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button jmxSupportButton;
     private Button jndiSupportButton;
     private Button annotationsSupportButton;
+    private Button websocketSupportButton;
     private Button ajpSupportButton;
     private Spinner ajpPortSpinner;
 
@@ -217,6 +218,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jmxSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, Messages.advConfigTab_jmxSupportButton,
                 Messages.advConfigTab_jmxSupportButtonTip, -1, 1, 1, modifyDialogListener);
+        websocketSupportButton =
+            createButton(jettyFeatureGroup, SWT.CHECK, Messages.advConfigTab_websocketSupportButton,
+                    Messages.advConfigTab_websocketSupportButtonTip, -1, 1, 1, modifyDialogListener);
     }
 
     private void createPluginFeatureGroup(Composite tabComposite)
@@ -362,6 +366,12 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private void createContextGroup(Composite tabComposite)
     {
         Group contextGroup = createGroup(tabComposite, Messages.advConfigTab_contextGroupTitle, 6, -1, true, 2, 1);
+        Object ld = contextGroup.getLayoutData();
+        // at least on SWT.GTK grabVerticalSpace does not correctly calculate the minHeight of the the composite.
+        if (ld instanceof GridData) {
+            GridData gd = (GridData)ld;
+            gd.heightHint = 180;
+        }
 
         configTable =
             createTable(contextGroup, SWT.BORDER | SWT.FULL_SELECTION, 320, 96, 5, 3,
@@ -523,6 +533,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             jmxSupportButton.setSelection(adapter.isJmxSupport());
             jndiSupportButton.setSelection(adapter.isJndiSupport());
             annotationsSupportButton.setSelection(adapter.isAnnotationsSupport());
+            websocketSupportButton.setSelection(adapter.isWebsocketSupport());
             ajpSupportButton.setSelection(adapter.isAjpSupport());
             gracefulShutdownOverrideEnabledButton.setSelection(adapter.isGracefulShutdownOverrideEnabled());
             gracefulShutdownOverrideTimeoutSpinner.setSelection(adapter.getGracefulShutdownOverrideTimeout() / 100);
@@ -599,6 +610,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             adapter.setJmxSupport(jmxSupportButton.getSelection());
             adapter.setJndiSupport(jndiSupportButton.getSelection());
             adapter.setAnnotationsSupport(annotationsSupportButton.getSelection());
+            adapter.setWebsocketSupport(websocketSupportButton.getSelection());
             adapter.setAjpSupport(ajpSupportButton.getSelection());
             adapter.setGracefulShutdownOverrideEnabled(gracefulShutdownOverrideEnabledButton.getSelection());
             adapter.setGracefulShutdownOverrideTimeout(gracefulShutdownOverrideTimeoutSpinner.getSelection() * 100);
@@ -643,7 +655,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         boolean jndi = jndiSupportButton.getSelection();
 
-        if (jndi)
+        if (jndi || websocketSupportButton.getSelection())
         {
             annotationsSupportButton.setEnabled(false);
             annotationsSupportButton.setSelection(true);

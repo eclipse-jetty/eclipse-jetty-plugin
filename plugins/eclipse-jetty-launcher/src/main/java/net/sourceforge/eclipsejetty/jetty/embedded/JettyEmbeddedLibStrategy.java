@@ -110,6 +110,11 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("org.objectweb.asm");
         dependencies.add("jetty-plus");
     }
+    
+    @Override
+    protected void addWebsocketDependencies(Collection<String> dependencies) {
+        dependencies.add("jetty-websocket");
+    }
 
     /**
      * {@inheritDoc}
