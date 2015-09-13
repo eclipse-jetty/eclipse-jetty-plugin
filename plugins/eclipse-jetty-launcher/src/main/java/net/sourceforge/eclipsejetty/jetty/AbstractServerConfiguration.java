@@ -32,6 +32,8 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     private boolean annotationsEnabled = false;
     private boolean jndiEnabled = false;
     private boolean jmxEnabled = false;
+    private boolean websocketEnabled = false;
+
     private Integer port;
     private Integer sslPort;
     private Integer gracefulShutdown;
@@ -141,6 +143,16 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     public void setJmxEnabled(boolean jmxEnabled)
     {
         this.jmxEnabled = jmxEnabled;
+    }
+
+    public boolean isWebsocketEnabled()
+    {
+        return websocketEnabled;
+    }
+
+    public void setWebsocketEnabled(boolean websocketEnabled)
+    {
+        this.websocketEnabled = websocketEnabled; 
     }
 
     /**

@@ -87,6 +87,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button jmxSupportButton;
     private Button jndiSupportButton;
     private Button annotationsSupportButton;
+    private Button websocketSupportButton;
     private Button ajpSupportButton;
     private Spinner ajpPortSpinner;
 
@@ -217,6 +218,10 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         jmxSupportButton =
             createButton(jettyFeatureGroup, SWT.CHECK, Messages.advConfigTab_jmxSupportButton,
                 Messages.advConfigTab_jmxSupportButtonTip, -1, 1, 1, modifyDialogListener);
+        websocketSupportButton =
+            createButton(jettyFeatureGroup, SWT.CHECK, Messages.advConfigTab_websocketSupportButton,
+                Messages.advConfigTab_websocketSupportButtonTip, -1, 1, 1, modifyDialogListener);
+
     }
 
     private void createPluginFeatureGroup(Composite tabComposite)
@@ -523,6 +528,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             jmxSupportButton.setSelection(adapter.isJmxSupport());
             jndiSupportButton.setSelection(adapter.isJndiSupport());
             annotationsSupportButton.setSelection(adapter.isAnnotationsSupport());
+            websocketSupportButton.setSelection(adapter.isWebsocketSupport());
             ajpSupportButton.setSelection(adapter.isAjpSupport());
             gracefulShutdownOverrideEnabledButton.setSelection(adapter.isGracefulShutdownOverrideEnabled());
             gracefulShutdownOverrideTimeoutSpinner.setSelection(adapter.getGracefulShutdownOverrideTimeout() / 100);
@@ -599,6 +605,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             adapter.setJmxSupport(jmxSupportButton.getSelection());
             adapter.setJndiSupport(jndiSupportButton.getSelection());
             adapter.setAnnotationsSupport(annotationsSupportButton.getSelection());
+            adapter.setWebsocketSupport(websocketSupportButton.getSelection());
             adapter.setAjpSupport(ajpSupportButton.getSelection());
             adapter.setGracefulShutdownOverrideEnabled(gracefulShutdownOverrideEnabledButton.getSelection());
             adapter.setGracefulShutdownOverrideTimeout(gracefulShutdownOverrideTimeoutSpinner.getSelection() * 100);

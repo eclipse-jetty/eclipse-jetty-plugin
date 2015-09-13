@@ -53,4 +53,9 @@ public class Jetty9LibStrategy extends Jetty8LibStrategy
         dependencies.add(".*/annotations/.*\\.jar");
     }
 
+    @Override
+    protected void addWebsocketSupport(Collection<String> dependencies)
+    {
+        dependencies.add(".*/websocket/.*\\.jar");
+    }
 }

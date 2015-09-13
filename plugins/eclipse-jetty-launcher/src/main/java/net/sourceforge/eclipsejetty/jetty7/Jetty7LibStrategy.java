@@ -23,11 +23,6 @@ import net.sourceforge.eclipsejetty.jetty.FileBasedJettyLibStrategy;
 public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
 {
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addServerDependencies(java.util.Collection)
-     */
     @Override
     protected void addServerDependencies(Collection<String> dependencies)
     {
@@ -44,11 +39,6 @@ public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
         dependencies.add(".*/jetty-util-.*\\.jar");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJSPDependencies(java.util.Collection)
-     */
     @Override
     protected void addJSPDependencies(Collection<String> dependencies)
     {
@@ -61,22 +51,12 @@ public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
         dependencies.add(".*/org.eclipse.jdt.core-.*\\.jar");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJMXDependencies(java.util.Collection)
-     */
     @Override
     protected void addJMXDependencies(Collection<String> dependencies)
     {
         dependencies.add(".*/jetty-jmx-.*\\.jar");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJNDIDependencies(java.util.Collection)
-     */
     @Override
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
@@ -85,11 +65,6 @@ public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
         dependencies.add(".*/jndi/.*\\.jar");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addAnnotationDependencies(java.util.Collection)
-     */
     @Override
     protected void addAnnotationsDependencies(Collection<String> dependencies)
     {
@@ -98,15 +73,16 @@ public class Jetty7LibStrategy extends FileBasedJettyLibStrategy
         dependencies.add(".*/annotations/.*\\.jar");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addAJPDependencies(java.util.Collection)
-     */
     @Override
     protected void addAJPDependencies(Collection<String> dependencies)
     {
         dependencies.add(".*/jetty-ajp-.*\\.jar");
+    }
+    
+    @Override
+    protected void addWebsocketSupport(Collection<String> dependencies)
+    {
+        // not supported
     }
 
 }

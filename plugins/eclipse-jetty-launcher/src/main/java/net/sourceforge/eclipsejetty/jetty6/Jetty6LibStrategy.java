@@ -112,4 +112,9 @@ public class Jetty6LibStrategy extends FileBasedJettyLibStrategy
         dependencies.add(".*/ext/jetty-ajp-.*\\.jar");
     }
 
+    @Override
+    protected void addWebsocketSupport(Collection<String> dependencies)
+    {
+        // not supported
+    }
 }

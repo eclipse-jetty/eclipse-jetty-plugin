@@ -32,11 +32,6 @@ import org.eclipse.core.runtime.Status;
 public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
 {
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addServerDependencies(java.util.Collection)
-     */
     @Override
     protected void addServerDependencies(Collection<String> dependencies)
     {
@@ -53,11 +48,6 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("jetty-util");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJSPDependencies(java.util.Collection)
-     */
     @Override
     protected void addJSPDependencies(Collection<String> dependencies)
     {
@@ -72,22 +62,12 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("org.eclipse.jdt.core");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJMXDependencies(java.util.Collection)
-     */
     @Override
     protected void addJMXDependencies(Collection<String> dependencies)
     {
         dependencies.add("jetty-jmx");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addJNDIDependencies(java.util.Collection)
-     */
     @Override
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
@@ -97,11 +77,6 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("jetty-plus");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addAnnotationDependencies(java.util.Collection)
-     */
     @Override
     protected void addAnnotationsDependencies(Collection<String> dependencies)
     {
@@ -111,15 +86,16 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         dependencies.add("jetty-plus");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.DependencyBasedJettyLibStrategy#addAJPDependencies(java.util.Collection)
-     */
     @Override
     protected void addAJPDependencies(Collection<String> dependencies)
     {
         dependencies.add("jetty-ajp");
+    }
+
+    @Override
+    protected void addWebsocketSupport(Collection<String> dependencies)
+    {
+        // TODO websockets
     }
 
     /**

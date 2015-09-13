@@ -88,6 +88,8 @@ public class Messages extends NLS
     public static String advConfigTab_jettyGroupTitle;
     public static String advConfigTab_jmxSupportButton;
     public static String advConfigTab_jmxSupportButtonTip;
+    public static String advConfigTab_websocketSupportButton;
+    public static String advConfigTab_websocketSupportButtonTip;
     public static String advConfigTab_jndiSupportButton;
     public static String advConfigTab_jndiSupportButtonTip;
     public static String advConfigTab_jspSupportButton;

@@ -33,7 +33,7 @@ public abstract class DependencyBasedJettyLibStrategy implements JettyLibStrateg
      *      boolean)
      */
     public Collection<File> find(File path, boolean jspSupport, boolean jmxSupport, boolean jndiSupport,
-        boolean annotationsSupport, boolean ajpSupport) throws CoreException
+        boolean annotationsSupport, boolean ajpSupport, boolean websocketSupport) throws CoreException
     {
         Collection<String> dependencies = new LinkedHashSet<String>();
 
@@ -62,6 +62,11 @@ public abstract class DependencyBasedJettyLibStrategy implements JettyLibStrateg
         if (ajpSupport)
         {
             addAJPDependencies(dependencies);
+        }
+
+        if (websocketSupport)
+        {
+            addWebsocketSupport(dependencies);
         }
 
         Collection<File> results = new LinkedHashSet<File>();
@@ -112,6 +117,13 @@ public abstract class DependencyBasedJettyLibStrategy implements JettyLibStrateg
      * @param dependencies the dependencies to be filled
      */
     protected abstract void addAJPDependencies(Collection<String> dependencies);
+
+    /**
+     * Add all dependencies for Websockets
+     * 
+     * @param dependencies the dependencies to be filled
+     */
+    protected abstract void addWebsocketSupport(Collection<String> dependencies);
 
     /**
      * Resolves all dependencies an addes the files to the results.
