@@ -21,7 +21,7 @@ import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
-public class Jetty9LibStrategy extends Jetty8LibStrategy
+public class Jetty93LibStrategy extends Jetty8LibStrategy
 {
     @Override
     protected void addServerDependencies(Collection<String> dependencies)
@@ -33,7 +33,7 @@ public class Jetty9LibStrategy extends Jetty8LibStrategy
     @Override
     protected void addJSPDependencies(Collection<String> dependencies)
     {
-        dependencies.add(".*\\/lib\\/jsp\\/.*\\.jar");
+        dependencies.add(".*\\/lib\\/apache-jsp\\/.*\\.jar");
     }
 
     @Override
