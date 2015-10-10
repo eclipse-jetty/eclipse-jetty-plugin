@@ -1,11 +1,12 @@
 package org.demo;
 
+import java.time.LocalDateTime;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @EnableAutoConfiguration
@@ -17,13 +18,12 @@ public class DemoApplication extends SpringBootServletInitializer {
 	}
 
 	@RequestMapping
-	public String echo(@RequestParam("text") String txt) {
-		return txt;
+	public String process() {
+		return LocalDateTime.now().toString();
 	}
 
 	@Override
-	protected SpringApplicationBuilder configure(
-			SpringApplicationBuilder application) {
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(DemoApplication.class);
 	}
 }
