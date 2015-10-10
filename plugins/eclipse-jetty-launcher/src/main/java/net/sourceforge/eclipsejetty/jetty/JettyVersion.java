@@ -216,7 +216,7 @@ public class JettyVersion
         majorVersion = extractMajorVersion(version);
         minorVersion = extractMinorVersion(version);
         microVersion = extractMicroVersion(version);
-        type = extractType(majorVersion, embedded);
+        type = extractType(majorVersion, minorVersion, embedded);
     }
 
     public String getVersion()
@@ -295,7 +295,7 @@ public class JettyVersion
         }
     }
 
-    private static JettyVersionType extractType(Integer majorVersion, boolean embedded)
+    private static JettyVersionType extractType(Integer majorVersion, Integer minorVersion, boolean embedded)
     {
         if (embedded)
         {
@@ -318,9 +318,14 @@ public class JettyVersion
             case 8:
                 return JettyVersionType.JETTY_8;
 
-            case 9:
-                return JettyVersionType.JETTY_9;
-
+            case 9: {
+            	if (minorVersion.intValue() <= 2) {
+            		return JettyVersionType.JETTY_9;
+            	}
+            	else {
+            		return JettyVersionType.JETTY_9_3;
+            	}
+            }
             default:
                 return null;
         }
