@@ -11,17 +11,17 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty;
 
-import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.ArtifactKey;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 
+import net.sourceforge.eclipsejetty.launch.util.JettyLaunchConfigurationAdapter;
+
 /**
  * Some utilities
- * 
+ *
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
@@ -30,7 +30,7 @@ public class JettyPluginM2EUtils
 
     /**
      * Returns true if the m2e plugin is available.
-     * 
+     *
      * @return true if the m2e plugin is available
      */
     public static boolean isM2EAvailable()
@@ -49,7 +49,7 @@ public class JettyPluginM2EUtils
 
     /**
      * Returns the {@link IMavenProjectFacade} for the specified project
-     * 
+     *
      * @param adapter the configuration adapter
      * @return the {@link IMavenProjectFacade} if available, null otherwise
      * @throws CoreException on occasion
@@ -64,12 +64,17 @@ public class JettyPluginM2EUtils
             return null;
         }
 
+        if (!isM2EAvailable())
+        {
+            return null;
+        }
+
         return MavenPlugin.getMavenProjectRegistry().getProject(project);
     }
 
     /**
      * Returns the Maven portable string
-     * 
+     *
      * @param groupId the group
      * @param artifactId the artifact
      * @param version the version
@@ -83,7 +88,7 @@ public class JettyPluginM2EUtils
 
     /**
      * Returns the Maven portable string with the varaint
-     * 
+     *
      * @param groupId the group
      * @param artifactId the artifact
      * @param version the version
@@ -134,7 +139,7 @@ public class JettyPluginM2EUtils
 
     /**
      * Returns the suspected Maven path for the artifact
-     * 
+     *
      * @param artifactKey the artifact key
      * @return the path
      */
