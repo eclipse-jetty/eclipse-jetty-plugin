@@ -2,6 +2,7 @@ package net.sourceforge.eclipsejetty.jetty;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
@@ -100,10 +101,16 @@ public class JettyVersion
         {
             try
             {
-                version =
-                    new JettyVersion(detect(new File(FileLocator.toFileURL(
-                        FileLocator.find(JettyPlugin.getDefault().getBundle(),
-                            Path.fromOSString("lib/jetty/jetty-server.jar"), null)).getFile())), true);
+                URL url = FileLocator.find(JettyPlugin.getDefault().getBundle(),
+                    Path.fromOSString("lib/jetty/jetty-server.jar"), null);
+
+                if (url == null)
+                {
+                    throw new IllegalArgumentException(
+                        "Could not detect Jetty version of embedded Jetty (did not find jetty-server.jar)");
+                }
+
+                version = new JettyVersion(detect(new File(FileLocator.toFileURL(url).getFile())), true);
             }
             catch (IOException e)
             {
@@ -318,13 +325,16 @@ public class JettyVersion
             case 8:
                 return JettyVersionType.JETTY_8;
 
-            case 9: {
-            	if (minorVersion.intValue() <= 2) {
-            		return JettyVersionType.JETTY_9;
-            	}
-            	else {
-            		return JettyVersionType.JETTY_9_3;
-            	}
+            case 9:
+            {
+                if (minorVersion.intValue() <= 2)
+                {
+                    return JettyVersionType.JETTY_9;
+                }
+                else
+                {
+                    return JettyVersionType.JETTY_9_3;
+                }
             }
             default:
                 return null;
