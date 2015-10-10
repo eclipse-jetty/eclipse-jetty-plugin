@@ -20,9 +20,9 @@
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.config.type.0" value="DEFAULT"/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.embedded" value="false"/>
 <intAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.microVersion" value="3"/>
-<intAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.minorVersion" value="2"/>
+<intAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.minorVersion" value="3"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.path" value="${JETTY9_HOME}"/>
-<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.version" value="JETTY_9"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.jetty.version" value="JETTY_9_3"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.jmx.enabled" value="true"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.jndi.enabled" value="true"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.jsp.enabled" value="true"/>
@@ -44,6 +44,7 @@
 <intAttribute key="net.sourceforge.eclipsejetty.launcher.threadPool.limit.count" value="16"/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.threadPool.limit.enabled" value="false"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.webappdir" value=""/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.websocket.enabled" value="false"/>
 <stringAttribute key="org.eclipse.debug.core.source_locator_id" value="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"/>
 <stringAttribute key="org.eclipse.debug.core.source_locator_memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;sourceLookupDirector&gt;&#10;&lt;sourceContainers duplicates=&quot;false&quot;&gt;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#10;&amp;lt;javaProject name=&amp;quot;quickstart&amp;quot;/&amp;gt;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#10;&amp;lt;javaProject name=&amp;quot;spring-boot-demo&amp;quot;/&amp;gt;&amp;#10;&quot; typeId=&quot;org.eclipse.jdt.launching.sourceContainer.javaProject&quot;/&gt;&#10;&lt;container memento=&quot;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;&amp;#10;&amp;lt;default/&amp;gt;&amp;#10;&quot; typeId=&quot;org.eclipse.debug.core.containerType.default&quot;/&gt;&#10;&lt;/sourceContainers&gt;&#10;&lt;/sourceLookupDirector&gt;&#10;"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
@@ -51,6 +52,7 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="net.sourceforge.eclipsejetty.launcher.JettyLaunchClassPathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre8"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="spring-boot-demo"/>
 </launchConfiguration>

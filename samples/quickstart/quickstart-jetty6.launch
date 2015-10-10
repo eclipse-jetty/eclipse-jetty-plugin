@@ -10,7 +10,7 @@
 <intAttribute key="net.sourceforge.eclipsejetty.launcher.configVersion" value="1"/>
 <intAttribute key="net.sourceforge.eclipsejetty.launcher.connection.limit.count" value="4"/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.console.enabled" value="true"/>
-<stringAttribute key="net.sourceforge.eclipsejetty.launcher.context" value="/quickstart"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.context" value="/"/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.customWebDefaults.enabled" value="false"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.customWebDefaults.resource" value=""/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.gracefulShutdown.override.enabled" value="false"/>
@@ -62,6 +62,7 @@
 <intAttribute key="net.sourceforge.eclipsejetty.launcher.threadPool.limit.count" value="16"/>
 <booleanAttribute key="net.sourceforge.eclipsejetty.launcher.threadPool.limit.enabled" value="true"/>
 <stringAttribute key="net.sourceforge.eclipsejetty.launcher.webappdir" value="src/main/webapp"/>
+<stringAttribute key="net.sourceforge.eclipsejetty.launcher.websocket.enabled" value="false"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
 </listAttribute>
@@ -72,6 +73,7 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="net.sourceforge.eclipsejetty.launcher.JettyLaunchClassPathProvider"/>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre5"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="net.sourceforge.eclipsejetty.starter.jetty6.Jetty6LauncherMain"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="quickstart"/>
 </launchConfiguration>
