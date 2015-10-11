@@ -1,7 +1,7 @@
  -----
  Eclipse Jetty Integration
  -----
- Christian Köberl, Manfred Hantschel
+ Christian KÃ¶berl, Manfred Hantschel
  -----
  December 2013
  
@@ -9,7 +9,7 @@ Introduction
 
  Eclipse Jetty Integration provides a launch configuration for launching Jetty server out of the Eclipse IDE (4.x, 3.4 and up).
  
- Currently supported versions of Jetty are 6.x, 7.x, 8.x and 9.x. You can use either the bundled Jetty 8 or any other manually installed one.
+ Currently supported versions of Jetty are 7.x, 8.x and 9.x. You can use either the bundled Jetty 8 or any other manually installed one.
  
  This plugin is released under the Apache 2.0 license ({{http://www.apache.org/licenses/LICENSE-2.0.txt}}).
 
@@ -35,7 +35,7 @@ http://eclipse-jetty.github.io/update/
 * About
 
  The Eclipse Jetty Plugin is hosted on {{{https://github.com/eclipse-jetty/eclipse-jetty-plugin}GitHub}} and is maintained by
- Christian Köberl and Manfred Hantschel. It's primary goal, is to provide a stable and consistent launch environment for 
+ Christian KÃ¶berl and Manfred Hantschel. It's primary goal, is to provide a stable and consistent launch environment for 
  large projects and development teams (reducing configuration needs per developer to a minimum). 
  
  It is based on the original Jetty Launcher by Geoffrey Longman (base for the well known {{{http://code.google.com/p/run-jetty-run/}Run Jetty Run}} plugin, too), 

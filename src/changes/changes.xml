@@ -9,11 +9,31 @@
 	</properties>
 
 	<body>
+		<release version="3.9.0" date="2015-10-11">
+			<action dev="derkoe" type="fix" issue="5">
+				MalformedURLException when loading temp config file in Windows.
+			</action>
+			<action dev="thred" type="fix" issue="8">
+				Changes in Jetty version not read after next launch.
+			</action>
+			<action dev="thred" type="fix" issue="13">
+				Avoid verification of DTDs via Internet.
+			</action>
+			<action dev="thred" type="fix" issue="16">
+				Problem when M2Eclipse is not installed.
+			</action>
+			<action dev="derkoe" type="add" issue="15">
+				Support for Jetty 9.3
+			</action>
+			<action type="add">
+				Added sample projects for testing different features in Jetty versions.
+			</action>
+		</release>
 		<release version="3.8.0" date="2014-07-13">
-			<action dev="thred" type="fix" issue="#4">
+			<action dev="thred" type="fix" issue="4">
 				The certificate should be issued for localhost instead of EclipseJettyPlugin
 			</action>
-			<action dev="derkoe" type="fix" issue="#1">
+			<action dev="derkoe" type="fix" issue="1">
 				Support for Jetty 9.1.x and 9.2.x
 			</action>
 			<action dev="thred" type="fix" issue="15">
@@ -21,7 +41,7 @@
 			</action>
 		</release>
 		<release version="3.7.0" date="2014-05-03">
-			<action dev="ckoeberl" type="fix" issue="17">
+			<action dev="ckoeberl" type="fix" issue="17" system="SourceForge">
 				Fixed relative path extraction for webapp path and context file location.
 			</action>
 
@@ -178,7 +198,7 @@
 			<action dev="thred" type="add">
 				Added visual sugar
 			</action>
-			<action dev="thred" type="fix" issue="#7 Invalid Maven Scopes">
+			<action dev="thred" type="fix" issue="7" system="SourceForge">
 				Added direct m2e support for correct Maven scopes
 			</action>
 			<action dev="thred" type="change">
@@ -208,7 +228,7 @@
 			<action dev="thred" type="remove">
 				Support for Jetty 5 dropped.
 			</action>
-			<action dev="thred" type="fix" issue="3520146">
+			<action dev="thred" type="fix">
 				Fixed Jetty version autodetection.
 			</action>
 			<action dev="thred" type="add">
