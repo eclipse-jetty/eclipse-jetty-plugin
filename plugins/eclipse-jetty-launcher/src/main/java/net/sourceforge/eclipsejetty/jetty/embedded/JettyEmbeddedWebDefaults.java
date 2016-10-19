@@ -11,14 +11,14 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty.embedded;
 
-import net.sourceforge.eclipsejetty.jetty8.Jetty8WebDefaults;
+import net.sourceforge.eclipsejetty.jetty9.Jetty9WebDefaults;
 
 /**
  * Web defaults for the embedded server.
  * 
  * @author Manfred Hantschel
  */
-public class JettyEmbeddedWebDefaults extends Jetty8WebDefaults
+public class JettyEmbeddedWebDefaults extends Jetty9WebDefaults
 {
 
     public JettyEmbeddedWebDefaults()

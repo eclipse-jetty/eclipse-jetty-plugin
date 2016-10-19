@@ -11,25 +11,18 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.jetty.embedded;
 
-import net.sourceforge.eclipsejetty.jetty8.Jetty8ServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty9.Jetty9ServerConfiguration;
 
 /**
  * Server configuration for the embedded server.
  *
  * @author Manfred Hantschel
  */
-public class JettyEmbeddedServerConfiguration extends Jetty8ServerConfiguration
+public class JettyEmbeddedServerConfiguration extends Jetty9ServerConfiguration
 {
 
     public JettyEmbeddedServerConfiguration()
     {
         super();
     }
-
-    @Override
-    protected String getExtendedAnnotationConfigurationClassName()
-    {
-        return "net.sourceforge.eclipsejetty.starter.embedded.ExtendedAnnotationConfiguration";
-    }
-
 }

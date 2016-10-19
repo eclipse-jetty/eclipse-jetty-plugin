@@ -1,35 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>net.sourceforge.eclipsejetty</groupId>
-		<artifactId>parent</artifactId>
-		<version>3.9.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>net.sourceforge.eclipsejetty</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.9.0-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>eclipse-jetty-starters</artifactId>
-	<packaging>pom</packaging>
+    <artifactId>eclipse-jetty-starters</artifactId>
+    <packaging>pom</packaging>
 
-	<name>Eclipse Jetty Launcher Starters</name>
+    <name>Eclipse Jetty Launcher Starters</name>
 
-	<properties>
-		<version.jetty6>6.1.26</version.jetty6>
-		<version.jetty7>7.6.12.v20130726</version.jetty7>
-		<version.jetty8>8.1.14.v20131031</version.jetty8>
-		<version.jetty9>9.0.5.v20130815</version.jetty9>
-	</properties>
+    <properties>
+        <version.jetty6>6.1.26</version.jetty6>
+        <version.jetty7>7.6.12.v20130726</version.jetty7>
+        <version.jetty8>8.1.14.v20131031</version.jetty8>
+        <version.jetty9>9.3.12.v20160915</version.jetty9>
+    </properties>
 
-	<modules>
-		<module>common</module>
-		<module>embedded</module>
-		<module>jetty6</module>
-		<module>jetty7</module>
-		<module>jetty8</module>
-		<module>jetty9</module>
-		<module>console</module>
-		<module>util</module>
-	</modules>
+    <modules>
+        <module>common</module>
+        <module>embedded</module>
+        <module>jetty6</module>
+        <module>jetty7</module>
+        <module>jetty8</module>
+        <module>jetty9</module>
+        <module>console</module>
+        <module>util</module>
+    </modules>
 
 </project>

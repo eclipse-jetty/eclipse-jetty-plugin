@@ -1,5 +1,5 @@
 net.sourceforge.eclipsejetty.starter.common.command.DumpCommand
 net.sourceforge.eclipsejetty.starter.common.command.InfoCommand
-net.sourceforge.eclipsejetty.starter.common.command.RestartCommand
 net.sourceforge.eclipsejetty.starter.common.command.StopCommand
-net.sourceforge.eclipsejetty.starter.embedded.command.OpenCommand
+net.sourceforge.eclipsejetty.starter.common.command.RestartCommand
+net.sourceforge.eclipsejetty.starter.jetty9.command.OpenCommand
