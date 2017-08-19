@@ -83,6 +83,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     private Button pathBrowseButton;
     private Label versionHint;
 
+    private Button enableOptimizedWebAppClassLoaderButton;
+    private Text optimizedClassLoaderExclusionPatternText;
+    
     private Button jspSupportButton;
     private Button jmxSupportButton;
     private Button jndiSupportButton;
@@ -135,6 +138,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         Composite tabComposite = createTabComposite(parent, 2, true);
 
         createJettyGroup(tabComposite);
+        createJettyWebAppClassLoaderGroup(tabComposite);
         createJettyFeatureGroup(tabComposite);
         createPluginFeatureGroup(tabComposite);
         createConfigGroup(tabComposite);
@@ -196,6 +200,26 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         
         createImage(composite, JettyPlugin.getIcon(JettyPlugin.JETTY_PLUGIN_ADVANCED_LOGO), 96, SWT.CENTER, SWT.TOP, 1,
             3);
+    }
+    
+    private void createJettyWebAppClassLoaderGroup(Composite tabComposite)
+    {
+        final Group jettyWebAppClassLoaderFeatureGroup = new Group(tabComposite, SWT.NONE);
+        jettyWebAppClassLoaderFeatureGroup.setLayout(new GridLayout(1, false));
+        jettyWebAppClassLoaderFeatureGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        jettyWebAppClassLoaderFeatureGroup.setText(Messages.advConfigTab_jettyWebappClassLoaderFeatureGroupTitle);
+
+        enableOptimizedWebAppClassLoaderButton =
+            createButton(jettyWebAppClassLoaderFeatureGroup, SWT.CHECK, Messages.advConfigTab_enableOptimizedWebAppClassLoaderButtonButton,
+                Messages.advConfigTab_enableOptimizedWebAppClassLoaderButtonButtonTip, -1, 1, 1, modifyDialogListener);
+                        
+        final Group jettyWebAppClassLoaderExclusionFeatureGroup = new Group(jettyWebAppClassLoaderFeatureGroup, SWT.NONE);
+        jettyWebAppClassLoaderExclusionFeatureGroup.setLayout(new GridLayout(1, false));
+        jettyWebAppClassLoaderExclusionFeatureGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        jettyWebAppClassLoaderExclusionFeatureGroup.setText(Messages.advConfigTab_advancedClassLoaderExclusionTitle);
+        
+        optimizedClassLoaderExclusionPatternText =
+            createText(jettyWebAppClassLoaderExclusionFeatureGroup, SWT.BORDER, Messages.advConfigTab_advancedClassLoaderExclusionPatternTip, -1, -1, 1, 1, modifyDialogListener);
     }
 
     private void createJettyFeatureGroup(Composite tabComposite)
@@ -524,6 +548,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
             externButton.setSelection(!adapter.isEmbedded());
             pathText.setText(adapter.getPathString());
 
+            enableOptimizedWebAppClassLoaderButton.setSelection(adapter.isOptimizedClassLoaderEnabled());
+            optimizedClassLoaderExclusionPatternText.setText(adapter.getOptimizedClassLoaderExclusionPattern());
+            
             jspSupportButton.setSelection(adapter.isJspSupport());
             jmxSupportButton.setSelection(adapter.isJmxSupport());
             jndiSupportButton.setSelection(adapter.isJndiSupport());
@@ -601,6 +628,9 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                 // failed to detect
             }
 
+            adapter.setOptimizedClassLoaderEnabled(enableOptimizedWebAppClassLoaderButton.getSelection());
+            adapter.setOptimizedClassLoaderExclusionPattern(optimizedClassLoaderExclusionPatternText.getText());
+            
             adapter.setJspSupport(jspSupportButton.getSelection());
             adapter.setJmxSupport(jmxSupportButton.getSelection());
             adapter.setJndiSupport(jndiSupportButton.getSelection());
@@ -666,6 +696,8 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         pathVariablesButton.setEnabled(!embedded);
         pathBrowseButton.setEnabled(!embedded);
 
+        optimizedClassLoaderExclusionPatternText.setEnabled(enableOptimizedWebAppClassLoaderButton.getSelection());
+        
         boolean threadPoolLimitEnabled = threadPoolLimitEnabledButton.getSelection();
 
         threadPoolLimitCountSpinner.setEnabled(threadPoolLimitEnabled);

@@ -653,6 +653,11 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
                 FileLocator.find(JettyPlugin.getDefault().getBundle(), Path.fromOSString(jettyVersion.getJar()), null))
                 .getFile())));
+            
+            //Add optimized webappclassloader
+            entries.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(FileLocator.toFileURL(
+                    FileLocator.find(JettyPlugin.getDefault().getBundle(),
+                        Path.fromOSString("lib/eclipse-jetty-optimized-webappclassloader.jar"), null)).getFile())));
 
             for (final File jettyLib : jettyVersion.getLibStrategy().find(jettyPath, jspSupport, jmxSupport,
                 jndiSupport, annotationsSupport, ajpSupport, websocketSupport))
@@ -837,6 +842,9 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
         serverConfiguration.setAnnotationsEnabled(adapter.isAnnotationsSupport());
         serverConfiguration.setWebsocketEnabled(adapter.isWebsocketSupport());
         serverConfiguration.setJmxEnabled(adapter.isJmxSupport());
+        
+        serverConfiguration.setEnabledOptimizedClassloader(adapter.isOptimizedClassLoaderEnabled());
+        serverConfiguration.setOptimizedClassloaderExclusionPattern(adapter.getOptimizedClassLoaderExclusionPattern());
 
         if (adapter.isGracefulShutdownOverrideEnabled())
         {

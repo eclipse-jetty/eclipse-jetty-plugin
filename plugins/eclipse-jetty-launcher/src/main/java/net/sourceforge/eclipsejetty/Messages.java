@@ -201,6 +201,11 @@ public class Messages extends NLS
     public static String shortcut_webAppSelectMessage;
     public static String shortcut_webAppSelectTitle;
     public static String utils_scanFailed;
+	public static String advConfigTab_jettyWebappClassLoaderFeatureGroupTitle;
+	public static String advConfigTab_enableOptimizedWebAppClassLoaderButtonButton;
+	public static String advConfigTab_enableOptimizedWebAppClassLoaderButtonButtonTip;
+	public static String advConfigTab_advancedClassLoaderExclusionTitle;
+	public static String advConfigTab_advancedClassLoaderExclusionPatternTip;
     static
     {
         // initialize resource bundle

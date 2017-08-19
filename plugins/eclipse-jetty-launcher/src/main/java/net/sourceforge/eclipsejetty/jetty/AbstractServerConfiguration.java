@@ -47,6 +47,9 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     private File defaultWar;
     private String defaultContextPath;
     private File customWebDefaultsFile;
+    
+    private boolean enabledOptimizedClassloader = false;
+    private String optimizedClassloaderExclusionPattern = ".*assembly.*";
 
     public AbstractServerConfiguration()
     {
@@ -154,6 +157,22 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     {
         this.websocketEnabled = websocketEnabled; 
     }
+    
+    public void setEnabledOptimizedClassloader(boolean enabledOptimizedClassloader) {
+		this.enabledOptimizedClassloader = enabledOptimizedClassloader;
+	}
+    
+    public boolean isEnabledOptimizedClassloader() {
+		return enabledOptimizedClassloader;
+	}
+    
+    public void setOptimizedClassloaderExclusionPattern(String optimizedClassloaderExclusionPattern) {
+		this.optimizedClassloaderExclusionPattern = optimizedClassloaderExclusionPattern;
+	}
+    
+    public String getOptimizedClassloaderExclusionPattern() {
+		return optimizedClassloaderExclusionPattern;
+	}
 
     /**
      * Returns the (HTTP) port.
@@ -424,10 +443,16 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         buildHttpsConfig(builder);
         buildHttpsConnector(builder);
         buildHandler(builder);
-        buildAnnotations(builder);
+        //[TODO] Do not know yet why they do not work together. Analyze.
+        if (!enabledOptimizedClassloader) {
+        	buildAnnotations(builder);
+        }
         buildJNDI(builder);
         buildJMX(builder);
-        buildExtraOptions(builder);
+        //[TODO] Do not know yet why they do not work together. Analyze.
+        if (!enabledOptimizedClassloader) {
+        	buildExtraOptions(builder);
+        }
 
     }
 
@@ -487,7 +512,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
         builder.beginSet("handler");
         {
-            builder.beginNew(getDefaultHandlerClass());
+            builder.beginNew("webContext", getDefaultHandlerClass());
             {
                 File defaultWar = getDefaultWar();
                 
@@ -509,6 +534,17 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
                 }
 
                 buildDefaultHandlerSetters(builder);
+                
+                if (enabledOptimizedClassloader) {
+	                builder.beginSet("classLoader"); 
+	                builder.beginNew("optimizedClassLoader", "jetty.classloader.OptimizedWebAppClassLoader");
+	                builder.beginArg();
+	                builder.ref("webContext");
+	                builder.end();
+	                builder.comment("Pattern of diretories that need to be excluded from being optimized (packaged) by the classloader");
+	                builder.arg(optimizedClassloaderExclusionPattern);
+	                builder.end();
+                }
             }
             builder.end();
         }

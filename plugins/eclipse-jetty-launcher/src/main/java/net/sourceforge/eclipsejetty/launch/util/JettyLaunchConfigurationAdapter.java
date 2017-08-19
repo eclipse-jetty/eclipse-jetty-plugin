@@ -66,6 +66,9 @@ public class JettyLaunchConfigurationAdapter
     private static final String ATTR_JETTY_CONFIG_TYPE = JettyPlugin.PLUGIN_ID + ".jetty.config.type."; //$NON-NLS-1$
     private static final String ATTR_JETTY_CONFIG_ACTIVE = JettyPlugin.PLUGIN_ID + ".jetty.config.active."; //$NON-NLS-1$
     private static final String ATTR_ANNOTATIONS_ENABLED = JettyPlugin.PLUGIN_ID + ".annotations.enabled"; //$NON-NLS-1$
+    private static final String ATTR_OPTMIZED_CLASSLOADER_ENABLED = JettyPlugin.PLUGIN_ID + ".optimizedClassloader.enabled"; //$NON-NLS-1$
+    private static final String ATTR_OPTMIZED_CLASSLOADER_EXCLUSION_PATTERN = JettyPlugin.PLUGIN_ID
+            + ".optimizedClassloader.exclusionPattern"; //$NON-NLS-1$
     private static final String ATTR_JSP_ENABLED = JettyPlugin.PLUGIN_ID + ".jsp.enabled"; //$NON-NLS-1$
     private static final String ATTR_JMX_ENABLED = JettyPlugin.PLUGIN_ID + ".jmx.enabled"; //$NON-NLS-1$
     private static final String ATTR_JNDI_ENABLED = JettyPlugin.PLUGIN_ID + ".jndi.enabled"; //$NON-NLS-1$
@@ -260,6 +263,9 @@ public class JettyLaunchConfigurationAdapter
             // failed to detect
         }
 
+        setOptimizedClassLoaderEnabled(isOptimizedClassLoaderEnabled());
+        setOptimizedClassLoaderExclusionPattern(getOptimizedClassLoaderExclusionPattern());
+        
         setJspSupport(isJspSupport());
         setJmxSupport(isJmxSupport());
         setJndiSupport(isJndiSupport());
@@ -760,6 +766,37 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
+     * Set to true, if optimized class loader should be supported.
+     * 
+     * @param jsoptimizedClassLoaderEnabledpSupport true, if optimized class loading should be supported
+     * @throws CoreException on occasion
+     */
+    public void setOptimizedClassLoaderEnabled(boolean optimizedClassLoaderEnabled) throws CoreException
+    {
+        setAttribute(true, ATTR_OPTMIZED_CLASSLOADER_ENABLED, String.valueOf(optimizedClassLoaderEnabled)); // string for backward compatibility
+    }
+    
+    /**
+     * Returns true, if optimized class loading should be supported.
+     * 
+     * @return true, if optimized class loading should be supported
+     * @throws CoreException on occasion
+     */
+    public boolean isOptimizedClassLoaderEnabled() throws CoreException
+    {
+        return !"false".equals(getAttribute(true, ATTR_OPTMIZED_CLASSLOADER_ENABLED, "true")); // string for backward compatibility //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    public void setOptimizedClassLoaderExclusionPattern(String value) throws CoreException {
+    	setAttribute(false, ATTR_OPTMIZED_CLASSLOADER_EXCLUSION_PATTERN, value);		
+	}
+
+	public String getOptimizedClassLoaderExclusionPattern() throws CoreException {
+		return getAttribute(false, ATTR_OPTMIZED_CLASSLOADER_EXCLUSION_PATTERN, ".*assembly.*");
+	}
+		
+
+    /**
      * Set to true, if JSPs should be supported.
      * 
      * @param jspSupport true, if JSPs should be supported
@@ -769,6 +806,7 @@ public class JettyLaunchConfigurationAdapter
     {
         setAttribute(true, ATTR_JSP_ENABLED, String.valueOf(jspSupport)); // string for backward compatibility
     }
+    
 
     /**
      * Returns true, if JMX should be supported.

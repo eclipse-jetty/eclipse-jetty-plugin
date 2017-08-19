@@ -30,6 +30,7 @@
 		<module>jetty9</module>
 		<module>console</module>
 		<module>util</module>
+        <module>optimizedwebappclassloader</module>
 	</modules>
 
 </project>

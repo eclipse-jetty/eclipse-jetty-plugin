@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+		<groupId>net.sourceforge.eclipsejetty</groupId>
+		<artifactId>eclipse-jetty-starters</artifactId>
+		<version>3.9.0-SNAPSHOT</version>
+  </parent>
+  
+  <artifactId>eclipse-jetty-optimized-webappclassloader</artifactId>
+  <name>Eclipse Jetty Optimized WebAppClassLoader</name>
+  <description>Optimized Jetty WebAppClassLoader</description>
+  <contributors>
+  	<contributor>
+  		<name>Robert Schmelzer</name>
+  		<email>robert.schmelzer@catalysts.cc</email>
+  	</contributor>
+  	<contributor>
+  		<name>Stefan Starke</name>
+  		<email>stefan.starke@catalysts.cc</email>
+  	</contributor>
+  </contributors>  
+  
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  
+  <!-- Dependencies -->
+  <dependencies>
+	<dependency>
+    	<groupId>org.eclipse.jetty</groupId>
+    	<artifactId>jetty-webapp</artifactId>
+    	<version>9.4.6.v20170531</version>
+	</dependency>
+  </dependencies>
+  
+</project>
