@@ -39,9 +39,8 @@ public enum JettyVersionType
     /**
      * The embedded Jetty of the Jetty Plugin.
      */
-    JETTY_EMBEDDED("net.sourceforge.eclipsejetty.starter.embedded.JettyEmbeddedLauncherMain",
-        "lib/eclipse-jetty-starters-embedded.jar", JettyEmbeddedServerConfiguration.class,
-        new JettyEmbeddedLibStrategy(), JettyEmbeddedWebDefaults.class),
+    JETTY_EMBEDDED("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-embedded.jar",
+        Jetty9ServerConfiguration.class, new JettyEmbeddedLibStrategy(), Jetty9WebDefaults.class),
 
     /**
      * A Jetty 6 at a specified path

@@ -35,31 +35,28 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
     @Override
     protected void addServerDependencies(Collection<String> dependencies)
     {
-        dependencies.add("javax.servlet");
-        dependencies.add("jetty-server");
+        dependencies.add("javax.servlet-api");
+
         dependencies.add("jetty-continuation");
+        dependencies.add("jetty-deploy");
         dependencies.add("jetty-http");
         dependencies.add("jetty-io");
-        dependencies.add("jetty-util");
         dependencies.add("jetty-security");
+        dependencies.add("jetty-server");
         dependencies.add("jetty-servlet");
+        dependencies.add("jetty-util");
         dependencies.add("jetty-webapp");
         dependencies.add("jetty-xml");
-        dependencies.add("jetty-util");
     }
 
     @Override
     protected void addJSPDependencies(Collection<String> dependencies)
     {
-        dependencies.add("jetty-jsp");
-        dependencies.add("javax.servlet.jsp");
-        dependencies.add("javax.servlet");
-        dependencies.add("org.apache.jasper.glassfish");
-        dependencies.add("javax.servlet.jsp.jstl");
-        dependencies.add("org.apache.taglibs.standard.glassfish");
-        dependencies.add("javax.el");
-        dependencies.add("com.sun.el");
-        dependencies.add("org.eclipse.jdt.core");
+        dependencies.add("apache-jsp");
+        dependencies.add("jetty-schemas");
+        dependencies.add("apache-jsp/apache-jsp");
+        dependencies.add("apache-jsp/apache-el");
+        dependencies.add("ecj");
     }
 
     @Override
@@ -81,21 +78,28 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
     protected void addAnnotationsDependencies(Collection<String> dependencies)
     {
         dependencies.add("jetty-annotations");
-        dependencies.add("javax.annotation");
-        dependencies.add("org.objectweb.asm");
+        dependencies.add("javax.annotation-api");
+        dependencies.add("asm");
         dependencies.add("jetty-plus");
     }
 
     @Override
     protected void addAJPDependencies(Collection<String> dependencies)
     {
-        dependencies.add("jetty-ajp");
+        // AJP not anymore supported by jetty9
     }
 
     @Override
     protected void addWebsocketSupport(Collection<String> dependencies)
     {
-        // TODO websockets
+        dependencies.add("javax.websocket-api");
+        dependencies.add("javax-websocket-server-impl");
+        dependencies.add("javax-websocket-client-impl");
+        dependencies.add("websocket-api");
+        dependencies.add("websocket-common");
+        dependencies.add("websocket-client");
+        dependencies.add("websocket-server");
+        dependencies.add("websocket-servlet");
     }
 
     /**
@@ -118,6 +122,7 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
     {
         try
         {
+            System.out.println(dependency);
             return new File(FileLocator.toFileURL(
                 FileLocator.find(JettyPlugin.getDefault().getBundle(),
                     Path.fromOSString(String.format("lib/jetty/%s.jar", dependency)), null)).getFile());
@@ -126,6 +131,11 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
         {
             throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
                 "Failed to include embedded Jetty libraries", e));
+        }
+        catch (Throwable t)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, JettyPlugin.PLUGIN_ID,
+                String.format("Failed to include embedded Jetty library: %s", dependency), t));
         }
     }
 
