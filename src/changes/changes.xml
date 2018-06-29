@@ -9,6 +9,15 @@
 	</properties>
 
 	<body>
+		<release version="4.0.0" date="2018-06-29">
+			<action dev="derkoe" type="update" issue="29">
+				Use Jetty 9.3 as embedded Jetty
+			</action>
+			<action dev="derkoe" type="fix" issue="32">
+				Fix some typos in the user interface.
+			</action>
+		</release>
+
 		<release version="3.9.0" date="2015-10-11">
 			<action dev="derkoe" type="fix" issue="5">
 				MalformedURLException when loading temp config file in Windows.
@@ -201,7 +210,7 @@
 			<action dev="thred" type="fix" issue="7" system="SourceForge">
 				Added direct m2e support for correct Maven scopes
 			</action>
-			<action dev="thred" type="change">
+			<action dev="thred" type="update">
 				Embedded Jetty is now version 8
 			</action>
 		</release>
@@ -243,10 +252,10 @@
 			<action dev="thred" type="add">
 				Classpath for webapp is now set via file - no problems with too long command line in Windows anymore :)
 			</action>
-			<action dev="thred" type="change">
+			<action dev="thred" type="update">
 				New logo with a shiny glow.
 			</action>
-			<action dev="thred" type="change">
+			<action dev="thred" type="update">
 				Refactored and beautified UI
 			</action>
 		</release>
