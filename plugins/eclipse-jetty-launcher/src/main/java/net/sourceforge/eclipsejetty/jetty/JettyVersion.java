@@ -331,9 +331,13 @@ public class JettyVersion
                 {
                     return JettyVersionType.JETTY_9;
                 }
-                else
+                else if (minorVersion.intValue() < 4)
                 {
                     return JettyVersionType.JETTY_9_3;
+                }
+                else
+                {
+                    return JettyVersionType.JETTY_9_4;
                 }
             }
             default:
