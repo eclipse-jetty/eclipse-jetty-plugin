@@ -191,6 +191,11 @@ public abstract class DependencyMatcher
         return withClasspathProperty(IRuntimeClasspathEntry.USER_CLASSES);
     }
 
+    public static DependencyMatcher classPath()
+    {
+        return withClasspathProperty(IRuntimeClasspathEntry.CLASS_PATH);
+    }
+
     /**
      * Matches only those entries with the specified classpath property: BOOTSTRAP_CLASSES, STANDARD_CLASSES,
      * USER_CLASSES.

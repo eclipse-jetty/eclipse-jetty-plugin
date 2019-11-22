@@ -340,7 +340,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
             scopedClasspathEntries.add(Dependency.create(mavenScopeCollection, entry));
         }
 
-        result = Collections.unmodifiableCollection(userClasses().match(scopedClasspathEntries));
+        result = Collections.unmodifiableCollection(or(userClasses(), classPath()).match(scopedClasspathEntries));
 
         putCached("OriginalClasspathEntries", adapter, result); //$NON-NLS-1$
 
@@ -678,7 +678,7 @@ public class JettyLaunchConfigurationDelegate extends JavaLaunchDelegate
     private DependencyMatcher createWebappClasspathMatcher(JettyLaunchConfigurationAdapter adapter)
         throws CoreException
     {
-        DependencyMatcher vmClasspathMatcher = userClasses();
+        DependencyMatcher vmClasspathMatcher = or(userClasses(), classPath());
 
         if (adapter.isGenericIdsSupported())
         {

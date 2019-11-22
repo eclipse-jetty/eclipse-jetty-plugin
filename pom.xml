@@ -161,8 +161,8 @@
 
 	<repositories>
 		<repository>
-			<id>eclipse-indigo</id>
-			<url>http://download.eclipse.org/releases/indigo</url>
+			<id>eclipse-oxygen</id>
+			<url>http://download.eclipse.org/releases/oxygen</url>
 			<layout>p2</layout>
 		</repository>
 	</repositories>
