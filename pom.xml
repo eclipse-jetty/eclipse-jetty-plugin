@@ -73,8 +73,8 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
 					<configuration>
-						<source>1.5</source>
-						<target>1.5</target>
+						<source>1.6</source>
+						<target>1.6</target>
 					</configuration>
 				</plugin>
 
@@ -161,8 +161,8 @@
 
 	<repositories>
 		<repository>
-			<id>eclipse-indigo</id>
-			<url>http://download.eclipse.org/releases/indigo</url>
+			<id>eclipse-oxygen</id>
+			<url>http://download.eclipse.org/releases/oxygen</url>
 			<layout>p2</layout>
 		</repository>
 	</repositories>
