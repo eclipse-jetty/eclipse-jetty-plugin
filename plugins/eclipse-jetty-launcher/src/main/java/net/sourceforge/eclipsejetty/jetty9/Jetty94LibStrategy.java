@@ -16,18 +16,28 @@ import java.util.Collection;
 import net.sourceforge.eclipsejetty.jetty8.Jetty8LibStrategy;
 
 /**
- * Resolve libs for Jetty 9
+ * Resolve libs for Jetty 9.4.x
  * 
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
+ * @author Andreas Stubenrauch
  */
-public class Jetty9LibStrategy extends Jetty8LibStrategy
+public class Jetty94LibStrategy extends Jetty8LibStrategy
 {
     @Override
     protected void addServerDependencies(Collection<String> dependencies)
     {
-        dependencies.add(".*\\/lib\\/jetty-.*\\.jar");
         dependencies.add(".*/servlet-api-.*\\.jar");
+        dependencies.add(".*/jetty-schemas-.*\\.jar");
+        dependencies.add(".*/jetty-http-.*\\.jar");
+        dependencies.add(".*/jetty-server-.*\\.jar");
+        dependencies.add(".*/jetty-xml-.*\\.jar");
+        dependencies.add(".*/jetty-util-.*\\.jar");
+        dependencies.add(".*/jetty-io-.*\\.jar");
+        dependencies.add(".*/jetty-security-.*\\.jar");
+        dependencies.add(".*/jetty-servlet-.*\\.jar");
+        dependencies.add(".*/jetty-webapp-.*\\.jar");
+        dependencies.add(".*/jetty-deploy-.*\\.jar");
     }
 
     @Override
@@ -40,23 +50,29 @@ public class Jetty9LibStrategy extends Jetty8LibStrategy
     @Override
     protected void addJMXDependencies(Collection<String> dependencies)
     {
+        dependencies.add(".*/jetty-jmx-.*\\.jar");
     }
 
     @Override
     protected void addJNDIDependencies(Collection<String> dependencies)
     {
-        dependencies.add(".*/jndi/.*\\.jar");
+        dependencies.add(".*/mail/.*\\.jar");
+        dependencies.add(".*/jetty-jndi-.*\\.jar");
+        dependencies.add(".*/transactions/.*\\.jar");
+        dependencies.add(".*/jetty-plus-.*\\.jar");
     }
 
     @Override
     protected void addAnnotationsDependencies(Collection<String> dependencies)
     {
+        dependencies.add(".*/jetty-annotations-.*\\.jar");
         dependencies.add(".*/annotations/.*\\.jar");
     }
 
     @Override
     protected void addWebsocketSupport(Collection<String> dependencies)
     {
+        dependencies.add(".*/jetty-client-.*\\.jar");
         dependencies.add(".*/websocket/.*\\.jar");
     }
 }
