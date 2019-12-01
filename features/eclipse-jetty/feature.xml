@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.eclipsejetty.feature"
       label="Eclipse Jetty Feature"
-      version="5.0.0.qualifier"
+      version="5.0.0"
       provider-name="Christian Köberl">
 
    <description url="http://eclipse-jetty.github.io/">
@@ -35,7 +35,7 @@ limitations under the License.
          id="net.sourceforge.eclipsejetty.launcher"
          download-size="25"
          install-size="25"
-         version="5.0.0.qualifier"
+         version="5.0.0"
          unpack="false"/>
 
 </feature>

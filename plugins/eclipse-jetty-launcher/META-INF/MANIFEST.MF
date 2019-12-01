@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse Jetty Launcher Plugin
 Bundle-SymbolicName: net.sourceforge.eclipsejetty.launcher;singleton:=true
-Bundle-Version: 5.0.0.qualifier
+Bundle-Version: 5.0.0
 Bundle-Activator: net.sourceforge.eclipsejetty.JettyPlugin
 Bundle-Vendor: Christian Köberl, Manfred Hantschel
 Require-Bundle: org.eclipse.ui,
