@@ -9,6 +9,24 @@
 	</properties>
 
 	<body>
+		<release version="5.0.0" date="2019-12-01">
+			<action dev="venushka" type="update" issue="49">
+				Upgrade minimum Eclipse version to Oxygen
+			</action>
+			<action dev="venushka" type="update" issue="49">
+				Upgrade minimum JDK version to 6
+			</action>
+			<action dev="venushka" type="update" issue="48">
+				Adding Maven dependencies in JDK9+ projects to classpath
+			</action>
+			<action dev="stuban" type="add" issue="39">
+				Support for Jetty 9.4.x
+			</action>
+			<action dev="froque" type="update" issue="44">
+				Upgrade Jetty 9.3 to version 9.3.25.v20180904
+			</action>
+		</release>
+
 		<release version="4.0.0" date="2018-06-29">
 			<action dev="derkoe" type="update" issue="29">
 				Use Jetty 9.3 as embedded Jetty
