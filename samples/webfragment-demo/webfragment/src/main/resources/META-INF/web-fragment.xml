@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-fragment xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_1.xsd"
+	id="webfragment" version="3.1">
+
+	<display-name>webfragment</display-name>
+	<name>webfragment</name>
+
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	
+	<servlet>
+		<servlet-name>test</servlet-name>
+		<servlet-class>org.demo.webfragment.WebFragmentTestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>test</servlet-name>
+		<url-pattern>/test</url-pattern>
+	</servlet-mapping>
+
+</web-fragment>
