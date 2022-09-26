@@ -68,17 +68,11 @@ public class Jetty8LauncherMain extends AbstractJettyLauncherMain
         return new Jetty8Adapter(new Server());
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain#configure(java.io.FileInputStream,
-     *      java.lang.Class, net.sourceforge.eclipsejetty.starter.common.ServerAdapter)
-     */
     @Override
-    protected void configure(FileInputStream in, Class<?> type, ServerAdapter adapter) throws Exception
+    protected void configure(File configFile, Class<?> type, ServerAdapter adapter) throws Exception
     {
         Server server = (Server) adapter.getServer();
-        XmlConfiguration configuration = new XmlConfiguration(in);
+        XmlConfiguration configuration = new XmlConfiguration(new FileInputStream(configFile));
 
         if (type.isInstance(server))
         {

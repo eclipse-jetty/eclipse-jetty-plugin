@@ -11,6 +11,7 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.starter.jetty9;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,19 +28,20 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 /**
- * Implemation of the {@link ServerAdapter} for Jetty 9
+ * Implementation of the {@link ServerAdapter} for Jetty 11.
  * 
  * @author Manfred Hantschel
  */
-public class Jetty9Adapter extends AbstractServerAdapter implements DumpableServerAdapter
+public class Jetty11Adapter extends AbstractServerAdapter implements DumpableServerAdapter
 {
 
     private final Server server;
 
-    public Jetty9Adapter(Server server)
+    public Jetty11Adapter(Server server)
     {
         super();
 
@@ -232,12 +234,14 @@ public class Jetty9Adapter extends AbstractServerAdapter implements DumpableServ
                 }
                 else if (handler instanceof WebAppContext)
                 {
-                    String extraClasspath = ((WebAppContext) handler).getExtraClasspath();
-
-                    if (extraClasspath != null)
+                    List<Resource> extraClasspath = ((WebAppContext) handler).getExtraClasspath();
+                    for (Resource classPathEntry: extraClasspath) 
                     {
-                        // Collections.addAll(classPath, extraClasspath.split(File.pathSeparator)); // it seems, Jetty was built for Windows
-                        Collections.addAll(classPath, extraClasspath.split(";"));
+                    	try {
+							classPath.add(classPathEntry.getFile().getAbsolutePath());
+						} catch (IOException e) {
+							System.err.println(e.getMessage());
+						}
                     }
                 }
             }

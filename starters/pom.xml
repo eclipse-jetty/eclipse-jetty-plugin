@@ -18,7 +18,8 @@
         <version.jetty6>6.1.26</version.jetty6>
         <version.jetty7>7.6.12.v20130726</version.jetty7>
         <version.jetty8>8.1.14.v20131031</version.jetty8>
-        <version.jetty9>9.3.25.v20180904</version.jetty9>
+        <version.jetty9>9.4.49.v20220914</version.jetty9>
+        <version.jetty11>11.0.12</version.jetty11>
     </properties>
 
     <modules>
