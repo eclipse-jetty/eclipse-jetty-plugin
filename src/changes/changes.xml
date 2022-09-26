@@ -9,7 +9,7 @@
 	</properties>
 
 	<body>
-		<release version="5.0.0" date="2019-12-01">
+		<release version="6.0.0" date="2019-12-01">
 			<action dev="venushka" type="update" issue="49">
 				Upgrade minimum Eclipse version to Oxygen
 			</action>

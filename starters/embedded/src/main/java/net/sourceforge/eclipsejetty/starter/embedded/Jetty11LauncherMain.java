@@ -9,7 +9,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package net.sourceforge.eclipsejetty.starter.jetty9;
+package net.sourceforge.eclipsejetty.starter.embedded;
 
 import java.io.File;
 import java.io.PrintStream;
