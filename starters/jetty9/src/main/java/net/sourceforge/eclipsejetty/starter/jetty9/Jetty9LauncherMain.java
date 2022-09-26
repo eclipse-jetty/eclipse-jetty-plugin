@@ -12,7 +12,6 @@
 package net.sourceforge.eclipsejetty.starter.jetty9;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.PrintStream;
 
 import net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain;
@@ -20,6 +19,7 @@ import net.sourceforge.eclipsejetty.starter.common.ServerAdapter;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
 /**
@@ -42,11 +42,6 @@ public class Jetty9LauncherMain extends AbstractJettyLauncherMain
         new Jetty9LauncherMain().launch(args);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain#printLogo(java.io.PrintStream)
-     */
     @Override
     protected void printLogo(PrintStream out)
     {
@@ -57,28 +52,17 @@ public class Jetty9LauncherMain extends AbstractJettyLauncherMain
         out.println("           /_/                              /___/");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain#createAdapter(java.io.File[], boolean)
-     */
     @Override
     protected ServerAdapter createAdapter(File[] configurationFiles, boolean showInfo) throws Exception
     {
         return new Jetty9Adapter(new Server());
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.starter.common.AbstractJettyLauncherMain#configure(java.io.FileInputStream,
-     *      java.lang.Class, net.sourceforge.eclipsejetty.starter.common.ServerAdapter)
-     */
     @Override
-    protected void configure(FileInputStream in, Class<?> type, ServerAdapter adapter) throws Exception
+    protected void configure(File configFile, Class<?> type, ServerAdapter adapter) throws Exception
     {
         Server server = (Server) adapter.getServer();
-        XmlConfiguration configuration = new XmlConfiguration(in);
+        XmlConfiguration configuration = new XmlConfiguration(Resource.newResource(configFile));
 
         if (type.isInstance(server))
         {
