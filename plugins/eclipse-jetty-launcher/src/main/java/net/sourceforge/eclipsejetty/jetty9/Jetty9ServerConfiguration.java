@@ -289,7 +289,7 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
             builder.argRef("Server");
             builder.beginCall("addBefore");
             {
-                builder.arg("addBefore", "org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
+                builder.arg("beforeClass", "org.eclipse.jetty.webapp.JettyWebXmlConfiguration");
                 builder.argArray("org.eclipse.jetty.annotations.AnnotationConfiguration");
             }
             builder.end();
