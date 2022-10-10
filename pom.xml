@@ -112,7 +112,7 @@
 										<version>3.8.0</version>
 									</requireMavenVersion>
 									<requireJavaVersion>
-										<version>11</version>
+										<version>17</version>
 									</requireJavaVersion>
 								</rules>
 							</configuration>
@@ -205,8 +205,8 @@
 
 	<repositories>
 		<repository>
-			<id>eclipse-2021-12</id>
-			<url>http://download.eclipse.org/releases/2021-12</url>
+			<id>eclipse-2022-09</id>
+			<url>http://download.eclipse.org/releases/2022-09</url>
 			<layout>p2</layout>
 		</repository>
 	</repositories>

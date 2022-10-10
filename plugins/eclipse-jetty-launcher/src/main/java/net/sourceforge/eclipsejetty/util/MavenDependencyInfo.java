@@ -35,8 +35,8 @@ public class MavenDependencyInfo
      */
     public static MavenDependencyInfo create(ArtifactRef artifactRef)
     {
-        return new MavenDependencyInfo(artifactRef.getGroupId(), artifactRef.getArtifactId(), artifactRef.getVersion(),
-            artifactRef.getClassifier(), null, false, MavenScope.to(artifactRef.getScope()));
+        return new MavenDependencyInfo(artifactRef.artifactKey().groupId(), artifactRef.artifactKey().artifactId(), artifactRef.artifactKey().version(),
+            artifactRef.artifactKey().classifier(), null, false, MavenScope.to(artifactRef.scope()));
     }
 
     /**
@@ -49,8 +49,8 @@ public class MavenDependencyInfo
      */
     public static MavenDependencyInfo create(IMavenProjectFacade facade, String variant, MavenScope scope)
     {
-        return new MavenDependencyInfo(facade.getArtifactKey().getGroupId(), facade.getArtifactKey().getArtifactId(),
-            facade.getArtifactKey().getVersion(), facade.getArtifactKey().getClassifier(), variant, true, scope);
+        return new MavenDependencyInfo(facade.getArtifactKey().groupId(), facade.getArtifactKey().artifactId(),
+            facade.getArtifactKey().version(), facade.getArtifactKey().classifier(), variant, true, scope);
     }
 
     /**
