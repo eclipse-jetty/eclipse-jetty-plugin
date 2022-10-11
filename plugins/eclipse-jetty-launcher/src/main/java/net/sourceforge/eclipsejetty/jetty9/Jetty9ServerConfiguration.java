@@ -25,22 +25,12 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty.AbstractConfiguration#getJettyVersionType()
-     */
     @Override
     protected JettyVersionType getJettyVersionType()
     {
         return JettyVersionType.JETTY_9;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildThreadPool(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
-     */
     @Override
     protected void buildThreadPool(JettyConfigBuilder builder)
     {
@@ -63,11 +53,6 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.end();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildHttpConfig(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
-     */
     @Override
     protected void buildHttpConfig(JettyConfigBuilder builder)
     {
@@ -97,11 +82,6 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.end();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildHttpConnector(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
-     */
     @Override
     protected void buildHttpConnector(JettyConfigBuilder builder)
     {
@@ -147,13 +127,13 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.end();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildHttpsConfig(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
-     */
     @Override
     protected void buildHttpsConfig(JettyConfigBuilder builder)
+    {
+    	buildHttpsConfig(builder, "org.eclipse.jetty.util.ssl.SslContextFactory");
+    }
+    
+    protected void buildHttpsConfig(JettyConfigBuilder builder, String sslContextFactoryClassName)
     {
         if (getSslPort() == null)
         {
@@ -162,7 +142,7 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
 
         builder.comment("HTTPs Config");
 
-        builder.beginNew("sslContextFactory", "org.eclipse.jetty.util.ssl.SslContextFactory");
+        builder.beginNew("sslContextFactory", sslContextFactoryClassName);
         {
             builder.set("KeyStorePath", getKeyStorePath());
             builder.set("KeyStorePassword", getKeyStorePassword());
@@ -170,14 +150,6 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
             builder.set("TrustStorePath", getKeyStorePath());
             builder.set("TrustStorePassword", getKeyStorePassword());
             builder.set("EndpointIdentificationAlgorithm", "");
-            builder.setArray("ExcludeCipherSuites", //
-                "SSL_RSA_WITH_DES_CBC_SHA", //
-                "SSL_DHE_RSA_WITH_DES_CBC_SHA", //
-                "SSL_DHE_DSS_WITH_DES_CBC_SHA", //
-                "SSL_RSA_EXPORT_WITH_RC4_40_MD5", //
-                "SSL_RSA_EXPORT_WITH_DES40_CBC_SHA", //
-                "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA", //
-                "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA");
         }
         builder.end();
 
@@ -258,22 +230,12 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.end();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#collectDefaultHandlerConfigurations(java.util.Collection)
-     */
     @Override
     protected void collectDefaultHandlerConfigurations(Collection<String> configurations)
     {
         // intentionally left blank
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildAnnotations(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
-     */
     @Override
     protected void buildAnnotations(JettyConfigBuilder builder)
     {
@@ -297,11 +259,6 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.end();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildJNDI(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
-     */
     @Override
     protected void buildJNDI(JettyConfigBuilder builder)
     {
@@ -328,11 +285,6 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.end();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildJMX(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
-     */
     @Override
     protected void buildJMX(JettyConfigBuilder builder)
     {
@@ -370,11 +322,6 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
         builder.end();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildExtraOptions(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
-     */
     @Override
     protected void buildExtraOptions(JettyConfigBuilder builder)
     {

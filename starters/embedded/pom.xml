@@ -22,6 +22,12 @@
 
         <dependency>
             <groupId>net.sourceforge.eclipsejetty</groupId>
+            <artifactId>eclipse-jetty-starters-jetty9</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.eclipsejetty</groupId>
             <artifactId>eclipse-jetty-starters-console</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
@@ -29,62 +35,68 @@
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-continuation</artifactId>
+            <version>${version.jetty9}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-deploy</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-http</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-io</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-jmx</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-security</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-util</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-xml</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
 
         <!-- jetty support libraries -->
@@ -98,7 +110,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-annotations</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
@@ -120,7 +132,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-plus</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
@@ -132,7 +144,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-jndi</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.orbit</groupId>
@@ -144,7 +156,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>apache-jsp</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.toolchain</groupId>
@@ -154,44 +166,44 @@
         <dependency>
             <groupId>org.mortbay.jasper</groupId>
             <artifactId>apache-jsp</artifactId>
-            <version>8.0.33</version>
+            <version>8.5.70</version>
         </dependency>
         <dependency>
             <groupId>org.mortbay.jasper</groupId>
             <artifactId>apache-el</artifactId>
-            <version>8.0.33</version>
+            <version>8.5.70</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jdt.core.compiler</groupId>
+            <groupId>org.eclipse.jdt</groupId>
             <artifactId>ecj</artifactId>
-            <version>4.4.2</version>
+            <version>3.19.0</version>
         </dependency>
 
         <!-- jetty optionals: websockets -->
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-core-server</artifactId>
-            <version>${version.jetty11}</version>
+            <artifactId>websocket-server</artifactId>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-jetty-api</artifactId>
-            <version>${version.jetty11}</version>
+            <artifactId>websocket-api</artifactId>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-core-common</artifactId>
-            <version>${version.jetty11}</version>
+            <artifactId>websocket-common</artifactId>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-core-client</artifactId>
-            <version>${version.jetty11}</version>
+            <artifactId>websocket-client</artifactId>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>websocket-servlet</artifactId>
-            <version>${version.jetty11}</version>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>javax.websocket</groupId>
@@ -200,28 +212,15 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-jetty-server</artifactId>
-            <version>${version.jetty11}</version>
+            <artifactId>javax-websocket-server-impl</artifactId>
+            <version>${version.jetty9}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-jetty-client</artifactId>
-            <version>${version.jetty11}</version>
+            <artifactId>javax-websocket-client-impl</artifactId>
+            <version>${version.jetty9}</version>
         </dependency>
 
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

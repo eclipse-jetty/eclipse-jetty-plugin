@@ -12,9 +12,12 @@
 package net.sourceforge.eclipsejetty.jetty;
 
 import net.sourceforge.eclipsejetty.jetty.embedded.JettyEmbeddedLibStrategy;
-import net.sourceforge.eclipsejetty.jetty6.Jetty6LibStrategy;
-import net.sourceforge.eclipsejetty.jetty6.Jetty6ServerConfiguration;
-import net.sourceforge.eclipsejetty.jetty6.Jetty6WebDefaults;
+import net.sourceforge.eclipsejetty.jetty10.Jetty10LibStrategy;
+import net.sourceforge.eclipsejetty.jetty10.Jetty10ServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty10.Jetty10WebDefaults;
+import net.sourceforge.eclipsejetty.jetty11.Jetty11LibStrategy;
+import net.sourceforge.eclipsejetty.jetty11.Jetty11ServerConfiguration;
+import net.sourceforge.eclipsejetty.jetty11.Jetty11WebDefaults;
 import net.sourceforge.eclipsejetty.jetty7.Jetty7LibStrategy;
 import net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration;
 import net.sourceforge.eclipsejetty.jetty7.Jetty7WebDefaults;
@@ -34,18 +37,11 @@ import net.sourceforge.eclipsejetty.jetty9.Jetty9WebDefaults;
  */
 public enum JettyVersionType
 {
-
     /**
-     * The embedded Jetty of the Jetty Plugin.
+     * Embedded Jetty 9 config
      */
-    JETTY_EMBEDDED("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-embedded.jar",
+	JETTY_EMBEDDED("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-jetty9.jar",
         Jetty9ServerConfiguration.class, new JettyEmbeddedLibStrategy(), Jetty9WebDefaults.class),
-
-    /**
-     * A Jetty 6 at a specified path
-     */
-    JETTY_6("net.sourceforge.eclipsejetty.starter.jetty6.Jetty6LauncherMain", "lib/eclipse-jetty-starters-jetty6.jar",
-        Jetty6ServerConfiguration.class, new Jetty6LibStrategy(), Jetty6WebDefaults.class),
 
     /**
      * A Jetty 7 at a specified path
@@ -62,15 +58,27 @@ public enum JettyVersionType
     /**
      * A Jetty 9 at a specified path
      */
-    JETTY_9("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-jetty9.jar",
+	JETTY_9("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-jetty9.jar",
         Jetty9ServerConfiguration.class, new Jetty9LibStrategy(), Jetty9WebDefaults.class),
 
     JETTY_9_3("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-jetty9.jar",
             Jetty9ServerConfiguration.class, new Jetty93LibStrategy(), Jetty9WebDefaults.class),
     
     JETTY_9_4("net.sourceforge.eclipsejetty.starter.jetty9.Jetty9LauncherMain", "lib/eclipse-jetty-starters-jetty9.jar",
-            Jetty9ServerConfiguration.class, new Jetty94LibStrategy(), Jetty9WebDefaults.class);
-	
+            Jetty9ServerConfiguration.class, new Jetty94LibStrategy(), Jetty9WebDefaults.class),
+
+    /**
+     * Jetty 10 config
+     */
+	JETTY_10("net.sourceforge.eclipsejetty.starter.jetty10.Jetty10LauncherMain", "lib/eclipse-jetty-starters-jetty10.jar",
+        Jetty10ServerConfiguration.class, new Jetty10LibStrategy(), Jetty10WebDefaults.class),
+
+	/**
+     * Jetty 11 config
+     */
+	JETTY_11("net.sourceforge.eclipsejetty.starter.jetty11.Jetty11LauncherMain", "lib/eclipse-jetty-starters-jetty11.jar",
+        Jetty11ServerConfiguration.class, new Jetty11LibStrategy(), Jetty11WebDefaults.class);
+
     private final String mainClass;
     private final String jar;
     private final Class<? extends AbstractServerConfiguration> serverConfigurationClass;

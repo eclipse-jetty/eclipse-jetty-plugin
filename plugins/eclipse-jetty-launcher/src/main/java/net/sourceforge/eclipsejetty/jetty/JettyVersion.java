@@ -316,9 +316,6 @@ public class JettyVersion
 
         switch (majorVersion.intValue())
         {
-            case 6:
-                return JettyVersionType.JETTY_6;
-
             case 7:
                 return JettyVersionType.JETTY_7;
 
@@ -340,6 +337,17 @@ public class JettyVersion
                     return JettyVersionType.JETTY_9_4;
                 }
             }
+            
+            case 10:
+            {
+            	return JettyVersionType.JETTY_10;
+            }
+            
+            case 11:
+            {
+            	return JettyVersionType.JETTY_11;
+            }
+            
             default:
                 return null;
         }

@@ -27,7 +27,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Comment;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
@@ -382,6 +384,14 @@ public class DOMBuilder
 
         try
         {
+            // TODO add doctype only with Jetty 10 and 11
+            DOMImplementation implementation = document.getImplementation();
+            DocumentType docType = implementation.createDocumentType("Configure", "-//Jetty//Configure//EN", "https://www.eclipse.org/jetty/configure_10_0.dtd");
+        	if (docType != null)
+        	{
+        		transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, docType.getPublicId());
+        		transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, docType.getSystemId());
+        	}
             transformer.transform(new DOMSource(document), new StreamResult(out));
         }
         catch (TransformerException e)

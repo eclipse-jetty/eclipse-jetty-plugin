@@ -1,122 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>net.sourceforge.eclipsejetty</groupId>
-        <artifactId>parent</artifactId>
-        <version>6.0.0-SNAPSHOT</version>
-        <relativePath>../..</relativePath>
-    </parent>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sourceforge.eclipsejetty</groupId>
+		<artifactId>parent</artifactId>
+		<version>6.0.0-SNAPSHOT</version>
+		<relativePath>../..</relativePath>
+	</parent>
 
-    <artifactId>net.sourceforge.eclipsejetty.launcher</artifactId>
-    <packaging>eclipse-plugin</packaging>
+	<artifactId>net.sourceforge.eclipsejetty.launcher</artifactId>
+	<packaging>eclipse-plugin</packaging>
 
-    <name>Eclipse Jetty Launcher Plugin</name>
-    <description>Eclipse launch configuration for Jetty</description>
+	<name>Eclipse Jetty Launcher Plugin</name>
+	<description>Eclipse launch configuration for Jetty</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>net.sourceforge.eclipsejetty</groupId>
-            <artifactId>eclipse-jetty-starters-embedded</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-jetty7</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>net.sourceforge.eclipsejetty</groupId>
-            <artifactId>eclipse-jetty-starters-jetty6</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-jetty8</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>net.sourceforge.eclipsejetty</groupId>
-            <artifactId>eclipse-jetty-starters-jetty7</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-jetty9</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>net.sourceforge.eclipsejetty</groupId>
-            <artifactId>eclipse-jetty-starters-jetty8</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-jetty10</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>net.sourceforge.eclipsejetty</groupId>
-            <artifactId>eclipse-jetty-starters-jetty9</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-jetty11</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>net.sourceforge.eclipsejetty</groupId>
-            <artifactId>eclipse-jetty-starters-console</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-embedded</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>net.sourceforge.eclipsejetty</groupId>
+			<artifactId>eclipse-jetty-starters-console</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.5</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies-starters</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeArtifactIds>eclipse-jetty-starters-common,
-                                eclipse-jetty-starters-embedded,
-                                eclipse-jetty-starters-jetty6,
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies-starters</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeArtifactIds>eclipse-jetty-starters-common,
                                 eclipse-jetty-starters-jetty7,
                                 eclipse-jetty-starters-jetty8,
                                 eclipse-jetty-starters-jetty9,
+                                eclipse-jetty-starters-jetty10,
+                                eclipse-jetty-starters-jetty11,
                                 eclipse-jetty-starters-console,
                                 eclipse-jetty-starters-util</includeArtifactIds>
-                            <outputDirectory>${project.build.directory}/../lib</outputDirectory>
-                            <stripVersion>true</stripVersion>
-                        </configuration>
-                    </execution>
+							<outputDirectory>${project.build.directory}/../lib</outputDirectory>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
 
-                    <execution>
-                        <id>copy-dependencies-jetty</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeGroupIds>org.eclipse.jetty,
+					<execution>
+						<id>copy-dependencies-jetty</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeGroupIds>org.eclipse.jetty,
                                 org.eclipse.jetty.orbit,
                                 org.eclipse.jetty.toolchain,
                                 org.eclipse.jetty.websocket,
@@ -126,11 +122,11 @@
                                 javax.transaction,
                                 javax.websocket,
                                 org.ow2.asm</includeGroupIds>
-                            <outputDirectory>${project.build.directory}/../lib/jetty</outputDirectory>
-                            <stripVersion>true</stripVersion>
-                            <overWriteReleases>true</overWriteReleases>
-                        </configuration>
-                    </execution>
+							<outputDirectory>${project.build.directory}/../lib/jetty</outputDirectory>
+							<stripVersion>true</stripVersion>
+							<overWriteReleases>true</overWriteReleases>
+						</configuration>
+					</execution>
 
                     <execution>
                         <id>copy-dependencies-apache-jsp</id>
@@ -145,8 +141,8 @@
                             <overWriteReleases>true</overWriteReleases>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
