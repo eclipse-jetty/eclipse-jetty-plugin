@@ -122,7 +122,6 @@ public class JettyEmbeddedLibStrategy extends DependencyBasedJettyLibStrategy
     {
         try
         {
-            System.out.println(dependency);
             return new File(FileLocator.toFileURL(
                 FileLocator.find(JettyPlugin.getDefault().getBundle(),
                     Path.fromOSString(String.format("lib/jetty/%s.jar", dependency)), null)).getFile());

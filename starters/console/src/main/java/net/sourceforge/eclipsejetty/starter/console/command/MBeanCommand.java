@@ -194,7 +194,6 @@ public class MBeanCommand extends AbstractCommand
 
     protected int list(Process process) throws MalformedObjectNameException
     {
-        @SuppressWarnings("unchecked")
         Set<ObjectName> objectNames = server.queryNames(new ObjectName("*.*:*"), null);
 
         for (ObjectName objectName : objectNames)
@@ -479,7 +478,6 @@ public class MBeanCommand extends AbstractCommand
 
         if (pattern != null)
         {
-            @SuppressWarnings("unchecked")
             Set<ObjectName> objectNames = server.queryNames(new ObjectName("*.*:*"), null);
 
             for (ObjectName objectName : objectNames)
@@ -664,7 +662,7 @@ public class MBeanCommand extends AbstractCommand
             {
                 throw new IllegalArgumentException(String.format("Invalid character: %s", value));
             }
-            return new Character(value.charAt(0));
+            return Character.valueOf(value.charAt(0));
         }
 
         if (type.isAssignableFrom(String.class))

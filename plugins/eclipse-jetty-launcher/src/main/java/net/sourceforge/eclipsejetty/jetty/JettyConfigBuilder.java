@@ -282,12 +282,13 @@ public class JettyConfigBuilder
 
         switch (version)
         {
-            case JETTY_6:
             case JETTY_7:
             case JETTY_8:
                 builder.attribute("id", id);
                 break;
             case JETTY_9:
+            case JETTY_10:
+            case JETTY_11:
                 builder.attribute("refid", id);
                 break;
             default:

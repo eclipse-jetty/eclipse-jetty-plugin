@@ -137,20 +137,11 @@ public abstract class AbstractJettyLauncherMain
             }
 
             Class<?> type = determineClass(configurationFile);
-            FileInputStream in = new FileInputStream(configurationFile);
-
-            try
-            {
-                configure(in, type, adapter);
-            }
-            finally
-            {
-                in.close();
-            }
+            configure(configurationFile, type, adapter);
         }
     }
 
-    protected abstract void configure(FileInputStream in, Class<?> type, ServerAdapter adapter) throws Exception;
+    protected abstract void configure(File configFile, Class<?> type, ServerAdapter adapter) throws Exception;
 
     protected static File[] getConfigurationFiles(String definitionList) throws IOException
     {

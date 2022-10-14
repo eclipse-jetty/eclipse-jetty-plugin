@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.sourceforge.eclipsejetty</groupId>
         <artifactId>eclipse-jetty-starters</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>eclipse-jetty-starters-embedded</artifactId>
@@ -17,6 +17,12 @@
         <dependency>
             <groupId>net.sourceforge.eclipsejetty</groupId>
             <artifactId>eclipse-jetty-starters-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.eclipsejetty</groupId>
+            <artifactId>eclipse-jetty-starters-jetty9</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -160,17 +166,17 @@
         <dependency>
             <groupId>org.mortbay.jasper</groupId>
             <artifactId>apache-jsp</artifactId>
-            <version>8.0.33</version>
+            <version>8.5.70</version>
         </dependency>
         <dependency>
             <groupId>org.mortbay.jasper</groupId>
             <artifactId>apache-el</artifactId>
-            <version>8.0.33</version>
+            <version>8.5.70</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jdt.core.compiler</groupId>
+            <groupId>org.eclipse.jdt</groupId>
             <artifactId>ecj</artifactId>
-            <version>4.4.2</version>
+            <version>3.19.0</version>
         </dependency>
 
         <!-- jetty optionals: websockets -->
@@ -216,18 +222,5 @@
         </dependency>
 
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
