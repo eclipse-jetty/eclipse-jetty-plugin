@@ -5,7 +5,7 @@
 	<skin>
 		<groupId>org.apache.maven.skins</groupId>
 		<artifactId>maven-fluido-skin</artifactId>
-		<version>1.4</version>
+		<version>1.11.1</version>
 	</skin>
 	<bannerLeft>
 		<name>Eclipse Jetty Integration</name>
@@ -14,6 +14,7 @@
 	</bannerLeft>
 	<body>
 		<head>
+			<![CDATA[
 			<meta name="og:title" content="Eclipse Jetty Plugin" />
 			<meta itemprop="name" content="Eclipse Jetty Plugin" />
 			<meta name="description" content="The Eclipse Jetty Plugin enables running/debugging of Java web applications with Jetty in the Eclipse IDE. It supports Jetty 6-9 (has an own Jetty 8 included) and works well in conjunction with the m2e Maven integration." />
@@ -24,7 +25,8 @@
 			<meta name="og:url" content="http://eclipse-jetty.github.io/" />
 			<meta name="og:site_name" content="Eclipse Jetty Plugin" />
 			<link href="http://eclipse-jetty.github.io/" rel="canonical" />
-			<link rel="shortcut icon" type="image/x-icon" href="http://eclipse-jetty.github.io/favicon.ico" />			
+			<link rel="shortcut icon" type="image/x-icon" href="http://eclipse-jetty.github.io/favicon.ico" />
+			]]>	
 		</head>
 		
 		<links>
@@ -43,9 +45,9 @@
 
 		<menu name="Additional Infos">
 			<item name="Version History" href="changes-report.html" />
-			<item name="Team" href="team-list.html" />
-			<item name="License" href="license.html" />
-			<item name="Source Repository" href="source-repository.html" />
+			<item name="Team" href="team.html" />
+			<item name="License" href="licenses.html" />
+			<item name="Sources" href="scm.html" />
 		</menu>
 	</body>
 </project>
