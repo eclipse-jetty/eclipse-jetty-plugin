@@ -147,19 +147,19 @@ public class JettyPluginM2EUtils
     {
         StringBuilder builder = new StringBuilder();
 
-        if (artifactKey.getGroupId() != null)
+        if (artifactKey.groupId() != null)
         {
-            builder.append(artifactKey.getGroupId().replace('.', '/'));
+            builder.append(artifactKey.groupId().replace('.', '/'));
         }
 
-        if (artifactKey.getVersion() != null)
+        if (artifactKey.version() != null)
         {
             if (builder.length() > 0)
             {
                 builder.append("/");
             }
 
-            builder.append(artifactKey.getVersion());
+            builder.append(artifactKey.version());
         }
 
         if (builder.length() > 0)
@@ -167,11 +167,11 @@ public class JettyPluginM2EUtils
             builder.append("/");
         }
 
-        builder.append(artifactKey.getArtifactId());
+        builder.append(artifactKey.artifactId());
 
-        if (artifactKey.getVersion() != null)
+        if (artifactKey.version() != null)
         {
-            builder.append("-").append(artifactKey.getVersion());
+            builder.append("-").append(artifactKey.version());
         }
 
         // TODO where's the classifier!?

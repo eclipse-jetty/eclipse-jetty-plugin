@@ -11,7 +11,9 @@
 // limitations under the License.
 package net.sourceforge.eclipsejetty.util;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -97,15 +99,16 @@ public class MavenDependencyInfoMap
 
     private void buildLocations(IMavenProjectFacade facade)
     {
-        addLocations(facade, "output", MavenScope.COMPILE, facade.getOutputLocation()); //$NON-NLS-1$
+        addLocations(facade, "output", MavenScope.COMPILE, Collections.singletonList(facade.getOutputLocation())); //$NON-NLS-1$
         addLocations(facade, "resource", MavenScope.RUNTIME, facade.getResourceLocations()); //$NON-NLS-1$
-        addLocations(facade, "test-output", MavenScope.TEST, facade.getTestOutputLocation()); //$NON-NLS-1$
+        addLocations(facade, "test-output", MavenScope.TEST, Collections.singletonList(facade.getTestOutputLocation())); //$NON-NLS-1$
         addLocations(facade, "test-resource", MavenScope.TEST, facade.getTestResourceLocations()); //$NON-NLS-1$
     }
 
-    private void addLocations(IMavenProjectFacade facade, String variant, MavenScope scope, IPath... paths)
+    private void addLocations(IMavenProjectFacade facade, String variant, MavenScope scope, List<IPath> paths)
     {
-        if ((paths == null) || (paths.length == 0))
+        if (paths == null || paths.size() == 0
+        		|| (paths.size() == 1 && paths.get(0) == null))
         {
             return;
         }
@@ -125,7 +128,7 @@ public class MavenDependencyInfoMap
 
     private void buildArtifact(ArtifactRef artifactRef)
     {
-        String portableString = artifactRef.getArtifactKey().toPortableString();
+        String portableString = artifactRef.artifactKey().toPortableString();
 
         dependencies.put(portableString, MavenDependencyInfo.create(artifactRef));
     }
