@@ -116,6 +116,7 @@
                                 org.eclipse.jetty.orbit,
                                 org.eclipse.jetty.toolchain,
                                 org.eclipse.jetty.websocket,
+                                org.eclipse.jdt,
                                 org.eclipse.jdt.core.compiler,
                                 javax.servlet,
                                 javax.annotation,
