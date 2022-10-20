@@ -9,6 +9,14 @@
 	</properties>
 
 	<body>
+		<release version="7.0.0" date="2022-10-20">
+			<action dev="Wallabeng" type="update" issue="61">
+				Support for eclipse 2022-09 / m2e 2.0
+			</action>
+			<action dev="derkoe" type="fix" issue="65">
+				Fix missing ecj for embedded Jetty
+			</action>
+		</release>
 		<release version="6.0.0" date="2022-10-14">
 			<action dev="derkoe" type="update" issue="62">
 				Support for Jetty 10 and 11, remove Jetty 6
