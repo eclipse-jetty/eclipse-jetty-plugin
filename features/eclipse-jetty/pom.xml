@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>net.sourceforge.eclipsejetty</groupId>
 		<artifactId>parent</artifactId>
-		<version>7.0.0-SNAPSHOT</version>
+		<version>7.0.0</version>
 		<relativePath>../..</relativePath>
 	</parent>
 	
