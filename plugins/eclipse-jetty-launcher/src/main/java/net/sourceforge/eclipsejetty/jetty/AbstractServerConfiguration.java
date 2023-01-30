@@ -33,6 +33,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
     private boolean jndiEnabled = false;
     private boolean jmxEnabled = false;
     private boolean websocketEnabled = false;
+    private boolean sniCheckEnabled = true;
 
     private Integer port;
     private Integer sslPort;
@@ -145,6 +146,26 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
         this.jmxEnabled = jmxEnabled;
     }
 
+    /**
+     * Returns true if SNI check is enabled.
+     *
+     * @return true if SNI check is enabled
+     */
+    public boolean isSniCheckEnabled()
+    {
+        return sniCheckEnabled;
+    }
+
+    /**
+     * Toggles the SNI host check.
+     *
+     * @param sniCheckEnabled true to enable SNI checks
+     */
+    public void setSniCheckEnabled(boolean sniCheckEnabled)
+    {
+        this.sniCheckEnabled = sniCheckEnabled;
+    }
+
     public boolean isWebsocketEnabled()
     {
         return websocketEnabled;
@@ -152,7 +173,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
 
     public void setWebsocketEnabled(boolean websocketEnabled)
     {
-        this.websocketEnabled = websocketEnabled; 
+        this.websocketEnabled = websocketEnabled;
     }
 
     /**
@@ -490,7 +511,7 @@ public abstract class AbstractServerConfiguration extends AbstractConfiguration
             builder.beginNew(getDefaultHandlerClass());
             {
                 File defaultWar = getDefaultWar();
-                
+
                 builder.arg((defaultWar != null) ? defaultWar.getAbsolutePath() : "/");
                 builder.arg(getDefaultContextPath());
 
