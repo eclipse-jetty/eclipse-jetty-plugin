@@ -29,6 +29,8 @@ public class Messages extends NLS
     public static String advConfigTab_ajpSupportButtonTip;
     public static String advConfigTab_clientCacheDisabledButton;
     public static String advConfigTab_clientCacheDisabledButtonTip;
+    public static String advConfigTab_sniCheckDisabledButton;
+    public static String advConfigTab_sniCheckDisabledButtonTip;
     public static String advConfigTab_consoleEnabledButton;
     public static String advConfigTab_consoleEnabledButtonTip;
     public static String advConfigTab_contextAddButton;

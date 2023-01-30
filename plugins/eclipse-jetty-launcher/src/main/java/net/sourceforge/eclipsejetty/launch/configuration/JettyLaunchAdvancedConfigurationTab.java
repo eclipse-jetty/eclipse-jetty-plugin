@@ -67,7 +67,7 @@ import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * UI
- * 
+ *
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
@@ -106,6 +106,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     private Button serverCacheDisabledButton;
     private Button clientCacheDisabledButton;
+    private Button sniCheckDisabledButton;
 
     private Table configTable;
     private boolean configTableFormatted = false;
@@ -126,7 +127,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
      * @wbp.parser.entryPoint
      */
@@ -193,7 +194,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         versionHint = createHint(jettyGroup, String.format("Detected Jetty Version: %s", "none"), -1, 2, 1);
         versionHint.setAlignment(SWT.LEFT);
-        
+
         createImage(composite, JettyPlugin.getIcon(JettyPlugin.JETTY_PLUGIN_ADVANCED_LOGO), 96, SWT.CENTER, SWT.TOP, 1,
             3);
     }
@@ -336,7 +337,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
                     {
                         String path =
                             chooseExternalFile(getShell(), customWebDefaultsResourceText.getText(),
-                                Messages.advConfigTab_customWebDefaultsFileSystemTitle, "*.xml", "*.*"); //$NON-NLS-1$//$NON-NLS-2$ 
+                                Messages.advConfigTab_customWebDefaultsFileSystemTitle, "*.xml", "*.*"); //$NON-NLS-1$//$NON-NLS-2$
 
                         if (path != null)
                         {
@@ -362,6 +363,10 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         clientCacheDisabledButton =
             createButton(configGroup, SWT.CHECK, Messages.advConfigTab_clientCacheDisabledButton,
                 Messages.advConfigTab_clientCacheDisabledButtonTip, 224, 3, 1, modifyDialogListener);
+
+        sniCheckDisabledButton =
+                createButton(configGroup, SWT.CHECK, Messages.advConfigTab_sniCheckDisabledButton,
+                    Messages.advConfigTab_sniCheckDisabledButtonTip, 224, 3, 1, modifyDialogListener);
     }
 
     private void createContextGroup(Composite tabComposite)
@@ -476,7 +481,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
      */
     public String getName()
@@ -486,7 +491,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getImage()
      */
     @Override
@@ -497,7 +502,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#getMessage()
      */
     @Override
@@ -508,7 +513,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.jdt.debug.ui.launchConfigurations.JavaLaunchTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
      */
     @Override
@@ -543,6 +548,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
             serverCacheDisabledButton.setSelection(!adapter.isServerCacheEnabled());
             clientCacheDisabledButton.setSelection(!adapter.isClientCacheEnabled());
+            sniCheckDisabledButton.setSelection(!adapter.isSniCheckEnabled());
 
             updateTable(adapter, true);
             updateConfigButtonState();
@@ -558,7 +564,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
      */
     public void setDefaults(final ILaunchConfigurationWorkingCopy configuration)
@@ -568,7 +574,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
      */
     public void performApply(final ILaunchConfigurationWorkingCopy configuration)
@@ -623,6 +629,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
             adapter.setServerCacheEnabled(!serverCacheDisabledButton.getSelection());
             adapter.setClientCacheEnabled(!clientCacheDisabledButton.getSelection());
+            adapter.setSniCheckEnabled(!sniCheckDisabledButton.getSelection());
 
             adapter.setConfigs(configEntryList.getConfigs());
 
@@ -639,7 +646,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.eclipse.debug.ui.AbstractLaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
      */
     @Override
@@ -698,7 +705,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
         clientCacheDisabledButton.setEnabled(!customWebDefaultsEnabled);
 
         String jettyPath = null;
-        
+
         if (!embedded)
         {
             jettyPath = JettyPluginUtils.resolveVariables(pathText.getText()).trim();
@@ -774,7 +781,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * Update the table with the Jetty configuration XML files
-     * 
+     *
      * @param adapter the adapter
      * @param updateType true to update all types
      */
@@ -808,7 +815,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * Choose one Jetty configuration XML file from the workspace
-     * 
+     *
      * @param path the inital path
      * @return the selected file, null if none was selected
      */
@@ -823,13 +830,13 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
     /**
      * Choose one Jetty configuration XML file from the file system
-     * 
+     *
      * @param path the initial path
      * @return the selected file, null if none was selected
      */
     protected String chooseConfigFromFileSystem(String path)
     {
-        return chooseExternalFile(getShell(), path, Messages.advConfigTab_contextAddExternalTitle, "*.xml", "*.*"); //$NON-NLS-1$//$NON-NLS-2$ 
+        return chooseExternalFile(getShell(), path, Messages.advConfigTab_contextAddExternalTitle, "*.xml", "*.*"); //$NON-NLS-1$//$NON-NLS-2$
     }
 
     /**
@@ -1040,7 +1047,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
     {
         /**
          * {@inheritDoc}
-         * 
+         *
          * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
          */
         @SuppressWarnings("synthetic-access")
@@ -1051,7 +1058,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         /**
          * {@inheritDoc}
-         * 
+         *
          * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
          */
         public void widgetDefaultSelected(final SelectionEvent arg0)
@@ -1061,7 +1068,7 @@ public class JettyLaunchAdvancedConfigurationTab extends AbstractJettyLaunchConf
 
         /**
          * {@inheritDoc}
-         * 
+         *
          * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
          */
         @SuppressWarnings("synthetic-access")

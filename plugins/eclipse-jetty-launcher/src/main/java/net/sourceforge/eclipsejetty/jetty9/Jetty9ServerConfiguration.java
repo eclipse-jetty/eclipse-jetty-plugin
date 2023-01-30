@@ -132,7 +132,7 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
     {
     	buildHttpsConfig(builder, "org.eclipse.jetty.util.ssl.SslContextFactory");
     }
-    
+
     protected void buildHttpsConfig(JettyConfigBuilder builder, String sslContextFactoryClassName)
     {
         if (getSslPort() == null)
@@ -160,7 +160,11 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
             {
                 builder.beginArg();
                 {
-                    builder.beginNew("org.eclipse.jetty.server.SecureRequestCustomizer").end();
+                    builder.beginNew("org.eclipse.jetty.server.SecureRequestCustomizer");
+                    {
+                    	builder.set("sniHostCheck", isSniCheckEnabled());
+                    }
+                    builder.end();
                 }
                 builder.end();
             }
@@ -171,7 +175,7 @@ public class Jetty9ServerConfiguration extends Jetty8ServerConfiguration
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see net.sourceforge.eclipsejetty.jetty7.Jetty7ServerConfiguration#buildHttpsConnector(net.sourceforge.eclipsejetty.jetty.JettyConfigBuilder)
      */
     @Override

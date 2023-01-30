@@ -38,7 +38,7 @@ import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * Constants for the Jetty plugin and an adapter for the configuration.
- * 
+ *
  * @author Christian K&ouml;berl
  * @author Manfred Hantschel
  */
@@ -81,6 +81,7 @@ public class JettyLaunchConfigurationAdapter
         + ".gracefulShutdown.override.timeout"; //$NON-NLS-1$
     private static final String ATTR_SERVER_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.server.enabled"; //$NON-NLS-1$
     private static final String ATTR_CLIENT_CACHE_ENABLED = JettyPlugin.PLUGIN_ID + ".cache.client.enabled"; //$NON-NLS-1$
+    private static final String ATTR_SNI_CHECK_ENABLED = JettyPlugin.PLUGIN_ID + ".security.sniCheck.enabled"; //$NON-NLS-1$
     private static final String ATTR_CUSTOM_WEB_DEFAULTS_ENABLED = JettyPlugin.PLUGIN_ID + ".customWebDefaults.enabled"; //$NON-NLS-1$
     private static final String ATTR_CUSTOM_WEB_DEFAULTS_RESOURCE = JettyPlugin.PLUGIN_ID
         + ".customWebDefaults.resource"; //$NON-NLS-1$
@@ -114,7 +115,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Creates an readable configuration adapter.
-     * 
+     *
      * @param configuration the configuration, must not be null
      * @return the adapter
      */
@@ -125,7 +126,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Creates an read and writable configuration adapter.
-     * 
+     *
      * @param configuration the configuration, must not be null
      * @return the adapter
      */
@@ -138,7 +139,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Creates the adapter.
-     * 
+     *
      * @param configuration the configuration
      */
     protected JettyLaunchConfigurationAdapter(ILaunchConfiguration configuration)
@@ -150,7 +151,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the readable configuration.
-     * 
+     *
      * @return the configuration
      */
     public ILaunchConfiguration getConfiguration()
@@ -160,7 +161,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the read and writable configuration.
-     * 
+     *
      * @return the configuration
      * @throws CoreException if configuration is only readable
      */
@@ -179,7 +180,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Initializes a new launch configuration.
-     * 
+     *
      * @param project the project, must not be null
      * @param webAppPath the web application path, must not be null
      * @throws CoreException on occasion
@@ -274,6 +275,7 @@ public class JettyLaunchConfigurationAdapter
 
         setServerCacheEnabled(isServerCacheEnabled());
         setClientCacheEnabled(isClientCacheEnabled());
+        setSniCheckEnabled(isSniCheckEnabled());
 
         setShowLauncherInfo(isShowLauncherInfo());
         setConsoleEnabled(isConsoleEnabled());
@@ -307,7 +309,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the configuration version to distinguish between versions of the plugin.
-     * 
+     *
      * @return the configuration version
      * @throws CoreException on occasion
      */
@@ -318,7 +320,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Updates the configuration version to the one supported by the plugin.
-     * 
+     *
      * @throws CoreException on occasion
      */
     public void updateConfigVersion() throws CoreException
@@ -328,7 +330,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the name of the selected eclipse project, that should be launched.
-     * 
+     *
      * @return the project
      * @throws CoreException on occasion
      */
@@ -339,7 +341,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the name of the selected eclipse project, that should be launched.
-     * 
+     *
      * @param project the project
      * @throws CoreException on occasion
      */
@@ -350,7 +352,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the project as defined by the project name.
-     * 
+     *
      * @return the project, null if unable to locate
      */
     public IProject getProject()
@@ -367,7 +369,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the context path (path part of the URL) of the application.
-     * 
+     *
      * @return the context path
      * @throws CoreException on occasion
      */
@@ -378,7 +380,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the context path (path part of the URL) of the application.
-     * 
+     *
      * @param context the context
      * @throws CoreException on occasion
      */
@@ -389,7 +391,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the location of the web application directory in the workspace.
-     * 
+     *
      * @return the location of the web application directory
      * @throws CoreException on occasion
      */
@@ -400,7 +402,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the location of the web application directory in the workspace.
-     * 
+     *
      * @param webappdir the location of the web application directory
      * @throws CoreException on occasion
      */
@@ -411,7 +413,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Tries to determine the web application path from the web application directory.
-     * 
+     *
      * @return the path, null if unable to determine
      */
     public File getWebAppPath()
@@ -428,7 +430,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the (HTTP) port.
-     * 
+     *
      * @return the port
      * @throws CoreException on occasion
      */
@@ -446,7 +448,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the (HTTP) port.
-     * 
+     *
      * @param port the port
      * @throws CoreException on occasion
      */
@@ -457,7 +459,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the (HTTPs) port.
-     * 
+     *
      * @return the port
      * @throws CoreException on occasion
      */
@@ -475,7 +477,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the (HTTPs) port.
-     * 
+     *
      * @param httpsPort the port
      * @throws CoreException on occasion
      */
@@ -486,7 +488,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true if HTTPs is enabled.
-     * 
+     *
      * @return true if enabled
      * @throws CoreException on occasion
      */
@@ -497,7 +499,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if the HTTPs is enabled.
-     * 
+     *
      * @param httpsEnabled true if enabled
      * @throws CoreException on occasion
      */
@@ -508,7 +510,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the path to an optionally available Jetty.
-     * 
+     *
      * @return the path
      * @throws CoreException on occasion
      */
@@ -519,7 +521,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the path to an optionally available Jetty.
-     * 
+     *
      * @param path the path
      * @throws CoreException on occasion
      */
@@ -530,7 +532,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Tries to determine the path to an optionally available Jetty.
-     * 
+     *
      * @return the path, null if unable to determine
      */
     public File getPath()
@@ -547,7 +549,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if the embedded Jetty should be used.
-     * 
+     *
      * @return true, if the embedded Jetty should be used.
      * @throws CoreException on occasion
      */
@@ -558,7 +560,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if the embedded Jetty should be used.
-     * 
+     *
      * @param embedded true, if the embedded Jetty should be used
      * @throws CoreException on occasion
      */
@@ -569,7 +571,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the version of the Jetty.
-     * 
+     *
      * @return the version of the Jetty
      * @throws CoreException on occasion
      */
@@ -580,7 +582,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the version of the Jetty.
-     * 
+     *
      * @param jettyVersion the version
      * @throws CoreException on occasion
      */
@@ -591,7 +593,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the major version of the Jetty.
-     * 
+     *
      * @return the major version of the Jetty
      * @throws CoreException on occasion
      */
@@ -602,7 +604,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the major version of the Jetty.
-     * 
+     *
      * @param jettyVersion the version
      * @throws CoreException on occasion
      */
@@ -614,7 +616,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the minor version of the Jetty.
-     * 
+     *
      * @return the minor version of the Jetty
      * @throws CoreException on occasion
      */
@@ -625,7 +627,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the minor version of the Jetty.
-     * 
+     *
      * @param jettyVersion the version
      * @throws CoreException on occasion
      */
@@ -637,7 +639,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the micro version of the Jetty.
-     * 
+     *
      * @return the micro version of the Jetty
      * @throws CoreException on occasion
      */
@@ -648,7 +650,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the micro version of the Jetty.
-     * 
+     *
      * @param jettyVersion the version
      * @throws CoreException on occasion
      */
@@ -660,7 +662,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the configuration context holders.
-     * 
+     *
      * @return a list of {@link JettyConfig}s
      * @throws CoreException on occasion
      */
@@ -697,7 +699,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the configuration context holders.
-     * 
+     *
      * @param entries the entries
      * @throws CoreException on occasion
      */
@@ -728,7 +730,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if annotations should be supported.
-     * 
+     *
      * @return true, if annotations should be supported
      * @throws CoreException on occasion
      */
@@ -739,7 +741,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if JSPs should be supported.
-     * 
+     *
      * @param annotationsSupport true, if JSPs should be supported
      * @throws CoreException on occasion
      */
@@ -750,7 +752,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if JSPs should be supported.
-     * 
+     *
      * @return true, if JSPs should be supported
      * @throws CoreException on occasion
      */
@@ -761,7 +763,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if JSPs should be supported.
-     * 
+     *
      * @param jspSupport true, if JSPs should be supported
      * @throws CoreException on occasion
      */
@@ -772,7 +774,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if JMX should be supported.
-     * 
+     *
      * @return true, if JMX should be supported
      * @throws CoreException on occasion
      */
@@ -783,7 +785,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if JMX should be supported.
-     * 
+     *
      * @param jmxSupport true, if JMX should be supported
      * @throws CoreException on occasion
      */
@@ -794,7 +796,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if JNDI should be supported.
-     * 
+     *
      * @return true, if JNDI should be supported
      * @throws CoreException on occasion
      */
@@ -805,7 +807,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if JNDI should be supported.
-     * 
+     *
      * @param jndiSupport true, if JNDI should be supported
      * @throws CoreException on occasion
      */
@@ -816,7 +818,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if an AJP connector should be supported.
-     * 
+     *
      * @return true, if an AJP connector should be supported
      * @throws CoreException on occasion
      */
@@ -827,7 +829,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if an AJP connector should be supported.
-     * 
+     *
      * @param ajpSupport true, if an AJP connector should be supported.
      * @throws CoreException on occasion
      */
@@ -838,7 +840,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if Websockets should be supported.
-     * 
+     *
      * @return true, if Websockets should be supported
      * @throws CoreException on occasion
      */
@@ -849,7 +851,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if Websockets should be supported.
-     * 
+     *
      * @param websocketSupport true, if Websockets should be supported.
      * @throws CoreException on occasion
      */
@@ -860,7 +862,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if the size of Jetty's thread pool is limited.
-     * 
+     *
      * @return true, if the size of Jetty's thread pool is limited
      * @throws CoreException on occasion
      */
@@ -871,7 +873,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if the size of Jetty's thread pool is limited.
-     * 
+     *
      * @param value true, if the size of Jetty's thread pool is limited
      * @throws CoreException on occasion
      */
@@ -882,7 +884,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the maximum size of Jetty's thead pool.
-     * 
+     *
      * @return the maximum size of Jetty's thead pool
      * @throws CoreException on occasion
      */
@@ -893,7 +895,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the maximum size of Jetty's thead pool
-     * 
+     *
      * @param value the maximum size of Jetty's thead pool
      * @throws CoreException on occasion
      */
@@ -904,7 +906,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if the number of Jetty's acceptors is limited.
-     * 
+     *
      * @return true, if the number of Jetty's acceptors is limited
      * @throws CoreException on occasion
      */
@@ -915,7 +917,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if the number of Jetty's acceptors is limited
-     * 
+     *
      * @param value true, if the number of Jetty's acceptors is limited
      * @throws CoreException on occasion
      */
@@ -926,7 +928,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the maximum number of acceptors Jetty should use.
-     * 
+     *
      * @return the maximum number of acceptors Jetty should use
      * @throws CoreException on occasion
      */
@@ -937,7 +939,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the the maximum number of acceptors Jetty should use.
-     * 
+     *
      * @param value the maximum number of acceptors Jetty should use
      * @throws CoreException on occasion
      */
@@ -948,7 +950,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Return true, if the graceful shutdown override is enabled.
-     * 
+     *
      * @return true, if the graceful shutdown override is enabled
      * @throws CoreException on occasion
      */
@@ -959,7 +961,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if the graceful shutdown override is enabled.
-     * 
+     *
      * @param value true, if the graceful shutdown override is enabled
      * @throws CoreException on occasion
      */
@@ -970,7 +972,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the timeout for the graceful shutdown (in milliseconds).
-     * 
+     *
      * @return the timeout for the graceful shutdown (in milliseconds)
      * @throws CoreException on occasion
      */
@@ -981,7 +983,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the timeout for the graceful shutdown (in milliseconds)
-     * 
+     *
      * @param value the timeout for the graceful shutdown (in milliseconds)
      * @throws CoreException on occasion
      */
@@ -992,7 +994,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if Jetty's server cache is enabled.
-     * 
+     *
      * @return true, if Jetty's server cache is enabled
      * @throws CoreException on occasion
      */
@@ -1003,7 +1005,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if Jetty's server cache is enabled.
-     * 
+     *
      * @param enabled true, if Jetty's server cache is enabled
      * @throws CoreException on occasion
      */
@@ -1014,7 +1016,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if the cache pragma no cache should not be sent.
-     * 
+     *
      * @return true, if the cache pragma no cache should not be sent
      * @throws CoreException on occasion
      */
@@ -1025,7 +1027,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if the cache pragma no cache should not be sent.
-     * 
+     *
      * @param enabled true, if the cache pragma no cache should not be sent
      * @throws CoreException on occasion
      */
@@ -1035,8 +1037,32 @@ public class JettyLaunchConfigurationAdapter
     }
 
     /**
+     * Returns true, if the SNI check should be enabled (see documentation
+     * of jetty.ssl.sniHostCheck).
+     *
+     * @return true, if the SNI check should be enabled
+     * @throws CoreException on occasion
+     */
+    public boolean isSniCheckEnabled() throws CoreException
+    {
+        return getAttribute(true, ATTR_SNI_CHECK_ENABLED, true);
+    }
+
+    /**
+     * Set to true, if the SNI check should be enabled (see documentation
+     * of jetty.ssl.sniHostCheck).
+     *
+     * @param enabled true, if the SNI check should be enabled
+     * @throws CoreException on occasion
+     */
+    public void setSniCheckEnabled(boolean enabled) throws CoreException
+    {
+        setAttribute(true, ATTR_SNI_CHECK_ENABLED, enabled);
+    }
+
+    /**
      * Returns true, if a custom default web.xml should be used.
-     * 
+     *
      * @return true, if a custom default web.xml should be used
      * @throws CoreException on occasion
      */
@@ -1047,7 +1073,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if a custom default web.xml should be used
-     * 
+     *
      * @param value true, if a custom default web.xml should be used
      * @throws CoreException on occasion
      */
@@ -1058,7 +1084,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the custom default web.xml.
-     * 
+     *
      * @return the custom default web.xml
      * @throws CoreException on occasion
      */
@@ -1069,7 +1095,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the custom default web.xml
-     * 
+     *
      * @param value the custom default web.xml
      * @throws CoreException on occasion
      */
@@ -1080,7 +1106,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Tries to determine the custom web.xml file from the resource.
-     * 
+     *
      * @return the custom web.xml file, null if not found or not enabled
      */
     public File getCustomWebDefaultFile()
@@ -1104,7 +1130,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if Maven dependencies with the compile scope should be excluded.
-     * 
+     *
      * @return true, if Maven dependencies with the compile scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1115,7 +1141,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if Maven dependencies with the compile scope should be excluded.
-     * 
+     *
      * @param value true, if Maven dependencies with the compile scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1126,7 +1152,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if Maven dependencies with the provided scope should be excluded.
-     * 
+     *
      * @return true, if Maven dependencies with the provided scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1137,7 +1163,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if Maven dependencies with the provided scope should be excluded.
-     * 
+     *
      * @param value true, if Maven dependencies with the provided scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1148,7 +1174,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if Maven dependencies with the runtime scope should be excluded.
-     * 
+     *
      * @return true, if Maven dependencies with the runtime scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1159,7 +1185,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if Maven dependencies with the runtime scope should be excluded.
-     * 
+     *
      * @param value true, if Maven dependencies with the runtime scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1170,7 +1196,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if Maven dependencies with the test scope should be excluded.
-     * 
+     *
      * @return true, if Maven dependencies with the test scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1181,7 +1207,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if Maven dependencies with the test scope should be excluded.
-     * 
+     *
      * @param value true, if Maven dependencies with the test scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1192,7 +1218,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if Maven dependencies with the system scope should be excluded.
-     * 
+     *
      * @return true, if Maven dependencies with the system scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1203,7 +1229,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if Maven dependencies with the system scope should be excluded.
-     * 
+     *
      * @param value true, if Maven dependencies with the system scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1214,7 +1240,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if Maven dependencies with the import scope should be excluded.
-     * 
+     *
      * @return true, if Maven dependencies with the import scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1225,7 +1251,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if Maven dependencies with the import scope should be excluded.
-     * 
+     *
      * @param value true, if Maven dependencies with the import scope should be excluded
      * @throws CoreException on occasion
      */
@@ -1236,7 +1262,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if dependencies unknown to Maven should be excluded.
-     * 
+     *
      * @return true, if dependencies unknown to Maven should be excluded
      * @throws CoreException on occasion
      */
@@ -1252,7 +1278,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if dependencies unknown to Maven should be excluded.
-     * 
+     *
      * @param value true, if dependencies unknown to Maven should be excluded
      * @throws CoreException on occasion
      */
@@ -1299,7 +1325,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns all generic ids of dependencies, that should be explicitly excluded.
-     * 
+     *
      * @return all generic ids of dependencies, that should be explicitly excluded
      * @throws CoreException on occasion
      */
@@ -1311,7 +1337,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets all generic ids of dependencies, that should be explicitly excluded.
-     * 
+     *
      * @param excludedGenericIds all generic ids of dependencies, that should be explicitly excluded
      * @throws CoreException on occasion
      */
@@ -1322,7 +1348,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns all generic ids of dependencies, that should be explicitly included.
-     * 
+     *
      * @return all generic ids of dependencies, that should be explicitly included
      * @throws CoreException on occasion
      */
@@ -1334,7 +1360,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets all generic ids of dependencies, that should be explicitly included.
-     * 
+     *
      * @param includedGenericIds all generic ids of dependencies, that should be explicitly included
      * @throws CoreException on occasion
      */
@@ -1364,7 +1390,7 @@ public class JettyLaunchConfigurationAdapter
     /**
      * Returns all generic ids of dependencies, that should be part of the Jetty classpath, rather than the web
      * application classpath.
-     * 
+     *
      * @return all generic ids of dependencies, that should be part of the Jetty classpath, rather than the web
      *         application classpath
      * @throws CoreException on occasion
@@ -1378,7 +1404,7 @@ public class JettyLaunchConfigurationAdapter
     /**
      * Sets all generic ids of dependencies, that should be part of the Jetty classpath, rather than the web application
      * classpath.
-     * 
+     *
      * @param globalGenericIds all generic ids of dependencies, that should be part of the Jetty classpath, rather than
      *            the web application classpath
      * @throws CoreException on occasion
@@ -1390,7 +1416,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if the launch should display it's launch info.
-     * 
+     *
      * @return true, if the launch should display it's launch info
      * @throws CoreException on occasion
      */
@@ -1401,7 +1427,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if the launch should display it's launch info
-     * 
+     *
      * @param value true, if the launch should display it's launch info
      * @throws CoreException on occasion
      */
@@ -1412,7 +1438,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true, if the console of the launcher is available.
-     * 
+     *
      * @return true, if the console of the launcher is available
      * @throws CoreException on occasion
      */
@@ -1423,7 +1449,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Set to true, if the console of the launcher is available
-     * 
+     *
      * @param value true, if the console of the launcher is available
      * @throws CoreException on occasion
      */
@@ -1434,7 +1460,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the default classpath provider for the Jetty plugin
-     * 
+     *
      * @param classpathProvider the classpath provider
      * @throws CoreException on occasion
      */
@@ -1445,7 +1471,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the main type name of the Jetty plugin.
-     * 
+     *
      * @return the main type name of the Jetty plugin
      * @throws CoreException on occasion
      */
@@ -1456,7 +1482,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the main type name of the Jetty plugin.
-     * 
+     *
      * @param jettyVersion the version
      * @throws CoreException on occasion
      */
@@ -1468,7 +1494,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true if the generic id mechanis is available.
-     * 
+     *
      * @return true if the generic id mechanis is available
      * @throws CoreException on occasion
      */
@@ -1479,7 +1505,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the specified attribute.
-     * 
+     *
      * @param globalFallback true to fallback to the global definition
      * @param name the name of the attribute
      * @param defaultValue the default value
@@ -1496,7 +1522,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the specified attribute.
-     * 
+     *
      * @param globalFallback true to fallback to the global definition
      * @param name the name of the attribute
      * @param defaultValue the default value
@@ -1512,7 +1538,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns the specified attribute.
-     * 
+     *
      * @param globalFallback true to fallback to the global definition
      * @param name the name of the attribute
      * @param defaultValue the default value
@@ -1528,7 +1554,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Returns true if the specified attribute exists in the configuration.
-     * 
+     *
      * @param name the name of the attribute
      * @return true if exists
      * @throws CoreException on occasion
@@ -1555,7 +1581,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the specified attribute.
-     * 
+     *
      * @param globalFallback true if the value should be written to the global configuration, too
      * @param name the name of the attribute
      * @param value the value
@@ -1584,7 +1610,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the specified attribute.
-     * 
+     *
      * @param globalFallback true if the value should be written to the global configuration, too
      * @param name the name of the attribute
      * @param value the value
@@ -1613,7 +1639,7 @@ public class JettyLaunchConfigurationAdapter
 
     /**
      * Sets the specified attribute.
-     * 
+     *
      * @param globalFallback true if the value should be written to the global configuration, too
      * @param name the name of the attribute
      * @param value the value
