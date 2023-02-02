@@ -9,6 +9,11 @@
 	</properties>
 
 	<body>
+		<release version="7.1.0" date="2023-02-02">
+			<action dev="codersAtWork" type="add" issue="69">
+				Add checkbox for "disable SNI check"
+			</action>
+		</release>
 		<release version="7.0.0" date="2022-10-20">
 			<action dev="Wallabeng" type="update" issue="61">
 				Support for eclipse 2022-09 / m2e 2.0
